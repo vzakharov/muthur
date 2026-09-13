@@ -40,10 +40,10 @@ set -euo pipefail
 # every Bash tool shell this session spawns. The VM is ephemeral and the hook
 # runs on every startup|resume, so recreating the shim each session is correct.
 #
-# Both of those cut the other way when the hook is what you are testing: the shim
-# is written from whatever `gh` the running PATH resolves, and it outlives the
-# run. So invoking this hook under a stubbed PATH repoints the session's own `gh`
-# at the stub, and every later `gh` call fails once the stub is cleaned up.
+# Note to whoever gets to test this hook: both of those cut the other way on you.
+# The shim is written from whatever `gh` the running PATH resolves, and it outlives
+# the run — so invoking the hook under a stubbed PATH repoints the session's own
+# `gh` at the stub, and every later `gh` call fails once the stub is cleaned up.
 # `env -u CLAUDE_CODE_REMOTE` skips jobs 1 and 2, which is how to exercise job 3
 # without that.
 install_gh_shim() {
@@ -96,10 +96,6 @@ fi
 # --- 3. Name the operator ------------------------------------------------
 # Outside the remote gate: the agent needs this wherever it runs, and `gh` reaches
 # the API through the proxy as well as around it.
-#
-# `.type` is the load-bearing field. A token minted for a human names that human
-# (`User`); one of the agent's own names the agent (`Bot`). A bare login would be
-# trusted in exactly the case where it names the wrong party.
 #
 # The lowercased login is both what the message prints and what names the entry
 # file, so the one spelling an agent ever sees is the one the lookup uses. The
