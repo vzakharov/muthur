@@ -65,6 +65,6 @@ Commit it **now**, before any planning. The export is the source of truth for wh
 
 ## Step 3 — Return to the caller
 
-Hand back the export path (`docs/issue/<n>/issue.md`) and `<issue>` = `<n>`, the number the eventual PR must close. Where the caller's own procedure carves the work into slices, that number is the parent, and which number the PR closes is settled there rather than here — `@.claude/skills/plan/SKILL.md` § "Carving a task into issues" owns it.
+Hand back the export path (`docs/issue/<n>/issue.md`) and the number. **Whether it is the number a PR closes is the caller's to decide**, and often it isn't one: an issue taken for context — a related report, the thread a decision was argued in, the parent of a carve — is read and closes nothing. Where the caller carves, `@.claude/skills/plan/carving.md` settles which number the PR closes.
 
-Then stop. Everything downstream — the plan-or-not call, the carve, the branch name, the PR — belongs to the caller.
+Then stop. Everything downstream belongs to the caller.

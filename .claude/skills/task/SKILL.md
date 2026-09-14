@@ -37,9 +37,9 @@ The test: if you can hold the whole change in your head and name every file it t
 
 `@.claude/skills/plan/SKILL.md` Part 1, unchanged: `docs/plans/<slug>.draft.do-not-implement.md`, banner and all, published through `/pr` so the operator has a surface to read and interrupt on.
 
-**Every planning route produces a draft**, including the one that is about to implement without stopping. The state is not scaffolding to be skipped when you already know the answer: it is what a `/handle` reads if this session dies between writing the file and flipping it — a plan awaiting a go-ahead, which costs one round trip to re-give. The alternative, an `*.in-progress.md` claiming a live session holds the plan right now, is a reading someone has to untangle by hand.
+**Every planning route produces a draft.** It is what a `/handle` reads if this session dies between writing the file and flipping it — a plan awaiting a go-ahead, which costs one round trip to re-give. The alternative, an `*.in-progress.md` claiming a live session holds the plan right now, is a reading someone has to untangle by hand.
 
-It is also what makes a carve safe here. `@.claude/skills/plan/SKILL.md` § "Carving a task into issues" files nothing at plan time and leans on the draft being the gate, so a carve found while writing this plan needs no procedure of its own: the file is already a draft carrying its banner, and Step 3 is where it stops.
+It is also what makes a carve safe here. `@.claude/skills/plan/carving.md` files nothing at plan time and leans on the draft being the gate, so a carve found while writing this plan needs no procedure of its own: the file is already a draft carrying its banner, and Step 3 is where it stops.
 
 ## Step 3 — Does the operator need to look?
 
