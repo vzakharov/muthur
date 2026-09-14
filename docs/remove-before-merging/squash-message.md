@@ -1,7 +1,7 @@
 Proposed squash title/body:
 
 ```
-feat: route the entry ladder on change-or-not, carve in /plan (pr #71)
+feat: route the entry ladder on change-or-not, move the carve (pr #71)
 ```
 
 ```
@@ -22,22 +22,25 @@ route through it produces a draft — which leaves a session that died
 mid-turn in a state a later /handle reads as awaiting a go-ahead rather
 than as held by a session that is gone.
 
-/plan owns the carve, whole: the bar, the plan-file shape that names
-the parent and children it proposes, the read-only dedupe, and the
-filing procedure itself. It creates nothing — the plan file is already
-the gate, so /go files the list on the go-ahead that flips it, and a
-plan turn that ends unapproved leaves the tracker as it found it. This
-is what makes untracked work splittable at all: the criteria lived
-inside a skill reached by already having an issue number.
+The carve leaves /issue for .claude/skills/plan/carving.md, which /plan
+loads when work is beyond one PR and /go loads to file what the plan
+proposed. /plan keeps the bar that decides, so a plan taking its task
+whole never reads the rest and /go carries no filing procedure through
+a planless run. Nothing is created at plan time: the plan file is
+already the gate, so /go files the list on the go-ahead that flips it,
+and a plan turn that ends unapproved leaves the tracker as it found it.
+This is what makes untracked work splittable at all — the criteria
+lived inside a skill reached by already having an issue number.
 
 An issue number is therefore a detail of the prompt, not a destination.
 /task, /plan and /go all take <what to do> #<N> and export the thread
-first, so the skill that reads one is reduced to transport and takes
-the name that says which half it is, /take-issue; /issue stays as a
-redirect. The number also leaves the branch slug, which had forced it
-to exist before /plan renamed the branch — /pr writes Closes #<tbd>
-where a carve has yet to file its children, and /propose-issue fills it
-in when it creates them.
+before routing on it, an issue-shaped prompt being one the ladder often
+cannot be read off. So the skill that reads one is reduced to transport
+and takes the name that says which half it is, /take-issue; /issue
+stays as a redirect to what the old name invoked. The number also
+leaves the branch slug — /pr writes Closes #<tbd> where a carve has yet
+to file its children, and /propose-issue fills it in when it creates
+them.
 
 Co-authored-by: Claude <noreply@anthropic.com>
 ```
