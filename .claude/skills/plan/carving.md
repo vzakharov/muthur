@@ -1,13 +1,11 @@
 # Carving a task into issues
 
-The procedure a carve runs, held apart from `@.claude/skills/plan/SKILL.md` because
-a plan that takes its task whole — most of them — should not pay for it. That
-skill's § "Carving a task into issues" holds the bar that decides; this file is
-what to do once the decision is yes.
+What to do once `@.claude/skills/plan/SKILL.md` § "Carving a task into issues"
+has answered yes — that skill holds the bar the answer is measured against.
 
-Two readers, one procedure: `/plan` writes the proposal, `/go` files it on the
-go-ahead. They are stated together because the second half is written against the
-shape the first produces.
+Two readers, one procedure: `/plan` writes the proposal and `/go` files it,
+stated together because the filing half is written against the shape the
+proposal takes.
 
 **Only the next slice has to be manageable.** Spell out the immediate work in full and give a **coarse** view of what follows — smaller than the original umbrella, but not fully decomposed. Parked slices are placeholders and ordering hints, not mini-specs; you owe no implementation DAG and no per-child plans up front.
 

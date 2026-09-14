@@ -65,7 +65,7 @@ Default to taking the task whole. Carve only when the size is obviously beyond a
 
 Deciding **not** to carve is not a gate and never becomes one: say so in a line and write the plan. Do not ask whether the task looks big enough, and do not offer a carve you don't think is warranted — the operator disagrees in the plan review, which costs them a sentence, whereas a question here costs a round trip on every task.
 
-**Carving → load `@.claude/skills/plan/carving.md`** and follow it: how coarse the parked slices may be, what the plan file names, and what `/go` files from that list on the go-ahead. It sits beside this file rather than inside it because most plans take their task whole, and those should not carry the procedure in context to decide they don't need it.
+**Carving → load `@.claude/skills/plan/carving.md`** and follow it: how coarse the parked slices may be, what the plan file names, and what `/go` files from that list. It sits beside this file rather than inside it because most plans take their task whole, and those should not carry a procedure in context to decide they don't need it.
 
 ### Publishing the plan
 
