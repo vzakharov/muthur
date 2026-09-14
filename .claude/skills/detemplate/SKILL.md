@@ -154,11 +154,12 @@ hydrate-now-or-delete; the reverse-closure edits; the derived watermark and
 `scripts/vet.sh`'s disposition; the language answer; and the deletion list. Plus
 the `## DRY notes` section CLAUDE.md requires of every plan.
 
-**Two dispositions are pre-decided, and the plan states them rather than asking.**
-`/implement` goes, unconditionally: it redirects a name that predates `/go`, and
-a fork has no plan file or PR comment old enough to still say it — the catalog's
-"ask the operator" applies to a repo that shipped `/implement` under its own
-history, which a tree one commit old cannot have. And this skill goes (Step 5.8).
+**Three dispositions are pre-decided, and the plan states them rather than asking.**
+`/implement` and `/issue` go, unconditionally: each redirects a name this repo
+shipped before a split, and a fork has no plan file, PR comment or muscle memory
+old enough to still say it — the catalog's "ask the operator" applies to a repo
+that shipped those names under its own history, which a tree one commit old
+cannot have. And this skill goes (Step 5.8).
 
 ## Step 5 — The execution order the plan prescribes
 

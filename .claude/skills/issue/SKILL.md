@@ -14,9 +14,9 @@ prose, number and all. Then say in one line that `/task` and `/go` take that
 same argument: `/task` hands the plan-or-not call back to the agent, and `/go`
 skips it.
 
-`/plan` is the default of the three because the name says nothing about which
-reading the operator meant, so the guess should be the one that costs a round
-trip rather than an unreviewed diff.
+`/plan` is the default of the three because it is what `/issue … #<N>` invoked
+before the split, so it is what an operator typing the old name is expecting to
+happen.
 
 **With no number:** there is no issue to take, and the prose is an unfiled unit
 of work. Name `@.claude/skills/propose-issue/SKILL.md` and stop rather than
