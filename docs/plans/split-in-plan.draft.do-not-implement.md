@@ -174,36 +174,26 @@ same principle to a number that does not exist yet.
 ### Group closure
 
 The catalog puts `/plan` in **G2** and `/take-issue` / `/propose-issue` in **G3**, so
-`/plan` cannot simply absorb issue-filing: an adopter who took the loop but tracks
-nothing on GitHub would get a step they cannot run. What is split here is the
-carve's **documentation**, not the work — two halves, two homes:
+a `/plan` that states the filing reaches across a group line. **It states it
+anyway, in full** — the carve is one procedure, and cutting it at the group line
+would leave the G2 half stopping exactly where its reader needs the next sentence.
 
-- **G2, stated in `/plan`:** whether to carve, where the seams are, and the plan
-  file's shape — first slice in full, remainder coarse.
-- **G3, in `.claude/skills/propose-issue/splitting.md`:** calling `/propose-issue` for
-  each slice, the native `sub_issues` link and its two 422 traps, the ≥5-files
-  granularity rule, and carrying an enumerated parent's verbatim reports and
-  attachments into each child.
+What a G2-only adopter does instead — keep the remaining slices in the plan file,
+in a backlog doc, in whatever tracker they do use — is theirs to decide, and this
+repo writes no degradation path for it. The catalog is where they are told that,
+rather than discovering it: `/plan` joins `/finalize` in § "Closure is not
+optional", whose bullet already reads "reaches into G3 and G5 conditionally …
+strip the two citations, or adopt the groups". One more citation, same instruction
+— strip the filing half, keep the carve, and decide for yourself where the slices
+live. `/plan`'s **Requires** gains the conditional G3 edge `/finalize`'s already
+carries.
 
-Concretely, on "rebuild the settings area, it's three separate screens": both
-adopters get the same `/plan` turn, because judging the seams needs no tracker.
-The plan file specs the first screen in full, describes the other two in a
-paragraph each, and lists all three under the heading that proposes them. For the
-G2-only adopter that list **is** the tracking, and the turn ends there. For the G3
-adopter `/go` reads the same list on the go-ahead and files it — parent, three
-children, `sub_issues` links — and the PR for screen one carries `Closes #<child>`.
-One judgement, and a second half that only exists where there is somewhere to file.
-
-The G3 half sits beside `/propose-issue` rather than beside `/take-issue` because
-it is about creating a family of issues, which is that skill's job and no longer
-has anything to do with transport. It also means pruning G3 takes the file with the
-skill it belongs to, instead of stranding it under a skill that never reads it.
-
-`/plan` cites the G3 file conditionally. For a G2-only adopter the carve is the
-plan naming its slices, and nothing else: no fallback procedure is written for
-what they do with a list they can't file. Precedent for the conditional edge is
-`/finalize`, whose **Requires** column already reads "**conditionally** `/issue`
-(G3)".
+Concretely, on "rebuild the settings area, it's three separate screens": the plan
+file specs the first screen in full, describes the other two in a paragraph each,
+and lists all three under the heading that proposes them. With G3, `/go` reads that
+list on the go-ahead and files it — parent, three children, `sub_issues` links —
+and the PR for screen one carries `Closes #<child>`. Without G3, that list is
+where the three screens sit until the adopter moves them somewhere they chose.
 
 ### `/task` decides the gate after the plan is written
 
@@ -249,15 +239,14 @@ now, which is the reading someone has to untangle by hand.
 | `CLAUDE.md` | § "Plan mode & questions in web sessions": replace the planning-session default with Part A's two rows plus the `#<N>` export-first line; keep the `/from-branch` / `/handle` continued-work bullet as the launch-vs-continued line. § "Working with skills": `/take-issue` moves from the entry points to the mechanical pieces, and `/issue` joins `/implement` as a redirect |
 | `.claude/skills/take-issue/SKILL.md` | **renamed from `issue/`**; delete Steps 3 and 4 and § "Branch name"; what remains is the mode gate, the export and the commit; the argument shape admits prose around the number and says the export outranks it; a closing line that its callers are `/task`, `/plan` and `/go`, and that it returns to them |
 | `.claude/skills/issue/SKILL.md` | **new** — deprecation stub: with a `#<N>`, forward to `/plan` and report that `/task` and `/go` take the same shape; with none, name `/propose-issue` and stop |
-| `.claude/skills/propose-issue/splitting.md` | **new** — the G3 filing half, moved verbatim from Step 3 |
 | `.claude/skills/pr/SKILL.md` | Step 4 reads `docs/issue/<n>/` instead of the slug, and writes `Closes #<tbd>` on a carve whose children are not filed yet; no line at all where no issue is involved; the `<issue>` parameter line follows |
 | `.claude/skills/propose-issue/SKILL.md` | say that Steps 1–2 and Step 3 may run in different turns; Step 3 fills any `#<tbd>` on the branch and in the PR body |
 | `.claude/skills/squash-message/SKILL.md` | never carry `#<tbd>` into the title or the `Closes` trailer — omit the reference until it resolves |
-| `.claude/skills/plan/SKILL.md` | new section: the carve bar, the plan-file shape including the proposed issues, the read-only dedupe, the conditional cite; plus the `#<N>` pointer |
+| `.claude/skills/plan/SKILL.md` | new section, absorbing `/issue` Step 3 whole: the carve bar, the plan-file shape including the proposed issues, the read-only dedupe, and the filing half — `/propose-issue` per slice, the `sub_issues` link and its two 422 traps, the ≥5-files granularity rule, an enumerated parent's verbatim reports; plus the `#<N>` pointer |
 | `.claude/skills/go/SKILL.md` | file the issues the approved plan proposes, before the work; plus the `#<N>` pointer |
 | `.claude/skills/task/SKILL.md` | the two questions become a question, a draft, and a question — the gate call moves after the plan file exists, and its "no" branch enters `/go` at Step 1 rather than writing `*.in-progress.md`; plus the `#<N>` pointer and one line that `/task` is where a launch-time directive lands |
 | `.claude/skills/finalize/SKILL.md` | the **Requires** column's conditional G3 edge repoints to `/take-issue` |
-| `.claude/skills/update-muthur/catalog.md` | `/take-issue` and `/plan` rows re-described, a row added for the `/issue` stub; `/plan` gains a conditional G3 edge |
+| `.claude/skills/update-muthur/catalog.md` | `/take-issue` and `/plan` rows re-described, a row added for the `/issue` stub; `/plan` gains a conditional G3 edge and joins `/finalize` in § "Closure is not optional"'s conditional-reach bullet |
 
 Every other `/issue` citation repoints with the rename.
 `./scripts/check-skill-catalog.sh` is what proves none was missed: it fails on a
@@ -265,7 +254,7 @@ dangling `@`-reference and on a skill without exactly one catalog row — and bo
 the renamed skill and the stub need rows, which is what makes the stub's omission a
 failure rather than an oversight.
 
-**Not itself split-worthy**, by the bar this plan moves: twelve files, one seam,
+**Not itself split-worthy**, by the bar this plan moves: eleven files, one seam,
 one PR.
 
 ## Settled in review
@@ -274,8 +263,8 @@ On the thread at `.claude/skills/task/SKILL.md`:14:
 
 - **`/propose-issue` runs on the parent only**, children created directly — and a
   dedupe hit stops and reports instead of adopting the match.
-- **A G2-only adopter gets the plan naming its slices and nothing more.** Working
-  around a tracker they declined is theirs to solve, not this repo's.
+- **A G2-only adopter is owed no degradation path.** Working around a tracker they
+  declined is theirs to solve, not this repo's.
 - **`/task` writes the draft before it decides the gate.** Every planning route
   now produces a draft, and the "does the operator need to look?" call is made with
   the plan in hand rather than forecast from the prompt. No route reaches `/plan`
@@ -307,27 +296,25 @@ On the review of this file:
   callers. The old `/issue` keeps working, as a stub that runs `/plan` on the same
   argument and names `/task` and `/go` as the other two readings of it — or names
   `/propose-issue`, where there is no number to take.
-- **`propose-issue/splitting.md`, not `take-issue/splitting.md`.** The filing half is
-  about creating a family of issues, which is `/propose-issue`'s job; transport has
-  nothing to do with it, and homing it there keeps it with the skill a G2-only
-  adopter prunes.
+- **The carve is one procedure in `/plan`, not two files on a group line.** `/plan`
+  states the filing as well, and the adopter who declined G3 strips that half and
+  decides for themselves where the slices live — told so by the catalog's closure
+  bullet, where `/finalize` already stands for the same reason.
 
 Nothing is left open. The plan is waiting on a go-ahead, not on an answer.
 
 ## DRY notes
 
 - **The carve criteria move, they are not copied.** `/issue` Step 3 is deleted
-  outright, not summarized into a pointer — the criteria have one home after this
-  (`/plan`), and the filing mechanics have one home (`propose-issue/splitting.md`). The
-  failure mode being avoided is the convention stated twice, which CLAUDE.md
-  § "Writing things down" names as the finding rather than the fix.
-- **"First slice in full, remainder coarse" goes to `/plan` only.** It is a
-  plan-shape rule, so `propose-issue/splitting.md` does not restate it.
+  outright, not summarized into a pointer — criteria and filing mechanics alike have
+  one home after this, and it is `/plan`. The failure mode being avoided is the
+  convention stated twice, which CLAUDE.md § "Writing things down" names as the
+  finding rather than the fix.
 - **One issue-creation site: `/propose-issue`.** Parent and children both go
   through it rather than the children through a local `gh api` loop, because the
   `#<tbd>` fill-in has to live wherever issues are born and two birthplaces means
   two copies of that rule — the convention stated twice that CLAUDE.md § "Writing
-  things down" calls the finding. What `propose-issue/splitting.md` keeps is what is
+  things down" calls the finding. What `/plan` states beside the call is what is
   genuinely about the parent-child *relation* rather than about creating an issue:
   the `sub_issues` link and its two 422 traps, the granularity rule, and carrying
   an enumerated parent's verbatim reports into each child.
