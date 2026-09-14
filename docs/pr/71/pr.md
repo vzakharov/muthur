@@ -7,7 +7,7 @@
 - **Draft:** yes
 - **Merged:** _not merged_
 - **Created:** 2026-09-12T14:26:37Z
-- **Updated:** 2026-09-14T18:34:26Z
+- **Updated:** 2026-09-14T18:40:00Z
 - **Closed:** _not closed_
 - **Labels:** _none_
 
@@ -689,7 +689,7 @@ where someone deciding whether this change is right will look for it.
 
 ---
 
-### `docs/plans/split-in-plan.draft.do-not-implement.md`:56 — resolved
+### `docs/plans/split-in-plan.draft.do-not-implement.md`:63 — resolved
 
 ```diff
 @@ -0,0 +1,185 @@
@@ -1337,6 +1337,31 @@ this body is just shorter. Say the word and I'll restore the previous text.
 
 I don't think it should point at /take-issue, because /take-issue itself, unlike the former /issue, is transport-only. So we should forward the operator to /task, /go, or /plan, depending on their needs (like, literally say, this skill is deprecated, use this for this, that for that, yet another that for that)
 
+**@vzakharov (agent)** — 2026-09-14T18:40:22Z
+
+Taken, and it takes a row out of Part A with it. What I missed is that `/task [title]
+#55` is the same shape as `/go [title] #55` and `/plan [title] #55` — so the number is
+a detail of the prompt, not a destination. Row 2 was routing a launch prompt to a skill
+the operator isn't meant to invoke, which is the contradiction you're pointing at.
+
+So the ladder is two rows now — asks for a change → `/task`, with or without a `#55`;
+asks for no change → answer it — plus one line: a `#<N>` means the thread is exported
+and committed before anything else, by whichever of `/task`, `/plan` or `/go` received
+the prompt. The rule's home is the ladder; the three carry a pointer, not a copy.
+
+That cashes out through the rest of the skill. After Step 3 goes, what's left is export
+and commit — so **Step 4 goes too**, along with § "Branch name", whose one contribution
+this plan already removes. It stops dispatching entirely: it's called, it returns, and
+it moves to the mechanical pieces in CLAUDE.md § "Working with skills" beside
+`/branch-rename` and `/squash-message`.
+
+And the stub is a map rather than a redirect, as you said — literally: `/task <what to
+do> #<N>` to let the agent make the call, `/plan` or `/go` with the same shape to force
+it either way, `/propose-issue` to file a new one. Which also disposes of the noun's old
+ambiguity: the read-or-file question gets answered by naming both.
+
+006d80d
+
 ---
 
 ### `docs/plans/split-in-plan.draft.do-not-implement.md`:218 — unresolved
@@ -1409,6 +1434,25 @@ I don't think it should point at /take-issue, because /take-issue itself, unlike
 
 wait, why? didn't we move this to /plan?
 
+**@vzakharov (agent)** — 2026-09-14T18:40:24Z
+
+Half-moved, and you're right that the remainder is in the wrong place. The carve
+*criteria* go to `/plan`; what this file holds is the G3 filing half — the
+`/propose-issue` calls, the native `sub_issues` link and its two 422 traps, the ≥5-files
+granularity rule, and carrying an enumerated parent's verbatim reports into each child.
+That can't sit in `/plan`, which is G2: an adopter who tracks no issues would get a step
+they can't run.
+
+But it has no business under `take-issue/` either, and that's sharper now than when I
+wrote it — after the change above, `/take-issue` is export-and-commit and nothing else,
+so the file would live under a skill that never reads it. It's about creating a family
+of issues, which is `/propose-issue`'s job.
+
+Moved to `.claude/skills/propose-issue/splitting.md`. It's G3, it sits beside the skill
+that does the creating, and pruning G3 takes it along instead of stranding it.
+
+006d80d
+
 ---
 
 ### `docs/pr/71/pr.md`:1 — unresolved
@@ -1416,6 +1460,26 @@ wait, why? didn't we move this to /plan?
 **@vzakharov (human)** — 2026-09-14T18:34:23Z
 
 does the pr-export skill/script instruct the agent to only look at the diff after exporting? because if you routinely read it all at ones, at 1200+ lines, it's getting beyond manageable, I'm guessing
+
+**@vzakharov (agent)** — 2026-09-14T18:40:25Z
+
+No, nothing says that, and what little is stated points the wrong way: `/handle` Step 2
+calls the export "the whole thread" and `/finalize` says a resuming agent "reads the
+full thread from there". Neither anticipated the third review round.
+
+What I actually do, which is why this hasn't bitten yet: regenerate the export, `git
+diff` it against the committed copy, and read only the threads that moved — `grep` for
+the headers to see which are `unresolved` with a `(human)` tail, then `sed` the line
+ranges those sit in. I've never read this file end to end. But that's habit, not
+procedure, and habit doesn't survive a context wipe, which is precisely the case the
+committed export exists for.
+
+So it's worth writing down, and `/handle` Step 2 is where — beside the tail test, which
+is already the thing that decides what's worth reading. Added to the plan's "Out of
+scope" as a named follow-up rather than folded in, since it has nothing to do with entry
+routing and this diff is at twelve files.
+
+006d80d
 
 ---
 
