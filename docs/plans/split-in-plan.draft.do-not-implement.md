@@ -112,18 +112,21 @@ Renaming later is not available: the plan filename tracks the slug, and a rename
 after the PR exists closes the PR. So the slug read goes, and the PR body carries
 the number instead:
 
-- **`/pr` writes `Closes #<tbd>` whenever it cannot name the issue** — because the
-  issue does not exist yet, or because a resumed session has no way to know it.
-  The marker is the mechanism, not a fallback: it makes "not known here" a durable
-  state on the branch rather than something lost with the turn.
+- **A `Closes` line appears only where the work is tracked, or is about to be.**
+  Most PRs close no issue and carry no line, exactly as today. The two origins
+  that put one there are an `/issue` call, where the number is known, and a carve,
+  where the children do not exist yet — and only the second writes
+  **`Closes #<tbd>`**. The marker means "an issue is coming and its number belongs
+  here", which is a durable state on the branch rather than something lost with
+  the turn; it is never a stand-in for not having looked.
 - **`/propose-issue` Step 3 fills it in**, being the one place an issue is ever
   created. Whoever creates the issue is the only party that can know the number
   the moment it exists, and routing every slice through that skill is what keeps
   the rule in one home.
-- **`docs/issue/<n>/` is a shortcut, not the mechanism.** It exists only where
+- **`docs/issue/<n>/` serves the first origin and only it.** It exists only where
   `/issue` exported a thread, which is precisely the path where the number was
-  never in doubt. Work that *creates* its issue has no export, so the marker is
-  what covers it.
+  never in doubt; a resumed session reads it there instead of off the slug. Work
+  that *creates* its issue has no export, which is what the marker covers.
 
 None of these reads the session's own memory, which is what the slug was standing
 in for. `/issue` Step 2 commits the export before any planning precisely so a
@@ -173,7 +176,7 @@ answered with the wrong task in view; the carve is the correction.
 | --- | --- |
 | `CLAUDE.md` | § "Plan mode & questions in web sessions": replace the planning-session default with Part A's three rows; keep the `/from-branch` / `/handle` continued-work bullet as the launch-vs-continued line |
 | `.claude/skills/issue/SKILL.md` | delete Step 3; renumber; Step 4 loses the split exception; § "Branch name" drops the issue-number requirement |
-| `.claude/skills/pr/SKILL.md` | Step 4 reads `docs/issue/<n>/` instead of the slug, and writes `Closes #<tbd>` when it cannot name the issue; the `<issue>` parameter line follows |
+| `.claude/skills/pr/SKILL.md` | Step 4 reads `docs/issue/<n>/` instead of the slug, and writes `Closes #<tbd>` on a carve whose children are not filed yet; no line at all where no issue is involved; the `<issue>` parameter line follows |
 | `.claude/skills/propose-issue/SKILL.md` | say that Steps 1–2 and Step 3 may run in different turns; Step 3 fills any `#<tbd>` on the branch and in the PR body |
 | `.claude/skills/squash-message/SKILL.md` | never carry `#<tbd>` into the title or the `Closes` trailer — omit the reference until it resolves |
 | `.claude/skills/issue/splitting.md` | **new** — the G3 filing half, moved verbatim from Step 3 |
@@ -206,9 +209,10 @@ On the review of this file:
 - **In doubt, read a prompt as asking for no change.** Answer it, keep whatever
   the answer produced in `tmp/`, and move it somewhere tracked only if asked.
 - **The issue number leaves the branch slug**, and `/pr` Step 4 stops reading it
-  there. `Closes #<tbd>` in the PR body is the durable carrier, filled in by
-  whoever creates the issue. This rides this PR, the sites being ones it already
-  edits.
+  there. The PR body carries it instead — the number where an `/issue` call knows
+  it, `#<tbd>` where a carve has yet to file it, and no line at all on the PRs
+  that close nothing, which is most of them. This rides this PR, the sites being
+  ones it already edits.
 - **Both parent and children go through `/propose-issue`**, which is what lets the
   `#<tbd>` fill-in have a single home — and gets the children deduped for free,
   at plan time where the operator rules on any match before approving.
