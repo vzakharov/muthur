@@ -2,12 +2,12 @@
 
 - **State:** open
 - **URL:** https://github.com/vzakharov/muthur/pull/71
-- **Author:** @vzakharov (human)
+- **Author:** @vzakharov (agent)
 - **Base ← Head:** main ← claude/task-skill-ukv536
 - **Draft:** yes
 - **Merged:** _not merged_
 - **Created:** 2026-09-12T14:26:37Z
-- **Updated:** 2026-09-14T14:40:58Z
+- **Updated:** 2026-09-14T14:48:24Z
 - **Closed:** _not closed_
 - **Labels:** _none_
 
@@ -17,12 +17,35 @@
 
 ## Summary
 
-- **The plan-or-not call gets its own front door: `/task <what to do>`.** The judgment — does this task need the operator's gate, a plan for the agent's own sake, or neither? — reached the agent only as prose (`plan or go: <task>`) routed through a section of `/plan`. `.claude/skills/plan/plan-or-go.md` becomes `.claude/skills/task/SKILL.md`, questions and outcomes unchanged, so it is a typeable slash command that loads on invocation instead of on every planning session. **The name is a noun on purpose:** skills trigger on description matching before their body loads, so a verb-named entry is readable as an instruction — an earlier draft called it `/lets`, which collides with `/plan`'s approval gate reading "let's implement" as a go-ahead. CLAUDE.md now rules those names out and points at naming a skill after its argument, which is what `/issue`, `/task` and `/pr` do.
-- **`/issue` makes that same call instead of planning unconditionally.** It used to hand every issue to `/plan`, on the reasoning that filing an issue answers the call by itself. Filing one is evidence the work is worth *tracking*, which comes apart from worth *deliberating*: a two-row docs correction gets filed so a review doesn't lose it, not because anyone needs a page about it first. Step 4 now hands to `/task` like any other work. A split issue is the one exception — it skips the call and plans, since splitting only happens when the work is obviously beyond a single PR, which is the first question's first clause already satisfied.
-- **Nothing threads a parameter to carry that.** The only thing downstream that wants the issue number is `/pr`'s `Closes #N`, which already infers one when no caller passed it; what that inference did not read is the branch, and `/issue` is the one caller that guarantees the number is in the slug. So `/pr` Step 4 reads the branch before the commits — which also settles the split case the explicit parameter existed for, the slug carrying the chosen child and never the parent.
-- **Citations repointed**, so nothing states the old arrangement: CLAUDE.md's routing bullet and its skills list, `/go`'s planless entry, `/issue`'s frontmatter, end-state and chain, and the catalog (a new `/task` row in G2, `/plan`'s row losing the moved clause, `/go`'s and `/issue`'s gaining the new reference). The move also upgrades the `/go` → `/task` pointer into one `scripts/check-skill-catalog.sh` verifies, which a reference to a non-`SKILL.md` page was not.
+- **The plan-or-not call has its own front door: `/task <what to do>`.** Two
+  questions pick between three outcomes — plan and hand off, plan and then
+  implement, implement with no plan — and the invocation is a conditional
+  go-ahead scoped to that one task. It lives at `.claude/skills/task/SKILL.md`,
+  so it loads when invoked rather than on every planning session.
+- **The name is a noun on purpose.** Skills trigger on description matching
+  before their body loads, so a verb-named entry is readable as an instruction
+  and collides with `/plan`'s approval gate. CLAUDE.md rules those names out and
+  points at naming a skill after its argument — `/issue`, `/task`, `/pr`.
+- **`/issue` makes the same call rather than planning unconditionally.** Filing
+  an issue is evidence the work is worth *tracking*, which comes apart from worth
+  *deliberating*: a two-row docs correction gets filed so a review doesn't lose
+  it. Its Step 4 hands to `/task` like any other work. A split issue is the one
+  exception — it plans directly, splitting being Question 1's first clause
+  already satisfied.
+- **Nothing threads a parameter to carry the issue number.** `/pr` Step 4's
+  `Closes #N` ladder reads the caller's `<issue>`, then the branch slug, then any
+  issue the PR or a commit references. The slug read is what `/issue` guarantees,
+  and it settles the split case: the slug carries the chosen child, never the
+  parent umbrella.
+- **Citations repointed** across CLAUDE.md, `/go`'s planless entry, `/issue`'s
+  frontmatter and chain, and the catalog. The `/go` → `/task` pointer is now one
+  `scripts/check-skill-catalog.sh` verifies.
 
-- **A follow-up plan rides this branch**, at `docs/plans/split-in-plan.draft.do-not-implement.md`: a three-way routing rule for a launch prompt that names no skill, and the relocation of the split decision out of `/issue` Step 3 into `/plan`. It is a draft awaiting a go-ahead; implementing it grows this PR into both changes.
+**A follow-up plan rides this branch**, at
+`docs/plans/split-in-plan.draft.do-not-implement.md`: a three-way routing rule
+for a launch prompt that names no skill, and the relocation of the split decision
+out of `/issue` into `/plan`. It is a draft awaiting a go-ahead; implementing it
+grows this PR into both changes.
 
 ## QA Checklist
 
@@ -31,20 +54,18 @@
 - [ ] `issue-large` — Run `/issue` on a genuinely large issue. It still writes `docs/plans/<slug>.draft.do-not-implement.md`, publishes the draft PR, and ends at the `/go <branch>` handoff.
 - [ ] `issue-split` — Run `/issue` on a split-worthy issue. After the split is approved it plans without re-asking whether a plan is needed, and the PR closes the chosen child rather than the parent umbrella.
 - [ ] `mid-session` — Partway through an implementation session, say "let's also rename X". It is handled as an ordinary follow-up under `/plan`'s approval gate; the session does not load `/task` or re-decide whether the work needs a plan.
-- [ ] `plan-unchanged` — Open a session with `plan: <task>`. It writes the draft plan file, publishes the draft PR, and ends with the handoff block, exactly as before.
+- [ ] `plan-unchanged` — Open a session with `plan: <task>`. It writes the draft plan file, publishes the draft PR, and ends with the handoff block.
 - [ ] `catalog` — Run `./scripts/check-skill-catalog.sh`. It reports OK: `/task` has exactly one catalog row, and every `@`-reference added here resolves.
 
 | Item | Automatable | Covered? | Notes |
 |------|-------------|----------|-------|
 | `invoke` | manual-only | — | Whether an agent reads the routing correctly is a judgment call, not an assertion |
-| `issue-small` | manual-only | — | The change's whole point; only a real issue run exercises the call and the slug inference together |
-| `issue-large` | manual-only | — | Regression check that the plan lane still reaches the handoff |
+| `issue-small` | manual-only | — | Exercises the call and the slug inference together |
+| `issue-large` | manual-only | — | The plan lane still reaches the handoff |
 | `issue-split` | manual-only | — | Also checks the umbrella stays open, which no assertion can see |
-| `mid-session` | manual-only | — | The collision the noun name removes; only a real session exercises it |
-| `plan-unchanged` | manual-only | — | Regression check that removing the section changed nothing else in `/plan` |
+| `mid-session` | manual-only | — | The token collision the noun name removes; only a real session exercises it |
+| `plan-unchanged` | manual-only | — | `/plan` is otherwise unaffected |
 | `catalog` | unit | ✅ | `scripts/check-skill-catalog.sh`, which `scripts/vet.sh` runs |
-
-https://claude.ai/code/session_01XRx3cnhN5rkx4LpLRdDRBf
 
 ---
 
@@ -855,6 +876,38 @@ instead of calling it independent.
 
 why? why not let it write normally, and have the `/go`, which it calls right after, handle the rename as per usual? (I don't know the entire context, so maybe it's a poor idea.)
 
+**@vzakharov (agent)** — 2026-09-14T14:48:24Z
+
+Not a poor idea — it's better than what I wrote, and it deletes a rule instead of
+adding one. Taken.
+
+The reason outcome 3 skipped the draft was that the filename is a claim about
+approval state, and outcome 3's work *is* approved, conditionally, so
+`*.in-progress.md` looked like the only true name. What that misses is the thing
+this whole section is about: during outcome 3 the approval status isn't actually
+settled yet. The conditional go-ahead was scoped to the task as described, and a
+carve is the discovery that the task wasn't that. So the draft state isn't
+"awaiting the operator" here — it's "not yet established that this is cleared",
+and the flip is where it gets established.
+
+Which is exactly your version: write the draft, then enter `/go` at **Step 1**
+rather than Step 2. Step 1 is already the `git mv`, and its commit already quotes
+the go-ahead — here the `/task` prompt itself, which is a literal go-ahead like
+any other. Cost is one `git mv`.
+
+And then the recovery rule disappears. A carve found while writing that plan needs
+no procedure at all: the file is already a draft carrying its banner, the session
+doesn't flip it, it hands off. What made outcome 3 special was the skipped state,
+so restoring the state retires the special case rather than patching around it.
+
+One cost worth naming, and it points the safe way: a session interrupted between
+writing the file and flipping it leaves a draft indistinguishable from one
+awaiting you, so a later `/handle` asks for a go-ahead it technically already had.
+One round trip, in the direction that doesn't file five issues.
+
+7cd1194 — the section is now "Outcome 3 writes a draft too", and `/task`
+SKILL.md joins the files table.
+
 ---
 
 ### `docs/plans/split-in-plan.draft.do-not-implement.md`:77 — resolved
@@ -961,6 +1014,33 @@ survives only as the reason the slug question blocks Part B.
 
 this has gotten beyond unwieldy, let's cut to the current understanding (no narration), 300 lines max. Also seems to be worth adding for the plan to adapt the pr skill to never narrate (there's edit history + comment threads for that)
 
+**@vzakharov (agent)** — 2026-09-14T14:48:25Z
+
+Rewritten — the body is now 55 lines and says what the branch delivers, with the
+history cut. Gone: what `/issue` "used to" do and the reasoning it used to rest
+on, the earlier `/lets` name, what the `<issue>` parameter "did not read". Each of
+those was a sentence about a decision rather than about the thing decided, and the
+decision is in the threads.
+
+The rule goes into the plan on `/pr` Step 4: **the Summary states what the branch
+delivers, never how it came to deliver it.** It isn't a new rule — it's CLAUDE.md
+§ "Key principles"'s present-tense-contract line, which already governs code
+comments, applied to the one piece of prose `/pr` writes. Worth stating there
+anyway, because `/pr`'s refresh mode invites exactly the failure: the body written
+at plan time is a forecast, and reconciling a forecast reads as an
+invitation to explain the delta rather than to replace it.
+
+One thing I can't fix from here, in case it's what you were pointing at: this file
+itself — `docs/pr/71/pr.md` — is 983 lines because it's a verbatim export of the
+thread, regenerated by `scripts/export-github-item.py` rather than written. Cutting
+it would mean the next agent resuming this branch reads a summary of the review
+instead of the review. It's a working artifact under `docs/`, so `/finalize`
+sweeps it and it never reaches the trunk; the diff bulk is temporary by
+construction. If the noise in the PR's file list is the actual problem, the lever
+is the export's location rather than its content, and that's a separate one-liner.
+
+7cd1194
+
 ---
 
 ### `docs/plans/split-in-plan.draft.do-not-implement.md`:1 — unresolved
@@ -970,6 +1050,45 @@ this has gotten beyond unwieldy, let's cut to the current understanding (no narr
 this looks good. Two last things:
 1- is backward compatibility with a `/issue do this and that #<number>` session start prompt enabled by default, or does it need additional wording
 2- should we rename `/issue` to `/read-issue` maybe, as a counterpart ot `/propose-issue`? (not insisting; besides the blast radius it means `1-` becomes a definitive "no" with a stub needed)
+
+**@vzakharov (agent)** — 2026-09-14T14:48:26Z
+
+**1 — It needs wording, and it's one line.**
+
+Today `/issue`'s argument shape is `<number|url>`, a single token; the
+prose-plus-number form is documented only as the *bare* launch prompt with no
+slash command ("a prompt that reads like an issue title and ends in `#<N>`"). So a
+literal `/issue do this and that #55` works only by an agent quietly discarding
+the prose, which nothing tells it to do — and Part A's row 2 makes that form the
+normal way in rather than an oddity, so it can't stay undocumented.
+
+The line says: the number is the argument, any surrounding prose is your own
+summary of it, and Step 1's export outranks that summary. That last clause is
+already there as "do not start solving the task from the title alone" — the new
+wording just extends it from the title to the prose you typed. `/issue` SKILL.md
+is already in the files table, so this costs nothing extra.
+
+**2 — I'd keep `/issue`, and the blast radius isn't the reason.**
+
+A compat stub is cheap — `/implement` → `/go` is exactly that, and it's four
+lines. The reason is the naming rule: CLAUDE.md § "Adding or renaming a skill"
+says to name a skill after its argument *specifically* to keep it out of reach of
+the instruction-token reading, and cites `/issue`, `/task` and `/pr` as the three
+that do it. `/read-issue` is verb-led, so the rename would move `/issue` off the
+rule and onto the exception. The symmetry is real, but it's symmetry with
+`/propose-issue`, which is the one that doesn't follow the convention.
+
+Second reason, smaller: after Part B, `/issue` doesn't only read. It exports,
+commits, and hands to `/task` — reading is step one of three, so `/read-issue`
+would name the least of what it does while `/issue` names what it takes.
+
+If you want it anyway it's a separate PR, not this one: the citations run through
+CLAUDE.md, `/task`, `/go`, `/plan`, `/finalize` and the catalog, and folding that
+into a diff that already touches ten files makes both changes harder to read.
+Noted in "Settled in review" as a no with the reasoning, so it's on the record
+rather than forgotten.
+
+7cd1194
 
 ---
 
