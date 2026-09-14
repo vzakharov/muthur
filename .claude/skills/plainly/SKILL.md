@@ -11,9 +11,16 @@ description: >-
 ---
 
 This file is the procedure: the invocations, the pass, and the six defects it
-runs a draft against. The rule it works from is `.claude/voice/voice.md`, which
-`CLAUDE.md` imports, so the rule is in context before this file is ever loaded
-and is stated there alone.
+runs a draft against. Those defects are the skill's own standard — what
+"plainly" means does not vary by team — so it carries them rather than deriving
+them from elsewhere.
+
+`.claude/voice/voice.md` is the other thing, resident in every session because
+`CLAUDE.md` imports it: how this team wants to be talked to. The two agree here,
+this team's manner being a plain one, and they need not — a house voice can be
+deliberately less plain and still want a way to ask for something plainer. Where
+they differ, the invocation decides: the table below governs the reply, and the
+operator's entry governs how it sounds.
 
 ## Two invocations
 
@@ -43,9 +50,9 @@ Either way the output is an answer, not a plan to produce one.
 3. **Run the six defects below over that draft, then write it out again.** Each
    has a tell you can see in your own text without knowing the subject — but only
    in text you actually put down first.
-4. **Apply the operator's entry**, already in context by the time you are
-   reading this. `.claude/voice/voice.md` carries how it gets there and what it
-   may do to a draft.
+4. **Apply the operator's entry** where the project keeps them, already in
+   context by the time you are reading this. `.claude/voice/voice.md` carries how
+   it gets there and what it may do to a draft.
 
 ## The six defects
 

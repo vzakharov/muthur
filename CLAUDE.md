@@ -193,9 +193,9 @@ from `.claude/voice/` rather than stated here — in force from every session's
 first reply. `operators/` beside it holds one file per person, saying how that
 person in particular wants to be talked to.
 
-`/plainly` is the procedure built on it: bare, it re-explains an answer that did
-not land; with a question, it answers under the rule from the start. Invoking it
-is optional — the rule itself governs every reply regardless.
+`/plainly` is the on-demand procedure: bare, it re-explains an answer that did
+not land; with a question, it answers plainly from the start. Invoking it is
+optional — the rule itself governs every reply regardless.
 
 <!-- A real import, not a pointer, so it is unbackticked: the import parser
      skips code spans, and backticking it would silently stop it loading. Every

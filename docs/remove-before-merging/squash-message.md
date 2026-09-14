@@ -32,9 +32,9 @@ the spelling the lookup uses.
 
 The rule those entries answer to moves out of the /plainly skill to
 .claude/voice/ beside them, being in force from every session's first
-reply where a skill is something a session invokes. Nothing points back
-at it, so the rule adopts alone; the reference check now covers every
-@-import into .claude/, and the catalog the dependencies it cannot see.
+reply where a skill is something a session invokes. Neither points at
+the other now, so each adopts alone; the reference check covers every
+@-import into .claude/, and the catalog the runtime reads it cannot see.
 
 Startup is three hooks, one per job, settings.json taking a list. The
 three shared only a `set -euo pipefail`, under which a slip in one kills

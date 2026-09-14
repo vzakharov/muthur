@@ -7,7 +7,7 @@
 - **Draft:** yes
 - **Merged:** _not merged_
 - **Created:** 2026-09-12T14:56:18Z
-- **Updated:** 2026-09-14T13:11:33Z
+- **Updated:** 2026-09-14T14:48:11Z
 - **Closed:** _not closed_
 - **Labels:** _none_
 
@@ -41,6 +41,14 @@ Two comment notes, then two design questions that were opened for discussion and
 - **`voice.md` now covers agents that have no SessionStart hook.** That is Claude Code's mechanism, so an agent running elsewhere resolves the handle and reads the entry by hand on the first turn. The filename being the whole lookup is what makes that reproducible without the hook.
 - **`check-skill-catalog.sh` checks more than skill pointers.** Its first assertion matched `@.claude/skills/<name>/SKILL.md` only, so `CLAUDE.md`'s import of `voice.md` would have gone unchecked at its new path — and `plan-or-go.md` had been unchecked all along. It now covers every `@`-reference into `.claude/`.
 - The catalog's one G4 row is three, with three separate conditions, and `.claude/voice/` gets a G1 row of its own beside `/plainly`.
+
+### Since the third review
+
+Three comments, all on the same seam: the move detached the voice rule from `/plainly` physically, and left the prose and the catalog still describing them as halves of one thing.
+
+- **The dependency runs one way now.** `voice.md` ended by naming `/plainly` "the long version", as an `@`-reference — so the checker held the always-resident rule hostage to a skill a session invokes. Cut; `CLAUDE.md` already introduces `/plainly` a paragraph above the import. `plainly/SKILL.md` opens as the procedure it is rather than as the other half of `voice.md`, and its pass no longer cites a G4 hook from a G1 skill.
+- **The catalog's `Pulls in` column was recording the wrong relation.** It was defined as `@`-references only, and none of these dependencies is one: `operator-voice.sh` reads a file at a fixed path, `/override-gh`'s body asserts the shim is installed. Both fail as silently as a dangling pointer and no check sees either. Widened to what an item cannot work without, `@`-referenced or not — so `.claude/voice/` pulls in only `/tend-prose`, and `/override-gh` gains the `gh-shim.sh` row it always depended on.
+- **Neither pair turns out to be mutual.** The hook needs the entries; the entries do not need the hook, `voice.md` having the lookup done by hand under any harness without `SessionStart`. Same for the shim, which runs whether or not the marker skill exists. In both cases the depended-on half adopts alone, which is the general form § "Closure is not optional" now carries.
 
 ## QA Checklist
 
@@ -630,7 +638,7 @@ Cut in a1e072b. Agreed — the fork right below it tests `.type` and says what a
 
 ---
 
-### `.claude/skills/update-muthur/catalog.md`:118 — unresolved
+### `.claude/skills/update-muthur/catalog.md`:118 — resolved
 
 ```diff
 @@ -113,11 +113,8 @@ there is no condition under which it fails to apply.
@@ -720,7 +728,7 @@ yeah I think it's worth it. pls see for a better name for `name-operator.sh`, cu
 
 ---
 
-### `.claude/skills/plainly/SKILL.md`:15 — unresolved
+### `.claude/skills/plainly/SKILL.md`:15 — resolved
 
 ```diff
 @@ -7,12 +7,12 @@ description: >-
@@ -743,6 +751,12 @@ yeah I think it's worth it. pls see for a better name for `name-operator.sh`, cu
 
 despite being detached, .claude/voice still reads as related to the plainly skill due the end state of this edits. Check for polar bears pls
 
+**@vzakharov (agent)** — 2026-09-14T13:21:39Z
+
+Found two, both in the prose rather than the tree. `voice.md` ended by naming `/plainly` "the long version", and this file opened by defining itself as that — a framing that only made sense while the two sat in one directory. Worse, that closing pointer was an `@`-reference, so the checker made `.claude/voice/` un-adoptable without the skill: the rule that is resident in every session depending on the thing a session invokes.
+
+Both cut in 7686b9b. `voice.md` now names nothing under `.claude/skills/plainly/` — CLAUDE.md § "Explaining things to people" already introduces the skill one paragraph above the import, so nothing is lost — and this file opens as the procedure it is. Step 4 also stopped citing the hook by category ("the session-start hook"), which is a G4 file a G1 skill has no business naming; it points at `voice.md` for how the entry got there.
+
 ---
 
 ### `.claude/skills/update-muthur/catalog.md`:117 — unresolved
@@ -760,6 +774,20 @@ despite being detached, .claude/voice still reads as related to the plainly skil
 **@vzakharov (human)** — 2026-09-14T13:09:54Z
 
 Again, this sounds coupled. Let's discuss how we can make it not so.
+
+**@vzakharov (agent)** — 2026-09-14T13:21:51Z
+
+The coupling was real and it ran both ways, which is the part worth fixing. `/plainly` cites the rule; `voice.md` cited `/plainly` back, as an `@`-reference, so the checker held them to each other. Two items that each require the other cannot be adopted separately no matter how the row is worded.
+
+So I cut the back-reference rather than the forward one (see the thread on `plainly/SKILL.md`:15). What is left is one arrow: `/plainly` → `.claude/voice/`, which is the ordinary shape of a procedure citing what it does not own, the same as its `/tend-prose` reference. `.claude/voice/` now pulls in only `/tend-prose` and sits at the bottom of its own chain — adopting it alone is a complete decision, and it is what everything else points at.
+
+I would not try to get to zero. `/plainly` genuinely cannot work without the rule — it is the pass over it — and severing that would mean restating the rule inside the skill, which is the duplication the move just removed. One-way is the decoupled state here; mutual was the bug.
+
+Pushed in 7686b9b. Say the word if you wanted the other arrow cut instead and I will swap them.
+
+**@vzakharov (human)** — 2026-09-14T14:47:39Z
+
+But then we are back to square one where they are cause-effect-ish, not correlated-ish. "Plainly" means "say it plainly", whereas "voice" means "talk to us this way". I'm guessing it's okay for both to start with the same thing, but it's hypothetically very possible the team decides their voice to be "less plain", while *still* requiring whatever was said by the agent to be put in a plainer way after they call "/plainly". Do you see what I mean?
 
 ---
 
@@ -779,6 +807,26 @@ Again, this sounds coupled. Let's discuss how we can make it not so.
 **@vzakharov (human)** — 2026-09-14T13:10:49Z
 
 no, it's accepted or declined (compeltely or partially in both cases) together with .claude/voice. Same arguably for .claude/hooks/gh-shim being "part of" override-gh skill
+
+**@vzakharov (agent)** — 2026-09-14T13:22:04Z
+
+You are right that the column was lying, and the reason is worth stating: **Pulls in** was defined as "siblings it `@`-references", and none of these dependencies is an `@`-reference. `operator-voice.sh` `cat`s a file at a fixed path; `/override-gh`'s body asserts the shim is installed. Both break exactly as silently as a dangling pointer, and no check sees either — so the column was recording the one kind it could prove and missing the two it could not.
+
+Widened it to what an item cannot work without, `@`-referenced or not. That makes the rows say what actually holds:
+
+| | Pulls in, before | after |
+| --- | --- | --- |
+| `.claude/voice/` | `operator-voice.sh` (G4) | `/tend-prose` |
+| `.claude/hooks/operator-voice.sh` | `.claude/voice/` (G1) | unchanged — correct already |
+| `/override-gh` | — | `.claude/hooks/gh-shim.sh` |
+
+One place I did not follow you, and it is the interesting one: I do not think either pair is mutual. The hook needs the entries; the entries do not need the hook — `voice.md` now tells an agent under any other harness to do the same lookup by hand on the first turn, which is also what an adopter who declines G4 gets. Same with the shim: `/override-gh` describes it and is false without it, but the shim runs whether or not the marker skill exists. So both are one-way, and in both cases the depended-on half adopts alone. I put that in the row and the general form in § "Closure is not optional", since "two things that only make sense together" is usually one thing depending on another and the direction is the adoptable part.
+
+Pushed in 7686b9b.
+
+**@vzakharov (human)** — 2026-09-14T14:48:11Z
+
+Can you provide an example where you think adopting one but not the other makes sense, on the example of /override-gh vs gh-shim?
 
 ---
 

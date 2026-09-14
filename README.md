@@ -32,7 +32,7 @@ per skill, script and file, grouped so you can tell how much of it you need:
 | Group | What it covers |
 | --- | --- |
 | **G0** | The sync path, both directions: `/update-muthur` pulls later changes forward (ships as a stub; hydrating it is filling in the watermark), `/spinoff` pushes a new sibling repo out. |
-| **G1** | Prose & principles: `CLAUDE.md`, `.claude/rules/`, `/dry`, `/tend-prose`, `.claude/voice/` and the `/plainly` procedure over it. |
+| **G1** | Prose & principles: `CLAUDE.md`, `.claude/rules/`, `/dry`, `/tend-prose`, `.claude/voice/`, `/plainly`. |
 | **G2** | The PR loop: `/plan`, `/go`, `/pr`, `/finalize` and the mechanical pieces they compose. |
 | **G3** | Issue & backlog: `/issue`, `/propose-issue`, `/audit-github-backlog`. |
 | **G4** | Remote-session plumbing — the `gh` shim that makes the rest work on the web. |

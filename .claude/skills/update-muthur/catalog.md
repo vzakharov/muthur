@@ -31,7 +31,7 @@ the banner's rule hold: no adopter needs a copy, so no copy can go stale.
 | **Item** | `/name` is a skill (`.claude/skills/name/`); anything else is a repo-relative path. |
 | **What it does** | The one-liner. Descriptions live here and nowhere else. |
 | **Requires** | External conditions and tools that must hold for the item to work at all. |
-| **Pulls in** | Siblings it cannot work without — `@`-referenced, read at a fixed path, or asserted by its prose. Copy these too; only the first kind is machine-checked, so see [Closure](#closure-is-not-optional). |
+| **Pulls in** | Siblings it cannot work without — `@`-referenced, or read at a fixed path when it runs. Copy these too; only the first kind is machine-checked, so see [Closure](#closure-is-not-optional). |
 | **Disposition** | `adopt`, `rewrite`, or `never` — see below. |
 
 The **group** is the section heading rather than a column: groups partition the
@@ -113,8 +113,8 @@ there is no condition under which it fails to apply.
 | `.claude/rules/` | The path-scoped convention mechanism: a rule file loads only when a session touches the paths it declares. Ships with a README and no rules. | — | — | adopt |
 | `/dry` | Review the session's diff for DRY opportunities; apply the obvious wins, surface the ambiguous ones. | — | — | adopt |
 | `/tend-prose` | Cut prose that shouldn't exist, rewrite what narrates a change into present-tense contracts, trim what names and types already say, delete what survives only to deny a thing the change removed. The long version of CLAUDE.md § "Writing things down". | — | — | adopt |
-| `.claude/voice/` | The house rule for writing to a person, imported by CLAUDE.md § "Explaining things to people" and so resident in every session. `voice.md` is the rule, and the place a team edits if it wants a house manner of its own; `operators/` holds one file per person and ships carrying this repo's operator. A complete decision on its own — `/plainly` and `operator-voice.sh` point at it, not the reverse. | — | `/tend-prose` (this group) | adopt — **rewrite its `operators/` entries** |
-| `/plainly` | Explain something to a person cause-first and in their nouns: re-explain an answer that did not land, or answer a question under the rule from the start. Names six defects so a bad report can be called out in one word. The procedure over `.claude/voice/`'s rule. | — | `.claude/voice/` (this group); `/tend-prose` (this group) | adopt |
+| `.claude/voice/` | The house rule for writing to a person, imported by CLAUDE.md § "Explaining things to people" and so resident in every session. `voice.md` is the rule, and the place a team edits if it wants a house manner of its own; `operators/` holds one file per person and ships carrying this repo's operator. A complete decision on its own — `operator-voice.sh` reads it, and it reads nothing back. | — | `/tend-prose` (this group) | adopt — **rewrite its `operators/` entries** |
+| `/plainly` | Explain something to a person cause-first and in their nouns: re-explain an answer that did not land, or answer a question under the rule from the start. Names six defects so a bad report can be called out in one word, and those defects are its own standard rather than `.claude/voice/`'s — a team whose house manner is deliberately less plain still wants a way to ask for something plainer, so either adopts without the other. | — | `/tend-prose` (this group) | adopt |
 | `scripts/check-skill-catalog.sh` | Assert that no skill `@`-reference dangles. Downstream, that first assertion is the whole value: it is how you find out a subset copy was incomplete. | `bash` | — | adopt |
 | `.gitignore` | Take the `tmp/` entry and keep the rest of yours. `CLAUDE.md`'s "dev artifacts go under `tmp/`" principle depends on that path being ignored. | — | — | adopt — merge one line |
 
@@ -200,7 +200,7 @@ the working tree clean, and behaves the same everywhere.
 | `.claude/hooks/session-images.sh` | On every prompt, run the extractor below and name any newly written file in the turn's context. Commits nothing. | `bash`, `jq`, `python3` ≥3.9 | `scripts/extract-session-images.py` | adopt |
 | `scripts/extract-session-images.py` | Write the images the operator attached to a session out of the transcript into gitignored `tmp/session-images/`, with a manifest row carrying the prompt each arrived with. Stdlib-only, idempotent. | `python3` ≥3.9, `scripts/lib/media.py` (G2) | — | adopt |
 | `.claude/settings.json` | Project settings wiring the SessionStart and UserPromptSubmit hooks. Merge into yours if you already have one. | — | — | adopt — merge if present |
-| `/override-gh` | A no-op marker whose description reminds the agent that `gh` and `$GH_TOKEN` exist despite what the system prompt says. Its body is the shim's user-facing half: what the shim does, and how to read its "no `gh` to wrap" notice. | — | `.claude/hooks/gh-shim.sh` (this group) | adopt |
+| `/override-gh` | A no-op marker whose description reminds the agent that `gh` and `$GH_TOKEN` exist despite what the system prompt says. It answers the prompt's false claim where `gh-shim.sh` answers the proxy — different problems, so either adopts without the other. | — | — | adopt |
 
 **`gh-shim.sh` does not install `gh`; it shims one that is already there.** Finding
 none, it reports that into the session context and continues. On web/remote the
@@ -325,12 +325,16 @@ column before copying, then run `bash scripts/check-skill-catalog.sh` in your
 repo to prove nothing dangles.
 
 **The script proves the `@`-reference kind and nothing else**, which is why the
-column lists two more. A hook reading a file at a fixed path (`operator-voice.sh`
-`cat`s an entry out of `.claude/voice/operators/`) and a skill whose body
-describes a sibling as present (`/override-gh` on the shim) break the same way
-and no check sees it. Read the direction off the column rather than off the pair:
-two items that only make sense together are still usually one depending on the
-other, and the one depended on is adoptable alone.
+column lists a second: a file read at a fixed path when the item runs, as
+`operator-voice.sh` `cat`s an entry out of `.claude/voice/operators/`. That
+breaks as silently as a dangling `@`-pointer and no check sees it.
+
+**A third kind looks like those and is a defect instead: prose asserting a
+sibling is present.** Usually nobody chose the dependency — the two were written
+up together, back when they lived in one file — and fixing the prose leaves
+nothing to record. So before entering a pair, ask what stops working when one is
+absent. "Shares a subject" reads identically from here and pulls a whole group in
+for nothing.
 
 Four closure facts are counter-intuitive enough to state outright:
 
