@@ -7,7 +7,7 @@
 - **Draft:** yes
 - **Merged:** _not merged_
 - **Created:** 2026-09-12T14:56:18Z
-- **Updated:** 2026-09-13T19:52:04Z
+- **Updated:** 2026-09-14T13:11:33Z
 - **Closed:** _not closed_
 - **Labels:** _none_
 
@@ -17,10 +17,10 @@
 
 ## Summary
 
-- **The agent never knew who it was talking to.** The harness reports an email; `git config user.email` is the commit identity. Resolving the operator meant spending a turn on `gh api user`, and only if the session remembered to. Job 3 of `.claude/hooks/session-start.sh` now does it at startup and prints the answer into the session context.
+- **The agent never knew who it was talking to.** The harness reports an email; `git config user.email` is the commit identity. Resolving the operator meant spending a turn on `gh api user`, and only if the session remembered to. `.claude/hooks/operator-voice.sh` now does it at startup and prints the answer into the session context.
 - **It names the person, not the handle.** `gh api user` carries `.name`, so the hook prints `Vova Zakharov (@vzakharov)` and `voice.md` asks for a greeting by that name in the session's first reply. Where `.name` is empty the message falls back to the handle alone and there is nothing to greet with, so nobody gets hailed as "hey vzakharov".
 - **It prints the operator's entry, not a pointer to it.** `CLAUDE.md` used to import `operators.md` whole, so every session carried every person's entry and still had to pick its own out of the list. The import is gone: a session applies one entry, so importing the set spent context on everyone else's, every session. Cost goes from O(team) to O(1), and the "if they have one" conditional disappears — either an entry was printed or the hook said there is none.
-- **An entry is a filename and nothing else.** `.claude/skills/plainly/operators/<handle>.md`, the file's whole content being the entry, and the directory holds no other kind of file. A heading was a thing an entry could get wrong, and getting it wrong failed silently — the entry reached no session while the preference sat in the repo looking done. There is no syntax to violate, so the lookup is `cat`.
+- **An entry is a filename and nothing else.** `.claude/voice/operators/<handle>.md`, the file's whole content being the entry, and the directory holds no other kind of file. A heading was a thing an entry could get wrong, and getting it wrong failed silently — the entry reached no session while the preference sat in the repo looking done. There is no syntax to violate, so the lookup is `cat`.
 - **What the hook can't determine, it says.** `.type` distinguishes a token minted for a human from one of the agent's own, because a bare login would be trusted in exactly the case where it names the agent. Three non-answers — no entry, a `Bot` token, `gh` out of reach — each print explicitly rather than silently.
 - **Two rules moved to stay correct.** "An entry cannot lower a bar" is now in `voice.md`, which stays imported — it governs every reply and had been riding on the import that went away. `voice.md` also carries the write-it-down instruction and the line separating one person's preference from the team's: a manner rule for everyone is an edit to `voice.md`, made where the team can see it, never an entry promoted out of one person's file.
 
@@ -31,37 +31,52 @@ Ten comments, all addressed; `default.md`, `operators/README.md` and `scripts/ch
 - `default.md` and `README.md` were both reserved names in a directory keyed on GitHub logins, and both are real logins. Dropping them leaves `operators/` holding nothing but `<handle>.md`, so the collision class is gone rather than narrowed.
 - The README's surviving content is two clauses in `voice.md`, which every session already loads. A path-globbed rule would have loaded when a session *touches* `operators/` — after you have decided to write an entry; the moment that matters is when someone states a preference, which happens anywhere.
 - `check-operator-entries.sh` guarded a case mismatch the hook can no longer produce: the login is lowercased once, and that form is both what the message prints and what names the file.
-- The catalog stops listing a skill's own files — `voice.md` and `operators/` fold into the `/plainly` row, disposition "adopt — rewrite its `operators/` entries".
+
+### Since the second review
+
+Two comment notes, then two design questions that were opened for discussion and answered before anything was built.
+
+- **Startup is three hooks, not one.** `gh-shim.sh`, `install-deps.sh` and `operator-voice.sh`, enumerated separately under the one `SessionStart` matcher. The three jobs shared no variable, no ordering and not even the same gate — the shim and the install are remote-only where the operator lookup runs everywhere. What they shared was one `set -euo pipefail`, under which a slip in one job kills the rest silently; the operator lookup died that way twice during this branch's review, and in a split file neither death could have touched the shim. An adopter gets three copyable files with three conditions in place of one file and a paragraph on which parts to delete.
+- **The voice rule has its own home.** `.claude/voice/voice.md` and `.claude/voice/operators/`. It is in force from every session's first reply, where a skill is something a session invokes — it sat under `.claude/skills/plainly/` only because that is where it was written. `/plainly` keeps `SKILL.md` as the procedure over the rule and cites it by path; `CLAUDE.md` imports the rule from the new home.
+- **`voice.md` now covers agents that have no SessionStart hook.** That is Claude Code's mechanism, so an agent running elsewhere resolves the handle and reads the entry by hand on the first turn. The filename being the whole lookup is what makes that reproducible without the hook.
+- **`check-skill-catalog.sh` checks more than skill pointers.** Its first assertion matched `@.claude/skills/<name>/SKILL.md` only, so `CLAUDE.md`'s import of `voice.md` would have gone unchecked at its new path — and `plan-or-go.md` had been unchecked all along. It now covers every `@`-reference into `.claude/`.
+- The catalog's one G4 row is three, with three separate conditions, and `.claude/voice/` gets a G1 row of its own beside `/plainly`.
 
 ## QA Checklist
 
 - [ ] `handle` — start a fresh session in this repo and read the first lines of context: it should name you and print your entry verbatim, with no tool call spent resolving it.
 - [ ] `greeting` — that session's first reply opens by greeting you by name, not by handle.
+- [ ] `isolation` — the point of the split: make `gh-shim.sh` fail (run it with `gh` off `PATH`) and confirm `operator-voice.sh` still prints its line. Under the old single file a failure in either job could take the other down.
 - [ ] `no-name` — stub `gh` to return an empty third field; the message falls back to `@handle` alone and the reply greets you by nothing.
 - [ ] `uppercase-login` — stub `gh` to return `VZakharov\tUser\tVova Zakharov`; it must still resolve `vzakharov.md`.
-- [ ] `no-entry` — `git mv .claude/skills/plainly/operators/vzakharov.md /tmp/`, run `.claude/hooks/session-start.sh`, confirm it reports no entry **and still exits 0 with output** (this path died silently before the `|| true` fix).
-- [ ] `bot-token` — stub `gh` to return `something[bot]\tBot\t`, run the hook, confirm it names no operator and says to ask.
-- [ ] `gh-down` — run the hook with `gh` absent from `PATH` (coreutils intact) and with a `gh` that exits 1; both should report the operator unresolved and exit 0.
-- [ ] `no-import` — confirm `CLAUDE.md` has no `@.claude/skills/plainly/operators` line and that a session's context no longer carries anyone else's entry.
-- [ ] `local` — run the hook with `CLAUDE_CODE_REMOTE` unset: job 3 runs, the `gh` shim and dependency install stay skipped.
+- [ ] `no-entry` — move `.claude/voice/operators/vzakharov.md` aside, run `.claude/hooks/operator-voice.sh`, confirm it reports no entry **and still exits 0 with output** (this path died silently before the `|| true` fix).
+- [ ] `bot-token` — stub `gh` to return `something[bot]\tBot\t`, run `operator-voice.sh`, confirm it names no operator and says to ask.
+- [ ] `gh-down` — run `operator-voice.sh` with `gh` absent from `PATH` (coreutils intact) and with a `gh` that exits 1; both should report the operator unresolved and exit 0. Run `gh-shim.sh` the same way and it should print the setup-script notice and exit 0.
+- [ ] `no-import` — confirm `CLAUDE.md` imports `.claude/voice/voice.md` and that a session's context no longer carries anyone else's entry.
+- [ ] `local` — run all three with `CLAUDE_CODE_REMOTE` unset: `operator-voice.sh` runs, the shim and the dependency install no-op.
+- [ ] `wiring` — confirm the three commands in `.claude/settings.json` all fire on a real session start, in the order listed.
 
 | Item | Automatable | Covered? | Notes |
 |------|-------------|----------|-------|
-| `handle` | integration | ❌ | No test drives the hook. Would stub `gh` and assert the printed line. |
+| `handle` | integration | ❌ | No test drives the hooks. Would stub `gh` and assert the printed line. |
 | `greeting` | manual-only | — | Whether a reply opens with a greeting is model behavior, not something this repo can assert. |
+| `isolation` | integration | ❌ | The regression the split exists to prevent, so the row that most wants a test. |
 | `no-name` | integration | ❌ | Assert the message degrades to `@handle` with no name in it. |
-| `uppercase-login` | integration | ❌ | The case the deleted check guarded; now the hook's own job, so it is the one that most wants a test. |
-| `no-entry` | integration | ❌ | The regression that matters most — assert non-empty stdout and exit 0 with no entry file. |
+| `uppercase-login` | integration | ❌ | The case the deleted check guarded; now the hook's own job. |
+| `no-entry` | integration | ❌ | Assert non-empty stdout and exit 0 with no entry file. |
 | `bot-token` | integration | ❌ | Stub `gh` to emit a `Bot` type; assert no handle is asserted as the operator. |
-| `gh-down` | integration | ❌ | Two stubs: `gh` absent from `PATH`, and `gh` exiting non-zero. |
+| `gh-down` | integration | ❌ | Two stubs each, for two hooks. |
 | `no-import` | manual-only | — | What reaches a session's context is a harness behavior. |
-| `local` | integration | ❌ | Assert job 3's line is present and the shim is not written when `CLAUDE_CODE_REMOTE` is unset. |
+| `local` | integration | ❌ | Assert the gate: one hook speaks, two say nothing. |
+| `wiring` | manual-only | — | Whether Claude Code runs every entry in the array is the harness's behavior, not this repo's. |
 
-**Coverage gap worth naming, now wider than it was:** six of nine rows are uncovered and nothing here is automated at all, `check-operator-entries.sh` having been the one check and now deleted. This branch is where the hook's behavior got two silent-failure bugs — the `set -e` death on a missing entry file, and a `[ -n "$name" ] && …` one-liner that would have killed the hook for every operator whose profile has no name. Both were caught by hand.
+Every row above except the three manual-only ones was **run by hand on this branch** and passes. What is missing is automation, not verification.
 
-There is also a trap any test must handle, found by walking into it. Job 1 resolves the real `gh` from `PATH` on every run, so running the hook with a stubbed `PATH` makes it write `~/.local/bin/gh` pointing at the stub — and `~/.local/bin` is first on `PATH`, so `gh` breaks for the rest of the session the moment the stub is cleaned up. Job 1 and 2 are already gated on `CLAUDE_CODE_REMOTE`, so a job-3 test unsets it: `env -u CLAUDE_CODE_REMOTE PATH=<stub> .claude/hooks/session-start.sh` exercises the operator lookup and leaves the shim untouched.
+**Coverage gap worth naming:** eight of eleven rows are automatable and none are automated, `check-operator-entries.sh` having been the one check and now deleted. This branch is where the hook's behavior got two silent-failure bugs — the `set -e` death on a missing entry file, and a `[ -n "$name" ] && …` one-liner that would have killed the hook for every operator whose profile has no name. Both were caught by hand, and the split is the structural half of the same fix.
 
-`scripts/test_authorship.py` is the precedent for a test at this layer, so a `test_session_start.py` is feasible — worth filing rather than doing here.
+There is also a trap any test of `gh-shim.sh` must handle, found by walking into it: the shim is written from whatever `gh` the running `PATH` resolves, and it outlives the run, so testing under a stubbed `PATH` repoints the session's own `gh` at the stub and every later `gh` call fails once the stub is cleaned up. Point `$HOME` at a scratch directory instead. The hook says so in a comment.
+
+`scripts/test_authorship.py` is the precedent for a test at this layer, so a `test_hooks.py` is feasible — worth filing rather than doing here.
 
 https://claude.ai/code/session_01VPCzziE6gnPK4o4QH6Zra6
 
@@ -111,6 +126,28 @@ an entry may do, which had been riding on the import that went away.
 
 Co-authored-by: Claude <noreply@anthropic.com>
 ```
+
+---
+
+### Comment by @vzakharov (agent) on 2026-09-14T09:46:32Z
+
+[https://github.com/vzakharov/muthur/pull/73#issuecomment-5662085977](https://github.com/vzakharov/muthur/pull/73#issuecomment-5662085977)
+
+Both design threads are implemented in 01de783. This lands as a conversation comment rather than two threaded replies because the review carrying your two answers is still **pending** — GitHub allows one pending review per user, and a threaded reply would open a second one, so the API refuses it (422). Submitting yours releases the thread replies; nothing here waits on that.
+
+**The hook split** (`.claude/hooks/session-start.sh`:1) — three hooks now, three entries under the one `SessionStart` matcher: `gh-shim.sh`, `install-deps.sh`, `operator-voice.sh`.
+
+On the name you flagged: `name-operator.sh` described half the job. The hook resolves who the operator is *and* prints how they want to be talked to, and the second half is the part every reply actually uses — naming only the first is what made it read like a lookup with no consumer. `operator-voice.sh` names both halves, and it now says the same word as its data: the file it reads is `.claude/voice/operators/<handle>.md`.
+
+The rest of the price is paid. The dozen path citations across CLAUDE.md, ADOPTING.md, `/detemplate`, `/override-gh`, the catalog and `voice.md` each repoint to whichever of the three they meant, and the catalog's single G4 row is three rows with three separate conditions.
+
+**The voice move** (`.claude/skills/update-muthur/catalog.md`:118) — `.claude/voice/voice.md` and `.claude/voice/operators/`, imported by CLAUDE.md from the new path. `/plainly` keeps `SKILL.md` alone and cites the rule rather than housing it.
+
+Your note for non-Claude agents is in `voice.md` as its own paragraph. `SessionStart` is Claude Code's mechanism, so an agent running anywhere else does the lookup by hand on the first turn: take the handle from whatever already names the operator, or ask, then read `operators/<handle>.md` lowercased. The filename being the whole lookup is what makes that reproducible by hand at all.
+
+**One thing the move surfaced**, fixed in the same commit. `check-skill-catalog.sh` only checked references of the shape `@.claude/skills/<name>/SKILL.md`, so CLAUDE.md's import of `voice.md` would have gone unchecked at its new path — and `plan-or-go.md` had been unchecked all along, which nobody had noticed. The assertion now covers every `@`-reference into `.claude/`.
+
+All three hooks are exercised by hand: the operator lookup on all four of its branches (entry found, no entry, `Bot` token, `gh` absent), the shim with the gate on and off and with `gh` missing, the dependency stub both ways. `scripts/vet.sh` is clean.
 
 ---
 
@@ -219,7 +256,7 @@ You're right that it collides, and the underscore would have worked — but the 
 
 ---
 
-### `.claude/hooks/session-start.sh`:145 — resolved
+### `.claude/hooks/session-start.sh`:147 — resolved
 
 ```diff
 @@ -74,9 +77,71 @@ EOF
@@ -631,9 +668,13 @@ One thing it drags along: the same seam splits the hook — see the thread on `s
 
 Not touching any of it until you pick.
 
+**@vzakharov (human)** — 2026-09-14T09:25:10Z
+
+sounds good; I didn't know `.claude` could have arbitrary directories inside, so yeah, it makes sense. One small not to add to voice.md to non-Claude agents is to manually look for the operator's handle and their voice (because afaiu the session start hooks only work for Claude)
+
 ---
 
-### `.claude/hooks/session-start.sh`:1 — unresolved
+### `.claude/hooks/session-start.sh`:1 — resolved
 
 **@vzakharov (human)** — 2026-09-13T19:46:32Z
 
@@ -673,6 +714,72 @@ Priced honestly: about a dozen citations name `session-start.sh` by path across 
 
 Both threads land on the same files, so I'd do them in one pass. Say go.
 
+**@vzakharov (human)** — 2026-09-14T09:19:10Z
+
+yeah I think it's worth it. pls see for a better name for `name-operator.sh`, currently it doesn't seem like it describes what it's doing esp. wrt the to-be-done voice infra reframing
+
+---
+
+### `.claude/skills/plainly/SKILL.md`:15 — unresolved
+
+```diff
+@@ -7,12 +7,12 @@ description: >-
+   investigation included. Names six defects — symptom-as-finding, buried lede,
+   untranslated nouns, broken chain, fog, receipt — so one word calls out a bad
+   report. **Resolve who you are talking to once per session** and apply that
+-  person's operator entry from then on; `voice.md` carries how.
++  person's operator entry from then on; `.claude/voice/voice.md` carries how.
+ ---
+ 
+-`voice.md` beside this file is the short version, and `CLAUDE.md` imports it, so
+-the rule itself is already in context — state it there, once. This file is the
+-long version: the defects, the invocations, and the pass.
++`.claude/voice/voice.md` is the rule itself, and `CLAUDE.md` imports it, so it is
++already in context — state it there, once. This file is the long version: the
++defects, the invocations, and the pass.
+```
+
+**@vzakharov (human)** — 2026-09-14T13:08:23Z
+
+despite being detached, .claude/voice still reads as related to the plainly skill due the end state of this edits. Check for polar bears pls
+
+---
+
+### `.claude/skills/update-muthur/catalog.md`:117 — unresolved
+
+```diff
+@@ -113,7 +113,8 @@ there is no condition under which it fails to apply.
+ | `.claude/rules/` | The path-scoped convention mechanism: a rule file loads only when a session touches the paths it declares. Ships with a README and no rules. | — | — | adopt |
+ | `/dry` | Review the session's diff for DRY opportunities; apply the obvious wins, surface the ambiguous ones. | — | — | adopt |
+ | `/tend-prose` | Cut prose that shouldn't exist, rewrite what narrates a change into present-tense contracts, trim what names and types already say, delete what survives only to deny a thing the change removed. The long version of CLAUDE.md § "Writing things down". | — | — | adopt |
+-| `/plainly` | Explain something to a person cause-first and in their nouns: re-explain an answer that did not land, or answer a question under the rule from the start. Names six defects so a bad report can be called out in one word. Its `voice.md` is the resident short version, imported by CLAUDE.md § "Explaining things to people", and the place a team edits if it wants a house manner of its own; its `operators/` holds one file per person and ships carrying this repo's operator. | — | `/tend-prose` (this group); `.claude/hooks/session-start.sh` (G4) | adopt — **rewrite its `operators/` entries** |
++| `.claude/voice/` | The house rule for writing to a person, imported by CLAUDE.md § "Explaining things to people" and so resident in every session. `voice.md` is the rule, and the place a team edits if it wants a house manner of its own; `operators/` holds one file per person and ships carrying this repo's operator. | — | `.claude/hooks/operator-voice.sh` (G4) | adopt — **rewrite its `operators/` entries** |
++| `/plainly` | Explain something to a person cause-first and in their nouns: re-explain an answer that did not land, or answer a question under the rule from the start. Names six defects so a bad report can be called out in one word. The procedure over `.claude/voice/`'s rule. | — | `.claude/voice/` (this group); `/tend-prose` (this group) | adopt |
+```
+
+**@vzakharov (human)** — 2026-09-14T13:09:54Z
+
+Again, this sounds coupled. Let's discuss how we can make it not so.
+
+---
+
+### `.claude/skills/update-muthur/catalog.md`:198 — unresolved
+
+```diff
+@@ -192,14 +193,16 @@ the working tree clean, and behaves the same everywhere.
+ 
+ | Item | What it does | Requires | Pulls in | Disposition |
+ | --- | --- | --- | --- | --- |
+-| `.claude/hooks/session-start.sh` | On session start, install a `gh` shim at `$HOME/.local/bin/gh` that runs the real binary unproxied, and name the operator — their GitHub name and handle, plus their `/plainly` entry — into the session. Dependency install is a stub you fill in for your stack. The shim and the install are web/remote-only; the operator lookup runs everywhere. | `bash`; **`gh` already on `PATH`**; web/remote sessions for the shim and the install | `/plainly` (G1) | adopt |
++| `.claude/hooks/gh-shim.sh` | On session start, install a `gh` shim at `$HOME/.local/bin/gh` that runs the real binary unproxied. Finding no `gh` to wrap, it reports that into the session context and continues. Web/remote only. | `bash`; **`gh` already on `PATH`**; web/remote sessions | — | adopt |
++| `.claude/hooks/install-deps.sh` | On session start, re-sync the install tree with the lockfile, the environment snapshot being built once and then cached. The install itself is a stub you fill in for your stack — `scripts/vet.sh`'s paired site. Web/remote only. | `bash`; web/remote sessions | — | adopt — **fill in the install** |
++| `.claude/hooks/operator-voice.sh` | On session start, name the operator — their GitHub name and handle, plus their `.claude/voice/operators/` entry — into the session context. Runs everywhere: a laptop session needs to know who it is talking to as much as a remote one does. | `bash`; `gh` reaching the API | `.claude/voice/` (G1) | adopt |
+```
+
+**@vzakharov (human)** — 2026-09-14T13:10:49Z
+
+no, it's accepted or declined (compeltely or partially in both cases) together with .claude/voice. Same arguably for .claude/hooks/gh-shim being "part of" override-gh skill
+
 ---
 
 ## Timeline (status, references, and other events)
@@ -681,4 +788,4 @@ Both threads land on the same files, so I'd do them in one pass. Say go.
 - **2026-09-12T15:31:10Z** @vzakharov cross-referenced this pull request from [#72 docs: drop the working-artifact rows from the catalog's Never table](https://github.com/vzakharov/muthur/issues/72).
 - **2026-09-12T15:36:28Z** @vzakharov renamed from «feat: name the session's operator and their entry at session start» to «feat: name and greet the session's operator at startup».
 - **2026-09-13T19:46:45Z** @vzakharov reviewed (COMMENTED): https://github.com/vzakharov/muthur/pull/73#pullrequestreview-5188252193.
-- **** @vzakharov reviewed (PENDING): https://github.com/vzakharov/muthur/pull/73#pullrequestreview-5195995044.
+- **2026-09-14T13:11:33Z** @vzakharov reviewed (COMMENTED): https://github.com/vzakharov/muthur/pull/73#pullrequestreview-5195995044.

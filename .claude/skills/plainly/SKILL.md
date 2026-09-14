@@ -10,9 +10,10 @@ description: >-
   person's operator entry from then on; `.claude/voice/voice.md` carries how.
 ---
 
-`.claude/voice/voice.md` is the rule itself, and `CLAUDE.md` imports it, so it is
-already in context — state it there, once. This file is the long version: the
-defects, the invocations, and the pass.
+This file is the procedure: the invocations, the pass, and the six defects it
+runs a draft against. The rule it works from is `.claude/voice/voice.md`, which
+`CLAUDE.md` imports, so the rule is in context before this file is ever loaded
+and is stated there alone.
 
 ## Two invocations
 
@@ -42,9 +43,9 @@ Either way the output is an answer, not a plan to produce one.
 3. **Run the six defects below over that draft, then write it out again.** Each
    has a tell you can see in your own text without knowing the subject — but only
    in text you actually put down first.
-4. **Apply the operator's entry**, which the session-start hook has already
-   printed into context. `.claude/voice/voice.md` carries what an entry may do to
-   a draft.
+4. **Apply the operator's entry**, already in context by the time you are
+   reading this. `.claude/voice/voice.md` carries how it gets there and what it
+   may do to a draft.
 
 ## The six defects
 

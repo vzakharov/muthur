@@ -55,6 +55,3 @@ in it, what gets reported, or which checks run. "Keep it short" does not license
 dropping the cause; "no need to flag small stuff" does not license a silent
 failure. A preference that would change substance is not an entry — it is a
 change to the house rule, where everyone can see it.
-
-`@.claude/skills/plainly/SKILL.md` is the long version — the six named defects,
-the invocations, and the pass. Read it for a borderline call, not on every reply.

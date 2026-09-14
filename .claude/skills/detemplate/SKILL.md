@@ -224,8 +224,8 @@ Two reasons it matters:
 
 It runs **once, when the environment snapshot is built**, then is cached
 ([docs](https://code.claude.com/docs/en/claude-code-on-the-web#setup-scripts)) —
-which is why the session-start hook re-syncs dependencies on every session start
-rather than trusting the snapshot.
+which is why `.claude/hooks/install-deps.sh` re-syncs dependencies on every
+session start rather than trusting the snapshot.
 
 **Where it goes**, since "the settings" is not enough to find it: in the session
 composer, the environment picker → **Cloud** → the environment itself, whose

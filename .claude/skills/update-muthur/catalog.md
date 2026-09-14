@@ -31,7 +31,7 @@ the banner's rule hold: no adopter needs a copy, so no copy can go stale.
 | **Item** | `/name` is a skill (`.claude/skills/name/`); anything else is a repo-relative path. |
 | **What it does** | The one-liner. Descriptions live here and nowhere else. |
 | **Requires** | External conditions and tools that must hold for the item to work at all. |
-| **Pulls in** | Siblings it `@`-references. Copy these too, or the reference dangles — see [Closure](#closure-is-not-optional). |
+| **Pulls in** | Siblings it cannot work without — `@`-referenced, read at a fixed path, or asserted by its prose. Copy these too; only the first kind is machine-checked, so see [Closure](#closure-is-not-optional). |
 | **Disposition** | `adopt`, `rewrite`, or `never` — see below. |
 
 The **group** is the section heading rather than a column: groups partition the
@@ -113,7 +113,7 @@ there is no condition under which it fails to apply.
 | `.claude/rules/` | The path-scoped convention mechanism: a rule file loads only when a session touches the paths it declares. Ships with a README and no rules. | — | — | adopt |
 | `/dry` | Review the session's diff for DRY opportunities; apply the obvious wins, surface the ambiguous ones. | — | — | adopt |
 | `/tend-prose` | Cut prose that shouldn't exist, rewrite what narrates a change into present-tense contracts, trim what names and types already say, delete what survives only to deny a thing the change removed. The long version of CLAUDE.md § "Writing things down". | — | — | adopt |
-| `.claude/voice/` | The house rule for writing to a person, imported by CLAUDE.md § "Explaining things to people" and so resident in every session. `voice.md` is the rule, and the place a team edits if it wants a house manner of its own; `operators/` holds one file per person and ships carrying this repo's operator. | — | `.claude/hooks/operator-voice.sh` (G4) | adopt — **rewrite its `operators/` entries** |
+| `.claude/voice/` | The house rule for writing to a person, imported by CLAUDE.md § "Explaining things to people" and so resident in every session. `voice.md` is the rule, and the place a team edits if it wants a house manner of its own; `operators/` holds one file per person and ships carrying this repo's operator. A complete decision on its own — `/plainly` and `operator-voice.sh` point at it, not the reverse. | — | `/tend-prose` (this group) | adopt — **rewrite its `operators/` entries** |
 | `/plainly` | Explain something to a person cause-first and in their nouns: re-explain an answer that did not land, or answer a question under the rule from the start. Names six defects so a bad report can be called out in one word. The procedure over `.claude/voice/`'s rule. | — | `.claude/voice/` (this group); `/tend-prose` (this group) | adopt |
 | `scripts/check-skill-catalog.sh` | Assert that no skill `@`-reference dangles. Downstream, that first assertion is the whole value: it is how you find out a subset copy was incomplete. | `bash` | — | adopt |
 | `.gitignore` | Take the `tmp/` entry and keep the rest of yours. `CLAUDE.md`'s "dev artifacts go under `tmp/`" principle depends on that path being ignored. | — | — | adopt — merge one line |
@@ -195,12 +195,12 @@ the working tree clean, and behaves the same everywhere.
 | --- | --- | --- | --- | --- |
 | `.claude/hooks/gh-shim.sh` | On session start, install a `gh` shim at `$HOME/.local/bin/gh` that runs the real binary unproxied. Finding no `gh` to wrap, it reports that into the session context and continues. Web/remote only. | `bash`; **`gh` already on `PATH`**; web/remote sessions | — | adopt |
 | `.claude/hooks/install-deps.sh` | On session start, re-sync the install tree with the lockfile, the environment snapshot being built once and then cached. The install itself is a stub you fill in for your stack — `scripts/vet.sh`'s paired site. Web/remote only. | `bash`; web/remote sessions | — | adopt — **fill in the install** |
-| `.claude/hooks/operator-voice.sh` | On session start, name the operator — their GitHub name and handle, plus their `.claude/voice/operators/` entry — into the session context. Runs everywhere: a laptop session needs to know who it is talking to as much as a remote one does. | `bash`; `gh` reaching the API | `.claude/voice/` (G1) | adopt |
+| `.claude/hooks/operator-voice.sh` | On session start, name the operator — their GitHub name and handle, plus their `.claude/voice/operators/` entry — into the session context. Runs everywhere: a laptop session needs to know who it is talking to as much as a remote one does. Declining it leaves `.claude/voice/` working — `voice.md` has the agent do the same lookup by hand on the first turn, which is what a non-Claude harness does anyway. | `bash`; `gh` reaching the API | `.claude/voice/` (G1) | adopt |
 | `.claude/hooks/plan-mode-notice.sh` | On every prompt submitted while the session is in native plan mode, inject the notice that this repo plans on disk and that the exit is plan mode's own. | web/remote sessions; `bash`, `jq` | `/plan` (G2) | adopt |
 | `.claude/hooks/session-images.sh` | On every prompt, run the extractor below and name any newly written file in the turn's context. Commits nothing. | `bash`, `jq`, `python3` ≥3.9 | `scripts/extract-session-images.py` | adopt |
 | `scripts/extract-session-images.py` | Write the images the operator attached to a session out of the transcript into gitignored `tmp/session-images/`, with a manifest row carrying the prompt each arrived with. Stdlib-only, idempotent. | `python3` ≥3.9, `scripts/lib/media.py` (G2) | — | adopt |
 | `.claude/settings.json` | Project settings wiring the SessionStart and UserPromptSubmit hooks. Merge into yours if you already have one. | — | — | adopt — merge if present |
-| `/override-gh` | A no-op marker whose description reminds the agent that `gh` and `$GH_TOKEN` exist despite what the system prompt says. | — | — | adopt |
+| `/override-gh` | A no-op marker whose description reminds the agent that `gh` and `$GH_TOKEN` exist despite what the system prompt says. Its body is the shim's user-facing half: what the shim does, and how to read its "no `gh` to wrap" notice. | — | `.claude/hooks/gh-shim.sh` (this group) | adopt |
 
 **`gh-shim.sh` does not install `gh`; it shims one that is already there.** Finding
 none, it reports that into the session context and continues. On web/remote the
@@ -323,6 +323,14 @@ that isn't there, and **that failure is silent**: the agent reads the surviving
 prose and skips the step they could not load. Resolve each group's **Pulls in**
 column before copying, then run `bash scripts/check-skill-catalog.sh` in your
 repo to prove nothing dangles.
+
+**The script proves the `@`-reference kind and nothing else**, which is why the
+column lists two more. A hook reading a file at a fixed path (`operator-voice.sh`
+`cat`s an entry out of `.claude/voice/operators/`) and a skill whose body
+describes a sibling as present (`/override-gh` on the shim) break the same way
+and no check sees it. Read the direction off the column rather than off the pair:
+two items that only make sense together are still usually one depending on the
+other, and the one depended on is adoptable alone.
 
 Four closure facts are counter-intuitive enough to state outright:
 

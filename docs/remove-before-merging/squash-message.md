@@ -24,17 +24,17 @@ spent context on everyone else's, every session.
 
 Entries are one file per handle, the file's whole content being the
 entry, where they had been headings inside a single file. A heading was
-a thing an entry could get wrong, and a wrong one failed silently,
-reaching no session while the preference sat in the repo looking done. A
-filename has no syntax to violate, so the lookup is `cat`; the login is
-lowercased once and printed in that same form, so the spelling an agent
-writes an entry under is the spelling the lookup uses.
+a thing an entry could get wrong, and a wrong one reached no session
+while the preference sat in the repo looking done. A filename has no
+syntax to violate, so the lookup is `cat`; the login is lowercased once
+and printed in that form, so the spelling an entry is written under is
+the spelling the lookup uses.
 
 The rule those entries answer to moves out of the /plainly skill to
 .claude/voice/ beside them, being in force from every session's first
-reply where a skill is something a session invokes. /plainly is the
-procedure over it and cites it, and the reference check now covers every
-@-import into .claude/ rather than skill pointers alone.
+reply where a skill is something a session invokes. Nothing points back
+at it, so the rule adopts alone; the reference check now covers every
+@-import into .claude/, and the catalog the dependencies it cannot see.
 
 Startup is three hooks, one per job, settings.json taking a list. The
 three shared only a `set -euo pipefail`, under which a slip in one kills
