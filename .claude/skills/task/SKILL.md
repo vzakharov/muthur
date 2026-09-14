@@ -7,7 +7,7 @@ description: >-
   task.
 ---
 
-The decision this skill makes, before any other: **does this task get a plan, and does the plan block on the operator?** Those are two questions with a plan file between them, not two questions asked up front — the second cannot be answered before the thing it judges exists.
+The decision this skill makes, before any other: **does this task get a plan, and does the plan block on the operator?** Those are two questions with a plan file between them: the second judges the plan, so it is asked once the plan exists.
 
 **The prompt is a conditional go-ahead.** It authorizes implementation *on condition that* the agent judges the operator's gate unnecessary, scoped to the task in that message and to that message alone.
 
@@ -39,7 +39,7 @@ The test: if you can hold the whole change in your head and name every file it t
 
 **Every planning route produces a draft**, including the one that is about to implement without stopping. The state is not scaffolding to be skipped when you already know the answer: it is what a `/handle` reads if this session dies between writing the file and flipping it — a plan awaiting a go-ahead, which costs one round trip to re-give. The alternative, an `*.in-progress.md` claiming a live session holds the plan right now, is a reading someone has to untangle by hand.
 
-It is also what makes a carve safe here. `@.claude/skills/plan/SKILL.md` § "Carving a task into issues" files nothing at plan time and leans on the draft being the gate; a route that skipped the draft would file a parent and children off a one-line prompt. Writing the draft first means the carve needs no recovery rule of its own.
+It is also what makes a carve safe here. `@.claude/skills/plan/SKILL.md` § "Carving a task into issues" files nothing at plan time and leans on the draft being the gate, so a carve found while writing this plan needs no procedure of its own: the file is already a draft carrying its banner, and Step 3 is where it stops.
 
 ## Step 3 — Does the operator need to look?
 
@@ -58,7 +58,7 @@ None of these asks how important the change is. Importance is why the operator r
 
 ## The three outcomes
 
-All three survive the reordering; two of them stop being decided in advance and become the two ends of one route.
+Two of the three are the two ends of one route, forking at Step 3 where the plan exists to fork on.
 
 1. **Plan and hand off** — Step 1 yes, Step 3 yes.
 2. **Go** — Step 1 no. The diff is the plan.

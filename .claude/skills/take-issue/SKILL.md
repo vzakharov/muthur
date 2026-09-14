@@ -67,4 +67,4 @@ Commit it **now**, before any planning. The export is the source of truth for wh
 
 Hand back the export path (`docs/issue/<n>/issue.md`) and `<issue>` = `<n>`, the number the eventual PR must close. Where the caller's own procedure carves the work into slices, that number is the parent, and which number the PR closes is settled there rather than here — `@.claude/skills/plan/SKILL.md` § "Carving a task into issues" owns it.
 
-Then stop. Whether the work gets a plan, whether it splits, what the branch is called and what the PR says are all the caller's: this skill is called, it does not dispatch.
+Then stop. Everything downstream — the plan-or-not call, the carve, the branch name, the PR — belongs to the caller.

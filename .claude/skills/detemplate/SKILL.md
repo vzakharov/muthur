@@ -262,8 +262,7 @@ stage later:
 ```
 
 A fresh session, because this one's context is the template it just deleted.
-Where Step 5.5 filed no issue, hand over `/task <the brief>` instead — same
-command, minus the number that would have had a thread to export.
+Where Step 5.5 filed no issue, hand over `/task <the brief>` instead.
 
 ## Recognizing an undetemplated fork
 

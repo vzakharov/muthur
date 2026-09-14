@@ -397,7 +397,8 @@ a PR comment, or an operator's own muscle memory might still say it. Never
 adopted `/issue` → decline the row and put `.claude/skills/issue/` in `declined`:
 there is nothing to redirect, and the stub would be a permanent extra row
 standing in for a name the repo never had. Already adopted it → take the
-redirect, since the name it stood for now means two different things. Declining
+redirect, since the name covers two operations with different destinations.
+Declining
 G3 outright takes the redirect with it: its no-number branch names
 `/propose-issue`, which you do not have.
 
