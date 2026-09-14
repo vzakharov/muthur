@@ -27,7 +27,7 @@ Either reason is enough on its own.
 
 The test: if you can hold the whole change in your head and name every file it touches, the file buys nothing.
 
-**Or there is something here the operator may need to rule on.** You are not deciding that yet — Step 3 is — only noticing that the question is live. The signs are the ones Step 3 weighs: the work costs far more to produce than to describe, a fork carries no recommendation, a review round would come too late, or the scope is itself the question.
+**Or any of Step 3's four signs is even arguably present.** You are not deciding it yet — that is Step 3's call, made against the plan rather than against the line that asked for the work. Here you only notice that the question is live.
 
 **No to both → `@.claude/skills/go/SKILL.md` § "Planless entry"** with the task, where the diff is the plan.
 

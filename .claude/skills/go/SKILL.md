@@ -46,7 +46,7 @@ Work with no plan behind it enters here with a **task** in place of one — the 
 
 Planless is not gateless: locating a plan is the only thing this entry skips.
 
-**A `#<N>` in the task means the thread is read first.** Load and follow `@.claude/skills/take-issue/SKILL.md` with the whole task before starting — it exports the thread and its attachments, commits them, and hands back the number, which is what the PR closes. CLAUDE.md § "Plan mode & questions in web sessions" is the home of that rule; `/task` and `/plan` carry the same pointer, because which of the three the operator names changes what the session has read, not where the work goes.
+**A `#<N>` in the task means the thread is read first:** load and follow `@.claude/skills/take-issue/SKILL.md` with the whole task before starting, and work against what it puts on the branch. The number it hands back is `<issue>` for Step 4's `/pr` call. CLAUDE.md § "Plan mode & questions in web sessions" is that rule's home.
 
 ## Step 1 — Locate the plan
 

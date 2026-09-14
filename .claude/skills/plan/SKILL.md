@@ -39,7 +39,7 @@ Plan mode is reached two ways, neither of which asks the agent: the operator swi
 
 A `/plan` session's deliverable is the **plan file on a draft PR**, not code. The operator reviews it from another machine, often hours later, and begins implementation in a **different** session via `/go <branch>` (`@.claude/skills/go/SKILL.md` routes that through `/from-branch`, which attaches to the branch and finds the plan under `docs/plans/`) — the handoff works because the plan file rides the branch. So a plan turn ends in a handoff, not a continuation; same-session implementation is the rare exception.
 
-**A `#<N>` in the argument means the thread is read first.** Load and follow `@.claude/skills/take-issue/SKILL.md` with the whole argument before planning anything — it exports the thread and its attachments to `docs/issue/<n>/`, commits them, and hands back the number. CLAUDE.md § "Plan mode & questions in web sessions" is the home of that rule; `/task` and `/go` carry the same pointer, because which of the three receives the prompt is the operator's choice and changes nothing about the export.
+**A `#<N>` in the argument means the thread is read first:** load and follow `@.claude/skills/take-issue/SKILL.md` with the whole argument before planning anything, and plan against what it puts on the branch. CLAUDE.md § "Plan mode & questions in web sessions" is that rule's home.
 
 Do **exactly what you would do in plan mode** — same research, same rigor, same "don't touch code until approved" discipline. The _only_ difference is where the plan goes and how it's approved:
 
