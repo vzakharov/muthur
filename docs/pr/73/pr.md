@@ -7,7 +7,7 @@
 - **Draft:** yes
 - **Merged:** _not merged_
 - **Created:** 2026-09-12T14:56:18Z
-- **Updated:** 2026-09-14T14:48:11Z
+- **Updated:** 2026-09-14T14:56:23Z
 - **Closed:** _not closed_
 - **Labels:** _none_
 
@@ -49,6 +49,27 @@ Three comments, all on the same seam: the move detached the voice rule from `/pl
 - **The dependency runs one way now.** `voice.md` ended by naming `/plainly` "the long version", as an `@`-reference — so the checker held the always-resident rule hostage to a skill a session invokes. Cut; `CLAUDE.md` already introduces `/plainly` a paragraph above the import. `plainly/SKILL.md` opens as the procedure it is rather than as the other half of `voice.md`, and its pass no longer cites a G4 hook from a G1 skill.
 - **The catalog's `Pulls in` column was recording the wrong relation.** It was defined as `@`-references only, and none of these dependencies is one: `operator-voice.sh` reads a file at a fixed path, `/override-gh`'s body asserts the shim is installed. Both fail as silently as a dangling pointer and no check sees either. Widened to what an item cannot work without, `@`-referenced or not — so `.claude/voice/` pulls in only `/tend-prose`, and `/override-gh` gains the `gh-shim.sh` row it always depended on.
 - **Neither pair turns out to be mutual.** The hook needs the entries; the entries do not need the hook, `voice.md` having the lookup done by hand under any harness without `SessionStart`. Same for the shim, which runs whether or not the marker skill exists. In both cases the depended-on half adopts alone, which is the general form § "Closure is not optional" now carries.
+
+### Since the fourth review
+
+Two questions on the catalog's **Pulls in** column, and both landed: the column
+had grown a third kind of dependency that was not one.
+
+- **`/plainly` carries its own standard.** What "plainly" means does not vary by
+  team — the six defects are stated in the skill — so claiming it derives from
+  `.claude/voice/` described where the text used to live, not a requirement. A
+  house voice can be set deliberately less plain and still want a way to ask for
+  something plainer. The two agree here and need not; each now adopts alone.
+- **`/override-gh` and `gh-shim.sh` answer different problems.** The marker
+  answers a system prompt that denies `gh` exists; the shim answers an egress
+  proxy that blocks it. A harness making no such claim wants the hook alone; an
+  unproxied session wants the marker alone. The skill's shim paragraph is now
+  conditional and names what its absence looks like, so the row drops to `—`.
+- **Prose asserting a sibling is present is a defect, not a dependency.** The
+  column is back to two kinds — the `@`-reference the checker proves, and a file
+  read at a fixed path when the item runs — and § "Closure is not optional" says
+  to fix the prose rather than record it. The test: ask what stops working when
+  one is absent, because "shares a subject" reads identically from the column.
 
 ## QA Checklist
 
@@ -789,6 +810,22 @@ Pushed in 7686b9b. Say the word if you wanted the other arrow cut instead and I 
 
 But then we are back to square one where they are cause-effect-ish, not correlated-ish. "Plainly" means "say it plainly", whereas "voice" means "talk to us this way". I'm guessing it's okay for both to start with the same thing, but it's hypothetically very possible the team decides their voice to be "less plain", while *still* requiring whatever was said by the agent to be put in a plainer way after they call "/plainly". Do you see what I mean?
 
+**@vzakharov (agent)** — 2026-09-14T14:55:42Z
+
+I do, and you are right — I had the relation one level too tight.
+
+The check I should have run: what actually stops working if the other is absent? `/plainly`'s six defects are stated **in the skill**, in its own table. Nothing in the pass reads `voice.md` to find out what plain means. So the sentence claiming `voice.md` was "the rule it works from" was describing where the text used to live, not a dependency — and under your hypothetical it is simply false: a house voice set to "formal, terse, no jokes" is a perfectly coherent `voice.md`, and `/plainly` invoked against a reply written in it still means *put that plainer*, using the same six defects.
+
+So the two are different kinds of thing, which is what "plainly" vs "voice" was telling me all along: one is a standing manner, the other an on-demand transformation. They agree in this repo because this team's manner happens to be a plain one. That is a coincidence of the house, not a property of the skill.
+
+Changed accordingly in 9b532d5:
+
+- `/plainly`'s opening now says the defects are its own standard, and that `voice.md` is the other thing — with the divergence spelled out: where they differ, the invocation decides, and the operator entry still governs how the reply sounds rather than what is in it.
+- Its **Pulls in** drops `.claude/voice/` and keeps only `/tend-prose`. Both rows now adopt alone, in both directions.
+- `CLAUDE.md` § "Explaining things to people" said `/plainly` is "the procedure built on it" — same assertion, in the always-resident file. Now "the on-demand procedure".
+
+One thing I did **not** do, in case it is what you were driving at: I left the six defects where they are rather than trying to dedupe them against `voice.md`'s bullets. They overlap today, and the overlap is exactly what your hypothetical says should be allowed to come apart — merging them would re-couple the two at the only point that still matters.
+
 ---
 
 ### `.claude/skills/update-muthur/catalog.md`:198 — unresolved
@@ -827,6 +864,22 @@ Pushed in 7686b9b.
 **@vzakharov (human)** — 2026-09-14T14:48:11Z
 
 Can you provide an example where you think adopting one but not the other makes sense, on the example of /override-gh vs gh-shim?
+
+**@vzakharov (agent)** — 2026-09-14T14:56:00Z
+
+Yes, and trying to write it down showed me the row was still wrong — just less wrong than before.
+
+**Shim without the marker.** `/override-gh` exists for one reason: this harness's system prompt states, flatly, that the agent has no `gh` CLI and must use the MCP tools for everything. The skill is a sticky note contradicting that. An adopter on a harness that makes no such claim gets nothing from it — a no-op skill taking up a line in the skills list — while still getting `gh run watch` hung on the egress proxy. They want the hook and not the marker.
+
+**Marker without the shim.** A repo on *this* harness whose sessions are not behind the proxy: a self-hosted runner, or an adopter who only ever works locally. The prompt still lies about `gh`; nothing needs unproxying. The marker earns its place and the hook is a startup script that exits immediately, every session, forever.
+
+Which is the actual finding: **they answer two different problems that happen to co-occur here.** The marker answers a false claim in the prompt; the shim answers a proxy. An adopter has either, both or neither — so there was never a dependency, only a paragraph.
+
+That paragraph was the real coupling, and it was mine to fix rather than to record. `/override-gh`'s body asserted the shim *is* installed, which for anyone who took the skill alone is a false explanation of why `gh` works — worse than silence, because it would stop them investigating a genuine proxy stall. It now reads "Where the shim is installed…" and closes by naming what its absence looks like: `gh` proxied, a long-poll that hangs.
+
+So in 9b532d5 the row's **Pulls in** goes back to `—`, and the column definition back to two kinds rather than three. The third kind — prose asserting a sibling is present — moves into § "Closure is not optional" as a **defect** rather than a dependency: usually nobody chose it, the two were just written up together back when they lived in one file, and fixing the prose leaves nothing to record. The test I put there is the one your question is: ask what stops working when one is absent, because "shares a subject" reads identically from the column and pulls a whole group in for nothing.
+
+What survives is the one you named first and I agree with unchanged: `operator-voice.sh` → `.claude/voice/`. The hook's entire output is an entry read at a fixed path, so without that directory it has nothing to print — that one is real, uncheckable, and stays in the column.
 
 ---
 
