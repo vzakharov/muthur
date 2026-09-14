@@ -12,36 +12,31 @@ tool call the session had to think to make — and mostly did not, leaving
 stated preferences unapplied.
 
 A session-start hook now resolves the operator and prints their entry
-into the session before the first reply, naming them by the name on
-their GitHub profile so a session opens by greeting a person rather than
-a handle. It reports the token's account type alongside the login, since
-a token minted for a human names that human and one of the agent's own
-names the agent, so a bare login would be trusted in exactly the case
-where it names the wrong party; where the hook cannot answer at all, it
-says which of the three ways it failed. CLAUDE.md in turn stops
-importing the entries — a session applies one, so importing the set
-spent context on everyone else's, every session.
+before the first reply, naming them by the name on their GitHub profile
+so a session opens by greeting a person rather than a handle. It reports
+the token's account type alongside the login, since a token minted for a
+human names that human and one of the agent's own names the agent, so a
+bare login would be trusted in exactly the case where it names the wrong
+party; where it cannot answer at all, it says which of the three ways it
+failed. Startup is three hooks now, one per job: the three shared a `set
+-euo pipefail` under which a slip in one killed the others silently,
+which the operator lookup did twice during review. The gh shim and the
+dependency install stay remote-only, the lookup runs everywhere.
 
 Entries are one file per handle, the file's whole content being the
 entry, where they had been headings inside a single file. A heading was
 a thing an entry could get wrong, and a wrong one reached no session
 while the preference sat in the repo looking done. A filename has no
 syntax to violate, so the lookup is `cat`; the login is lowercased once
-and printed in that form, so the spelling an entry is written under is
-the spelling the lookup uses.
+and printed in that form. CLAUDE.md in turn stops importing the entries
+— a session applies one, so importing the set spent context on everyone
+else's, every session.
 
 The rule those entries answer to moves out of the /plainly skill to
 .claude/voice/ beside them, being in force from every session's first
 reply where a skill is something a session invokes. Neither points at
 the other now, so each adopts alone; the reference check covers every
 @-import into .claude/, and the catalog the runtime reads it cannot see.
-
-Startup is three hooks, one per job, settings.json taking a list. The
-three shared only a `set -euo pipefail`, under which a slip in one kills
-the others silently — which the operator lookup did twice during review.
-The gh shim and the dependency install stay remote-only; the operator
-lookup runs everywhere, a laptop session needing to know who it is
-talking to as much as a remote one.
 
 Co-authored-by: Claude <noreply@anthropic.com>
 ```
