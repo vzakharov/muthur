@@ -25,7 +25,7 @@ change to this codebase**:
 | Opening prompt | Routes to |
 | --- | --- |
 | asks for a change, untracked — "add an admin page" | `/task` |
-| asks for a change, carries an issue number — "add an admin page #55" | `/issue` |
+| asks for a change, carries an issue number — "add an admin page #55" | `/read-issue` |
 | asks for no change — "what do we need to add an admin page?" | nothing: answer it |
 
 Four things the wording has to get right:
@@ -70,6 +70,15 @@ go away:
   form: the number is the argument, surrounding prose is the operator's own
   summary, and Step 1's export outranks it — the rule already there as "do not
   start solving the task from the title alone".
+- **And it takes the name that says which half it is: `/read-issue`.** The noun
+  names the argument but not the operation, and this repo has two operations on
+  that argument. Nothing in the naming rule objects: it bars names that double as
+  go-ahead tokens, and "read" is not one — naming a skill after its argument is the
+  stronger guarantee that rule offers, not the convention the repo follows, which
+  is why `/propose-issue` sits under it without being an exception. The old name
+  stays as a compat stub the way `/implement` does, pointing at `/read-issue` and
+  naming `/propose-issue` as the other reading — a bare `/issue` being exactly the
+  invocation that does not say which was meant.
 - **`/task` is untouched.** Work that needs a carve already satisfies Question 1
   ("the scope is itself the question", "costs far more to produce than to
   describe"), so it routes to `/plan` without a special case.
@@ -85,7 +94,7 @@ go away:
   operator approved. So a match is something the operator rules on while reviewing
   the carve, not an interruption after it, and a slice that turns out to be tracked
   already gets linked as the sub-issue instead of duplicated.
-- **The parent.** Arriving from `/issue`, it exists already. Arriving from bare
+- **The parent.** Arriving from `/read-issue`, it exists already. Arriving from bare
   prose, the plan proposes one and `/go` creates it. It stays open as a grouping
   artifact and is never what the PR closes; the first slice is a child, never the
   parent — the rule `/issue` states today, carried over unchanged. **A match on the
@@ -118,7 +127,7 @@ the number instead:
 
 - **A `Closes` line appears only where the work is tracked, or is about to be.**
   Most PRs close no issue and carry no line, exactly as today. The two origins
-  that put one there are an `/issue` call, where the number is known, and a carve,
+  that put one there are a `/read-issue` call, where the number is known, and a carve,
   where the children do not exist yet — and only the second writes
   **`Closes #<tbd>`**. The marker means "an issue is coming and its number belongs
   here", which is a durable state on the branch rather than something lost with
@@ -128,7 +137,7 @@ the number instead:
   the moment it exists, and routing every slice through that skill is what keeps
   the rule in one home.
 - **`docs/issue/<n>/` serves the first origin and only it.** It exists only where
-  `/issue` exported a thread, which is precisely the path where the number was
+  `/read-issue` exported a thread, which is precisely the path where the number was
   never in doubt; a resumed session reads it there instead of off the slug. Work
   that *creates* its issue has no export, which is what the marker covers.
 
@@ -140,13 +149,13 @@ same principle to a number that does not exist yet.
 
 ### Group closure
 
-The catalog puts `/plan` in **G2** and `/issue` / `/propose-issue` in **G3**, so
+The catalog puts `/plan` in **G2** and `/read-issue` / `/propose-issue` in **G3**, so
 `/plan` cannot simply absorb issue-filing: an adopter who tracks no issues would
 get a step they cannot run. Split the carve along that line:
 
 - **G2, stated in `/plan`:** whether to carve, where the seams are, and the plan
   file's shape — first slice in full, remainder coarse.
-- **G3, in `.claude/skills/issue/splitting.md`:** calling `/propose-issue` for
+- **G3, in `.claude/skills/read-issue/splitting.md`:** calling `/propose-issue` for
   each slice, the native `sub_issues` link and its two 422 traps, the ≥5-files
   granularity rule, and carrying an enumerated parent's verbatim reports and
   attachments into each child.
@@ -157,49 +166,67 @@ what they do with a list they can't file. Precedent for the conditional edge is
 `/finalize`, whose **Requires** column already reads "**conditionally** `/issue`
 (G3)".
 
-### Outcome 3 writes a draft too
+### `/task` decides the gate after the plan is written
 
 Making the plan file the gate would leave one route uncovered. `/task` outcome 3
 — plan, then go — writes straight to `*.in-progress.md` under the conditional
 go-ahead and enters `/go` at its Step 2, so there is no draft state and no gate; a
 carve found there files a parent and children off a one-line prompt.
 
-The fix is smaller than a recovery rule: **outcome 3 writes a draft like every
-other plan and enters `/go` at Step 1.** That step is already the flip, and its
-commit already quotes the go-ahead — here the `/task` prompt itself. The draft
-costs one `git mv` and buys the invariant that no plan file claims approval before
-the thing that would reveal it lacks approval, the carve, has been written down.
+What closes it is a reordering rather than a recovery rule. `/task` asks both its
+questions before the work exists, and the gate question is the one that cannot be
+answered there: it judges what the operator would want to rule on from the single
+line that asked for it. So it moves after the plan, and the skill becomes a
+question, a plan, and a question:
+
+1. **Does this task get a plan?** Either reason counts — writing it down would
+   change what you build, or there is something here the operator may need to rule
+   on. No → `/go` § "Planless entry", where the diff is the plan.
+2. **Write it as a draft**, banner and all, like every other plan.
+3. **Does the operator need to look?** No → enter `/go` at **Step 1**, which flips
+   the draft in a commit quoting the `/task` prompt. Yes → end at `/plan`'s handoff
+   block, and the next session flips it.
+
+All three outcomes survive; two of them stop being decided in advance and become
+the two ends of one route, forking where the plan exists to fork on. Step 1 is
+deliberately over-inclusive — being wrong costs a file `/finalize` sweeps, so a
+close call writes one — and step 3 is the call that costs a round trip.
 
 A carve found while writing that plan then needs no procedure: the file is already
 a draft carrying its banner, the session does not flip it, and it hands off. What
 made outcome 3 special was the skipped state, so restoring the state retires the
 special case rather than adding one.
 
-What the draft state costs is one round trip in the safe direction: a session
-interrupted between writing the file and flipping it leaves a draft
-indistinguishable from one awaiting the operator, so a later `/handle` asks for a
-go-ahead it already had.
+The draft is also the better state to be interrupted in. A session that dies
+between writing the file and flipping it leaves something a later `/handle` reads
+as awaiting a go-ahead, so it asks for one it already had — one round trip. What
+that replaces is an `*.in-progress.md` claiming a live session holds the plan right
+now, which is the reading someone has to untangle by hand.
 
 ## Files
 
 | File | Change |
 | --- | --- |
 | `CLAUDE.md` | § "Plan mode & questions in web sessions": replace the planning-session default with Part A's three rows; keep the `/from-branch` / `/handle` continued-work bullet as the launch-vs-continued line |
-| `.claude/skills/issue/SKILL.md` | delete Step 3; renumber; Step 4 loses the split exception; § "Branch name" drops the issue-number requirement; the argument shape admits prose around the number and says the export outranks it |
-| `.claude/skills/pr/SKILL.md` | Step 4 reads `docs/issue/<n>/` instead of the slug, and writes `Closes #<tbd>` on a carve whose children are not filed yet; no line at all where no issue is involved; the `<issue>` parameter line follows; the Summary states what the branch delivers and never how it came to deliver it |
+| `.claude/skills/read-issue/SKILL.md` | **renamed from `issue/`**; delete Step 3; renumber; Step 4 loses the split exception; § "Branch name" drops the issue-number requirement; the argument shape admits prose around the number and says the export outranks it |
+| `.claude/skills/issue/SKILL.md` | **new** — compat stub on the `/implement` model, pointing at `/read-issue` and naming `/propose-issue` as the other reading of the noun |
+| `.claude/skills/read-issue/splitting.md` | **new** — the G3 filing half, moved verbatim from Step 3 |
+| `.claude/skills/pr/SKILL.md` | Step 4 reads `docs/issue/<n>/` instead of the slug, and writes `Closes #<tbd>` on a carve whose children are not filed yet; no line at all where no issue is involved; the `<issue>` parameter line follows |
 | `.claude/skills/propose-issue/SKILL.md` | say that Steps 1–2 and Step 3 may run in different turns; Step 3 fills any `#<tbd>` on the branch and in the PR body |
 | `.claude/skills/squash-message/SKILL.md` | never carry `#<tbd>` into the title or the `Closes` trailer — omit the reference until it resolves |
-| `.claude/skills/issue/splitting.md` | **new** — the G3 filing half, moved verbatim from Step 3 |
 | `.claude/skills/plan/SKILL.md` | new section: the carve bar, the plan-file shape including the proposed issues, the read-only dedupe, the conditional cite |
 | `.claude/skills/go/SKILL.md` | file the issues the approved plan proposes, before the work |
-| `.claude/skills/task/SKILL.md` | outcome 3 writes a draft and enters `/go` at Step 1, not Step 2; plus one line that `/task` is where a launch-time directive lands |
-| `.claude/skills/update-muthur/catalog.md` | `/issue` and `/plan` rows re-described; `/plan` gains a conditional G3 edge |
+| `.claude/skills/task/SKILL.md` | the two questions become a question, a draft, and a question — the gate call moves after the plan file exists, and its "no" branch enters `/go` at Step 1 rather than writing `*.in-progress.md`; plus one line that `/task` is where a launch-time directive lands |
+| `.claude/skills/finalize/SKILL.md` | the **Requires** column's conditional G3 edge repoints to `/read-issue` |
+| `.claude/skills/update-muthur/catalog.md` | `/read-issue` and `/plan` rows re-described, a row added for the `/issue` stub; `/plan` gains a conditional G3 edge |
 
-Verified with `./scripts/check-skill-catalog.sh` (every `@`-reference resolves,
-one catalog row per skill).
+Every other `/issue` citation — CLAUDE.md's ladder, `/task`, `/go`, `/plan` —
+repoints with the rename. `./scripts/check-skill-catalog.sh` is what proves none
+was missed: it fails on a dangling `@`-reference and on a skill without exactly one
+catalog row.
 
-**Not itself split-worthy**, by the bar this plan moves: ten files, one seam, one
-PR.
+**Not itself split-worthy**, by the bar this plan moves: twelve files, one seam,
+one PR.
 
 ## Settled in review
 
@@ -209,9 +236,10 @@ On the thread at `.claude/skills/task/SKILL.md`:14:
   dedupe hit stops and reports instead of adopting the match.
 - **A G2-only adopter gets the plan naming its slices and nothing more.** Working
   around a tracker they declined is theirs to solve, not this repo's.
-- **Outcome 3 writes a draft like every other plan** and enters `/go` at Step 1,
-  which is already the flip. No route reaches `/plan` without the gate, so the
-  carve needs no recovery rule of its own.
+- **`/task` writes the draft before it decides the gate.** Every planning route
+  now produces a draft, and the "does the operator need to look?" call is made with
+  the plan in hand rather than forecast from the prompt. No route reaches `/plan`
+  without the gate, so the carve needs no recovery rule of its own.
 
 On the review of this file:
 
@@ -220,41 +248,37 @@ On the review of this file:
 - **In doubt, read a prompt as asking for no change.** Answer it, keep whatever
   the answer produced in `tmp/`, and move it somewhere tracked only if asked.
 - **The issue number leaves the branch slug**, and `/pr` Step 4 stops reading it
-  there. The PR body carries it instead — the number where an `/issue` call knows
+  there. The PR body carries it instead — the number where a `/read-issue` call knows
   it, `#<tbd>` where a carve has yet to file it, and no line at all on the PRs
   that close nothing, which is most of them. This rides this PR, the sites being
   ones it already edits.
 - **Both parent and children go through `/propose-issue`**, which is what lets the
   `#<tbd>` fill-in have a single home — and gets the children deduped for free,
   at plan time where the operator rules on any match before approving.
-- **A PR body states what the branch delivers, never how it came to.** The change
-  is visible in the diff and its history in the threads, so a body that recounts
-  what an earlier draft did spends the one surface a reader opens to catch up.
-  `/pr` Step 4 carries the rule; it is CLAUDE.md § "Key principles"'s
-  present-tense-contract line applied to the one piece of prose that skill writes.
-- **`/issue` keeps its name.** `/read-issue` would pair it with `/propose-issue`,
-  but CLAUDE.md § "Adding or renaming a skill" names a skill after its argument
-  precisely to keep it out of reach of the go-ahead tokens, and cites `/issue`,
-  `/task` and `/pr` as the pattern — so the rename would match the exception
-  rather than the rule, and would cost a `/implement`-style compat stub on top of
-  the citations.
+- **`/issue` becomes `/read-issue`**, the old name kept as a compat stub. The
+  naming rule bars a name that doubles as a go-ahead token, which "read" is not;
+  naming a skill after its argument is the stronger guarantee it offers rather than
+  the convention the repo follows. Part B is what decides it — a skill reduced to
+  transport can no longer carry a name that does not say which of the two
+  operations on an issue it performs.
 
-Nothing is left open. The plan is waiting on a go-ahead, not on an answer.
+One thing is left open: what the `/issue` stub tells an operator who reaches it.
+Everything else is waiting on a go-ahead, not on an answer.
 
 ## DRY notes
 
 - **The carve criteria move, they are not copied.** `/issue` Step 3 is deleted
   outright, not summarized into a pointer — the criteria have one home after this
-  (`/plan`), and the filing mechanics have one home (`issue/splitting.md`). The
+  (`/plan`), and the filing mechanics have one home (`read-issue/splitting.md`). The
   failure mode being avoided is the convention stated twice, which CLAUDE.md
   § "Writing things down" names as the finding rather than the fix.
 - **"First slice in full, remainder coarse" goes to `/plan` only.** It is a
-  plan-shape rule, so `issue/splitting.md` does not restate it.
+  plan-shape rule, so `read-issue/splitting.md` does not restate it.
 - **One issue-creation site: `/propose-issue`.** Parent and children both go
   through it rather than the children through a local `gh api` loop, because the
   `#<tbd>` fill-in has to live wherever issues are born and two birthplaces means
   two copies of that rule — the convention stated twice that CLAUDE.md § "Writing
-  things down" calls the finding. What `issue/splitting.md` keeps is what is
+  things down" calls the finding. What `read-issue/splitting.md` keeps is what is
   genuinely about the parent-child *relation* rather than about creating an issue:
   the `sub_issues` link and its two 422 traps, the granularity rule, and carrying
   an enumerated parent's verbatim reports into each child.
@@ -262,9 +286,13 @@ Nothing is left open. The plan is waiting on a go-ahead, not on an answer.
   runs Steps 1–2 and `/go` runs Step 3, which the skill's own numbering already
   separates; neither turn needs a mode flag, and nothing is duplicated by the
   split.
-- **CLAUDE.md stays the single home of routing.** `/task` and `/issue` point at
-  the ladder rather than restating its rows; only `/task` gains the one line that
-  says a launch-time directive lands there.
+- **CLAUDE.md stays the single home of routing.** `/task` and `/read-issue` point
+  at the ladder rather than restating its rows; only `/task` gains the one line
+  that says a launch-time directive lands there.
+- **The `/issue` stub restates nothing.** It is a pointer on the `/implement`
+  model — `/read-issue` for taking one, `/propose-issue` for filing one — so the
+  argument shape, the export rule and the branch-name rule keep exactly one home
+  between them.
 - **Polar-bear watch on the diff.** Deleting `/issue` Step 3 must not leave a
   sentence anywhere saying the split no longer happens there. `/tend-prose
   negation` runs over the result.

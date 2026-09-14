@@ -7,7 +7,7 @@
 - **Draft:** yes
 - **Merged:** _not merged_
 - **Created:** 2026-09-12T14:26:37Z
-- **Updated:** 2026-09-14T14:48:24Z
+- **Updated:** 2026-09-14T14:57:13Z
 - **Closed:** _not closed_
 - **Labels:** _none_
 
@@ -689,7 +689,7 @@ where someone deciding whether this change is right will look for it.
 
 ---
 
-### `docs/plans/split-in-plan.draft.do-not-implement.md`:56 — unresolved
+### `docs/plans/split-in-plan.draft.do-not-implement.md`:56 — resolved
 
 ```diff
 @@ -0,0 +1,185 @@
@@ -908,6 +908,21 @@ One round trip, in the direction that doesn't file five issues.
 7cd1194 — the section is now "Outcome 3 writes a draft too", and `/task`
 SKILL.md joins the files table.
 
+**@vzakharov (human)** — 2026-09-14T14:51:02Z
+
+In that case we can even move `/task` "or go" decision to *after* the plan is written, so the fork becomes:
+
+1- decide if plan is needed
+2- write the plan
+3- decide if approval is needed
+
+or am I overengineering this?
+
+> a session interrupted between
+writing the file and flipping it
+
+well that's arguably better than having a plan already marked as in progress by the time the session is interrupted
+
 ---
 
 ### `docs/plans/split-in-plan.draft.do-not-implement.md`:77 — resolved
@@ -1008,7 +1023,7 @@ survives only as the reason the slug question blocks Part B.
 
 ---
 
-### `docs/pr/71/pr.md`:1 — unresolved
+### `docs/pr/71/pr.md`:1 — resolved
 
 **@vzakharov (human)** — 2026-09-14T14:39:01Z
 
@@ -1090,6 +1105,54 @@ rather than forgotten.
 
 7cd1194
 
+**@vzakharov (human)** — 2026-09-14T14:55:16Z
+
+> specifically to keep it out of reach of
+the instruction-token reading, and cites /issue, /task and /pr as the three
+that do it. /read-issue is verb-led, so the rename would move /issue off the
+rule and onto the exception. The symmetry is real, but it's symmetry with
+/propose-issue, which is the one that doesn't follow the convention.
+
+yeah, exactly, we already have /propose-issue ignoring the condition. What's that rationale in that claude.md paragraph, again? I don't see how "read an issue" (or "fetch an issue", if that's a better verb) can do anything bad (we always read it, it's not like there's a case where we prefer NOT to read despite being called that).
+
+I just feel like `/issue` in itself has always been ambiguous as to whether it means posting or reading, but the "judgmental coverage" of it made it kinda explicable. Now that it's pure transport, I'm not sure.
+
+Renaming would also make it easier to write the stub for the old one (with a note to the operator that it's deprecated in favor of `/task`, `/plan` or `/go`)
+
+---
+
+### `docs/plans/split-in-plan.draft.do-not-implement.md`:240 — unresolved
+
+```diff
+@@ -216,6 +227,17 @@ On the review of this file:
+ - **Both parent and children go through `/propose-issue`**, which is what lets the
+   `#<tbd>` fill-in have a single home — and gets the children deduped for free,
+   at plan time where the operator rules on any match before approving.
++- **A PR body states what the branch delivers, never how it came to.** The change
++  is visible in the diff and its history in the threads, so a body that recounts
++  what an earlier draft did spends the one surface a reader opens to catch up.
++  `/pr` Step 4 carries the rule; it is CLAUDE.md § "Key principles"'s
++  present-tense-contract line applied to the one piece of prose that skill writes.
++- **`/issue` keeps its name.** `/read-issue` would pair it with `/propose-issue`,
++  but CLAUDE.md § "Adding or renaming a skill" names a skill after its argument
++  precisely to keep it out of reach of the go-ahead tokens, and cites `/issue`,
++  `/task` and `/pr` as the pattern — so the rename would match the exception
++  rather than the rule, and would cost a `/implement`-style compat stub on top of
++  the citations.
+```
+
+**@vzakharov (human)** — 2026-09-14T14:56:16Z
+
+polar bear unless we do decide to change it
+
+---
+
+### `docs/pr/71/pr.md`:1 — unresolved
+
+**@vzakharov (human)** — 2026-09-14T14:57:03Z
+
+sorry I just now realized it was an automatic export, not something you've authored -- so my entire objection to its being unwiledy in the previous review was nonsensical, and pls revert any (ir)relevant changes you did following said objection.
+
 ---
 
 ## Timeline (status, references, and other events)
@@ -1100,3 +1163,4 @@ rather than forgotten.
 - **2026-09-14T10:05:19Z** @vzakharov cross-referenced this pull request from [#74 feat: route untracked work to /task, and move the split into /plan](https://github.com/vzakharov/muthur/pull/74).
 - **2026-09-14T13:30:33Z** @vzakharov reviewed (COMMENTED): https://github.com/vzakharov/muthur/pull/71#pullrequestreview-5198256935.
 - **2026-09-14T14:40:58Z** @vzakharov reviewed (COMMENTED): https://github.com/vzakharov/muthur/pull/71#pullrequestreview-5199032973.
+- **2026-09-14T14:57:13Z** @vzakharov reviewed (COMMENTED): https://github.com/vzakharov/muthur/pull/71#pullrequestreview-5199246175.
