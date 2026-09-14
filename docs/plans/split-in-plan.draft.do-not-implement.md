@@ -65,7 +65,11 @@ go away:
 
 - **`/issue` becomes transport**, the shape `/pr` already has: export, commit,
   hand to `/task` with `<issue>` = the number the eventual PR must close. No
-  wording change to how `Closes #N` is planted.
+  wording change to how `Closes #N` is planted. Row 2 sends it prose-plus-number,
+  which its argument shape says is `<number|url>`, so that shape gains the third
+  form: the number is the argument, surrounding prose is the operator's own
+  summary, and Step 1's export outranks it — the rule already there as "do not
+  start solving the task from the title alone".
 - **`/task` is untouched.** Work that needs a carve already satisfies Question 1
   ("the scope is itself the question", "costs far more to produce than to
   describe"), so it routes to `/plan` without a special case.
@@ -153,36 +157,42 @@ what they do with a list they can't file. Precedent for the conditional edge is
 `/finalize`, whose **Requires** column already reads "**conditionally** `/issue`
 (G3)".
 
-### The one case with no gate: outcome 3
+### Outcome 3 writes a draft too
 
-Making the plan file the gate covers every route into `/plan` except one.
-`/task` outcome 3 — plan, then go — writes straight to `*.in-progress.md` under
-the conditional go-ahead, with no draft state and so no gate, and `/go` follows in
-the same session. A carve discovered there would file a parent and children off a
-one-line prompt.
+Making the plan file the gate would leave one route uncovered. `/task` outcome 3
+— plan, then go — writes straight to `*.in-progress.md` under the conditional
+go-ahead and enters `/go` at its Step 2, so there is no draft state and no gate; a
+carve found there files a parent and children off a one-line prompt.
 
-So `/plan` states the recovery: **a carve discovered while running outcome 3 sends
-the task back to the gate** — write the plan as a draft, file nothing, hand off.
+The fix is smaller than a recovery rule: **outcome 3 writes a draft like every
+other plan and enters `/go` at Step 1.** That step is already the flip, and its
+commit already quotes the go-ahead — here the `/task` prompt itself. The draft
+costs one `git mv` and buys the invariant that no plan file claims approval before
+the thing that would reveal it lacks approval, the carve, has been written down.
 
-This is not a new rule, which is why it costs a sentence. Filing issues is
-outward-facing and awkward to undo — nobody declines it by not merging; somebody
-closes five issues by hand — so it is Question 1's "a review round comes too late"
-firing on information that only arrived once the planning started. Question 1 was
-answered with the wrong task in view; the carve is the correction.
+A carve found while writing that plan then needs no procedure: the file is already
+a draft carrying its banner, the session does not flip it, and it hands off. What
+made outcome 3 special was the skipped state, so restoring the state retires the
+special case rather than adding one.
+
+What the draft state costs is one round trip in the safe direction: a session
+interrupted between writing the file and flipping it leaves a draft
+indistinguishable from one awaiting the operator, so a later `/handle` asks for a
+go-ahead it already had.
 
 ## Files
 
 | File | Change |
 | --- | --- |
 | `CLAUDE.md` | § "Plan mode & questions in web sessions": replace the planning-session default with Part A's three rows; keep the `/from-branch` / `/handle` continued-work bullet as the launch-vs-continued line |
-| `.claude/skills/issue/SKILL.md` | delete Step 3; renumber; Step 4 loses the split exception; § "Branch name" drops the issue-number requirement |
-| `.claude/skills/pr/SKILL.md` | Step 4 reads `docs/issue/<n>/` instead of the slug, and writes `Closes #<tbd>` on a carve whose children are not filed yet; no line at all where no issue is involved; the `<issue>` parameter line follows |
+| `.claude/skills/issue/SKILL.md` | delete Step 3; renumber; Step 4 loses the split exception; § "Branch name" drops the issue-number requirement; the argument shape admits prose around the number and says the export outranks it |
+| `.claude/skills/pr/SKILL.md` | Step 4 reads `docs/issue/<n>/` instead of the slug, and writes `Closes #<tbd>` on a carve whose children are not filed yet; no line at all where no issue is involved; the `<issue>` parameter line follows; the Summary states what the branch delivers and never how it came to deliver it |
 | `.claude/skills/propose-issue/SKILL.md` | say that Steps 1–2 and Step 3 may run in different turns; Step 3 fills any `#<tbd>` on the branch and in the PR body |
 | `.claude/skills/squash-message/SKILL.md` | never carry `#<tbd>` into the title or the `Closes` trailer — omit the reference until it resolves |
 | `.claude/skills/issue/splitting.md` | **new** — the G3 filing half, moved verbatim from Step 3 |
-| `.claude/skills/plan/SKILL.md` | new section: the carve bar, the plan-file shape including the proposed issues, the read-only dedupe, the outcome-3 recovery, the conditional cite |
+| `.claude/skills/plan/SKILL.md` | new section: the carve bar, the plan-file shape including the proposed issues, the read-only dedupe, the conditional cite |
 | `.claude/skills/go/SKILL.md` | file the issues the approved plan proposes, before the work |
-| `.claude/skills/task/SKILL.md` | one line: `/task` is where a launch-time directive lands |
+| `.claude/skills/task/SKILL.md` | outcome 3 writes a draft and enters `/go` at Step 1, not Step 2; plus one line that `/task` is where a launch-time directive lands |
 | `.claude/skills/update-muthur/catalog.md` | `/issue` and `/plan` rows re-described; `/plan` gains a conditional G3 edge |
 
 Verified with `./scripts/check-skill-catalog.sh` (every `@`-reference resolves,
@@ -199,8 +209,9 @@ On the thread at `.claude/skills/task/SKILL.md`:14:
   dedupe hit stops and reports instead of adopting the match.
 - **A G2-only adopter gets the plan naming its slices and nothing more.** Working
   around a tracker they declined is theirs to solve, not this repo's.
-- **Outcome 3 is the one route with no gate**, so it keeps a stated recovery: a
-  carve found there goes back to the gate as a draft plan.
+- **Outcome 3 writes a draft like every other plan** and enters `/go` at Step 1,
+  which is already the flip. No route reaches `/plan` without the gate, so the
+  carve needs no recovery rule of its own.
 
 On the review of this file:
 
@@ -216,6 +227,17 @@ On the review of this file:
 - **Both parent and children go through `/propose-issue`**, which is what lets the
   `#<tbd>` fill-in have a single home — and gets the children deduped for free,
   at plan time where the operator rules on any match before approving.
+- **A PR body states what the branch delivers, never how it came to.** The change
+  is visible in the diff and its history in the threads, so a body that recounts
+  what an earlier draft did spends the one surface a reader opens to catch up.
+  `/pr` Step 4 carries the rule; it is CLAUDE.md § "Key principles"'s
+  present-tense-contract line applied to the one piece of prose that skill writes.
+- **`/issue` keeps its name.** `/read-issue` would pair it with `/propose-issue`,
+  but CLAUDE.md § "Adding or renaming a skill" names a skill after its argument
+  precisely to keep it out of reach of the go-ahead tokens, and cites `/issue`,
+  `/task` and `/pr` as the pattern — so the rename would match the exception
+  rather than the rule, and would cost a `/implement`-style compat stub on top of
+  the citations.
 
 Nothing is left open. The plan is waiting on a go-ahead, not on an answer.
 

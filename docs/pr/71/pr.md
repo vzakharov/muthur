@@ -7,7 +7,7 @@
 - **Draft:** yes
 - **Merged:** _not merged_
 - **Created:** 2026-09-12T14:26:37Z
-- **Updated:** 2026-09-14T14:00:02Z
+- **Updated:** 2026-09-14T14:40:58Z
 - **Closed:** _not closed_
 - **Labels:** _none_
 
@@ -292,7 +292,7 @@ The one hole left is that the inference reads commits but not the branch, which 
 
 ---
 
-### `.claude/skills/task/SKILL.md`:14 — unresolved
+### `.claude/skills/task/SKILL.md`:14 — resolved
 
 ```diff
 @@ -11,7 +11,9 @@ The decision this skill makes, before any other: **does this task get a plan, an
@@ -592,6 +592,54 @@ on an answer. One heads-up since you're mid-read: "Still open" is gone, folded
 into "Settled in review", and the "Nothing is filed until the go-ahead" section
 now carries the two `Closes` paths instead of the blocker.
 
+**@vzakharov (agent)** — 2026-09-14T14:01:18Z
+
+Caught. The export only exists where `/issue` exported a thread — which is exactly
+the path where the number was never in doubt. Work that *creates* its issue has no
+export, and that is Part B's whole population. I had the two paths in the plan but
+ordered backwards, with the shortcut presented as the mechanism.
+
+Flipped: **`#<tbd>` is the mechanism, the export read is the shortcut** — and,
+per your follow-up, scoped rather than universal. Writing it "whenever `/pr`
+cannot name the issue" would have stamped it on every PR that closes nothing,
+which is most of them. It appears only where an issue is involved: an `/issue`
+origin, where the number is known and gets written; or a carve, where the children
+don't exist yet and `#<tbd>` holds the slot. Everything else carries no `Closes`
+line, exactly as today. The marker means "an issue is coming and its number belongs
+here" — never "I didn't look".
+
+**Where the fill-in lives: `/propose-issue`, as you say, and it should be the only
+place an issue is ever created.** That's what makes it a single home rather than a
+rule copied into every creation site. Which answers your footnote:
+
+**Yes — children through `/propose-issue` too, and it makes the design smaller.**
+I argued the opposite two rounds ago on the grounds that deduping each child is a
+round-trip against a near-always-empty result. That was wrong twice over. The
+round-trip isn't paid at `/go` time at all: your `/plan`-proposes-`/go`-files split
+already lets the skill break along its own numbering — `/plan` runs Steps 1–2
+(search and triage, read-only) for every slice and writes the matches into the
+plan; `/go` runs Step 3 on what was approved. So a match is something you rule on
+while reviewing the carve, not an interruption after it. And "near-always-empty" is
+doubtful anyway: granular issues outnumber umbrellas, so a *child* colliding with
+something already filed is likelier than the parent doing so — and when it hits,
+the right move is to link the existing issue as the sub-issue rather than duplicate
+it. Better behaviour, not just cheaper.
+
+The parent keeps the stop-and-report, since a match there bears on whether to carve
+at all rather than on one slice.
+
+`issue/splitting.md` then keeps only what's about the parent-child *relation* — the
+`sub_issues` link and its two 422 traps, the granularity rule, carrying an
+enumerated parent's verbatim reports into each child — and not creation.
+
+**On `/squash-message` as the safety net:** it would notice, but I'd rather it not
+be a second home for the rule. What it does need is the negative: never carry
+`#<tbd>` into the title's `#<issue>` slot or the body's `Closes` trailer — omit the
+reference until it resolves. That's in the files table.
+
+Plan at 7f72ec9. The DRY note arguing against a shared creation site is gone, since
+it argued from the dedupe cost that this removes.
+
 ---
 
 ### `.claude/skills/task/SKILL.md`:29 — resolved
@@ -801,9 +849,15 @@ instead of calling it independent.
 
 1de0fa3
 
+**@vzakharov (human)** — 2026-09-14T14:36:49Z
+
+> outcome 3 writes straight to *.in-progress.md
+
+why? why not let it write normally, and have the `/go`, which it calls right after, handle the rename as per usual? (I don't know the entire context, so maybe it's a poor idea.)
+
 ---
 
-### `docs/plans/split-in-plan.draft.do-not-implement.md`:77 — unresolved
+### `docs/plans/split-in-plan.draft.do-not-implement.md`:77 — resolved
 
 ```diff
 @@ -0,0 +1,185 @@
@@ -901,6 +955,24 @@ survives only as the reason the slug question blocks Part B.
 
 ---
 
+### `docs/pr/71/pr.md`:1 — unresolved
+
+**@vzakharov (human)** — 2026-09-14T14:39:01Z
+
+this has gotten beyond unwieldy, let's cut to the current understanding (no narration), 300 lines max. Also seems to be worth adding for the plan to adapt the pr skill to never narrate (there's edit history + comment threads for that)
+
+---
+
+### `docs/plans/split-in-plan.draft.do-not-implement.md`:1 — unresolved
+
+**@vzakharov (human)** — 2026-09-14T14:40:35Z
+
+this looks good. Two last things:
+1- is backward compatibility with a `/issue do this and that #<number>` session start prompt enabled by default, or does it need additional wording
+2- should we rename `/issue` to `/read-issue` maybe, as a counterpart ot `/propose-issue`? (not insisting; besides the blast radius it means `1-` becomes a definitive "no" with a stub needed)
+
+---
+
 ## Timeline (status, references, and other events)
 
 - **2026-09-12T14:50:45Z** @vzakharov reviewed (COMMENTED): https://github.com/vzakharov/muthur/pull/71#pullrequestreview-5186802965.
@@ -908,3 +980,4 @@ survives only as the reason the slug question blocks Part B.
 - **2026-09-12T15:27:12Z** @vzakharov reviewed (COMMENTED): https://github.com/vzakharov/muthur/pull/71#pullrequestreview-5186945235.
 - **2026-09-14T10:05:19Z** @vzakharov cross-referenced this pull request from [#74 feat: route untracked work to /task, and move the split into /plan](https://github.com/vzakharov/muthur/pull/74).
 - **2026-09-14T13:30:33Z** @vzakharov reviewed (COMMENTED): https://github.com/vzakharov/muthur/pull/71#pullrequestreview-5198256935.
+- **2026-09-14T14:40:58Z** @vzakharov reviewed (COMMENTED): https://github.com/vzakharov/muthur/pull/71#pullrequestreview-5199032973.
