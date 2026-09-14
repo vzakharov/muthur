@@ -7,7 +7,7 @@
 - **Draft:** yes
 - **Merged:** _not merged_
 - **Created:** 2026-09-12T14:26:37Z
-- **Updated:** 2026-09-12T15:27:12Z
+- **Updated:** 2026-09-14T09:57:03Z
 - **Closed:** _not closed_
 - **Labels:** _none_
 
@@ -25,7 +25,6 @@
 ## QA Checklist
 
 - [ ] `invoke` — In a fresh session, type `/task <some small task>`. The turn opens by reporting the call and its reason, offers `plan` as the one-word override, and then runs one of the three outcomes rather than asking what to do.
-- [ ] `prose-form` — Open a session with `plan or go: <task>`. It reaches the same skill and behaves identically to `/task`.
 - [ ] `issue-small` — Run `/issue 72` (a two-row docs correction). It exports and commits the thread, then reaches the no-plan outcome and implements — no `docs/plans/` file, no handoff block — and the PR it opens ends with `Closes #72`, read off the `claude/72-…` branch slug with nothing passed to `/pr`.
 - [ ] `issue-large` — Run `/issue` on a genuinely large issue. It still writes `docs/plans/<slug>.draft.do-not-implement.md`, publishes the draft PR, and ends at the `/go <branch>` handoff.
 - [ ] `issue-split` — Run `/issue` on a split-worthy issue. After the split is approved it plans without re-asking whether a plan is needed, and the PR closes the chosen child rather than the parent umbrella.
@@ -36,7 +35,6 @@
 | Item | Automatable | Covered? | Notes |
 |------|-------------|----------|-------|
 | `invoke` | manual-only | — | Whether an agent reads the routing correctly is a judgment call, not an assertion |
-| `prose-form` | manual-only | — | Same — it turns on description-matching by the harness |
 | `issue-small` | manual-only | — | The change's whole point; only a real issue run exercises the call and the slug inference together |
 | `issue-large` | manual-only | — | Regression check that the plan lane still reaches the handoff |
 | `issue-split` | manual-only | — | Also checks the umbrella stays open, which no assertion can see |
@@ -311,9 +309,73 @@ these are polar bears -- no operator would normally write "plan or go" if this w
 
 what I think though, is that any invocation that sounds like a directive rather than a question (e.g. "let's create ..." or even just simply "create ..." versus "what does our repo say about..."). This sounds pretty intuitive, right? Currently muthur provides no entry for requests that sound like "do this", and an adopting repo's agent would be at its own judgment as to what to do next (just work on the auto branch? invoke some skill?)
 
+**@vzakharov (agent)** — 2026-09-12T15:34:59Z
+
+Both prose forms cut in 87de4cd, frontmatter and body. You're right that
+nobody reaches for "plan or go" unprompted — it was only ever the name of the
+`/plan` page this moved out of, so listing it as an invocation advertised the
+old home.
+
+On the directive rule: agreed, and I think the gap is actually two.
+
+The narrow one is that the ladder has no exit for a **question**. CLAUDE.md
+says to treat a new session as a planning session, with exceptions only for
+"no plan", `/from-branch`, `/handle`, and an issue title ending in `#N` — so a
+session opened with "what does our repo say about the vet exit rule?" formally
+routes to `/plan`. No agent actually writes a plan file for that, which is the
+tell: it's already running on judgment the ladder doesn't state.
+
+The wide one is your rule proper — directive → `/task` rather than → `/plan`.
+That one changes the loop's default posture: today the operator opts into the
+agent's call by typing `/task`, and under the rule the agent makes it on every
+new session unless told otherwise. The gate doesn't disappear, since Question 1
+routes genuinely gate-worthy work back to `/plan` — it moves from *always* to
+*when the questions say so*. I think that's the right trade, and I think it's
+too big to arrive as a review-round patch on this PR: it rewrites the routing
+ladder and changes what every session opened in this repo does.
+
+One trap for whoever writes it: `let's …` is on `/plan` § "The approval gate"'s
+token list, so "let's create X" is a directive at launch and a go-ahead
+mid-session. The rule has to key on which, and the ladder's last bullet already
+draws that line ("only new sessions, not continued work").
+
+Happy to file it as an issue or take it straight to `/plan` — say which.
+
+**@vzakharov (human)** — 2026-09-14T09:57:03Z
+
+here are my thoughts, not necessarily perfect:
+
+1- the distinction should be not between directives vs questions -- I take that back. The distinction should be something that modifies codebase vs something that doesn't. Example: 'analyze the latest market trends' is a directive but does not automatically entail modifying the codebase (unless the codebase itself is doc/research-focused).
+
+2- the precedence of calling skills should be more or less as following:
+
+"add an admin page" = /task
+"add an admin page #..." = /issue
+"what do we need to add an admin page?" = none, muthur does not cover this by design (at least at this point)
+
+3- now, there's a more interesting question, what if a task itself is splittable -- currently not something even envisioned? "add an admin page" in a repo where there's no admin functionality at all (as opposed to say pre-existing api endpoints that just have to be wired in UI) is a task that might require more than a single PR could provide, according to the criteria _now_ mentioned in the /issue skill.
+
+So what I think is: the splitting decision *does not* belong in the issue skill, it should be part of `/plan` (because if something requires splitting it is obviously _not_ just `/go`).
+
+So my suggestion is to make `/issue` a transport-only skill, like we once did for `/pr`: it downloads the issue, "plants" the requirement to "Closes #[its number]" down the line (just like it does now -- so no new wording in this regard), and then submits it to `/task`.
+
+`/task` decides if it's worth planning -- just like it does now. If it is worth planning, it submits it to `/plan` -- note that the splitting does *not* happen at this stage -- it is the next skill's work.
+
+So, when `/plan` receives a task that passes the splitting criteria, it makes the splitting part of the plan (just like it works now I think, but now it's phrased in the wrong skill):
+1- Describes what's done on the very first digestible subtask
+2- Describes how the other tasks are split out into issues.
+
+NOW, a new part that must be here is: when we already have an issue that this was originally run from, we can call put the new subissues (including the first one -- which is *always* a subissue, not the parent issue) under it. When we start with just `add an admin page`, we now need to *create* the parent issue, and *then* create the issues under it. The parent issue will not be closed, so it's at this point just a grouping artifact.
+
+Note that in this case it would be virtually identical (in end result) to creating an issue based on the task, and calling the (pre-this-change) "/issue #[its number]". But the internal mechanics is different.
+
+Also note that when I say "create the issue", the agent will likely reach to `/propose-issue` by default. I'm not ready to say at this point whether it's a good thing (e.g. someone else has already thought of this task and created it as an issue -- good thing to know before we start) or a bad thing (conflation of concerns).
+
+So, I'd want you to weigh in on all of that. Then, if you don't find hard stoppers, let's /plan it right away.
+
 ---
 
-### `.claude/skills/task/SKILL.md`:29 — unresolved
+### `.claude/skills/task/SKILL.md`:29 — resolved
 
 ```diff
 @@ -24,6 +26,8 @@ Any one of these is a yes:
@@ -326,6 +388,16 @@ what I think though, is that any invocation that sounds like a directive rather 
 **@vzakharov (human)** — 2026-09-12T15:26:48Z
 
 polar bear
+
+**@vzakharov (agent)** — 2026-09-12T15:34:37Z
+
+Agreed, cut in 87de4cd — along with the pointer at it in `/issue` Step 4.
+
+It denied the *old* `/issue` behaviour (plan every issue) rather than
+anything the current tree says: `/task` already declares that caller extras
+ride through unread, so nothing in it invites reading an issue number as a
+size signal. The trackable-vs-deliberating argument stays in the squash body,
+where someone deciding whether this change is right will look for it.
 
 ---
 
