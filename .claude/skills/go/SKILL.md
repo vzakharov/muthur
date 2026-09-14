@@ -46,6 +46,8 @@ Work with no plan behind it enters here with a **task** in place of one — the 
 
 Planless is not gateless: locating a plan is the only thing this entry skips.
 
+**A `#<N>` in the task means the thread is read first.** Load and follow `@.claude/skills/take-issue/SKILL.md` with the whole task before starting — it exports the thread and its attachments, commits them, and hands back the number, which is what the PR closes. CLAUDE.md § "Plan mode & questions in web sessions" is the home of that rule; `/task` and `/plan` carry the same pointer, because which of the three the operator names changes what the session has read, not where the work goes.
+
 ## Step 1 — Locate the plan
 
 The primary target is a `/plan` stand-in file:
@@ -59,14 +61,12 @@ The primary target is a `/plan` stand-in file:
 
 The plan file's name encodes its lifecycle state (see `@.claude/skills/plan/SKILL.md` § "Plan file lifecycle"). Act on it **before writing any code**:
 
-- `*.draft.do-not-implement.md` — not yet cleared. Reaching this skill **is** the go-ahead (the operator invoked `/go`, approved at `/plan`'s gate, or launched `/from-branch … go`), so **`git mv` it to `*.in-progress.md` as your first action**. In the **same commit**, also **delete the line-1 ⛔ draft banner** — once the file is `in-progress`, a banner that still says "DO NOT IMPLEMENT" contradicts its own state — and quote the operator's literal go-ahead in the commit message (e.g. `chore: begin implementing <slug> (go-ahead: "…")`). Do this before editing source — a file still named `do-not-implement`, or still carrying the banner, means you have not been cleared, and writing the go-ahead out verbatim is the moment to catch a misread. When the plain-approved-plan case has no file at all, there's nothing to flip; the operator's in-chat go-ahead stands.
+- `*.draft.do-not-implement.md` — not yet cleared. Reaching this skill **is** the go-ahead (the operator invoked `/go`, approved at `/plan`'s gate, launched `/from-branch … go`, or wrote the draft themselves this turn under `@.claude/skills/task/SKILL.md`'s conditional go-ahead and answered its Step 3 "no"), so **`git mv` it to `*.in-progress.md` as your first action**. In the **same commit**, also **delete the line-1 ⛔ draft banner** — once the file is `in-progress`, a banner that still says "DO NOT IMPLEMENT" contradicts its own state — and quote the operator's literal go-ahead in the commit message (e.g. `chore: begin implementing <slug> (go-ahead: "…")`). Do this before editing source — a file still named `do-not-implement`, or still carrying the banner, means you have not been cleared, and writing the go-ahead out verbatim is the moment to catch a misread. When the plain-approved-plan case has no file at all, there's nothing to flip; the operator's in-chat go-ahead stands.
 - `*.in-progress.md` — **a session has this plan open.** The name is a claim, not a resume point: picking it up unasked puts two agents on the same plan and the same branch at once, each overwriting the other's commits. **Report it and ask** — unless the operator's own invocation says to take it over ("continue where the last session left off", "the last session died, pick it up"), which is the escape hatch for a session that ended without the chance to release the file. On that go-ahead only, treat it exactly as a `*.paused.md`.
 - `*.paused.md` — released partway through by an earlier session → yours to continue. `git mv` it to `*.in-progress.md` as your first action (it is claimed now), then read the record of what is done and what is left and continue from there, rather than re-running finished work.
 - `*.completed.md` — implementation already finished → don't silently re-run; report and ask.
 
 **A plan that proposes issues files them here, right after the flip.** `@.claude/skills/plan/SKILL.md` § "Carving a task into issues" has the plan name a parent and children and create none of them; the go-ahead that flipped the file is what approves that list. Run `@.claude/skills/propose-issue/SKILL.md` Step 3 once per slice — parent first, then each child — link the children natively, and fill in any `Closes #<tbd>` the branch carries. File before implementing: the first slice's PR closes a child that has to exist, and a session that dies mid-implementation should leave the carve on the tracker rather than only in a plan file `/finalize` sweeps.
-
-**A `#<N>` in the argument means the thread is read first.** On the planless entry below, load and follow `@.claude/skills/take-issue/SKILL.md` with the whole argument before starting — it exports the thread and its attachments, commits them, and hands back the number. CLAUDE.md § "Plan mode & questions in web sessions" is the home of that rule; `/task` and `/plan` carry the same pointer.
 
 ## Step 2 — Implement
 
