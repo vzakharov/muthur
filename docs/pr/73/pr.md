@@ -7,7 +7,7 @@
 - **Draft:** yes
 - **Merged:** _not merged_
 - **Created:** 2026-09-12T14:56:18Z
-- **Updated:** 2026-09-14T18:47:34Z
+- **Updated:** 2026-09-14T18:54:42Z
 - **Closed:** _not closed_
 - **Labels:** _none_
 
@@ -70,6 +70,27 @@ had grown a third kind of dependency that was not one.
   read at a fixed path when the item runs — and § "Closure is not optional" says
   to fix the prose rather than record it. The test: ask what stops working when
   one is absent, because "shares a subject" reads identically from the column.
+
+### Since the fifth review
+
+Six comments, one finding: the last two rounds answered "does this depend on
+that?" by writing down that it does not. A reader of the current tree never
+asks, so each sentence read as a constraint and carried none.
+
+- **`/plainly` stops describing whose standard its defects are**, and the pass
+  loses its "apply the operator's entry" step — the entry is in force from a
+  session's first reply, so a step inside one skill could only restate that. The
+  same instruction comes out of the frontmatter. What survives is the one thing
+  the names do not give an adopter: the two drift independently, and neither
+  tracks the other.
+- **`/override-gh` states the shim unconditionally again.** The case for the
+  marker alone was a harness that makes no false `gh` claim yet still proxies —
+  thin enough that documenting it cost more than it told anyone.
+- **The catalog drops both description tails and the third dependency kind.**
+  **Pulls in** names siblings an item cannot work without and stops enumerating
+  how the pointer is spelled; § "Closure is not optional" keeps the one
+  operational fact — the script sees `@`-references only, so a fixed-path read
+  has the column as its sole record.
 
 ## QA Checklist
 
@@ -902,6 +923,10 @@ What survives is the one you named first and I agree with unchanged: `operator-v
 
 polar bear: it's natural by default that a skill describes what it does without carrying it from anywhere
 
+**@vzakharov (human)** — 2026-09-14T18:53:59Z
+
+Agreed — cut in ffb8563. A skill stating its own procedure is the default, so the sentence only existed to deny the version above it in the diff.
+
 ---
 
 ### `.claude/skills/plainly/SKILL.md`:23 — unresolved
@@ -930,6 +955,10 @@ polar bear: it's natural by default that a skill describes what it does without 
 
 I think the last sentence is overcomplicating it again. I'd just say that their drifting apart is a normal occurrence and should not be treated as a need to keep them continuously mapped to each other.
 
+**@vzakharov (human)** — 2026-09-14T18:54:01Z
+
+Rewritten in ffb8563 to your version: "they drift independently — a house voice can be deliberately less plain and still want a way to ask for something plainer. Neither tracks the other." The invocation-decides machinery is gone; there was no case where a reader needed it.
+
 ---
 
 ### `.claude/skills/plainly/SKILL.md`:55 — unresolved
@@ -950,6 +979,10 @@ I think the last sentence is overcomplicating it again. I'd just say that their 
 **@vzakharov (human)** — 2026-09-14T18:42:45Z
 
 polar bear. How to talk to the operator has no longer anything to do with invoking this skill
+
+**@vzakharov (human)** — 2026-09-14T18:54:10Z
+
+Right — step 4 is gone entirely in ffb8563. The entry applies from the first reply of every session, so a step inside one skill's pass could only ever restate that. I took the same sentence out of the frontmatter description for the same reason; say if you wanted it kept there as a visible reminder in the skill list.
 
 ---
 
@@ -974,6 +1007,10 @@ polar bear. How to talk to the operator has no longer anything to do with invoki
 
 both are polar bears. you just keep adding them.
 
+**@vzakharov (human)** — 2026-09-14T18:54:12Z
+
+Both cut in ffb8563. The column already carries what each pulls in, so a description denying an entry the column does not make is the polar bear twice over — and I did keep adding them, because I kept treating your questions as asking me to write the answer down instead of just to fix the row.
+
 ---
 
 ### `.claude/skills/override-gh/SKILL.md`:7 — unresolved
@@ -990,6 +1027,10 @@ both are polar bears. you just keep adding them.
 **@vzakharov (human)** — 2026-09-14T18:45:26Z
 
 but why would we ever need gh without the shim? I still don't understand your rationale behind allowing to adopt them separately.
+
+**@vzakharov (human)** — 2026-09-14T18:54:22Z
+
+You're right and I've dropped it — ffb8563 puts the paragraph back to the unconditional statement. My case was a harness that carries the false `gh` claim but no egress proxy (a self-hosted runner pool). Both facts are properties of Claude Code on the web, so they arrive together; a session that has neither needs neither half. That leaves the separation too thin to be worth a sentence, let alone a `Pulls in` cell.
 
 ---
 
@@ -1021,6 +1062,10 @@ but why would we ever need gh without the shim? I still don't understand your ra
 **@vzakharov (human)** — 2026-09-14T18:47:06Z
 
 I don't understand why this is here. It looks like a combination of narration, archaeology, and polar bears.
+
+**@vzakharov (human)** — 2026-09-14T18:54:23Z
+
+All three, yes — cut in ffb8563. "back when they lived in one file" is archaeology of this PR, "a third kind is a defect instead" denies a kind I invented two commits ago and am now retracting, and the rest narrates the churn. What's left is the one operational fact: the script sees `@`-references only, so a fixed-path read like `operator-voice.sh` → `.claude/voice/operators/` has the column as its sole record.
 
 ---
 
