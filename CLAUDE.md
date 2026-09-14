@@ -36,9 +36,9 @@ The checks may also be fanned out with `scripts/run-parallel.sh lint='…' typec
 - **No stack yet → `exit 0` is correct**, and stays correct. The two built-in checks are the whole run and they genuinely pass, so there is nothing to refuse to certify. This is the normal state of a repo taken to *start* a project, not a template-only special case — and a repo that sets `exit 1` here fails step 1 of `/finalize` on every prose-only PR, which teaches the loop to route around the vet run.
 - **A stack present and unchecked → `exit 1`**, until this file runs that project's real commands. An exit-0 stub over an unchecked stack is worse than no script at all, because `/finalize` passes step 1 and attests to a run that verified nothing.
 
-So wiring `scripts/vet.sh` is what you do **when a stack lands**, alongside `.claude/hooks/session-start.sh`'s dependency install — the paired site nothing else names.
+So wiring `scripts/vet.sh` is what you do **when a stack lands**, alongside `.claude/hooks/install-deps.sh` — the paired site nothing else names.
 
-**A third site moves with the stack, and no agent can move it: the environment setup script**, which installs and pins the toolchain for remote sessions and has no API, MCP tool or in-repo file behind it. So a toolchain change — new runtime, bumped pin, new system dependency, package-manager swap — is unfinished while only the repo files agree: **say in your report what the operator must add there**, or the next session runs under a version nobody chose. The one case that detects itself is `gh` missing from `PATH`, which `.claude/hooks/session-start.sh` reports.
+**A third site moves with the stack, and no agent can move it: the environment setup script**, which installs and pins the toolchain for remote sessions and has no API, MCP tool or in-repo file behind it. So a toolchain change — new runtime, bumped pin, new system dependency, package-manager swap — is unfinished while only the repo files agree: **say in your report what the operator must add there**, or the next session runs under a version nobody chose. The one case that detects itself is `gh` missing from `PATH`, which `.claude/hooks/gh-shim.sh` reports.
 
 **Keep it current** as tooling evolves. If a CI job catches something `vet.sh` should have caught, that's a signal to extend it.
 
@@ -188,11 +188,14 @@ makes, not a blank left open.
 
 ## Explaining things to people
 
-How to write for a person is a large enough topic to live with the skill that
-expands it, so it is imported from there rather than stated here. That skill is
-`/plainly`: bare, it re-explains an answer that did not land; with a question, it
-answers under the rule from the start. Invoking it is optional — the rule itself
-governs every reply regardless.
+How to write for a person is long enough to have its own file, so it is imported
+from `.claude/voice/` rather than stated here — in force from every session's
+first reply. `operators/` beside it holds one file per person, saying how that
+person in particular wants to be talked to.
+
+`/plainly` is the procedure built on it: bare, it re-explains an answer that did
+not land; with a question, it answers under the rule from the start. Invoking it
+is optional — the rule itself governs every reply regardless.
 
 <!-- A real import, not a pointer, so it is unbackticked: the import parser
      skips code spans, and backticking it would silently stop it loading. Every
@@ -201,10 +204,10 @@ governs every reply regardless.
 
      `operators/` beside it is deliberately not imported. A session applies one
      person's entry, so importing the directory spends context on everyone
-     else's, every session — `.claude/hooks/session-start.sh` resolves the
+     else's, every session — `.claude/hooks/operator-voice.sh` resolves the
      operator at startup and prints that one entry instead. -->
 
-@.claude/skills/plainly/voice.md
+@.claude/voice/voice.md
 
 ## Working with skills
 

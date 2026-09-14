@@ -9,7 +9,7 @@
 # forgotten mid-session. (The first firing is the operator's task message —
 # `/plan` is client-side and submits no prompt of its own.)
 #
-# Remote-only, matching .claude/hooks/session-start.sh: CLAUDE.md § "Plan mode &
+# Remote-only, matching .claude/hooks/gh-shim.sh: CLAUDE.md § "Plan mode &
 # questions in web sessions" leaves native plan mode alone on the local CLI,
 # where the answer-losing bug this routes around does not bite.
 

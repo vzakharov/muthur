@@ -7,7 +7,7 @@
 - **Draft:** yes
 - **Merged:** _not merged_
 - **Created:** 2026-09-12T14:56:18Z
-- **Updated:** 2026-09-13T19:46:45Z
+- **Updated:** 2026-09-13T19:52:04Z
 - **Closed:** _not closed_
 - **Labels:** _none_
 
@@ -219,7 +219,7 @@ You're right that it collides, and the underscore would have worked — but the 
 
 ---
 
-### `.claude/hooks/session-start.sh`:149 — resolved
+### `.claude/hooks/session-start.sh`:145 — resolved
 
 ```diff
 @@ -74,9 +77,71 @@ EOF
@@ -518,7 +518,7 @@ One wrinkle behind your "where the session clearly provides it in lowercase": it
 
 ---
 
-### `.claude/hooks/session-start.sh`:48 — unresolved
+### `.claude/hooks/session-start.sh`:48 — resolved
 
 ```diff
 @@ -28,17 +28,24 @@
@@ -553,9 +553,13 @@ One wrinkle behind your "where the session clearly provides it in lowercase": it
 
 Rephrase to start with smth like "Note to whoever gets to test this hook: ...", because now it reads as a natural continuation of a docstring explaining what the step does, whereas it is a different context altogether
 
+**@vzakharov (agent)** — 2026-09-13T19:51:35Z
+
+Done in a1e072b — it now opens "Note to whoever gets to test this hook: both of those cut the other way on you."
+
 ---
 
-### `.claude/hooks/session-start.sh`:100 — unresolved
+### `.claude/hooks/session-start.sh`:100 — resolved
 
 ```diff
 @@ -87,59 +94,54 @@ if [ "${CLAUDE_CODE_REMOTE:-}" = "true" ]; then
@@ -583,6 +587,10 @@ Rephrase to start with smth like "Note to whoever gets to test this hook: ...", 
 
 not needed: the code already shows why `.type` is used through a clear fork
 
+**@vzakharov (agent)** — 2026-09-13T19:51:36Z
+
+Cut in a1e072b. Agreed — the fork right below it tests `.type` and says what a non-`User` account means, so the paragraph was reading the code back.
+
 ---
 
 ### `.claude/skills/update-muthur/catalog.md`:118 — unresolved
@@ -609,6 +617,20 @@ Trying to figure out how to handle it best.
 
 Let's discuss first.
 
+**@vzakharov (agent)** — 2026-09-13T19:51:50Z
+
+Option 3, and I think the seam is sharper than either of the first two.
+
+**`/plainly` is a procedure; the voice is a standing fact.** A skill is something you invoke — it has steps, and `/plainly` has six named defects and a pass over a reply. An operator entry is never invoked: it is in force from the first reply onward, which is exactly why the hook prints it into context and why `voice.md` is *imported* rather than loaded on demand. It sits under `.claude/skills/plainly/` for one reason, which is that this is where it got written. Nothing about it is `/plainly`'s.
+
+So move the files, not the concept: `.claude/voice/voice.md` and `.claude/voice/operators/<handle>.md`, imported by CLAUDE.md exactly as now, with `/plainly` keeping `SKILL.md` alone and citing `voice.md` the way every other skill cites what it does not own. No second skill, so no two angles to converge and conflict; `say it plainly` still works, because the name still describes what that skill does.
+
+That also answers "what if a team's voice steers far from plain", because the two are answering different questions. **`/plainly` is a floor on clarity; the voice is a choice of register.** Cause first, no buried lede, the reader's nouns, don't hand someone a symptom and call it a finding — a team does not steer away from those, it just has them, the same way it has tests. Warmth, humour, formality, whether banter comes back — that is theirs, and it changes how an answer sounds, never what is in it. `voice.md` already draws that line ("An entry cannot lower a bar"); it just draws it from inside the wrong directory, which is what made the whole thing look like one concern.
+
+One thing it drags along: the same seam splits the hook — see the thread on `session-start.sh`:1. The operator lookup becomes its own hook file pointing at `.claude/voice/`, which is what makes it adoptable without the `gh` shim riding along.
+
+Not touching any of it until you pick.
+
 ---
 
 ### `.claude/hooks/session-start.sh`:1 — unresolved
@@ -633,6 +655,24 @@ on this one: I understand `.claude/settings.json` can have multiple session star
 
 why, instead of trying to squeeze everything into a single `session-start.sh`, we split them by what each actually does, and enumerate them here separately? This'll make "adoption" of each simpler to convey.
 
+**@vzakharov (agent)** — 2026-09-13T19:52:03Z
+
+Yes — the array takes as many as you like, and this repo already does it: `UserPromptSubmit` runs `plan-mode-notice.sh` and `session-images.sh` as two separate entries. Multiple matcher blocks under `SessionStart` work too, if two of them ever want different matchers.
+
+I'd split it. The three jobs share nothing — not a variable, not an ordering, not even the same gate, since 1 and 2 are remote-only and 3 runs everywhere. What holds them together is one `set -euo pipefail`, and that is a liability rather than a reason: a `set -e` slip in one job kills the others silently. Not hypothetical on this branch — job 3 died that way twice during review, and in a split file neither death could have touched the shim.
+
+Shape:
+
+- `gh-shim.sh` — remote-only; needs `gh` on `PATH`, reports when it isn't.
+- `install-deps.sh` — remote-only; the stub an adopter fills in for their stack, and the one file `/detemplate` and CLAUDE.md § "Vetting" point at as the paired site.
+- `name-operator.sh` — everywhere; and per the catalog thread it points at `.claude/voice/` rather than into a skill directory.
+
+The adoption argument is the strongest part: ADOPTING.md gets three copyable files with three separate conditions, instead of one file plus a paragraph saying which parts to delete. A repo with no stack drops the middle one outright.
+
+Priced honestly: about a dozen citations name `session-start.sh` by path across six files (CLAUDE.md, ADOPTING.md, `/detemplate`, `/override-gh`, the catalog, `voice.md`), and each has to repoint to whichever of the three it actually meant. Mechanical, but it is the half that rots if left half-done — and the catalog gains two rows where it had one.
+
+Both threads land on the same files, so I'd do them in one pass. Say go.
+
 ---
 
 ## Timeline (status, references, and other events)
@@ -641,3 +681,4 @@ why, instead of trying to squeeze everything into a single `session-start.sh`, w
 - **2026-09-12T15:31:10Z** @vzakharov cross-referenced this pull request from [#72 docs: drop the working-artifact rows from the catalog's Never table](https://github.com/vzakharov/muthur/issues/72).
 - **2026-09-12T15:36:28Z** @vzakharov renamed from «feat: name the session's operator and their entry at session start» to «feat: name and greet the session's operator at startup».
 - **2026-09-13T19:46:45Z** @vzakharov reviewed (COMMENTED): https://github.com/vzakharov/muthur/pull/73#pullrequestreview-5188252193.
+- **** @vzakharov reviewed (PENDING): https://github.com/vzakharov/muthur/pull/73#pullrequestreview-5195995044.

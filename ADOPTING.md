@@ -130,7 +130,7 @@ The adopted skills call GraphQL-flavored `gh` freely (`gh pr view --json`, `gh p
 list`, `gh issue list`). Without the shim, those fail exactly as Step 2 showed.
 So on the web, G4 is a **prerequisite of G2, G3 and G5** — not a nicety.
 
-**To adopt it**, copy `.claude/hooks/session-start.sh` and merge
+**To adopt it**, copy `.claude/hooks/gh-shim.sh` and merge
 `.claude/settings.json` (see the [G4 catalog
 rows](.claude/skills/update-muthur/catalog.md#g4--remote-session-plumbing)), then install the shim for
 the *current* session so the remaining steps and the newly-adopted skills have a
@@ -259,7 +259,7 @@ whatever you answer, which is why it stays in your tree even when the answer is
 ### Fill in the operator entries
 
 The house rule for explaining things to a person is adopt-as-is; what you write
-is `.claude/skills/plainly/operators/`, which ships carrying this repo's operator
+is `.claude/voice/operators/`, which ships carrying this repo's operator
 as the worked shape — delete that file. Add your own people only where you know a
 preference they have stated, one `<handle>.md` each; otherwise leave none, the
 rule being complete with no entries at all. Entries accumulate from
@@ -392,7 +392,7 @@ Everything else here is a file you can write. The **environment setup script**
 isn't: it lives in Claude Code's environment settings, is set by a human in the
 web UI, and has no API, MCP tool or in-repo file behind it. It runs **once when
 the environment snapshot is built**, then is cached ([docs](https://code.claude.com/docs/en/claude-code-on-the-web#setup-scripts)) —
-which is why `.claude/hooks/session-start.sh` re-syncs dependencies on every
+which is why `.claude/hooks/install-deps.sh` re-syncs dependencies on every
 session start rather than trusting the snapshot.
 
 So the deliverable for this step is **text in your report** that the operator can

@@ -11,7 +11,7 @@ GitHub handle that keys a manner preference had to be resolved with a
 tool call the session had to think to make — and mostly did not, leaving
 stated preferences unapplied.
 
-The session-start hook now resolves the operator and prints their entry
+A session-start hook now resolves the operator and prints their entry
 into the session before the first reply, naming them by the name on
 their GitHub profile so a session opens by greeting a person rather than
 a handle. It reports the token's account type alongside the login, since
@@ -22,17 +22,26 @@ says which of the three ways it failed. CLAUDE.md in turn stops
 importing the entries — a session applies one, so importing the set
 spent context on everyone else's, every session.
 
-Entries move from headings inside a single file to one file per handle,
-the file's whole content being the entry, and the directory holds
-nothing else. A heading was a thing an entry could get wrong, and a
-wrong one failed silently, reaching no session while the preference sat
-in the repo looking done. A filename has no syntax to violate, so the
-lookup is `cat`; the login is lowercased once and printed in that same
-form, so the spelling an agent writes an entry under is the spelling the
-lookup uses and there is nothing left to validate. A manner rule meant
-for everyone is an edit to voice.md rather than an entry promoted out of
-one person's file behind their back — voice.md carrying that, and what
-an entry may do, which had been riding on the import that went away.
+Entries are one file per handle, the file's whole content being the
+entry, where they had been headings inside a single file. A heading was
+a thing an entry could get wrong, and a wrong one failed silently,
+reaching no session while the preference sat in the repo looking done. A
+filename has no syntax to violate, so the lookup is `cat`; the login is
+lowercased once and printed in that same form, so the spelling an agent
+writes an entry under is the spelling the lookup uses.
+
+The rule those entries answer to moves out of the /plainly skill to
+.claude/voice/ beside them, being in force from every session's first
+reply where a skill is something a session invokes. /plainly is the
+procedure over it and cites it, and the reference check now covers every
+@-import into .claude/ rather than skill pointers alone.
+
+Startup is three hooks, one per job, settings.json taking a list. The
+three shared only a `set -euo pipefail`, under which a slip in one kills
+the others silently — which the operator lookup did twice during review.
+The gh shim and the dependency install stay remote-only; the operator
+lookup runs everywhere, a laptop session needing to know who it is
+talking to as much as a remote one.
 
 Co-authored-by: Claude <noreply@anthropic.com>
 ```

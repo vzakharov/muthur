@@ -7,12 +7,12 @@ description: >-
   investigation included. Names six defects — symptom-as-finding, buried lede,
   untranslated nouns, broken chain, fog, receipt — so one word calls out a bad
   report. **Resolve who you are talking to once per session** and apply that
-  person's operator entry from then on; `voice.md` carries how.
+  person's operator entry from then on; `.claude/voice/voice.md` carries how.
 ---
 
-`voice.md` beside this file is the short version, and `CLAUDE.md` imports it, so
-the rule itself is already in context — state it there, once. This file is the
-long version: the defects, the invocations, and the pass.
+`.claude/voice/voice.md` is the rule itself, and `CLAUDE.md` imports it, so it is
+already in context — state it there, once. This file is the long version: the
+defects, the invocations, and the pass.
 
 ## Two invocations
 
@@ -43,7 +43,8 @@ Either way the output is an answer, not a plan to produce one.
    has a tell you can see in your own text without knowing the subject — but only
    in text you actually put down first.
 4. **Apply the operator's entry**, which the session-start hook has already
-   printed into context. `voice.md` carries what an entry may do to a draft.
+   printed into context. `.claude/voice/voice.md` carries what an entry may do to
+   a draft.
 
 ## The six defects
 

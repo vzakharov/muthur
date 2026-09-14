@@ -1,10 +1,12 @@
 #!/bin/bash
 # Assert the skill cross-reference and catalog invariants.
 #
-#   1. Every `@.claude/skills/<name>/SKILL.md` reference resolves to a file that
-#      exists. This is the check that makes subset-copying safe: a skill copied
-#      without its closure leaves a pointer that fails *silently* — the agent
-#      follows the surviving prose and skips the step they could not load.
+#   1. Every `@`-reference into `.claude/` resolves to a file that exists. This
+#      is the check that makes subset-copying safe: a file copied without its
+#      closure leaves a pointer that fails *silently* — the agent follows the
+#      surviving prose and skips the step they could not load. Skill pointers are
+#      the bulk of them; CLAUDE.md's imports fail the same way, which is why the
+#      scope is the directory.
 #   2. Every `.claude/skills/*/` directory has exactly one row in
 #      `.claude/skills/update-muthur/catalog.md`.
 #   3. Every path named in a catalog row's first column exists — for a row
@@ -58,20 +60,19 @@ fi
 
 # --- Assertion 1: no dangling skill reference ------------------------------
 
-echo "1. Skill @-references resolve"
+echo "1. @-references into .claude/ resolve"
 
-# Emit "file:referenced-skill" for every @-reference, then test each target.
+# Emit "file:referenced-path" for every @-reference, then test each target.
 while IFS= read -r hit; do
   [ -n "$hit" ] || continue
   src=${hit%%:*}
-  name=${hit#*:}
-  if [ ! -f ".claude/skills/$name/SKILL.md" ]; then
-    fail "$src references @.claude/skills/$name/SKILL.md — no such file"
+  ref=${hit#*:}
+  ref=${ref#@}
+  if [ ! -f "$ref" ]; then
+    fail "$src references $ref — no such file"
   fi
 done < <(
-  grep -oHE '@\.claude/skills/[a-z0-9-]+/SKILL\.md' "${sources[@]}" 2>/dev/null |
-    sed -E 's|@\.claude/skills/([a-z0-9-]+)/SKILL\.md|\1|' |
-    sort -u
+  grep -oHE '@\.claude/[A-Za-z0-9/_-]+\.md' "${sources[@]}" 2>/dev/null | sort -u
 )
 
 # --- Assertions 2 and 3: the catalog covers the inventory -----------------

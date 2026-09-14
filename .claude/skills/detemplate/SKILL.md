@@ -24,7 +24,7 @@ deliberately writes no source. With no brief, ask for it before anything else.
 **A fresh fork is the one place `gh` may genuinely be absent** — the rest of what
 `/override-gh` says about `gh` and `GH_TOKEN` holds here unchanged. The fork
 arrives before the operator has set an environment setup script, and `apt-get
-install -y gh` lives in that script (Step 6), so `.claude/hooks/session-start.sh`
+install -y gh` lives in that script (Step 6), so `.claude/hooks/gh-shim.sh`
 finds nothing to shim and says so on startup — `/override-gh` owns that signal
 and what it means. Take it at face value rather than re-deriving it; to probe by
 hand, use `gh api repos/{owner}/{repo} --jq .visibility` rather than `gh auth
@@ -179,7 +179,7 @@ Ordering is load-bearing at exactly one point, and it is the first step:
    with it — and delete § "Git conventions"'s adopter-inverts rule, which
    instructs adopters to delete it. **§ "Language"'s stub is replaced in the same
    pass** with the Step 1 answer, one line; the rest of that section holds as
-   shipped. **Delete `.claude/skills/plainly/operators/`'s shipped entry** and
+   shipped. **Delete `.claude/voice/operators/`'s shipped entry** and
    write one for whoever ran the detemplate, at `<their handle>.md`, if they
    stated a standing preference about how you talk to them during the run —
    otherwise leave none. The rule is complete with no entries at all, and
@@ -198,7 +198,7 @@ Ordering is load-bearing at exactly one point, and it is the first step:
    taken to start a project has no stack for the script to check. Wire the real
    checks only where the operator pushed a stack before realising they should
    have detemplated first. CLAUDE.md § "Vetting" owns that contract, and names
-   `.claude/hooks/session-start.sh`'s dependency install as the paired site.
+   `.claude/hooks/install-deps.sh` as the paired site.
 8. **Delete this skill.** Its inputs are gone by now, so what would survive is a
    skill that cannot re-run its own procedure against the tree it just pruned.
 9. **`bash scripts/vet.sh`** — now enforcing the stub prune, the catalog being
@@ -217,7 +217,7 @@ Two reasons it matters:
 - **It is where `gh` comes from.** `apt-get install -y gh` belongs in it. Without
   `gh` on `PATH` there is nothing for the proxy shim to wrap, and every
   `gh`-dependent skill fails later, far from the cause — so
-  `.claude/hooks/session-start.sh` reports the missing install into the session
+  `.claude/hooks/gh-shim.sh` reports the missing install into the session
   context. That notice is the one part of this step that detects itself.
 - **It is the only place a toolchain version can be pinned** for remote sessions,
   and `scripts/vet.sh` running under the wrong one is a confusing failure.

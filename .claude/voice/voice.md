@@ -25,7 +25,7 @@ answers to `@.claude/skills/tend-prose/SKILL.md` instead, and commit subjects
 answer to § "Git conventions".
 
 **Who you are talking to is already in context, and so is how they want to be
-talked to.** `.claude/hooks/session-start.sh` resolves the operator at startup and
+talked to.** `.claude/hooks/operator-voice.sh` resolves the operator at startup and
 prints their entry from `operators/` verbatim. Apply it to every reply, and open
 the session's first one by greeting them by the name the hook gives — their name,
 not their handle. The hook prints one of three other things instead, each complete
@@ -33,6 +33,14 @@ as it stands: that the handle has no entry, which means this file alone; that th
 session's GitHub token is the agent's own rather than a person's; or that `gh` was
 out of reach. The last two are where you ask, then read `operators/<handle>.md`
 yourself.
+
+**Under a harness with no SessionStart hook, that lookup is yours to do by hand.**
+`SessionStart` is Claude Code's mechanism, so an agent running anywhere else gets
+none of the above and would otherwise talk to a stranger in the house default. Do
+what the hook does, once, on the first turn: take the operator's GitHub handle
+from whatever already names them — the session's token, the repo they are pushing
+to — or ask, then read `operators/<handle>.md`, lowercased. The filename is the
+whole lookup, so there is nothing else to reproduce.
 
 **A stated preference is written down, in the entry of whoever stated it.**
 `operators/<handle>.md`, lowercase, the file's whole content being the entry —

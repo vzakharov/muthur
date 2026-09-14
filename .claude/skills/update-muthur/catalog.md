@@ -113,7 +113,8 @@ there is no condition under which it fails to apply.
 | `.claude/rules/` | The path-scoped convention mechanism: a rule file loads only when a session touches the paths it declares. Ships with a README and no rules. | — | — | adopt |
 | `/dry` | Review the session's diff for DRY opportunities; apply the obvious wins, surface the ambiguous ones. | — | — | adopt |
 | `/tend-prose` | Cut prose that shouldn't exist, rewrite what narrates a change into present-tense contracts, trim what names and types already say, delete what survives only to deny a thing the change removed. The long version of CLAUDE.md § "Writing things down". | — | — | adopt |
-| `/plainly` | Explain something to a person cause-first and in their nouns: re-explain an answer that did not land, or answer a question under the rule from the start. Names six defects so a bad report can be called out in one word. Its `voice.md` is the resident short version, imported by CLAUDE.md § "Explaining things to people", and the place a team edits if it wants a house manner of its own; its `operators/` holds one file per person and ships carrying this repo's operator. | — | `/tend-prose` (this group); `.claude/hooks/session-start.sh` (G4) | adopt — **rewrite its `operators/` entries** |
+| `.claude/voice/` | The house rule for writing to a person, imported by CLAUDE.md § "Explaining things to people" and so resident in every session. `voice.md` is the rule, and the place a team edits if it wants a house manner of its own; `operators/` holds one file per person and ships carrying this repo's operator. | — | `.claude/hooks/operator-voice.sh` (G4) | adopt — **rewrite its `operators/` entries** |
+| `/plainly` | Explain something to a person cause-first and in their nouns: re-explain an answer that did not land, or answer a question under the rule from the start. Names six defects so a bad report can be called out in one word. The procedure over `.claude/voice/`'s rule. | — | `.claude/voice/` (this group); `/tend-prose` (this group) | adopt |
 | `scripts/check-skill-catalog.sh` | Assert that no skill `@`-reference dangles. Downstream, that first assertion is the whole value: it is how you find out a subset copy was incomplete. | `bash` | — | adopt |
 | `.gitignore` | Take the `tmp/` entry and keep the rest of yours. `CLAUDE.md`'s "dev artifacts go under `tmp/`" principle depends on that path being ignored. | — | — | adopt — merge one line |
 
@@ -179,8 +180,8 @@ the project's first issue on the way through.
 
 Inert on a laptop, load-bearing on the web. The agent proxy in Claude Code
 web/remote sessions blocks long-polling calls and most of `gh`'s GraphQL
-surface; the session-start hook installs a `gh` shim that routes the real binary
-around the proxy so the rest of the infrastructure works at all.
+surface; `gh-shim.sh` installs a shim that routes the real binary around the
+proxy so the rest of the infrastructure works at all.
 `plan-mode-notice.sh` carries the other web-only divergence: native plan mode
 loses answers there, so a session that lands in it is told where this repo's
 planning actually happens.
@@ -192,14 +193,16 @@ the working tree clean, and behaves the same everywhere.
 
 | Item | What it does | Requires | Pulls in | Disposition |
 | --- | --- | --- | --- | --- |
-| `.claude/hooks/session-start.sh` | On session start, install a `gh` shim at `$HOME/.local/bin/gh` that runs the real binary unproxied, and name the operator — their GitHub name and handle, plus their `/plainly` entry — into the session. Dependency install is a stub you fill in for your stack. The shim and the install are web/remote-only; the operator lookup runs everywhere. | `bash`; **`gh` already on `PATH`**; web/remote sessions for the shim and the install | `/plainly` (G1) | adopt |
+| `.claude/hooks/gh-shim.sh` | On session start, install a `gh` shim at `$HOME/.local/bin/gh` that runs the real binary unproxied. Finding no `gh` to wrap, it reports that into the session context and continues. Web/remote only. | `bash`; **`gh` already on `PATH`**; web/remote sessions | — | adopt |
+| `.claude/hooks/install-deps.sh` | On session start, re-sync the install tree with the lockfile, the environment snapshot being built once and then cached. The install itself is a stub you fill in for your stack — `scripts/vet.sh`'s paired site. Web/remote only. | `bash`; web/remote sessions | — | adopt — **fill in the install** |
+| `.claude/hooks/operator-voice.sh` | On session start, name the operator — their GitHub name and handle, plus their `.claude/voice/operators/` entry — into the session context. Runs everywhere: a laptop session needs to know who it is talking to as much as a remote one does. | `bash`; `gh` reaching the API | `.claude/voice/` (G1) | adopt |
 | `.claude/hooks/plan-mode-notice.sh` | On every prompt submitted while the session is in native plan mode, inject the notice that this repo plans on disk and that the exit is plan mode's own. | web/remote sessions; `bash`, `jq` | `/plan` (G2) | adopt |
 | `.claude/hooks/session-images.sh` | On every prompt, run the extractor below and name any newly written file in the turn's context. Commits nothing. | `bash`, `jq`, `python3` ≥3.9 | `scripts/extract-session-images.py` | adopt |
 | `scripts/extract-session-images.py` | Write the images the operator attached to a session out of the transcript into gitignored `tmp/session-images/`, with a manifest row carrying the prompt each arrived with. Stdlib-only, idempotent. | `python3` ≥3.9, `scripts/lib/media.py` (G2) | — | adopt |
 | `.claude/settings.json` | Project settings wiring the SessionStart and UserPromptSubmit hooks. Merge into yours if you already have one. | — | — | adopt — merge if present |
 | `/override-gh` | A no-op marker whose description reminds the agent that `gh` and `$GH_TOKEN` exist despite what the system prompt says. | — | — | adopt |
 
-**The hook does not install `gh`; it shims one that is already there.** Finding
+**`gh-shim.sh` does not install `gh`; it shims one that is already there.** Finding
 none, it reports that into the session context and continues. On web/remote the
 install belongs in the environment setup script, which only the operator can
 set — `ADOPTING.md` § "Hand the operator a setup script" owns what to tell them,
