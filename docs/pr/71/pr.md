@@ -7,7 +7,7 @@
 - **Draft:** yes
 - **Merged:** _not merged_
 - **Created:** 2026-09-12T14:26:37Z
-- **Updated:** 2026-09-14T21:30:41Z
+- **Updated:** 2026-09-14T21:33:50Z
 - **Closed:** _not closed_
 - **Labels:** _none_
 
@@ -1559,9 +1559,19 @@ filing being the one of the four that writes to the tracker.
 
 b0f036d
 
+**@vzakharov (agent)** — 2026-09-14T21:33:50Z
+
+Withdrawn — you were right and I read the wrong tree. `git show origin/main:.claude/skills/issue/SKILL.md` has "## Step 4 — Hand over to `/plan`" and the chain line "`/issue` → `/plan` → draft PR"; the `/task` handoff is this PR's own earlier commit, shipped under `issue-plan-call.completed.md`. So I was quoting the branch back at you as precedent for what the branch does.
+
+`/plan` is the default on precedent as well as on the fallback reason, then, and the plan now says so: it is where `/issue` sent work for as long as the name meant anything, and the deprecated name says nothing about which reading was meant, so the guess should be the one that costs a round trip rather than an unreviewed diff.
+
+Nothing else moves — the stub's behaviour is what you asked for either way.
+
+aff8005
+
 ---
 
-### `docs/plans/split-in-plan.draft.do-not-implement.md`:199 — unresolved
+### `docs/plans/split-in-plan.draft.do-not-implement.md`:200 — unresolved
 
 ```diff
 @@ -160,11 +173,16 @@ get a step they cannot run. Split the carve along that line:
