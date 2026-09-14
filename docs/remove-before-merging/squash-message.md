@@ -1,41 +1,43 @@
 Proposed squash title/body:
 
 ```
-feat: give the plan-or-not call one home, and route /issue to it (pr #71)
+feat: route the entry ladder on change-or-not, carve in /plan (pr #71)
 ```
 
 ```
-The judgment an operator hands over when they don't want to pre-decide
-whether work needs a plan — does this task need the operator's gate, a
-plan for the agent's own sake, or neither? — reached the agent only as
-prose routed through a section of /plan. As its own skill it is a
-typeable slash command, it appears in the skills list where an operator
-can find it, and it loads on invocation instead of on every planning
-session. /task <what to do> runs the call it makes: plan and hand off,
-plan and then implement, or implement with no plan at all.
+Two of the loop's entry decisions were made by whichever skill happened
+to be holding the work rather than by the one in a position to make it.
+A new session's opening prompt routed to /plan by default — questions
+included, which no agent has ever written a plan file for — and /issue
+decided whether to split before anything had read the code.
 
-/issue makes that same call now instead of planning unconditionally. It
-had handed every issue to /plan on the reasoning that filing an issue
-answers the call by itself, but filing one is evidence the work is
-worth tracking, which comes apart from worth deliberating: a two-row
-docs correction gets filed so a review doesn't lose it, not because
-anyone needs a page about it first. A split issue is the exception and
-still plans, splitting being the case where the work is already known
-to be beyond one PR.
+The ladder now reads one thing: does the prompt ask for a change to
+this codebase? It does, and the work goes to /task; it does not, and
+the answer is the deliverable. In doubt the second row wins, being
+wrong there costing a turn where being wrong the other way commits a
+diff nobody asked for. /task is reordered around the same observation:
+its gate question judges the plan, so it is asked once the plan exists.
+The skill is a question, a draft, and a question, and every planning
+route through it produces a draft — which leaves a session that died
+mid-turn in a state a later /handle reads as awaiting a go-ahead rather
+than as held by a session that is gone.
 
-No parameter is threaded through the new route to carry the issue
-number. The only thing downstream that wants it is /pr's Closes #N,
-which already infers one when no caller passed it; what that inference
-did not read is the branch, and /issue is the one caller that
-guarantees the number leads the slug. /pr reads the branch before the
-commits, which also settles the split case: the slug carries the chosen
-child, never the parent umbrella.
+/plan owns the carve, whole: the bar, the plan-file shape that names
+the parent and children it proposes, the read-only dedupe, and the
+filing procedure itself. It creates nothing — the plan file is already
+the gate, so /go files the list on the go-ahead that flips it, and a
+plan turn that ends unapproved leaves the tracker as it found it. This
+is what makes untracked work splittable at all: the criteria lived
+inside a skill reached by already having an issue number.
 
-Skills trigger on description matching before their body loads, so a
-skill named after a word the loop already uses as a go-ahead fires on
-prose that meant the token. CLAUDE.md now rules those names out and
-points at naming a skill after its argument, which is what /issue,
-/task and /pr do.
+An issue number is therefore a detail of the prompt, not a destination.
+/task, /plan and /go all take <what to do> #<N> and export the thread
+first, so the skill that reads one is reduced to transport and takes
+the name that says which half it is, /take-issue; /issue stays as a
+redirect. The number also leaves the branch slug, which had forced it
+to exist before /plan renamed the branch — /pr writes Closes #<tbd>
+where a carve has yet to file its children, and /propose-issue fills it
+in when it creates them.
 
 Co-authored-by: Claude <noreply@anthropic.com>
 ```
