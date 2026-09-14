@@ -7,7 +7,7 @@
 - **Draft:** yes
 - **Merged:** _not merged_
 - **Created:** 2026-09-12T14:26:37Z
-- **Updated:** 2026-09-14T13:30:33Z
+- **Updated:** 2026-09-14T13:36:58Z
 - **Closed:** _not closed_
 - **Labels:** _none_
 
@@ -532,6 +532,22 @@ Plan updated at 51dce2c: both open questions closed, the outcome-3 section cut
 down to the clause, the dedupe stop added, and the slug question moved to a
 "Still open" section as the only thing left to decide.
 
+**@vzakharov (human)** — 2026-09-14T13:36:57Z
+
+> /pr Step 4 reads the
+branch precisely because https://github.com/vzakharov/muthur/pull/71 removed the threaded <issue> parameter
+
+I can't imagine a situation where the pr skill can *not* find out which issue we're talking about; /pr is called in the same session that writes the plan; this session knows what issue it's working on. In a situation where the issue itself would be created during implementation, the PR can start with a Closes #<tbd> to be filled out at whatever point the tbd becomes known.
+
+Am I missing something, or is this actually a no-problem we keep revisiting just because we once started?
+
+> /task add rate limiting to the API. Q1: no
+— the shape is standard, no fork, nothing irreversible.
+
+well judging by "you can't decline it by not merging — someone has to go
+close them" it already makes it *kind of* irreversible (or at least not easily reversible).
+Then again, I don't mind having a "if you took `plan and go` and during planning discovered splitting is needed, revert to `plan and wait for approval`"
+
 ---
 
 ### `.claude/skills/task/SKILL.md`:29 — resolved
@@ -560,7 +576,7 @@ where someone deciding whether this change is right will look for it.
 
 ---
 
-### `docs/plans/split-in-plan.draft.do-not-implement.md`:49 — unresolved
+### `docs/plans/split-in-plan.draft.do-not-implement.md`:56 — unresolved
 
 ```diff
 @@ -0,0 +1,185 @@
@@ -618,6 +634,17 @@ where someone deciding whether this change is right will look for it.
 **@vzakharov (human)** — 2026-09-14T13:27:53Z
 
 let's add an "if in doubt, err on the side of 'no-code-change'". When it's not 100% clear that something does or does not require a change, it's best to decide it isn't, provide the answer, possible generating some tmp files in the process, to then move them to tracked locations should the operator ask for it, rather than start mutating the repo and committing stuff around.
+
+**@vzakharov (agent)** — 2026-09-14T13:33:31Z
+
+In, as a fourth condition on the wording. The argument I wrote it on is that the
+two wrong reads aren't symmetric: row 3 read as row 1 mutates and commits against
+a request that wanted an answer, and undoing it is a revert you have to ask for;
+row 1 read as row 3 costs one turn — the answer lands, you say "now do it", and
+whatever the answer produced along the way is sitting in `tmp/` to be moved
+somewhere tracked if it turns out to be wanted.
+
+1de0fa3
 
 ---
 
@@ -699,6 +726,36 @@ let's add an "if in doubt, err on the side of 'no-code-change'". When it's not 1
 **@vzakharov (human)** — 2026-09-14T13:29:11Z
 
 nope -- arriving from bare prose, `/plan` *plans* to create it. If this is about that "go cannot go without an issue number" argument we discussed above,  you must've already edited this one.
+
+**@vzakharov (agent)** — 2026-09-14T13:33:44Z
+
+Not already edited — I'd gone the other way. Having lost the ordering argument I
+kept filing at plan time anyway, on the grounds that the approval and the tracker
+state land in the same turn. You're right that that's not a reason: the plan file
+**is** the approval, so filing can wait for the thing that reads it. Changed.
+
+`/plan` now carves, runs the dedupe read-only, and names the parent and children
+it proposes in the plan; `/go` files them on the go-ahead. An unapproved `/plan`
+turn leaves the tracker exactly as it found it, and the carve needs no
+propose-and-stop of its own — the plan file already is one.
+
+Two things fall out, one good and one you'll want to decide:
+
+**It puts outcome 3's gap back.** With the plan file as the gate, every route is
+covered except the one that skips the draft state: outcome 3 writes straight to
+`*.in-progress.md`. So the recovery is stated again after all — a carve found
+while running outcome 3 goes back to the gate as a draft. Cheap, and now it's the
+only case rather than a clause about go-ahead scope.
+
+**It makes the slug question a precondition, not a neighbour.** A number the slug
+has to carry is a number that has to exist before `/plan` renames the branch —
+which is filing at plan time. Renaming later isn't available: the plan filename
+tracks the slug, and a rename after the PR exists closes the PR. So deferring the
+filing needs the number out of the slug, and `Closes #N` needs somewhere else to
+come from first. Part B doesn't land until that's answered; the plan says so now
+instead of calling it independent.
+
+1de0fa3
 
 ---
 
@@ -788,6 +845,15 @@ nope -- arriving from bare prose, `/plan` *plans* to create it. If this is about
 **@vzakharov (human)** — 2026-09-14T13:29:38Z
 
 skipping as per discussion above
+
+**@vzakharov (agent)** — 2026-09-14T13:33:52Z
+
+Right to skip it — that section was already gone when you wrote this. It's now
+"Nothing is filed until the go-ahead", rewritten again just now for the
+plans-to-create point above, and the forced-ordering argument it used to carry
+survives only as the reason the slug question blocks Part B.
+
+1de0fa3
 
 ---
 

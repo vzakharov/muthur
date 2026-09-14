@@ -101,14 +101,26 @@ This needs no gate of its own — the plan file already **is** the gate, which i
 what makes the carve's approval free rather than a second propose-and-stop layered
 inside the planning turn.
 
-**This requires the issue number to leave the branch slug.** `/pr` Step 4 reads
-the closing issue off the slug today, and `/plan` renames the branch before
-writing the plan file, which is named after it — so a number that has to be in the
-slug has to exist by then, which is filing at plan time. Renaming later is not
-available: the plan filename tracks the slug, and a rename after the PR exists
-closes the PR. So the operator's intent to drop the number from slugs is not an
-optional tidy-up beside this plan, it is a precondition of it, and `Closes #N`
-needs the replacement named under "Still open" before either lands.
+**This requires the issue number to leave the branch slug**, which it does here.
+`/pr` Step 4 reads the closing issue off the slug today, and `/plan` renames the
+branch before writing the plan file, which is named after it — so a number the
+slug must carry is a number that must exist by then, which is filing at plan time.
+Renaming later is not available: the plan filename tracks the slug, and a rename
+after the PR exists closes the PR. So the slug read goes, and `Closes #N` comes
+from two places instead:
+
+- **The issue exists when the PR opens** — `/pr` reads the number off
+  `docs/issue/<n>/` on the branch, committed at `/issue` Step 2 for exactly this
+  reason. Same durability as the slug, and it survives a rename.
+- **The issue does not exist yet** — a child filed during `/go`, or an umbrella
+  created mid-flight. `/pr` opens the PR without a `Closes` line, and whoever
+  files the issue writes it in. The PR body is the durable carrier; nothing has to
+  be known before the branch is named.
+
+Neither path reads the session's own memory, which is what the slug was standing
+in for. `/issue` Step 2 commits the export before any planning precisely so a
+resumed session — after a handoff, a compaction boundary, a parallel session —
+re-reads the branch rather than the turn that created it.
 
 ### Group closure
 
@@ -139,16 +151,20 @@ one-line prompt.
 
 So `/plan` states the recovery: **a carve discovered while running outcome 3 sends
 the task back to the gate** — write the plan as a draft, file nothing, hand off.
-`/task`'s conditional go-ahead was scoped to the task as described, and a carve is
-the finding that the task wasn't that. It is Question 1's "the scope is itself the
-question", answered late.
+
+This is not a new rule, which is why it costs a sentence. Filing issues is
+outward-facing and awkward to undo — nobody declines it by not merging; somebody
+closes five issues by hand — so it is Question 1's "a review round comes too late"
+firing on information that only arrived once the planning started. Question 1 was
+answered with the wrong task in view; the carve is the correction.
 
 ## Files
 
 | File | Change |
 | --- | --- |
 | `CLAUDE.md` | § "Plan mode & questions in web sessions": replace the planning-session default with Part A's three rows; keep the `/from-branch` / `/handle` continued-work bullet as the launch-vs-continued line |
-| `.claude/skills/issue/SKILL.md` | delete Step 3; renumber; Step 4 loses the split exception |
+| `.claude/skills/issue/SKILL.md` | delete Step 3; renumber; Step 4 loses the split exception; § "Branch name" drops the issue-number requirement |
+| `.claude/skills/pr/SKILL.md` | Step 4 reads `docs/issue/<n>/` instead of the slug, and omits `Closes` when the issue does not exist yet; the `<issue>` parameter line follows |
 | `.claude/skills/issue/splitting.md` | **new** — the G3 filing half, moved verbatim from Step 3 |
 | `.claude/skills/plan/SKILL.md` | new section: the carve bar, the plan-file shape including the proposed issues, the read-only dedupe, the outcome-3 recovery, the conditional cite |
 | `.claude/skills/go/SKILL.md` | file the issues the approved plan proposes, before the work |
@@ -158,7 +174,7 @@ question", answered late.
 Verified with `./scripts/check-skill-catalog.sh` (every `@`-reference resolves,
 one catalog row per skill).
 
-**Not itself split-worthy**, by the bar this plan moves: seven files, one seam,
+**Not itself split-worthy**, by the bar this plan moves: eight files, one seam,
 one PR.
 
 ## Settled in review
@@ -178,27 +194,13 @@ On the review of this file:
   before the go-ahead, and the plan file is the gate that makes it so.
 - **In doubt, read a prompt as asking for no change.** Answer it, keep whatever
   the answer produced in `tmp/`, and move it somewhere tracked only if asked.
+- **The issue number leaves the branch slug**, and `/pr` Step 4 stops reading it
+  there. It was never the only durable carrier — `docs/issue/<n>/` has been on the
+  branch since `/issue` Step 2 — and a `Closes` line the PR doesn't have yet can
+  be written by whoever files the issue. This rides this PR, the three sites being
+  the ones it already edits.
 
-## Still open — and now a precondition
-
-**Where does `Closes #N` come from once the issue number leaves the branch slug?**
-The operator means to remove it, and deferring the filing to `/go` requires it
-removed: a number the slug must carry is a number that must exist before `/plan`
-renames the branch. It is the mechanism this branch's own change installed — `/pr`
-Step 4 reads the number off the slug precisely because no parameter threads it any
-more, and that read is what keeps a split closing the chosen child rather than a
-parent mentioned in a commit body. So it needs a replacement or an accepted loss:
-
-- **(a) `/pr` reads `docs/issue/<n>/` off the branch** — already committed at
-  `/issue` Step 2, survives a rename, and covers the split if the carve exports
-  the chosen child beside the parent. Keeps the no-threading win.
-- (b) Re-thread the `<issue>` parameter — undoes this branch's third change.
-- (c) Drop `Closes #N` and close issues by hand.
-
-Three sites state the rule: `/issue` § "Branch name", `/pr`'s `<issue>` parameter
-line, `/pr` Step 4. Small enough to ride this PR, and it edits this PR's own diff,
-so it waits for the operator rather than being folded in — but **Part B does not
-land without it**, so it is the one answer this plan is blocked on.
+Nothing is left open. The plan is waiting on a go-ahead, not on an answer.
 
 ## DRY notes
 
