@@ -64,6 +64,10 @@ The plan file's name encodes its lifecycle state (see `@.claude/skills/plan/SKIL
 - `*.paused.md` — released partway through by an earlier session → yours to continue. `git mv` it to `*.in-progress.md` as your first action (it is claimed now), then read the record of what is done and what is left and continue from there, rather than re-running finished work.
 - `*.completed.md` — implementation already finished → don't silently re-run; report and ask.
 
+**A plan that proposes issues files them here, right after the flip.** `@.claude/skills/plan/SKILL.md` § "Carving a task into issues" has the plan name a parent and children and create none of them; the go-ahead that flipped the file is what approves that list. Run `@.claude/skills/propose-issue/SKILL.md` Step 3 once per slice — parent first, then each child — link the children natively, and fill in any `Closes #<tbd>` the branch carries. File before implementing: the first slice's PR closes a child that has to exist, and a session that dies mid-implementation should leave the carve on the tracker rather than only in a plan file `/finalize` sweeps.
+
+**A `#<N>` in the argument means the thread is read first.** On the planless entry below, load and follow `@.claude/skills/take-issue/SKILL.md` with the whole argument before starting — it exports the thread and its attachments, commits them, and hands back the number. CLAUDE.md § "Plan mode & questions in web sessions" is the home of that rule; `/task` and `/plan` carry the same pointer.
+
 ## Step 2 — Implement
 
 Work through the plan on the current branch. Follow the plan as approved; if reality forces a material deviation, note it to the operator rather than silently reshaping scope.
