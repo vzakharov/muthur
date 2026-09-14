@@ -98,9 +98,10 @@ go away:
   agent, the second skips it. Given no number there is nothing to take, and the prose
   is an unfiled unit of work: that reading is `/propose-issue`, which the stub names
   rather than runs, filing being the one of the four that writes to the tracker.
-  `/plan` is the default because the deprecated name says nothing about which reading
-  was meant, and a plan is the one whose wrong guess costs a round trip rather than
-  an unreviewed diff. It is the `/implement` pattern with a fork in it, kept for the
+  `/plan` is the default because it is where `/issue` sent work for as long as the
+  name meant anything, and because the deprecated name says nothing about which
+  reading was meant — so the guess should be the one that costs a round trip rather
+  than an unreviewed diff. It is the `/implement` pattern with a fork in it, kept for the
   muscle memory and for the handoff blocks already written.
 - **`/task` is untouched.** Work that needs a carve already satisfies Question 1
   ("the scope is itself the question", "costs far more to produce than to
