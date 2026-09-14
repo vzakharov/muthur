@@ -1,5 +1,3 @@
-> ⛔ **DRAFT — DO NOT IMPLEMENT.** This plan is not approved. Do not edit source while this file is named `*.draft.do-not-implement.md` — prep and spikes go in `tmp/`. On an explicit operator go-ahead, `git mv` it to `*.in-progress.md` and delete this banner (quoting the go-ahead in the commit) *before* touching code.
-
 # Give the loop an entry rule for untracked work, and move the split decision into `/plan`
 
 Two changes to where the loop's entry decisions are made. They are separable in
