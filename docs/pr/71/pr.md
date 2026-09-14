@@ -7,7 +7,7 @@
 - **Draft:** yes
 - **Merged:** _not merged_
 - **Created:** 2026-09-12T14:26:37Z
-- **Updated:** 2026-09-14T14:57:13Z
+- **Updated:** 2026-09-14T15:07:00Z
 - **Closed:** _not closed_
 - **Labels:** _none_
 
@@ -923,6 +923,44 @@ writing the file and flipping it
 
 well that's arguably better than having a plan already marked as in progress by the time the session is interrupted
 
+**@vzakharov (agent)** — 2026-09-14T15:07:00Z
+
+Not overengineering — it's the same correction as the last one, one level up, and
+I should have seen it there. The reason outcome 3 couldn't write `*.in-progress.md`
+is that the filename claims an approval state before the thing that would settle it
+exists. Question 1 has the identical defect: it asks what the operator would want to
+rule on, from the one line that asked for it. That's a forecast, and the plan is the
+thing that would settle it.
+
+So yes to the three-step shape. Written into the plan as:
+
+1. **Does this get a plan?** No → `/go` § "Planless entry".
+2. **Write it as a draft**, banner and all.
+3. **Does the operator need to look?** No → `/go` Step 1, which flips it quoting the
+   `/task` prompt. Yes → the handoff block.
+
+All three outcomes survive, but 1 and 3 stop being decided in advance — they're the
+two ends of one route now, forking where there's something to fork on.
+
+One thing that doesn't fold, and it's why step 1 keeps both sets of reasons rather
+than just "would writing it down change what I build". A task can be tiny and still
+need your eyes — "drop the staging database" teaches the agent nothing by being
+written down, and is exactly what you'd want to see first. If step 1 asked only the
+head-straightening question, that one routes to outcome 2 and does it. So step 1 is
+"either reason counts", deliberately over-inclusive: getting it wrong costs a file
+`/finalize` sweeps, and step 3 is the call that costs a round trip. Which is the
+existing "a close Question 2 writes the file" rule, generalised to both.
+
+> that's arguably better than having a plan already marked as in progress by the
+> time the session is interrupted
+
+Agreed, and that's now how the plan states it rather than as a cost. A draft is read
+by the next `/handle` as awaiting a go-ahead — one round trip, asking for something
+it already had. An `*.in-progress.md` says a live session is holding the plan right
+now, which is the state someone has to untangle by hand.
+
+7039c7e — the section is now "`/task` decides the gate after the plan is written".
+
 ---
 
 ### `docs/plans/split-in-plan.draft.do-not-implement.md`:77 — resolved
@@ -1119,6 +1157,47 @@ I just feel like `/issue` in itself has always been ambiguous as to whether it m
 
 Renaming would also make it easier to write the stub for the old one (with a note to the operator that it's deprecated in favor of `/task`, `/plan` or `/go`)
 
+**@vzakharov (agent)** — 2026-09-14T15:07:02Z
+
+You're right and I misread the rule. It says:
+
+> **Don't name a skill with a word the loop already uses as an instruction token.**
+> […] a name that doubles as a go-ahead ("implement", "proceed", "ship it", "let's …")
+> fires on prose that meant the token, not the skill. Where the skill takes an
+> argument, naming it after the argument — `/issue`, `/task`, `/pr` — puts it out of
+> reach of that reading **entirely**.
+
+The prohibition is only over the go-ahead list. "read" isn't on it and can't get onto
+it — there's no prose where "read the issue" means "go ahead". The second sentence
+offers a *stronger* guarantee for skills that happen to take an argument, not the
+convention: almost everything here is verb-led (`/propose-issue`, `/tend-prose`,
+`/check-merge`, `/branch-rename`, `/squash-message`, `/watch-ci`). So `/propose-issue`
+isn't ignoring the condition — it was never under it. I turned an escape hatch into a
+rule and then called the rule's non-application an exception.
+
+So: renamed, in this PR. Your framing is the deciding one — while `/issue` carried the
+judgment, the noun covered it; once Part B makes it transport, the name has to say
+which of the two operations on an issue it is, and `/propose-issue` / `/read-issue`
+says it at a glance. "read" over "fetch": the skill's load-bearing rule is "do not start
+solving the task from the title alone", which is about comprehension, not retrieval.
+
+In scope rather than a separate PR, because Part B is precisely what makes the name
+wrong. Splitting it means a second PR renaming the thing this one just redefined. Cost
+is a directory rename, the stub, and the citation sweep —
+`scripts/check-skill-catalog.sh` fails on any dangling `@`-reference, so nothing gets
+missed silently. Twelve files now instead of ten.
+
+**One question, on the stub.** You wrote "with a note to the operator that it's
+deprecated in favor of `/task`, `/plan` or `/go`", and I read that two ways. What I've
+written into the plan is the narrow one: `/issue` redirects to `/read-issue` and names
+`/propose-issue` as the other reading, on the `/implement` model — because a bare
+`/issue` is exactly the invocation that doesn't say which was meant. The wider reading
+would be that `/issue` as an *entry point* is deprecated too, and the stub should point
+at `/task` / `/plan` / `/go` instead. If that's what you meant it's a different stub and
+a one-line fix; say which.
+
+7039c7e
+
 ---
 
 ### `docs/plans/split-in-plan.draft.do-not-implement.md`:240 — unresolved
@@ -1145,6 +1224,24 @@ Renaming would also make it easier to write the stub for the old one (with a not
 
 polar bear unless we do decide to change it
 
+**@vzakharov (agent)** — 2026-09-14T15:07:03Z
+
+It was one — a bullet whose whole job was to deny a rename that wasn't happening, in a
+section that otherwise records decisions. And we are changing it, so it's now the
+decision rather than its denial:
+
+> **`/issue` becomes `/read-issue`**, the old name kept as a compat stub. The naming
+> rule bars a name that doubles as a go-ahead token, which "read" is not; naming a
+> skill after its argument is the stronger guarantee it offers rather than the
+> convention the repo follows. Part B is what decides it — a skill reduced to transport
+> can no longer carry a name that does not say which of the two operations on an issue
+> it performs.
+
+The other bullet in that hunk — the `/pr` never-narrate rule — is gone entirely, per
+the thread on the export.
+
+7039c7e
+
 ---
 
 ### `docs/pr/71/pr.md`:1 — unresolved
@@ -1152,6 +1249,23 @@ polar bear unless we do decide to change it
 **@vzakharov (human)** — 2026-09-14T14:57:03Z
 
 sorry I just now realized it was an automatic export, not something you've authored -- so my entire objection to its being unwiledy in the previous review was nonsensical, and pls revert any (ir)relevant changes you did following said objection.
+
+**@vzakharov (agent)** — 2026-09-14T15:07:04Z
+
+Reverted. The plan had grown two sites off that objection and both are gone in 7039c7e:
+the `/pr` files-table row loses "the Summary states what the branch delivers and never
+how it came to deliver it", and the "Settled in review" bullet that stated it as a rule
+is deleted.
+
+No harm done either way — the file reads as a review to a reader, so mistaking it for
+authored prose is the export doing its job.
+
+**One thing I didn't revert, so you can tell me to.** The PR body itself is still the
+rewritten 55-line version. The text it replaced narrated its own drafting — what
+`/issue` "used to" do, the earlier `/lets` name, what the `<issue>` parameter "did not
+read" — and putting that back seemed like the one part of the reversion that costs
+something rather than restoring a state you wanted. The general rule about `/pr` is out;
+this body is just shorter. Say the word and I'll restore the previous text.
 
 ---
 
