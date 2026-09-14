@@ -5,7 +5,7 @@
 Two changes to where the loop's entry decisions are made. They are separable in
 principle and cohesive in practice: both are about a call currently made by the
 skill that happens to be holding the work rather than by the skill that is in a
-position to make it, and they touch the same five files.
+position to make it, and they touch the same files.
 
 **Builds on this branch's own change**, which makes `/issue` hand every issue to
 `/task`. The plan is written against the tree as `issue-plan-call.completed.md`
@@ -28,7 +28,7 @@ change to this codebase**:
 | asks for a change, carries an issue number — "add an admin page #55" | `/issue` |
 | asks for no change — "what do we need to add an admin page?" | nothing: answer it |
 
-Three things the wording has to get right:
+Four things the wording has to get right:
 
 - **The test is the expected deliverable, not the grammar.** "Analyse the latest
   market trends" is an imperative and still lands in row 3, because nothing in
@@ -43,6 +43,13 @@ Three things the wording has to get right:
   go-ahead list, so "let's add an admin page" is a directive at launch and an
   approval mid-session. The rule keys on launch-vs-continued, which the ladder's
   last bullet already separates.
+- **In doubt, read it as row 3.** The rows are not symmetric in what a wrong read
+  costs: row 3 read as row 1 mutates and commits against a request that wanted an
+  answer, and undoing it is a revert the operator has to ask for. Row 1 read as
+  row 3 costs one turn — the answer lands, the operator says "now do it", and
+  whatever the answer produced along the way is sitting in `tmp/`, to be moved to
+  a tracked location if it turns out to be wanted. So the tie goes to answering,
+  and work done while answering stays in `tmp/` until asked for.
 
 **What this costs, stated plainly in the ladder itself:** today the operator opts
 into the agent's plan-or-not call by typing `/task`; under this rule the agent
@@ -62,45 +69,46 @@ go away:
 - **`/task` is untouched.** Work that needs a carve already satisfies Question 1
   ("the scope is itself the question", "costs far more to produce than to
   describe"), so it routes to `/plan` without a special case.
-- **`/plan` gains the carve.** When the task passes the bar, the plan specs the
-  first slice in full and describes the remainder coarsely, and the slices are
-  filed as issues.
+- **`/plan` gains the carve, and creates nothing.** When the task passes the bar,
+  the plan specs the first slice in full, describes the remainder coarsely, and
+  **names the issues it proposes to file** — parent and children — as part of the
+  plan the operator is reviewing. The plan file is the proposal; the go-ahead is
+  the approval; `/go` does the filing.
 - **The parent.** Arriving from `/issue`, it exists already. Arriving from bare
-  prose, `/plan` creates it through `/propose-issue` — the one issue in a carve
-  worth deduping, since the umbrella is the one somebody else may already have
-  filed. **A dedupe hit stops the turn and reports it** rather than silently
+  prose, the plan proposes one and `/go` creates it through `/propose-issue` — the
+  one issue in a carve worth deduping, since the umbrella is what somebody else
+  may already have filed. **A dedupe hit stops and reports** rather than silently
   adopting the found issue: somebody else being on this work is exactly what
-  changes the operator's judgment, and it is invisible from the dedupe result.
-  Children are created directly. The parent stays open as a grouping artifact and
-  is never what the PR closes; the first slice is a child, never the parent — the
-  rule `/issue` states today, carried over unchanged.
+  changes the operator's judgment, and it is invisible from the dedupe result. The
+  dedupe query itself is read-only, so `/plan` runs it while carving and names the
+  match in the plan — the stop is then something the operator sees before
+  approving, not after. Children are created directly. The parent stays open as a
+  grouping artifact and is never what the PR closes; the first slice is a child,
+  never the parent — the rule `/issue` states today, carried over unchanged.
 
 What this buys beyond tidiness: **untracked work becomes splittable at all.**
 Today the carve lives only inside a skill you reach by already having an issue
 number, so "add an admin page" typed bare has no path to one.
 
-### When the issues are filed
+### Nothing is filed until the go-ahead
 
-Within a `/plan` turn the order is:
+`/plan` carves, dedupes read-only, and writes the proposed parent and children
+into the plan file. `/go` files them on the go-ahead that flips the plan, in the
+same commit's neighbourhood as the flip. A `/plan` turn that ends unapproved
+leaves the tracker exactly as it found it.
 
-1. carve decision, proposed in prose, stopping for approval — creating nothing;
-2. file the parent (when there isn't one) and every child;
-3. rename the branch to lead with the first child's number;
-4. write the plan file;
-5. publish via `/pr`.
+This needs no gate of its own — the plan file already **is** the gate, which is
+what makes the carve's approval free rather than a second propose-and-stop layered
+inside the planning turn.
 
-Steps 2–3 are in that order because `/pr` Step 4 reads the closing issue off the
-**branch slug**, and `/plan` Part 1 renames the branch before writing the plan
-file, which is named after the slug. **That read is itself under review** — the
-operator means to drop the issue number from branch slugs, and if it goes, `/pr`
-needs another place to read `Closes #N` from (`docs/issue/<n>/` on the branch is
-the cheap candidate; see "Settled in review"). Nothing in this plan changes with
-it: filing stays at step 2 on its own merit, which is that the carve's approval
-and the tracker state land in the same turn the operator reviews the plan.
-
-The gate protecting the tracker is `/issue` Step 3's existing one — propose in
-prose, create nothing until the operator agrees — and it moves into `/plan`
-unchanged, so no issue is filed ahead of the operator either way.
+**This requires the issue number to leave the branch slug.** `/pr` Step 4 reads
+the closing issue off the slug today, and `/plan` renames the branch before
+writing the plan file, which is named after it — so a number that has to be in the
+slug has to exist by then, which is filing at plan time. Renaming later is not
+available: the plan filename tracks the slug, and a rename after the PR exists
+closes the PR. So the operator's intent to drop the number from slugs is not an
+optional tidy-up beside this plan, it is a precondition of it, and `Closes #N`
+needs the replacement named under "Still open" before either lands.
 
 ### Group closure
 
@@ -121,14 +129,19 @@ what they do with a list they can't file. Precedent for the conditional edge is
 `/finalize`, whose **Requires** column already reads "**conditionally** `/issue`
 (G3)".
 
-### The carve is not covered by a conditional go-ahead
+### The one case with no gate: outcome 3
 
-`/task` outcome 3 — plan, then go — writes the plan straight to `*.in-progress.md`
-under the conditional go-ahead and implements in the same session, so a carve
-discovered inside it would file issues with no gate in the turn. The carve's own
-propose-and-stop covers this already; the one clause `/plan` adds is that
-`/task`'s conditional go-ahead does **not** extend to it. The go-ahead was scoped
-to the task as described, and a carve is the finding that the task wasn't that.
+Making the plan file the gate covers every route into `/plan` except one.
+`/task` outcome 3 — plan, then go — writes straight to `*.in-progress.md` under
+the conditional go-ahead, with no draft state and so no gate, and `/go` follows in
+the same session. A carve discovered there would file a parent and children off a
+one-line prompt.
+
+So `/plan` states the recovery: **a carve discovered while running outcome 3 sends
+the task back to the gate** — write the plan as a draft, file nothing, hand off.
+`/task`'s conditional go-ahead was scoped to the task as described, and a carve is
+the finding that the task wasn't that. It is Question 1's "the scope is itself the
+question", answered late.
 
 ## Files
 
@@ -137,15 +150,16 @@ to the task as described, and a carve is the finding that the task wasn't that.
 | `CLAUDE.md` | § "Plan mode & questions in web sessions": replace the planning-session default with Part A's three rows; keep the `/from-branch` / `/handle` continued-work bullet as the launch-vs-continued line |
 | `.claude/skills/issue/SKILL.md` | delete Step 3; renumber; Step 4 loses the split exception |
 | `.claude/skills/issue/splitting.md` | **new** — the G3 filing half, moved verbatim from Step 3 |
-| `.claude/skills/plan/SKILL.md` | new section: the carve bar, the plan-file shape, the propose-and-stop gate and the ordering, the clause excluding the carve from `/task`'s conditional go-ahead, the conditional cite |
+| `.claude/skills/plan/SKILL.md` | new section: the carve bar, the plan-file shape including the proposed issues, the read-only dedupe, the outcome-3 recovery, the conditional cite |
+| `.claude/skills/go/SKILL.md` | file the issues the approved plan proposes, before the work |
 | `.claude/skills/task/SKILL.md` | one line: `/task` is where a launch-time directive lands |
 | `.claude/skills/update-muthur/catalog.md` | `/issue` and `/plan` rows re-described; `/plan` gains a conditional G3 edge |
 
 Verified with `./scripts/check-skill-catalog.sh` (every `@`-reference resolves,
 one catalog row per skill).
 
-**Not itself split-worthy**, by the bar this plan moves: six files, one seam, one
-PR.
+**Not itself split-worthy**, by the bar this plan moves: seven files, one seam,
+one PR.
 
 ## Settled in review
 
@@ -155,16 +169,25 @@ On the thread at `.claude/skills/task/SKILL.md`:14:
   dedupe hit stops and reports instead of adopting the match.
 - **A G2-only adopter gets the plan naming its slices and nothing more.** Working
   around a tracker they declined is theirs to solve, not this repo's.
-- **Outcome 3 needs a clause, not a procedure** — the carve's own gate already
-  holds; only the scope of `/task`'s conditional go-ahead needed stating.
+- **Outcome 3 is the one route with no gate**, so it keeps a stated recovery: a
+  carve found there goes back to the gate as a draft plan.
 
-## Still open
+On the review of this file:
 
-**Does the issue number stay in the branch slug?** The operator means to remove
-it. It is the mechanism this branch's own change installed: `/pr` Step 4 reads the
-number off the slug precisely because no parameter threads it any more, and that
-read is what keeps a split closing the chosen child rather than a parent mentioned
-in a commit body. Removing it needs a replacement or an accepted loss:
+- **`/plan` proposes the issues; `/go` files them.** Nothing reaches the tracker
+  before the go-ahead, and the plan file is the gate that makes it so.
+- **In doubt, read a prompt as asking for no change.** Answer it, keep whatever
+  the answer produced in `tmp/`, and move it somewhere tracked only if asked.
+
+## Still open — and now a precondition
+
+**Where does `Closes #N` come from once the issue number leaves the branch slug?**
+The operator means to remove it, and deferring the filing to `/go` requires it
+removed: a number the slug must carry is a number that must exist before `/plan`
+renames the branch. It is the mechanism this branch's own change installed — `/pr`
+Step 4 reads the number off the slug precisely because no parameter threads it any
+more, and that read is what keeps a split closing the chosen child rather than a
+parent mentioned in a commit body. So it needs a replacement or an accepted loss:
 
 - **(a) `/pr` reads `docs/issue/<n>/` off the branch** — already committed at
   `/issue` Step 2, survives a rename, and covers the split if the carve exports
@@ -173,9 +196,9 @@ in a commit body. Removing it needs a replacement or an accepted loss:
 - (c) Drop `Closes #N` and close issues by hand.
 
 Three sites state the rule: `/issue` § "Branch name", `/pr`'s `<issue>` parameter
-line, `/pr` Step 4. Small enough to ride this PR, but it edits this PR's own diff,
-so it waits for the operator rather than being folded in. **Nothing else in this
-plan depends on the answer** — filing at plan time survives either way.
+line, `/pr` Step 4. Small enough to ride this PR, and it edits this PR's own diff,
+so it waits for the operator rather than being folded in — but **Part B does not
+land without it**, so it is the one answer this plan is blocked on.
 
 ## DRY notes
 
@@ -188,9 +211,14 @@ plan depends on the answer** — filing at plan time survives either way.
   plan-shape rule, so `issue/splitting.md` does not restate it.
 - **No shared issue-creation helper.** `/propose-issue` already owns
   dedupe-then-create for *one* issue. Extracting a common creator over it and the
-  child loop would force the dedupe round-trip onto every child, which is exactly
-  what question 1(a) rejects — the two call sites want different behavior, so the
+  child loop would force the dedupe round-trip onto every child, which parent-only
+  deduping rejects — the two call sites want different behavior, so the
   duplication is a straight `gh api` loop and stays local to `issue/splitting.md`.
+- **The dedupe query and the creation split across two skills but not two
+  implementations.** `/plan` runs `/propose-issue`'s search half while carving;
+  `/go` runs the whole skill on the go-ahead. A second search costs one call and
+  keeps `/propose-issue` a single entry point, which is cheaper than carving a
+  search-only mode out of it for one caller.
 - **CLAUDE.md stays the single home of routing.** `/task` and `/issue` point at
   the ladder rather than restating its rows; only `/task` gains the one line that
   says a launch-time directive lands there.
@@ -203,5 +231,5 @@ plan depends on the answer** — filing at plan time survives either way.
 - `/handle`'s missing note that a compaction boundary does not discharge the
   invocation, and `/pr`'s environment note about `gh pr edit` being unusable
   here. Both are separate one-liners.
-- Any change to what `/go` does with a plan that carries a carve. The first
-  slice is an ordinary plan by the time `/go` sees it.
+- Anything `/go` does with a carve beyond filing the proposed issues first. Past
+  that the first slice is an ordinary plan.

@@ -7,7 +7,7 @@
 - **Draft:** yes
 - **Merged:** _not merged_
 - **Created:** 2026-09-12T14:26:37Z
-- **Updated:** 2026-09-14T13:22:24Z
+- **Updated:** 2026-09-14T13:30:33Z
 - **Closed:** _not closed_
 - **Labels:** _none_
 
@@ -470,6 +470,68 @@ you predicted.
 
 so it's fine, is that what you're saying? I'd add that, in case a dedupe hits, the agent should stop and report because maybe that'll change the operator's judgment. (E.g. someone else is onto this task.)
 
+**@vzakharov (agent)** — 2026-09-14T13:27:50Z
+
+Three of four land; the first one has a hook in it worth seeing before you pull.
+
+**1 — Dropping the number from branch slugs.** You're right that it dissolves the
+ordering constraint: without the slug read there is nothing forcing the issues to
+exist before the rename, so filing becomes a choice rather than a forcing. The
+hook is that the slug read is *this PR's third bullet*. `/pr` Step 4 reads the
+branch precisely because #71 removed the threaded `<issue>` parameter, and the
+branch was the one place left that knew which issue the work closes — including
+the split case, where the slug carries the chosen child and a commit body might
+cite the parent. Pull the number and `Closes #N` falls through to "any issue the
+PR or a commit references", which is the guess that bullet exists to stop.
+
+So it's not a free deletion — it needs a replacement or an accepted loss. Cheapest
+replacement, and it keeps the no-parameter-threading win: **`/pr` reads the number
+off `docs/issue/<n>/` on the branch.** It's already committed at `/issue` Step 2,
+it survives a rename, and the split case works if the carve exports the chosen
+child alongside the parent — which it may as well, the child being what the
+session actually reads. The alternatives are re-threading the parameter (undoes
+this PR) or dropping `Closes` and closing by hand.
+
+Three sites state the rule: `/issue` § "Branch name", `/pr`'s `<issue>` parameter
+line, `/pr` Step 4. Small enough to ride this PR rather than be its own — but it
+edits this PR's own diff, so I'd rather you said which way than have me fold it in
+on a read of one sentence. Say the word and it goes in; say nothing and the plan
+keeps the ordering as written, which stays correct either way (filing before the
+rename is still *allowed*, just no longer forced).
+
+**2 — Group closure.** Taken, and it closes the plan's open question 2. `/plan`
+states the carve and names the slices; the filing half sits in
+`.claude/skills/issue/splitting.md` and is cited conditionally; a G2-only adopter
+gets the plan naming its slices and no procedure telling them what to do about it.
+No degradation story written — you're right that it isn't muthur's to solve.
+
+**3 — Outcome 3, with the example.** `/task add rate limiting to the API`. Q1: no
+— the shape is standard, no fork, nothing irreversible. Q2: yes — several parts,
+order matters. That's outcome 3: plan straight to `*.in-progress.md` and implement
+in the same session, no gate anywhere. Now the carve lives in `/plan`, so while
+writing that plan the agent finds it isn't one PR — middleware, a shared counter
+store, per-tenant config, an admin surface. Under today's wording it files a
+parent and four children and starts on the first. Nine words in, five issues out,
+and unlike an oversized PR you can't decline it by not merging — someone has to go
+close them.
+
+But your probability estimate is right and it shrinks the fix to nothing: the
+carve already stops for approval (finding 1's propose-and-stop, riding over from
+`/issue` Step 3), and that gate holds inside outcome 3 as well as anywhere else.
+The only thing needed is one clause saying `/task`'s conditional go-ahead does
+*not* cover it — the go-ahead was scoped to the task as described, and a carve is
+the discovery that the task wasn't that. Not a recovery procedure. Plan amended
+down to that.
+
+**4 — Dedupe hit.** Agreed, and better than "it converges": stop and report rather
+than adopt the found issue silently. Somebody else being on it is exactly the
+thing that changes your judgment, and it's invisible from the dedupe result alone.
+In the plan now.
+
+Plan updated at 51dce2c: both open questions closed, the outcome-3 section cut
+down to the clause, the dedupe stop added, and the slug question moved to a
+"Still open" section as the only thing left to decide.
+
 ---
 
 ### `.claude/skills/task/SKILL.md`:29 — resolved
@@ -498,9 +560,241 @@ where someone deciding whether this change is right will look for it.
 
 ---
 
+### `docs/plans/split-in-plan.draft.do-not-implement.md`:49 — unresolved
+
+```diff
+@@ -0,0 +1,185 @@
++> ⛔ **DRAFT — DO NOT IMPLEMENT.** This plan is not approved. Do not edit source while this file is named `*.draft.do-not-implement.md` — prep and spikes go in `tmp/`. On an explicit operator go-ahead, `git mv` it to `*.in-progress.md` and delete this banner (quoting the go-ahead in the commit) *before* touching code.
++
++# Give the loop an entry rule for untracked work, and move the split decision into `/plan`
++
++Two changes to where the loop's entry decisions are made. They are separable in
++principle and cohesive in practice: both are about a call currently made by the
++skill that happens to be holding the work rather than by the skill that is in a
++position to make it, and they touch the same five files.
++
++**Builds on this branch's own change**, which makes `/issue` hand every issue to
++`/task`. The plan is written against the tree as `issue-plan-call.completed.md`
++leaves it, and implementing it grows this PR rather than opening another.
++
++## Part A — an entry rule for prose that names no skill
++
++CLAUDE.md § "Plan mode & questions in web sessions" currently says to treat a new
++session as a planning session, with exceptions for "no plan", `/from-branch`,
++`/handle`, and an issue title ending in `#N`. Every other opening prompt formally
++routes to `/plan` — including a question, which no agent has ever written a plan
++file for. The ladder is already being overridden by unstated judgment.
++
++Replace the default with a three-way read on **whether the request asks for a
++change to this codebase**:
++
++| Opening prompt | Routes to |
++| --- | --- |
++| asks for a change, untracked — "add an admin page" | `/task` |
++| asks for a change, carries an issue number — "add an admin page #55" | `/issue` |
++| asks for no change — "what do we need to add an admin page?" | nothing: answer it |
++
++Three things the wording has to get right:
++
++- **The test is the expected deliverable, not the grammar.** "Analyse the latest
++  market trends" is an imperative and still lands in row 3, because nothing in
++  this repo changes as a result. (In a repo whose product *is* documents or
++  research, the same sentence lands in row 1 — the test reads the repo, not the
++  sentence.)
++- **Row 3 is a stated bucket, not a gap.** Left unstated, the old default
++  swallows it and questions route to `/plan` again. It says: answer the question;
++  no skill covers this by design. Where the read was wrong, the operator's next
++  message is a directive and lands in row 1 — one turn, not a wasted plan file.
++- **`let's …` is a token collision.** It is on `/plan` § "The approval gate"'s
++  go-ahead list, so "let's add an admin page" is a directive at launch and an
++  approval mid-session. The rule keys on launch-vs-continued, which the ladder's
++  last bullet already separates.
++
++**What this costs, stated plainly in the ladder itself:** today the operator opts
++into the agent's plan-or-not call by typing `/task`; under this rule the agent
++makes that call on every new session that asks for a change. The gate does not
+```
+
+**@vzakharov (human)** — 2026-09-14T13:27:53Z
+
+let's add an "if in doubt, err on the side of 'no-code-change'". When it's not 100% clear that something does or does not require a change, it's best to decide it isn't, provide the answer, possible generating some tmp files in the process, to then move them to tracked locations should the operator ask for it, rather than start mutating the repo and committing stuff around.
+
+---
+
+### `docs/plans/split-in-plan.draft.do-not-implement.md`:69 — unresolved
+
+```diff
+@@ -0,0 +1,185 @@
++> ⛔ **DRAFT — DO NOT IMPLEMENT.** This plan is not approved. Do not edit source while this file is named `*.draft.do-not-implement.md` — prep and spikes go in `tmp/`. On an explicit operator go-ahead, `git mv` it to `*.in-progress.md` and delete this banner (quoting the go-ahead in the commit) *before* touching code.
++
++# Give the loop an entry rule for untracked work, and move the split decision into `/plan`
++
++Two changes to where the loop's entry decisions are made. They are separable in
++principle and cohesive in practice: both are about a call currently made by the
++skill that happens to be holding the work rather than by the skill that is in a
++position to make it, and they touch the same five files.
++
++**Builds on this branch's own change**, which makes `/issue` hand every issue to
++`/task`. The plan is written against the tree as `issue-plan-call.completed.md`
++leaves it, and implementing it grows this PR rather than opening another.
++
++## Part A — an entry rule for prose that names no skill
++
++CLAUDE.md § "Plan mode & questions in web sessions" currently says to treat a new
++session as a planning session, with exceptions for "no plan", `/from-branch`,
++`/handle`, and an issue title ending in `#N`. Every other opening prompt formally
++routes to `/plan` — including a question, which no agent has ever written a plan
++file for. The ladder is already being overridden by unstated judgment.
++
++Replace the default with a three-way read on **whether the request asks for a
++change to this codebase**:
++
++| Opening prompt | Routes to |
++| --- | --- |
++| asks for a change, untracked — "add an admin page" | `/task` |
++| asks for a change, carries an issue number — "add an admin page #55" | `/issue` |
++| asks for no change — "what do we need to add an admin page?" | nothing: answer it |
++
++Three things the wording has to get right:
++
++- **The test is the expected deliverable, not the grammar.** "Analyse the latest
++  market trends" is an imperative and still lands in row 3, because nothing in
++  this repo changes as a result. (In a repo whose product *is* documents or
++  research, the same sentence lands in row 1 — the test reads the repo, not the
++  sentence.)
++- **Row 3 is a stated bucket, not a gap.** Left unstated, the old default
++  swallows it and questions route to `/plan` again. It says: answer the question;
++  no skill covers this by design. Where the read was wrong, the operator's next
++  message is a directive and lands in row 1 — one turn, not a wasted plan file.
++- **`let's …` is a token collision.** It is on `/plan` § "The approval gate"'s
++  go-ahead list, so "let's add an admin page" is a directive at launch and an
++  approval mid-session. The rule keys on launch-vs-continued, which the ladder's
++  last bullet already separates.
++
++**What this costs, stated plainly in the ladder itself:** today the operator opts
++into the agent's plan-or-not call by typing `/task`; under this rule the agent
++makes that call on every new session that asks for a change. The gate does not
++disappear — `/task` Question 1 routes gate-worthy work back to `/plan` — it moves
++from *always* to *when the questions say so*.
++
++## Part B — the split decision moves from `/issue` to `/plan`
++
++`/issue` Step 3 decides the carve before anything has read the code, and `/issue`
++Step 4 then carries the exception that a split "skips the call and plans". Both
++go away:
++
++- **`/issue` becomes transport**, the shape `/pr` already has: export, commit,
++  hand to `/task` with `<issue>` = the number the eventual PR must close. No
++  wording change to how `Closes #N` is planted.
++- **`/task` is untouched.** Work that needs a carve already satisfies Question 1
++  ("the scope is itself the question", "costs far more to produce than to
++  describe"), so it routes to `/plan` without a special case.
++- **`/plan` gains the carve.** When the task passes the bar, the plan specs the
++  first slice in full and describes the remainder coarsely, and the slices are
++  filed as issues.
++- **The parent.** Arriving from `/issue`, it exists already. Arriving from bare
++  prose, `/plan` creates it: it stays open as a grouping artifact and is never
+```
+
+**@vzakharov (human)** — 2026-09-14T13:29:11Z
+
+nope -- arriving from bare prose, `/plan` *plans* to create it. If this is about that "go cannot go without an issue number" argument we discussed above,  you must've already edited this one.
+
+---
+
+### `docs/plans/split-in-plan.draft.do-not-implement.md`:77 — unresolved
+
+```diff
+@@ -0,0 +1,185 @@
++> ⛔ **DRAFT — DO NOT IMPLEMENT.** This plan is not approved. Do not edit source while this file is named `*.draft.do-not-implement.md` — prep and spikes go in `tmp/`. On an explicit operator go-ahead, `git mv` it to `*.in-progress.md` and delete this banner (quoting the go-ahead in the commit) *before* touching code.
++
++# Give the loop an entry rule for untracked work, and move the split decision into `/plan`
++
++Two changes to where the loop's entry decisions are made. They are separable in
++principle and cohesive in practice: both are about a call currently made by the
++skill that happens to be holding the work rather than by the skill that is in a
++position to make it, and they touch the same five files.
++
++**Builds on this branch's own change**, which makes `/issue` hand every issue to
++`/task`. The plan is written against the tree as `issue-plan-call.completed.md`
++leaves it, and implementing it grows this PR rather than opening another.
++
++## Part A — an entry rule for prose that names no skill
++
++CLAUDE.md § "Plan mode & questions in web sessions" currently says to treat a new
++session as a planning session, with exceptions for "no plan", `/from-branch`,
++`/handle`, and an issue title ending in `#N`. Every other opening prompt formally
++routes to `/plan` — including a question, which no agent has ever written a plan
++file for. The ladder is already being overridden by unstated judgment.
++
++Replace the default with a three-way read on **whether the request asks for a
++change to this codebase**:
++
++| Opening prompt | Routes to |
++| --- | --- |
++| asks for a change, untracked — "add an admin page" | `/task` |
++| asks for a change, carries an issue number — "add an admin page #55" | `/issue` |
++| asks for no change — "what do we need to add an admin page?" | nothing: answer it |
++
++Three things the wording has to get right:
++
++- **The test is the expected deliverable, not the grammar.** "Analyse the latest
++  market trends" is an imperative and still lands in row 3, because nothing in
++  this repo changes as a result. (In a repo whose product *is* documents or
++  research, the same sentence lands in row 1 — the test reads the repo, not the
++  sentence.)
++- **Row 3 is a stated bucket, not a gap.** Left unstated, the old default
++  swallows it and questions route to `/plan` again. It says: answer the question;
++  no skill covers this by design. Where the read was wrong, the operator's next
++  message is a directive and lands in row 1 — one turn, not a wasted plan file.
++- **`let's …` is a token collision.** It is on `/plan` § "The approval gate"'s
++  go-ahead list, so "let's add an admin page" is a directive at launch and an
++  approval mid-session. The rule keys on launch-vs-continued, which the ladder's
++  last bullet already separates.
++
++**What this costs, stated plainly in the ladder itself:** today the operator opts
++into the agent's plan-or-not call by typing `/task`; under this rule the agent
++makes that call on every new session that asks for a change. The gate does not
++disappear — `/task` Question 1 routes gate-worthy work back to `/plan` — it moves
++from *always* to *when the questions say so*.
++
++## Part B — the split decision moves from `/issue` to `/plan`
++
++`/issue` Step 3 decides the carve before anything has read the code, and `/issue`
++Step 4 then carries the exception that a split "skips the call and plans". Both
++go away:
++
++- **`/issue` becomes transport**, the shape `/pr` already has: export, commit,
++  hand to `/task` with `<issue>` = the number the eventual PR must close. No
++  wording change to how `Closes #N` is planted.
++- **`/task` is untouched.** Work that needs a carve already satisfies Question 1
++  ("the scope is itself the question", "costs far more to produce than to
++  describe"), so it routes to `/plan` without a special case.
++- **`/plan` gains the carve.** When the task passes the bar, the plan specs the
++  first slice in full and describes the remainder coarsely, and the slices are
++  filed as issues.
++- **The parent.** Arriving from `/issue`, it exists already. Arriving from bare
++  prose, `/plan` creates it: it stays open as a grouping artifact and is never
++  what the PR closes. Either way the first slice is a child, never the parent —
++  the rule `/issue` states today, carried over unchanged.
++
++What this buys beyond tidiness: **untracked work becomes splittable at all.**
++Today the carve lives only inside a skill you reach by already having an issue
++number, so "add an admin page" typed bare has no path to one.
++
++### The ordering constraint that fixes when issues are filed
+```
+
+**@vzakharov (human)** — 2026-09-14T13:29:38Z
+
+skipping as per discussion above
+
+---
+
 ## Timeline (status, references, and other events)
 
 - **2026-09-12T14:50:45Z** @vzakharov reviewed (COMMENTED): https://github.com/vzakharov/muthur/pull/71#pullrequestreview-5186802965.
 - **2026-09-12T15:09:19Z** @vzakharov renamed from «feat: give the plan-or-not call its own skill, /task» to «feat: give the plan-or-not call its own skill, and route /issue to it».
 - **2026-09-12T15:27:12Z** @vzakharov reviewed (COMMENTED): https://github.com/vzakharov/muthur/pull/71#pullrequestreview-5186945235.
 - **2026-09-14T10:05:19Z** @vzakharov cross-referenced this pull request from [#74 feat: route untracked work to /task, and move the split into /plan](https://github.com/vzakharov/muthur/pull/74).
+- **2026-09-14T13:30:33Z** @vzakharov reviewed (COMMENTED): https://github.com/vzakharov/muthur/pull/71#pullrequestreview-5198256935.
