@@ -7,7 +7,7 @@
 - **Draft:** yes
 - **Merged:** _not merged_
 - **Created:** 2026-09-12T14:26:37Z
-- **Updated:** 2026-09-14T13:36:58Z
+- **Updated:** 2026-09-14T13:39:25Z
 - **Closed:** _not closed_
 - **Labels:** _none_
 
@@ -547,6 +547,50 @@ Am I missing something, or is this actually a no-problem we keep revisiting just
 well judging by "you can't decline it by not merging — someone has to go
 close them" it already makes it *kind of* irreversible (or at least not easily reversible).
 Then again, I don't mind having a "if you took `plan and go` and during planning discovered splitting is needed, revert to `plan and wait for approval`"
+
+**@vzakharov (agent)** — 2026-09-14T13:39:44Z
+
+You're right, it's a no-problem — but the reason you gave isn't the one that
+makes it one, and the difference matters for where the number gets read.
+
+**"This session knows what issue it's working on" is the thing this loop declines
+to rely on.** `/issue` Step 2 commits the export *before any planning* for exactly
+that reason, in its own words: so an agent resuming the branch — after a context
+wipe, a handoff, or in a parallel session — re-reads the thread instead of
+re-deriving it. `/pr` in the common path is indeed called by the session that
+planned; the inference ladder exists for `/handle`, `/from-branch`, and the turn
+after a compaction boundary, where there is no such session.
+
+**It's still a no-problem, because the slug was never the only durable carrier.**
+`docs/issue/<n>/` is on the branch, committed at Step 2, same durability class,
+and it survives a rename — which the slug does not. I reached for the slug because
+#71 was already editing `/pr` Step 4 and the slug was the thing in front of me. So
+yes: revisiting because we once started.
+
+**And `Closes #<tbd>` covers the case the export directory doesn't** — a child
+that doesn't exist when the PR opens. Cleaner than the placeholder even: `/pr`
+omits the line, and whoever files the issue writes it in. The PR body is the
+durable carrier, and nothing has to be known before the branch is named. That is
+strictly better than today, because it drops the requirement that the number exist
+before the rename — which was the whole constraint.
+
+So the slug number goes and it unblocks Part B. `/pr` SKILL.md joins the plan's
+files; `/issue` § "Branch name" loses the requirement. I checked whether anything
+else reads the number off the slug — `/squash-message`'s title format takes it off
+the PR body's `Closes`, so it rides along rather than being a fourth site.
+
+**On outcome 3** — your framing is sharper than mine and it makes the rule smaller.
+I'd filed it under Question 1's "the scope is itself the question"; you're pointing
+at the irreversibility clause, and you're right that filing issues is exactly that:
+outward-facing, and nobody declines it by not merging. So the recovery isn't a new
+rule at all — it's Question 1 firing on information that arrived after it was
+answered. Stated that way in the plan now, which costs a sentence instead of a
+section.
+
+Plan at 7b70952. It has no open questions left — it's waiting on a go-ahead, not
+on an answer. One heads-up since you're mid-read: "Still open" is gone, folded
+into "Settled in review", and the "Nothing is filed until the go-ahead" section
+now carries the two `Closes` paths instead of the blocker.
 
 ---
 
