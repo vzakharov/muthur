@@ -1,4 +1,4 @@
-# PR #71: feat: give the plan-or-not call its own skill, and route /issue to it
+# PR #71: feat: the entry ladder routes on change-or-not, and the carve moves into /plan
 
 - **State:** open
 - **URL:** https://github.com/vzakharov/muthur/pull/71
@@ -7,7 +7,7 @@
 - **Draft:** yes
 - **Merged:** _not merged_
 - **Created:** 2026-09-12T14:26:37Z
-- **Updated:** 2026-09-14T21:56:31Z
+- **Updated:** 2026-09-14T23:30:05Z
 - **Closed:** _not closed_
 - **Labels:** _none_
 
@@ -17,54 +17,83 @@
 
 ## Summary
 
-- **The plan-or-not call has its own front door: `/task <what to do>`.** Two
-  questions pick between three outcomes — plan and hand off, plan and then
-  implement, implement with no plan — and the invocation is a conditional
-  go-ahead scoped to that one task. It lives at `.claude/skills/task/SKILL.md`,
-  so it loads when invoked rather than on every planning session.
-- **The name is a noun on purpose.** Skills trigger on description matching
-  before their body loads, so a verb-named entry is readable as an instruction
-  and collides with `/plan`'s approval gate. CLAUDE.md rules those names out and
-  points at naming a skill after its argument — `/issue`, `/task`, `/pr`.
-- **`/issue` makes the same call rather than planning unconditionally.** Filing
-  an issue is evidence the work is worth *tracking*, which comes apart from worth
-  *deliberating*: a two-row docs correction gets filed so a review doesn't lose
-  it. Its Step 4 hands to `/task` like any other work. A split issue is the one
-  exception — it plans directly, splitting being Question 1's first clause
-  already satisfied.
-- **Nothing threads a parameter to carry the issue number.** `/pr` Step 4's
-  `Closes #N` ladder reads the caller's `<issue>`, then the branch slug, then any
-  issue the PR or a commit references. The slug read is what `/issue` guarantees,
-  and it settles the split case: the slug carries the chosen child, never the
-  parent umbrella.
-- **Citations repointed** across CLAUDE.md, `/go`'s planless entry, `/issue`'s
-  frontmatter and chain, and the catalog. The `/go` → `/task` pointer is now one
-  `scripts/check-skill-catalog.sh` verifies.
+Two changes to where the loop's entry decisions get made — both about a call
+made by whichever skill happened to be holding the work, rather than by the skill
+in a position to make it.
 
-**A follow-up plan rides this branch**, at
-`docs/plans/split-in-plan.draft.do-not-implement.md`: a three-way routing rule
-for a launch prompt that names no skill, and the relocation of the split decision
-out of `/issue` into `/plan`. It is a draft awaiting a go-ahead; implementing it
-grows this PR into both changes.
+- **The plan-or-not call has its own front door: `/task <what to do>`.** The
+  invocation is a conditional go-ahead scoped to that one task, and the skill
+  picks between three outcomes: plan and hand off, plan and then implement,
+  implement with no plan. The name is a noun on purpose — skills trigger on
+  description matching before their body loads, so a verb-named entry is readable
+  as an instruction and collides with `/plan`'s approval gate.
+- **The entry ladder reads whether the prompt asks for a change to this
+  codebase.** The old default sent every opening prompt to `/plan`, questions
+  included, so it was already being overridden by unstated judgment. Two rows
+  now: asks for a change → `/task`; asks for no change → answer it. In doubt,
+  read it as the second — being wrong there costs one turn, being wrong the other
+  way commits a diff nobody asked for.
+- **An issue number is a detail of the prompt, not a destination.** `/task`,
+  `/plan` and `/go` all take `<what to do> #<N>` and export the thread first, so
+  `/issue` loses its entry-point role and becomes `/take-issue`: pure transport,
+  three callers, decides nothing. The old name survives as a redirect that runs
+  `/plan` on the argument and names `/task` and `/go` as the same-shape
+  alternatives — or names `/propose-issue`, where there is no number to take.
+- **The carve moves into `/plan`, whole.** `/issue` Step 3 decided the split
+  before anything had read the code. `/plan` now owns the bar, the plan-file
+  shape that names the proposed parent and children, the read-only dedupe through
+  `/propose-issue` Steps 1–2, and the filing procedure itself. It creates
+  nothing: `/go` files the list on the go-ahead that flips the plan, so a plan
+  turn that ends unapproved leaves the tracker as it found it. What this buys
+  beyond tidiness is that **untracked work becomes splittable at all** — "add an
+  admin page" typed bare previously had no path to a carve.
+- **`/task` becomes a question, a draft, and a question.** The gate call cannot
+  be answered before the thing it judges exists, so it moves after the plan file.
+  Every planning route now produces a draft, which is what lets a carve found
+  mid-plan need no recovery rule — and what leaves a dead session in a state a
+  later `/handle` reads as awaiting a go-ahead rather than as claimed.
+- **The issue number leaves the branch slug.** `/pr` Step 4 read it there, which
+  forced the number to exist before `/plan` renamed the branch — filing at plan
+  time, which the carve's new home no longer does. The PR body carries it
+  instead: the caller's `<issue>` or `docs/issue/<n>/` on the branch, and
+  `Closes #<tbd>` where a carve has yet to file its children.
+  `/propose-issue` Step 3 fills the marker in, being the one place an issue is
+  ever created; `/squash-message` never carries it into permanent history.
+- **The catalog carries the group caveat.** `/plan` is G2 and the issue skills
+  are G3, so a `/plan` that states the filing reaches across a group line. It
+  states it anyway — the carve is one procedure, and cutting it at the line would
+  leave the G2 half stopping where its reader needs the next sentence. `/plan`
+  joins `/finalize` in § "Closure is not optional": strip the filing half, keep
+  the carve, and decide for yourself where the slices live.
+
+Eleven files in the second change, plus the citations that repoint with the
+rename. `./scripts/check-skill-catalog.sh` passes all four assertions, which is
+what proves none was missed — it fails on a dangling `@`-reference and on a skill
+without exactly one catalog row, and both `/take-issue` and the `/issue` redirect
+need rows.
 
 ## QA Checklist
 
-- [ ] `invoke` — In a fresh session, type `/task <some small task>`. The turn opens by reporting the call and its reason, offers `plan` as the one-word override, and then runs one of the three outcomes rather than asking what to do.
-- [ ] `issue-small` — Run `/issue 72` (a two-row docs correction). It exports and commits the thread, then reaches the no-plan outcome and implements — no `docs/plans/` file, no handoff block — and the PR it opens ends with `Closes #72`, read off the `claude/72-…` branch slug with nothing passed to `/pr`.
-- [ ] `issue-large` — Run `/issue` on a genuinely large issue. It still writes `docs/plans/<slug>.draft.do-not-implement.md`, publishes the draft PR, and ends at the `/go <branch>` handoff.
-- [ ] `issue-split` — Run `/issue` on a split-worthy issue. After the split is approved it plans without re-asking whether a plan is needed, and the PR closes the chosen child rather than the parent umbrella.
-- [ ] `mid-session` — Partway through an implementation session, say "let's also rename X". It is handled as an ordinary follow-up under `/plan`'s approval gate; the session does not load `/task` or re-decide whether the work needs a plan.
-- [ ] `plan-unchanged` — Open a session with `plan: <task>`. It writes the draft plan file, publishes the draft PR, and ends with the handoff block.
-- [ ] `catalog` — Run `./scripts/check-skill-catalog.sh`. It reports OK: `/task` has exactly one catalog row, and every `@`-reference added here resolves.
+- [ ] `route-change` — Open a fresh session with "add an admin page". It reaches `/task` and reports the plan-or-not call in its first sentence, with `plan` offered as the one-word override.
+- [ ] `route-question` — Open a fresh session with "what do we need to add an admin page?". It answers in chat: no plan file, no branch work, anything it produced along the way left in `tmp/`.
+- [ ] `number-anywhere` — Run each of `/task`, `/plan` and `/go` with a prompt ending in `#<N>`. Each exports the thread to `docs/issue/<n>/` and commits it before doing anything else, and none of them routes differently because of the number.
+- [ ] `task-draft` — Run `/task` on work that needs a plan but not the operator's gate. It writes `docs/plans/<slug>.draft.do-not-implement.md` with the banner, then flips it through `/go` Step 1 in a commit quoting the `/task` prompt — the draft state exists in history rather than being skipped.
+- [ ] `carve-proposes` — Run `/plan` on work obviously beyond one PR. The plan file names a parent and children with dedupe results beside them, and nothing is created on GitHub. Check the tracker afterwards.
+- [ ] `carve-files` — Give that plan a go-ahead. `/go` files parent and children through `/propose-issue`, links each child via `sub_issues`, and replaces the PR body's `Closes #<tbd>` with the child's real number.
+- [ ] `no-closes` — Open a PR for work with no issue behind it. The body ends with no `Closes` line at all, and nothing reads the branch slug for one.
+- [ ] `stub-fork` — Run `/issue fix the sidebar #847`, then `/issue rework the settings area`. The first runs `/plan` and names `/task` and `/go`; the second names `/propose-issue` and stops without filing.
+- [ ] `catalog` — Run `./scripts/check-skill-catalog.sh`. It reports OK.
 
 | Item | Automatable | Covered? | Notes |
 |------|-------------|----------|-------|
-| `invoke` | manual-only | — | Whether an agent reads the routing correctly is a judgment call, not an assertion |
-| `issue-small` | manual-only | — | Exercises the call and the slug inference together |
-| `issue-large` | manual-only | — | The plan lane still reaches the handoff |
-| `issue-split` | manual-only | — | Also checks the umbrella stays open, which no assertion can see |
-| `mid-session` | manual-only | — | The token collision the noun name removes; only a real session exercises it |
-| `plan-unchanged` | manual-only | — | `/plan` is otherwise unaffected |
+| `route-change` | manual-only | — | Whether an agent reads the ladder correctly is a judgment call, not an assertion |
+| `route-question` | manual-only | — | The row the old default swallowed; only a real session shows it |
+| `number-anywhere` | manual-only | — | Three skills, one rule; the export is observable on the branch |
+| `task-draft` | manual-only | — | The reordering's point is a state in history, visible in `git log` |
+| `carve-proposes` | manual-only | — | The assertion that matters is a negative one about GitHub |
+| `carve-files` | manual-only | — | Writes to the tracker; needs a disposable parent to run against |
+| `no-closes` | manual-only | — | Confirms the slug read is gone rather than merely unused |
+| `stub-fork` | manual-only | — | Both branches of the redirect, including the one that must not file |
 | `catalog` | unit | ✅ | `scripts/check-skill-catalog.sh`, which `scripts/vet.sh` runs |
 
 ---
@@ -78,41 +107,43 @@ grows this PR into both changes.
 Proposed squash title/body:
 
 ```
-feat: give the plan-or-not call one home, and route /issue to it (pr #71)
+feat: route the entry ladder on change-or-not, carve in /plan (pr #71)
 ```
 
 ```
-The judgment an operator hands over when they don't want to pre-decide
-whether work needs a plan — does this task need the operator's gate, a
-plan for the agent's own sake, or neither? — reached the agent only as
-prose routed through a section of /plan. As its own skill it is a
-typeable slash command, it appears in the skills list where an operator
-can find it, and it loads on invocation instead of on every planning
-session. /task <what to do> runs the call it makes: plan and hand off,
-plan and then implement, or implement with no plan at all.
+Two of the loop's entry decisions were made by whichever skill happened
+to be holding the work rather than by the one in a position to make it.
+A new session's opening prompt routed to /plan by default — questions
+included, which no agent has ever written a plan file for — and /issue
+decided whether to split before anything had read the code.
 
-/issue makes that same call now instead of planning unconditionally. It
-had handed every issue to /plan on the reasoning that filing an issue
-answers the call by itself, but filing one is evidence the work is
-worth tracking, which comes apart from worth deliberating: a two-row
-docs correction gets filed so a review doesn't lose it, not because
-anyone needs a page about it first. A split issue is the exception and
-still plans, splitting being the case where the work is already known
-to be beyond one PR.
+The ladder now reads one thing: does the prompt ask for a change to
+this codebase? It does, and the work goes to /task; it does not, and
+the answer is the deliverable. In doubt the second row wins, being
+wrong there costing a turn where being wrong the other way commits a
+diff nobody asked for. /task is reordered around the same observation:
+its gate question judges the plan, so it is asked once the plan exists.
+The skill is a question, a draft, and a question, and every planning
+route through it produces a draft — which leaves a session that died
+mid-turn in a state a later /handle reads as awaiting a go-ahead rather
+than as held by a session that is gone.
 
-No parameter is threaded through the new route to carry the issue
-number. The only thing downstream that wants it is /pr's Closes #N,
-which already infers one when no caller passed it; what that inference
-did not read is the branch, and /issue is the one caller that
-guarantees the number leads the slug. /pr reads the branch before the
-commits, which also settles the split case: the slug carries the chosen
-child, never the parent umbrella.
+/plan owns the carve, whole: the bar, the plan-file shape that names
+the parent and children it proposes, the read-only dedupe, and the
+filing procedure itself. It creates nothing — the plan file is already
+the gate, so /go files the list on the go-ahead that flips it, and a
+plan turn that ends unapproved leaves the tracker as it found it. This
+is what makes untracked work splittable at all: the criteria lived
+inside a skill reached by already having an issue number.
 
-Skills trigger on description matching before their body loads, so a
-skill named after a word the loop already uses as a go-ahead fires on
-prose that meant the token. CLAUDE.md now rules those names out and
-points at naming a skill after its argument, which is what /issue,
-/task and /pr do.
+An issue number is therefore a detail of the prompt, not a destination.
+/task, /plan and /go all take <what to do> #<N> and export the thread
+first, so the skill that reads one is reduced to transport and takes
+the name that says which half it is, /take-issue; /issue stays as a
+redirect. The number also leaves the branch slug, which had forced it
+to exist before /plan renamed the branch — /pr writes Closes #<tbd>
+where a carve has yet to file its children, and /propose-issue fills it
+in when it creates them.
 
 Co-authored-by: Claude <noreply@anthropic.com>
 ```
@@ -689,7 +720,7 @@ where someone deciding whether this change is right will look for it.
 
 ---
 
-### `docs/plans/split-in-plan.draft.do-not-implement.md`:63 — resolved
+### `docs/plans/split-in-plan.completed.md`:61 — resolved
 
 ```diff
 @@ -0,0 +1,185 @@
@@ -1096,7 +1127,7 @@ is the export's location rather than its content, and that's a separate one-line
 
 ---
 
-### `docs/plans/split-in-plan.draft.do-not-implement.md`:1 — resolved
+### `docs/plans/split-in-plan.completed.md`:1 — resolved
 
 **@vzakharov (human)** — 2026-09-14T14:40:35Z
 
@@ -1571,7 +1602,7 @@ aff8005
 
 ---
 
-### `docs/plans/split-in-plan.draft.do-not-implement.md`:184 — unresolved
+### `docs/plans/split-in-plan.draft.do-not-implement.md`:184 — resolved
 
 ```diff
 @@ -160,11 +173,16 @@ get a step they cannot run. Split the carve along that line:
@@ -1630,6 +1661,556 @@ Eleven files in the table now, not twelve.
 
 ---
 
+### `.claude/skills/issue/SKILL.md`:19 — unresolved
+
+```diff
+@@ -1,142 +1,31 @@
+ ---
+-description: Take a GitHub issue — export and read the thread, split it when the scope demands, then hand the work over to `/task`, which decides whether it gets a plan. Invoke as `/issue <number|url>`; a prompt that reads like an issue title and ends in `#<N>`, with no slash command, is the same invocation.
++description: Compatibility redirect — the work `/issue` names is spread across four skills, so this one forwards. Invoke as `/issue <what to do> #<N>` and it runs `/plan`; with no number it names `/propose-issue` and stops. Kept because handoff blocks and muscle memory still say `/issue`.
+ ---
+ 
+-End state of this skill: the issue is exported and committed on the branch, any split is filed on GitHub as sub-issues, and the work has been handed to `@.claude/skills/task/SKILL.md` — which in an ordinary web session means either a plan file published as a draft PR with a copyable `/go <branch>` handoff, or the change itself under a PR when the call came back "no plan".
+-
+-The chain is `/issue` → `/task` → `/plan` → draft PR → (review loop via `/handle`) → `/go` → `/finalize`, with the `/plan` leg skipped on issues that don't need one. Everything past the handover is owned by the skill that runs it.
+-
+-## Step 0 — Mode gate: native plan mode is not supported
+-
+-If the session is in **native plan mode** — the launch banner or system prompt says so, `ExitPlanMode` is the offered exit, or an edit is refused for that reason — **stop before running anything below.** Tell the operator:
+-
+-- this flow is plan-**file**-based (`@.claude/skills/plan/SKILL.md`), and native plan mode cannot write the two artifacts it depends on: the export under `docs/issue/<n>/` and the plan under `docs/plans/`. Both must be committed and pushed, because the operator reviews from a different machine than the one you run on;
+-- the plan-mode approval UI is unreliable in web sessions regardless (anthropics/claude-code#72704);
+-- so switch to **accept-edits** or **auto** and send any reply — the run picks up from there; no re-invocation needed.
+-
+-Do not work around it, and do not fall back to a chat-only plan.
+-
+-## Step 1 — Export the issue locally (then read the export)
+-
+-**First command:** run the bundled exporter:
+-
+-```bash
+-python3 scripts/export-github-item.py <issue-number|https://github.com/OWNER/REPO/issues/N> [--repo OWNER/REPO]
+-```
+-
+-The script writes `docs/issue/<n>/issue.md` (body + comments + timeline) and downloads any image / file attachments referenced in the thread to `docs/issue/<n>/attachments/`.
+-
+-Consult the issue only through the export — never `gh issue view`, the GitHub MCP tools, or `WebFetch` in its place. `gh issue view` alone does **not** fetch attachments: GitHub's `private-user-images.githubusercontent.com` URLs require an authenticated request even when the issue is public, which is why the export script exists. `WebFetch` on a github.com issue page often fails outright in isolated environments. For a quick metadata check unrelated to the task at hand — labels, assignees, linked PRs — `gh issue view <n> --json title,body,labels,assignees,state,url` is still fine.
+-
+-**Then read** `docs/issue/<n>/issue.md` end to end, and **open the files under** `docs/issue/<n>/attachments/` when you need pixels (screenshots, mockups, design references).
+-
+-**Auth:** the script reads `$GH_TOKEN` (or `$GITHUB_TOKEN`) first, then falls back to `gh auth token`. One of those must be available. **Deps:** stdlib Python 3.9+ only — no `pip install` needed.
+-
+-**Repo:** if `--repo OWNER/REPO` is omitted and the argument isn't a full issue URL, the script reads `origin` from the current git checkout. Pass `--repo` explicitly when exporting an issue from a different repo than the one you're working in.
+-
+-If the export fails, **stop and report** — do not start solving the task from the title alone. Tell the user what failed and how to proceed. The script exits non-zero on every failure — auth, network, repo not found, or an attachment that wouldn't download — so check the status, not just the last line. A partial attachment failure still writes the Markdown and prints `Downloaded 2/3 attachment(s)` plus each URL it missed: the thread is there, but you'd be reading it with pixels missing.
+-
+-### Video attachments (screen recordings)
+-
+-Exported attachments may have no extension (the filename stem is the asset id), so `file docs/issue/<n>/attachments/<asset-id>` to spot videos (e.g. `ISO Media, Apple QuickTime movie`). You can read **images** but not play **videos**. Extract frames with `ffmpeg`, if it's available, and read the frames as images:
+-
+-```bash
+-mkdir -p tmp/frames   # tmp/ is gitignored — never commit frames
+-ffmpeg -y -i docs/issue/<n>/attachments/<asset-id> -vf fps=2 -q:v 3 tmp/frames/frame_%03d.jpg
+-```
+-
+-- `fps=2` (two frames/sec) suits a short clip; lower to `fps=1` for long videos, raise to `fps=4` to catch a fast transient (a toast, a flashed error). Check length first with `ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 <path>`.
+-- Read first/middle/last frames, then bisect toward the moment of interest. Frame `N` ≈ `N / fps` seconds, so you can map a frame back to a timestamp and correlate it with logs.
+-- Recovers visuals only (no audio) — usually enough for a UI/repro bug.
+-
+-## Step 2 — Commit the export
+-
+-```bash
+-git add docs/issue/<n> && git commit -m "docs: #<n> export the issue"
+-```
+-
+-Commit it **now**, before any planning. The export is the source of truth for what the issue says, so an agent resuming this branch — after a context wipe, a handoff, or in a parallel session — re-reads the thread instead of re-exporting it, and committing it up front means that holds even if the session dies mid-plan. Never commit it on the trunk or a promotion branch.
+-
+-`@.claude/skills/finalize/SKILL.md` deletes the whole `docs/issue/` tree in the last commit before `gh pr ready`, so this add and that delete cancel out in the squash. **You** must not delete it.
+-
+-## Step 3 — Split, if and only if the scope demands it
+-
+-The bar for splitting is high. Do **not** split because:
+-
+-- the issue mentions several files (most do)
+-- you can imagine a "phase 1 / phase 2" framing (most things admit one)
+-- decomposition feels tidy
+-
+-Default to taking the issue as-is. Only split when the size is obviously beyond a single PR and the seams between sub-tasks are real, not invented. **Genuinely large** means multiple unrelated subsystems, weeks of work, or distinct deliverables that ship independently — not "many files" or a tidy phase breakdown.
+-
+-**Only a split stops for an answer.** Deciding _not_ to split is not a gate and never becomes one: say so in a line and move on to Step 4. Do not ask whether the issue looks big enough, do not offer a split you don't think is warranted, and do not treat a large-feeling issue as a reason to check in. If the operator disagrees they say so in the plan discussion one step later, which costs them a sentence — whereas a question here costs a round-trip on every issue.
+-
+-For **truly** large work, only the **next** slice has to be manageable in this run (something you can plan and ship in one branch/PR). Sub-issues you park in the backlog may themselves stay large — they are placeholders and ordering hints, not mini-specs. You do **not** owe a full implementation DAG or per-child plans up front: spell out the **immediate** work in detail, and give a **coarse** view of what follows (smaller than the original umbrella, but not fully decomposed).
+-
+-### If the issue is split-worthy
+-
+-1. **Propose the split in your reply and stop for approval** — titles + one-line scope each, dependency order, and which child you take first. Create nothing yet.
+-2. Once the operator approves — which may take a round or two of back-and-forth — create **one sub-issue per slice, the first one included** (see below), each linked natively to the parent.
+-3. Comment on the parent listing the children and the ordering.
+-4. `python3 scripts/export-github-item.py <first child>` and commit that export too. From here on, "the issue" means that child.
+-
+-The gate is there because filing sub-issues writes to the tracker on the operator's behalf and is awkward to undo — and because the carve is a judgement call they may want to make differently. It runs as prose in the chat rather than through a plan file: a split changes no files, so there is no diff to iterate over, and routing it through `/plan` would end the run at a `/go` handoff before any issue existed. Fold the enumeration-vs-cohesive question below into the same exchange when it's unclear.
+-
+-#### Every slice is a sub-issue, including the first
+-
+-Filing children 2..n and doing slice 1 "under the parent" leaves the PR nothing to close and makes the parent both umbrella and work item. So **every** slice gets its own sub-issue, the first included; the PR for the slice you take carries `Closes #<child>`, **never** the parent's number. The parent stays open as the umbrella and closes only once its children are done — the operator's call, not yours.
+-
+-#### Link each child natively — mandatory
+-
+-`Part of #<parent>` prose is a pointer for humans, not a relation GitHub can track. Keep that line in the child's body, and **also** attach it through the sub-issues API — the GitHub MCP `sub_issue_write` tool (`method: "add"`, `issue_number: <parent>`, `sub_issue_id: <child's database id>`), or plain `gh`:
+-
+-```bash
+-REPO=<owner>/<repo>
+-PARENT=<parent issue number>
+-for n in <child issue numbers…>; do
+-  cid=$(gh api "repos/$REPO/issues/$n" --jq '.id')
+-  gh api "repos/$REPO/issues/$PARENT/sub_issues" -F sub_issue_id=$cid
+-done
+-```
+-
+-Two traps, either of which 422s: `sub_issue_id` is the child's numeric **database `id`**, not its issue number; and it must be sent with **`-F`**, not `-f`, which would send the integer as a string.
+-
+-Without the relation the parent has no machine-readable notion of its children, so "the parent closes when its children are done" is unverifiable and the umbrella silently rots. Skipping the native link breaks the split; it is not an omitted nicety.
+-
+-#### Carry the original reports into each sub-issue
+-
+-When the parent reads as an **enumeration of multiple distinct bugs/requests** — a QA roundup, a bullet list of unrelated defects, several separate "also this is broken" items — copy each original item's **verbatim text and its attachments** into the sub-issue that covers it, so the child carries the reporter's own words and screenshots, not just your paraphrase. (This is distinct from the other reason to split: a **single, cohesive problem statement** that's merely too vast for one PR — there, there's no per-item original text to distribute, so don't force it.)
+-
+-- Put the original text + attachments in the sub-issue **body** when you create it. If you already created the bodies without them, post them as a **comment** on each child instead.
+-- **Reuse the parent's attachment URLs** so images/videos render: GitHub serves them at `https://github.com/user-attachments/assets/<asset-id>`, and the exporter rewrites those to local `docs/issue/<n>/attachments/<asset-id>.<ext>` — so the **filename stem is the asset id**. Reconstruct the original URL from it (or read the parent's raw body via the GitHub API, where the `user-attachments` links are intact) rather than re-uploading. Screenshots use `<img …>`, bare video URLs on their own line auto-embed.
+-- Quote the reporter verbatim (blockquote), attributed, and keep related items grouped under the sub-issue they map to.
+-- **When unsure** whether the parent qualifies as an enumeration (vs. one cohesive problem), **ask the operator** before deciding.
+-
+-#### Size the split so each sub-issue is worth its own PR
+-
+-**One sub-issue ships as one PR** — that mapping is fixed; don't bundle several sub-issues into one PR or carve one sub-issue across several. The lever you control is the **granularity of the split itself**: how finely you carve the parent into sub-issues. Carve it so each resulting sub-issue is **substantial enough to justify a PR** — roughly **≥5 files of real change**. A prospective sub-issue that would touch only **1–3 files is too fine a cut**: don't give it its own sub-issue/PR. Instead **group it with the other small, cohesive items into a single sub-issue** that, taken together, is PR-worthy (within that sub-issue, one commit per underlying item keeps the diff readable).
+-
+-A QA roundup of six small defects is usually **not** six sub-issues — it's one or two sub-issues that each bundle several related fixes, each shipping as one PR.
+-
+-- **Group by cohesion, not just to hit a count.** Bundle items that sit in the same area or move together (e.g. several modal/popup tweaks, a cluster of responsive-CSS fixes). When grouping, still carry each underlying item's verbatim report + attachments into the bundled sub-issue's body (per above), grouped item-by-item.
+-- **Keep blocked/uncertain items as their own sub-issue** even when small. A fix that needs an environment or investigation this run can't cover — a value to pixel-match against a running deployment, a root cause needing in-browser repro, an event with no traceable source in the code, an item someone else marked _in progress_ — gets its **own deferred sub-issue with a note on what it's blocked on**, rather than being grouped into a batch you can finish. Grouping merges trivial _ready_ fixes; it never justifies shipping a guess.
+-
+-### If the issue is not split-worthy
+-
+-The usual case. Say so in a line, and go straight to Step 4 — there is nothing to approve.
+-
+-## Step 4 — Hand over to `/task`
+-
+-Load and follow `@.claude/skills/task/SKILL.md`, passing what the issue asks in **one line** plus the export path (`docs/issue/<n>/issue.md`), and `<issue>` = the number the eventual PR must close: the chosen child when you split, otherwise the issue itself, **never** the parent. The handover happens in this session, so the outcome it picks runs with the thread you just read still in context and the export on the branch. Don't paraphrase the issue back at yourself.
+-
+-That skill's two questions decide whether this issue gets a plan, and nothing about them is restated here.
+-
+-**A split issue is the one case that skips the call and plans.** Step 3 splits only when the work is obviously beyond a single PR, which is Question 1's first clause already satisfied, so a split hands straight to `@.claude/skills/plan/SKILL.md` rather than re-asking a judgement that is made.
+-
+-Where the call lands on a plan, its deliverable is the plan file, published as a draft PR by `/plan` § "Publishing the plan", and the copyable `/go <branch>` block — **and that is where the run ends**, with `/go` implementing in a later session. Where the call lands on implementing, the work happens in this session and ends at the PR `/go` opens over it.
+-
+-**Branch name:** `@.claude/skills/branch-rename/SKILL.md` owns the form, and the rename lands before `/plan` writes the plan file, whose name derives from the slug. This skill contributes one requirement: the slug leads with the issue number, e.g. `claude/847-fix-sidebar-scroll-<hash>`. `@.claude/skills/pr/SKILL.md` Step 4 reads that number back off the branch, so a slug without it costs the PR its `Closes #N`.
+-
+-**Reporting:** whichever skill ran the outcome reports its own results. Add only what this skill alone knows — which issue you took, whether you split it, and links to the children.
+-
+-**Split-only session:** if the operator says the run's deliverable is the sub-issues themselves, with no code to be written in it, stop after Step 3 and report — there is nothing to hand over.
++`/issue` is the name four skills stand behind. Reading an issue is
++`@.claude/skills/take-issue/SKILL.md`, which nothing but a skill calls; deciding
++what happens to one is spread across `/task`, `/plan`, `/go` and
++`/propose-issue`. So this name forwards on the one thing that distinguishes the
++cases rather than unconditionally: whether the argument carries an issue number.
++
++**With a `#<N>` in the argument:** load and follow
++`@.claude/skills/plan/SKILL.md`, passing the argument through unchanged —
++prose, number and all. Then say in one line that `/task` and `/go` take that
++same argument: `/task` hands the plan-or-not call back to the agent, and `/go`
++skips it.
++
++`/plan` is the default of the three because the name says nothing about which
++reading the operator meant, so the guess should be the one that costs a round
++trip rather than an unreviewed diff.
+```
+
+**@vzakharov (human)** — 2026-09-14T23:14:41Z
+
+no, that's because that's what the pre-PR `/issue ... #<N>` used to invoke, so that's what the operator expects
+
+---
+
+### `.claude/skills/plan/SKILL.md`:70 — unresolved
+
+```diff
+@@ -39,21 +39,82 @@ Plan mode is reached two ways, neither of which asks the agent: the operator swi
+ 
+ A `/plan` session's deliverable is the **plan file on a draft PR**, not code. The operator reviews it from another machine, often hours later, and begins implementation in a **different** session via `/go <branch>` (`@.claude/skills/go/SKILL.md` routes that through `/from-branch`, which attaches to the branch and finds the plan under `docs/plans/`) — the handoff works because the plan file rides the branch. So a plan turn ends in a handoff, not a continuation; same-session implementation is the rare exception.
+ 
++**A `#<N>` in the argument means the thread is read first:** load and follow `@.claude/skills/take-issue/SKILL.md` with the whole argument before planning anything, and plan against what it puts on the branch. CLAUDE.md § "Plan mode & questions in web sessions" is that rule's home.
++
+ Do **exactly what you would do in plan mode** — same research, same rigor, same "don't touch code until approved" discipline. The _only_ difference is where the plan goes and how it's approved:
+ 
+-- Instead of presenting the plan via `ExitPlanMode`, **write it to `docs/plans/<branch-slug>.draft.do-not-implement.md`** (one file per session; name it after the current branch's task slug, or the issue number when working an issue — e.g. `docs/plans/1234.draft.do-not-implement.md`). The slug comes off the branch, so a harness auto-branch is renamed **before** the plan file is written, per CLAUDE.md § "Git conventions" — rename afterwards and the file keeps a slug naming nothing. The `.draft.do-not-implement.md` suffix is load-bearing: it is the on-disk marker that this plan has **not** been approved, visible in every `ls`, tool-call path, and `git status` so you can't drift past the gate without noticing. This directory is **not** gitignored on purpose: it rides the branch so the operator can pull and review the plan from another machine. Follow the repo's usual plan-content expectations, including the `## DRY notes` section CLAUDE.md requires.
++- Instead of presenting the plan via `ExitPlanMode`, **write it to `docs/plans/<branch-slug>.draft.do-not-implement.md`** (one file per session, named after the current branch's task slug). The slug comes off the branch, so a harness auto-branch is renamed **before** the plan file is written, per CLAUDE.md § "Git conventions" — rename afterwards and the file keeps a slug naming nothing. The `.draft.do-not-implement.md` suffix is load-bearing: it is the on-disk marker that this plan has **not** been approved, visible in every `ls`, tool-call path, and `git status` so you can't drift past the gate without noticing. This directory is **not** gitignored on purpose: it rides the branch so the operator can pull and review the plan from another machine. Follow the repo's usual plan-content expectations, including the `## DRY notes` section CLAUDE.md requires.
+ - **Make line 1 of the file a banner** that restates the gate:
+   ```
+   > ⛔ **DRAFT — DO NOT IMPLEMENT.** This plan is not approved. Do not edit source while this file is named `*.draft.do-not-implement.md` — prep and spikes go in `tmp/`. On an explicit operator go-ahead, `git mv` it to `*.in-progress.md` and delete this banner (quoting the go-ahead in the commit) *before* touching code.
+   ```
+ - Then **commit it and publish it** (§ "Publishing the plan" below), **end the turn with the handoff block** (§ "Handing off") and stop — do not start implementing.
+ - **The in-session path is the exception, not the default.** If a literal go-ahead token does arrive in _this_ session, "The approval gate" below governs it unchanged — and on approval you hand off to `@.claude/skills/go/SKILL.md`, whose Step 1 performs the flip that unlocks source edits (`git mv` the plan to `docs/plans/<branch-slug>.in-progress.md`, drop the draft banner, quote the go-ahead in the commit) as its first action, before any source edit. That flip is the on-record receipt that approval was given, so don't front-run it here; the mechanics live in `/go` to avoid two copies drifting apart. The gate is exactly as strict on this path as on any other; it just fires rarely.
+ 
++### Carving a task into issues
++
++Some work is too big for one PR, and the plan is where that gets decided — it is the first moment anyone has read the code. A carve produces two things: a plan file that specs one slice and describes the rest, and a list of issues the plan **proposes**. Nothing is filed here. `/go` files them on the go-ahead that flips the plan, so a plan turn that ends unapproved leaves the tracker exactly as it found it. The plan file is already the gate, which is what makes the carve's approval free rather than a second propose-and-stop layered inside the planning turn.
++
++**The bar is high.** Do **not** carve because:
++
++- the task touches several files (most do)
++- you can imagine a "phase 1 / phase 2" framing (most things admit one)
++- decomposition feels tidy
++
++Default to taking the task whole. Carve only when the size is obviously beyond a single PR and the seams are real, not invented. **Genuinely large** means multiple unrelated subsystems, weeks of work, or distinct deliverables that ship independently — not "many files" or a tidy phase breakdown.
++
++Deciding **not** to carve is not a gate and never becomes one: say so in a line and write the plan. Do not ask whether the task looks big enough, and do not offer a carve you don't think is warranted — the operator disagrees in the plan review, which costs them a sentence, whereas a question here costs a round trip on every task.
++
++**Only the next slice has to be manageable.** Spell out the immediate work in full and give a **coarse** view of what follows — smaller than the original umbrella, but not fully decomposed. Parked slices are placeholders and ordering hints, not mini-specs; you owe no implementation DAG and no per-child plans up front.
++
++#### What the plan file carries
+```
+
+**@vzakharov (human)** — 2026-09-14T23:17:24Z
+
+This relates to split issues only, right? If yes, let's put this section into a colocated .md file so that a non-splitting plan doesn't have to add this to the session context
+
+---
+
+### `.claude/skills/plan/SKILL.md`:82 — unresolved
+
+```diff
+@@ -39,21 +39,82 @@ Plan mode is reached two ways, neither of which asks the agent: the operator swi
+ 
+ A `/plan` session's deliverable is the **plan file on a draft PR**, not code. The operator reviews it from another machine, often hours later, and begins implementation in a **different** session via `/go <branch>` (`@.claude/skills/go/SKILL.md` routes that through `/from-branch`, which attaches to the branch and finds the plan under `docs/plans/`) — the handoff works because the plan file rides the branch. So a plan turn ends in a handoff, not a continuation; same-session implementation is the rare exception.
+ 
++**A `#<N>` in the argument means the thread is read first:** load and follow `@.claude/skills/take-issue/SKILL.md` with the whole argument before planning anything, and plan against what it puts on the branch. CLAUDE.md § "Plan mode & questions in web sessions" is that rule's home.
++
+ Do **exactly what you would do in plan mode** — same research, same rigor, same "don't touch code until approved" discipline. The _only_ difference is where the plan goes and how it's approved:
+ 
+-- Instead of presenting the plan via `ExitPlanMode`, **write it to `docs/plans/<branch-slug>.draft.do-not-implement.md`** (one file per session; name it after the current branch's task slug, or the issue number when working an issue — e.g. `docs/plans/1234.draft.do-not-implement.md`). The slug comes off the branch, so a harness auto-branch is renamed **before** the plan file is written, per CLAUDE.md § "Git conventions" — rename afterwards and the file keeps a slug naming nothing. The `.draft.do-not-implement.md` suffix is load-bearing: it is the on-disk marker that this plan has **not** been approved, visible in every `ls`, tool-call path, and `git status` so you can't drift past the gate without noticing. This directory is **not** gitignored on purpose: it rides the branch so the operator can pull and review the plan from another machine. Follow the repo's usual plan-content expectations, including the `## DRY notes` section CLAUDE.md requires.
++- Instead of presenting the plan via `ExitPlanMode`, **write it to `docs/plans/<branch-slug>.draft.do-not-implement.md`** (one file per session, named after the current branch's task slug). The slug comes off the branch, so a harness auto-branch is renamed **before** the plan file is written, per CLAUDE.md § "Git conventions" — rename afterwards and the file keeps a slug naming nothing. The `.draft.do-not-implement.md` suffix is load-bearing: it is the on-disk marker that this plan has **not** been approved, visible in every `ls`, tool-call path, and `git status` so you can't drift past the gate without noticing. This directory is **not** gitignored on purpose: it rides the branch so the operator can pull and review the plan from another machine. Follow the repo's usual plan-content expectations, including the `## DRY notes` section CLAUDE.md requires.
+ - **Make line 1 of the file a banner** that restates the gate:
+   ```
+   > ⛔ **DRAFT — DO NOT IMPLEMENT.** This plan is not approved. Do not edit source while this file is named `*.draft.do-not-implement.md` — prep and spikes go in `tmp/`. On an explicit operator go-ahead, `git mv` it to `*.in-progress.md` and delete this banner (quoting the go-ahead in the commit) *before* touching code.
+   ```
+ - Then **commit it and publish it** (§ "Publishing the plan" below), **end the turn with the handoff block** (§ "Handing off") and stop — do not start implementing.
+ - **The in-session path is the exception, not the default.** If a literal go-ahead token does arrive in _this_ session, "The approval gate" below governs it unchanged — and on approval you hand off to `@.claude/skills/go/SKILL.md`, whose Step 1 performs the flip that unlocks source edits (`git mv` the plan to `docs/plans/<branch-slug>.in-progress.md`, drop the draft banner, quote the go-ahead in the commit) as its first action, before any source edit. That flip is the on-record receipt that approval was given, so don't front-run it here; the mechanics live in `/go` to avoid two copies drifting apart. The gate is exactly as strict on this path as on any other; it just fires rarely.
+ 
++### Carving a task into issues
++
++Some work is too big for one PR, and the plan is where that gets decided — it is the first moment anyone has read the code. A carve produces two things: a plan file that specs one slice and describes the rest, and a list of issues the plan **proposes**. Nothing is filed here. `/go` files them on the go-ahead that flips the plan, so a plan turn that ends unapproved leaves the tracker exactly as it found it. The plan file is already the gate, which is what makes the carve's approval free rather than a second propose-and-stop layered inside the planning turn.
++
++**The bar is high.** Do **not** carve because:
++
++- the task touches several files (most do)
++- you can imagine a "phase 1 / phase 2" framing (most things admit one)
++- decomposition feels tidy
++
++Default to taking the task whole. Carve only when the size is obviously beyond a single PR and the seams are real, not invented. **Genuinely large** means multiple unrelated subsystems, weeks of work, or distinct deliverables that ship independently — not "many files" or a tidy phase breakdown.
++
++Deciding **not** to carve is not a gate and never becomes one: say so in a line and write the plan. Do not ask whether the task looks big enough, and do not offer a carve you don't think is warranted — the operator disagrees in the plan review, which costs them a sentence, whereas a question here costs a round trip on every task.
++
++**Only the next slice has to be manageable.** Spell out the immediate work in full and give a **coarse** view of what follows — smaller than the original umbrella, but not fully decomposed. Parked slices are placeholders and ordering hints, not mini-specs; you owe no implementation DAG and no per-child plans up front.
++
++#### What the plan file carries
++
++Under a heading of its own, the plan names every issue it proposes — the parent and each child — with a title and a one-line scope each, in dependency order, saying which child this plan specs. That list is the proposal the operator approves by approving the plan.
++
++**Dedupe each proposed issue read-only, and write the matches into the list.** Run `@.claude/skills/propose-issue/SKILL.md` Steps 1–2 — search and triage, which touch nothing — for every slice, and record what they found beside the slice it matched. So a duplicate is something the operator rules on while reviewing the carve, not an interruption after it, and a slice already tracked gets linked as the sub-issue instead of filed twice.
++
++**A match on the parent stops and reports.** Somebody else already tracking the whole umbrella is what changes the operator's judgment about whether to carve at all, which is a different question from whether one child is a duplicate.
++
++**The parent.** Arriving from `/take-issue` it exists already. Arriving from bare prose the plan proposes one and `/go` creates it. It stays open as a grouping artifact and is never what the PR closes — **every slice is a child, the first included.** Filing children 2..n and doing slice 1 "under the parent" leaves the PR nothing to close and makes the parent both umbrella and work item. The parent closes once its children are done, which is the operator's call.
++
++Because the children do not exist yet, the PR for this slice carries **`Closes #<tbd>`** — `@.claude/skills/pr/SKILL.md` Step 4 owns that marker and `/propose-issue` Step 3 fills it in.
++
++#### What `/go` does with the list
+```
+
+**@vzakharov (human)** — 2026-09-14T23:17:36Z
+
+why is this here, not in the go skill?
+
+---
+
+### `.claude/skills/pr/SKILL.md`:84 — unresolved
+
+```diff
+@@ -76,7 +76,12 @@ git diff --stat origin/<base>..HEAD
+ - **Summary** — 2-4 bullets explaining _what_ changed and _why_. Pull from commit bodies, not just subjects.
+ - **QA Checklist** — a `## QA Checklist` markdown checklist of how to verify the change end-to-end. For how to derive it, follow the "Derive the checklist" guidance in `@.claude/skills/qa-checklist/SKILL.md`, over whichever input this mode composes from.
+ 
+-End the body with `Closes #N` (for `feat`/`refactor`/etc.) or `Fixes #N` (for `fix`). `N` is the caller's `<issue>` when one was passed. Absent that, read it off the **branch slug** where the slug leads with an issue number (`claude/847-fix-sidebar-scroll-<hash>` — the form `/issue` § "Branch name" mandates for every branch it opens), and only then fall back to any issue the PR or a commit references. The branch comes first because that number was put there by the skill that knew which issue the work closes, whereas a commit that happens to mention one may be citing it rather than closing it.
++**A `Closes` line appears only where the work is tracked, or is about to be.** Most PRs close no issue and carry no line. Two origins put one there:
++
++- **The caller passed `<issue>`**, or `docs/issue/<n>/` exists on the branch — a `/take-issue` call, where the number was never in doubt. End the body with `Closes #N` (for `feat`/`refactor`/etc.) or `Fixes #N` (for `fix`). The caller's parameter wins; the export directory is what a resumed session reads it off instead, after a handoff or a compaction boundary. Falling back to an issue a commit merely references is the last rung and the weakest: a commit that mentions a number may be citing it rather than closing it.
++- **A carve whose children are not filed yet** — `@.claude/skills/plan/SKILL.md` § "Carving a task into issues" proposes the issues and `/go` files them, so at plan-open time the number does not exist. Write **`Closes #<tbd>`**. The marker means "an issue is coming and its number belongs here", which is a durable state on the branch rather than something lost with the turn; `@.claude/skills/propose-issue/SKILL.md` Step 3 fills it in when it creates the child. It is never a stand-in for not having looked.
++
++Both rungs read the branch rather than the session's own memory, which is what lets a session resumed after a handoff or a compaction boundary get the number right.
+```
+
+**@vzakharov (human)** — 2026-09-14T23:18:24Z
+
+If session memory *is* available, though, it's the first and easiest thing to read
+
+---
+
+### `.claude/skills/take-issue/SKILL.md`:68 — unresolved
+
+```diff
+@@ -0,0 +1,70 @@
++---
++description: Take a GitHub issue onto the branch — export the thread and its attachments, commit them, and hand the number back to whoever called. Invoke as `/take-issue <number|url>`; its callers are `/task`, `/plan` and `/go`, each running it first when the prompt carries a `#<N>`.
++---
++
++End state of this skill: `docs/issue/<n>/` holds the thread and its attachments, that export is committed on the branch, you have read it, and control is back with the caller — which is where every decision about the work is made.
++
++This skill decides nothing. It is the one place an issue gets pulled onto a branch, so its contract to its callers is that the issue has been **taken**: exported, committed, and there for a later session to re-read.
++
++## Argument shape
++
++The argument is an issue number or a full issue URL, optionally with prose around it — `fix the sidebar scroll #847` is the same invocation as `847`. The prose is the operator's own summary of the issue and is worth reading as a hint at what they care about, but **the export outranks it**: where the two disagree, the thread is what the work is against.
++
++## Step 0 — Mode gate: native plan mode is not supported
++
++If the session is in **native plan mode** — the launch banner or system prompt says so, `ExitPlanMode` is the offered exit, or an edit is refused for that reason — **stop before running anything below.** Tell the operator:
++
++- this flow is plan-**file**-based (`@.claude/skills/plan/SKILL.md`), and native plan mode cannot write the two artifacts it depends on: the export under `docs/issue/<n>/` and the plan under `docs/plans/`. Both must be committed and pushed, because the operator reviews from a different machine than the one you run on;
++- the plan-mode approval UI is unreliable in web sessions regardless (anthropics/claude-code#72704);
++- so switch to **accept-edits** or **auto** and send any reply — the run picks up from there; no re-invocation needed.
++
++Do not work around it, and do not fall back to a chat-only plan.
++
++## Step 1 — Export the issue locally (then read the export)
++
++**First command:** run the bundled exporter:
++
++```bash
++python3 scripts/export-github-item.py <issue-number|https://github.com/OWNER/REPO/issues/N> [--repo OWNER/REPO]
++```
++
++The script writes `docs/issue/<n>/issue.md` (body + comments + timeline) and downloads any image / file attachments referenced in the thread to `docs/issue/<n>/attachments/`.
++
++Consult the issue only through the export — never `gh issue view`, the GitHub MCP tools, or `WebFetch` in its place. `gh issue view` alone does **not** fetch attachments: GitHub's `private-user-images.githubusercontent.com` URLs require an authenticated request even when the issue is public, which is why the export script exists. `WebFetch` on a github.com issue page often fails outright in isolated environments. For a quick metadata check unrelated to the task at hand — labels, assignees, linked PRs — `gh issue view <n> --json title,body,labels,assignees,state,url` is still fine.
++
++**Then read** `docs/issue/<n>/issue.md` end to end, and **open the files under** `docs/issue/<n>/attachments/` when you need pixels (screenshots, mockups, design references).
++
++**Auth:** the script reads `$GH_TOKEN` (or `$GITHUB_TOKEN`) first, then falls back to `gh auth token`. One of those must be available. **Deps:** stdlib Python 3.9+ only — no `pip install` needed.
++
++**Repo:** if `--repo OWNER/REPO` is omitted and the argument isn't a full issue URL, the script reads `origin` from the current git checkout. Pass `--repo` explicitly when exporting an issue from a different repo than the one you're working in.
++
++If the export fails, **stop and report** — do not start solving the task from the title alone. Tell the user what failed and how to proceed. The script exits non-zero on every failure — auth, network, repo not found, or an attachment that wouldn't download — so check the status, not just the last line. A partial attachment failure still writes the Markdown and prints `Downloaded 2/3 attachment(s)` plus each URL it missed: the thread is there, but you'd be reading it with pixels missing.
++
++### Video attachments (screen recordings)
++
++Exported attachments may have no extension (the filename stem is the asset id), so `file docs/issue/<n>/attachments/<asset-id>` to spot videos (e.g. `ISO Media, Apple QuickTime movie`). You can read **images** but not play **videos**. Extract frames with `ffmpeg`, if it's available, and read the frames as images:
++
++```bash
++mkdir -p tmp/frames   # tmp/ is gitignored — never commit frames
++ffmpeg -y -i docs/issue/<n>/attachments/<asset-id> -vf fps=2 -q:v 3 tmp/frames/frame_%03d.jpg
++```
++
++- `fps=2` (two frames/sec) suits a short clip; lower to `fps=1` for long videos, raise to `fps=4` to catch a fast transient (a toast, a flashed error). Check length first with `ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 <path>`.
++- Read first/middle/last frames, then bisect toward the moment of interest. Frame `N` ≈ `N / fps` seconds, so you can map a frame back to a timestamp and correlate it with logs.
++- Recovers visuals only (no audio) — usually enough for a UI/repro bug.
++
++## Step 2 — Commit the export
++
++```bash
++git add docs/issue/<n> && git commit -m "docs: #<n> export the issue"
++```
++
++Commit it **now**, before any planning. The export is the source of truth for what the issue says, so an agent resuming this branch — after a context wipe, a handoff, or in a parallel session — re-reads the thread instead of re-exporting it, and committing it up front means that holds even if the session dies mid-plan. Never commit it on the trunk or a promotion branch.
++
++`@.claude/skills/finalize/SKILL.md` deletes the whole `docs/issue/` tree in the last commit before `gh pr ready`, so this add and that delete cancel out in the squash. **You** must not delete it.
++
++## Step 3 — Return to the caller
++
++Hand back the export path (`docs/issue/<n>/issue.md`) and `<issue>` = `<n>`, the number the eventual PR must close. Where the caller's own procedure carves the work into slices, that number is the parent, and which number the PR closes is settled there rather than here — `@.claude/skills/plan/SKILL.md` § "Carving a task into issues" owns it.
+```
+
+**@vzakharov (human)** — 2026-09-14T23:20:38Z
+
+it's not always the number to close; sometimes agents will need to take other issues for reference/information/etc.
+
+---
+
+### `.claude/skills/take-issue/SKILL.md`:70 — unresolved
+
+```diff
+@@ -0,0 +1,70 @@
++---
++description: Take a GitHub issue onto the branch — export the thread and its attachments, commit them, and hand the number back to whoever called. Invoke as `/take-issue <number|url>`; its callers are `/task`, `/plan` and `/go`, each running it first when the prompt carries a `#<N>`.
++---
++
++End state of this skill: `docs/issue/<n>/` holds the thread and its attachments, that export is committed on the branch, you have read it, and control is back with the caller — which is where every decision about the work is made.
++
++This skill decides nothing. It is the one place an issue gets pulled onto a branch, so its contract to its callers is that the issue has been **taken**: exported, committed, and there for a later session to re-read.
++
++## Argument shape
++
++The argument is an issue number or a full issue URL, optionally with prose around it — `fix the sidebar scroll #847` is the same invocation as `847`. The prose is the operator's own summary of the issue and is worth reading as a hint at what they care about, but **the export outranks it**: where the two disagree, the thread is what the work is against.
++
++## Step 0 — Mode gate: native plan mode is not supported
++
++If the session is in **native plan mode** — the launch banner or system prompt says so, `ExitPlanMode` is the offered exit, or an edit is refused for that reason — **stop before running anything below.** Tell the operator:
++
++- this flow is plan-**file**-based (`@.claude/skills/plan/SKILL.md`), and native plan mode cannot write the two artifacts it depends on: the export under `docs/issue/<n>/` and the plan under `docs/plans/`. Both must be committed and pushed, because the operator reviews from a different machine than the one you run on;
++- the plan-mode approval UI is unreliable in web sessions regardless (anthropics/claude-code#72704);
++- so switch to **accept-edits** or **auto** and send any reply — the run picks up from there; no re-invocation needed.
++
++Do not work around it, and do not fall back to a chat-only plan.
++
++## Step 1 — Export the issue locally (then read the export)
++
++**First command:** run the bundled exporter:
++
++```bash
++python3 scripts/export-github-item.py <issue-number|https://github.com/OWNER/REPO/issues/N> [--repo OWNER/REPO]
++```
++
++The script writes `docs/issue/<n>/issue.md` (body + comments + timeline) and downloads any image / file attachments referenced in the thread to `docs/issue/<n>/attachments/`.
++
++Consult the issue only through the export — never `gh issue view`, the GitHub MCP tools, or `WebFetch` in its place. `gh issue view` alone does **not** fetch attachments: GitHub's `private-user-images.githubusercontent.com` URLs require an authenticated request even when the issue is public, which is why the export script exists. `WebFetch` on a github.com issue page often fails outright in isolated environments. For a quick metadata check unrelated to the task at hand — labels, assignees, linked PRs — `gh issue view <n> --json title,body,labels,assignees,state,url` is still fine.
++
++**Then read** `docs/issue/<n>/issue.md` end to end, and **open the files under** `docs/issue/<n>/attachments/` when you need pixels (screenshots, mockups, design references).
++
++**Auth:** the script reads `$GH_TOKEN` (or `$GITHUB_TOKEN`) first, then falls back to `gh auth token`. One of those must be available. **Deps:** stdlib Python 3.9+ only — no `pip install` needed.
++
++**Repo:** if `--repo OWNER/REPO` is omitted and the argument isn't a full issue URL, the script reads `origin` from the current git checkout. Pass `--repo` explicitly when exporting an issue from a different repo than the one you're working in.
++
++If the export fails, **stop and report** — do not start solving the task from the title alone. Tell the user what failed and how to proceed. The script exits non-zero on every failure — auth, network, repo not found, or an attachment that wouldn't download — so check the status, not just the last line. A partial attachment failure still writes the Markdown and prints `Downloaded 2/3 attachment(s)` plus each URL it missed: the thread is there, but you'd be reading it with pixels missing.
++
++### Video attachments (screen recordings)
++
++Exported attachments may have no extension (the filename stem is the asset id), so `file docs/issue/<n>/attachments/<asset-id>` to spot videos (e.g. `ISO Media, Apple QuickTime movie`). You can read **images** but not play **videos**. Extract frames with `ffmpeg`, if it's available, and read the frames as images:
++
++```bash
++mkdir -p tmp/frames   # tmp/ is gitignored — never commit frames
++ffmpeg -y -i docs/issue/<n>/attachments/<asset-id> -vf fps=2 -q:v 3 tmp/frames/frame_%03d.jpg
++```
++
++- `fps=2` (two frames/sec) suits a short clip; lower to `fps=1` for long videos, raise to `fps=4` to catch a fast transient (a toast, a flashed error). Check length first with `ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 <path>`.
++- Read first/middle/last frames, then bisect toward the moment of interest. Frame `N` ≈ `N / fps` seconds, so you can map a frame back to a timestamp and correlate it with logs.
++- Recovers visuals only (no audio) — usually enough for a UI/repro bug.
++
++## Step 2 — Commit the export
++
++```bash
++git add docs/issue/<n> && git commit -m "docs: #<n> export the issue"
++```
++
++Commit it **now**, before any planning. The export is the source of truth for what the issue says, so an agent resuming this branch — after a context wipe, a handoff, or in a parallel session — re-reads the thread instead of re-exporting it, and committing it up front means that holds even if the session dies mid-plan. Never commit it on the trunk or a promotion branch.
++
++`@.claude/skills/finalize/SKILL.md` deletes the whole `docs/issue/` tree in the last commit before `gh pr ready`, so this add and that delete cancel out in the squash. **You** must not delete it.
++
++## Step 3 — Return to the caller
++
++Hand back the export path (`docs/issue/<n>/issue.md`) and `<issue>` = `<n>`, the number the eventual PR must close. Where the caller's own procedure carves the work into slices, that number is the parent, and which number the PR closes is settled there rather than here — `@.claude/skills/plan/SKILL.md` § "Carving a task into issues" owns it.
++
++Then stop. Everything downstream — the plan-or-not call, the carve, the branch name, the PR — belongs to the caller.
+```
+
+**@vzakharov (human)** — 2026-09-14T23:20:51Z
+
+the specifics are polar bears
+
+---
+
+### `.claude/skills/task/SKILL.md`:40 — unresolved
+
+```diff
+@@ -1,50 +1,73 @@
+ ---
+ description: >-
+-  Take a task and decide for yourself whether it needs a plan before the work
+-  exists, then run that call end to end — plan and hand off, plan and then
+-  implement, or implement with no plan at all. Invoke as `/task <what to do>`.
+-  The prompt is a conditional go-ahead scoped to that one task.
++  Take a task and decide for yourself whether it needs a plan, write the plan
++  when it does, and then decide whether the operator has to look — plan and hand
++  off, plan and then implement, or implement with no plan at all. Invoke as
++  `/task <what to do>`. The prompt is a conditional go-ahead scoped to that one
++  task.
+ ---
+ 
+-The decision this skill makes, before any other: **does this task get a plan, and does the plan block on the operator?** Two questions pick between three outcomes.
++The decision this skill makes, before any other: **does this task get a plan, and does the plan block on the operator?** Those are two questions with a plan file between them: the second judges the plan, so it is asked once the plan exists.
+ 
+ **The prompt is a conditional go-ahead.** It authorizes implementation *on condition that* the agent judges the operator's gate unnecessary, scoped to the task in that message and to that message alone.
+ 
+-`/task <what to do>` is the invocation. `/issue` is the other way in: it reads the thread first and then hands the work here, so the call is made once, in one place, whether or not the work is tracked. The mention stays bare rather than an `@`-reference — this skill ships to adopters who track no issues at all, and nothing here needs that file read.
++`/task <what to do>` is the invocation, and it is also where a launch-time directive lands: CLAUDE.md § "Plan mode & questions in web sessions" routes any opening prompt that asks for a change to this codebase here, so most tasks arrive without anyone typing the name. A `#<N>` in that prompt means the thread is exported and committed before anything else happens — `/take-issue` does that and hands the number back. Both mentions stay bare rather than `@`-references: this skill ships to adopters who track no issues at all, and nothing here needs those files read.
+ 
+ **Anything a caller passes beyond the task — an `<issue>`, an export path — rides through unchanged to whichever outcome runs, and is never read here:** this skill knows what a task is and nothing else, and what the extras mean belongs to the skills at either end of them.
+ 
+-## Question 1 — does the operator need to decide before the work exists?
++## Step 1 — Does this task get a plan?
+ 
+-Any one of these is a yes:
++Either reason is enough on its own.
++
++**Writing it down would change what you build.** A plan is how an agent gets its own head straight, and that value needs no operator:
++
++- several parts whose order matters, or edits that only make sense landing together;
++- a live reuse call — the mandatory `## DRY notes` is the forcing function, and it earns the file whenever "shared or duplicated?" has a real answer to argue;
++- a shape you would otherwise discover halfway through, after building the first half against a different one.
++
++The test: if you can hold the whole change in your head and name every file it touches, the file buys nothing.
++
++**Or any of Step 3's four signs is even arguably present.** You are not deciding it yet — that is Step 3's call, made against the plan rather than against the line that asked for the work. Here you only notice that the question is live.
++
++**No to both → `@.claude/skills/go/SKILL.md` § "Planless entry"** with the task, where the diff is the plan.
++
++**This step is deliberately over-inclusive.** Being wrong costs a file `/finalize` sweeps, so a close call writes one.
++
++## Step 2 — Write it as a draft
++
++`@.claude/skills/plan/SKILL.md` Part 1, unchanged: `docs/plans/<slug>.draft.do-not-implement.md`, banner and all, published through `/pr` so the operator has a surface to read and interrupt on.
++
++**Every planning route produces a draft**, including the one that is about to implement without stopping. The state is not scaffolding to be skipped when you already know the answer: it is what a `/handle` reads if this session dies between writing the file and flipping it — a plan awaiting a go-ahead, which costs one round trip to re-give. The alternative, an `*.in-progress.md` claiming a live session holds the plan right now, is a reading someone has to untangle by hand.
+```
+
+**@vzakharov (human)** — 2026-09-14T23:22:47Z
+
+> including the one that is about to implement without stopping
+
+not sure but polar bear?
+
+---
+
+### `CLAUDE.md`:1 — unresolved
+
+**@vzakharov (human)** — 2026-09-14T23:27:56Z
+
+not sure the main bulk of the edits -- something that only pertains to session start -- belongs to CLAUDE.md. I'd rather have a *separate* session start hook (not the general `sesson-start.sh` one, as it's already split on main anyway) that sees if it's a skill-less call and feeds this to the context.
+
+btw, two things to note if this DOES end with a `#<...>`
+
+1- the decision on whether it involves code change can't be made before the issue is taken
+2- seems like, instead of doing a round trip, we can export the issue right away with the script, put it where it belongs, and tell the agent it's already there, all they'll have to do is look. Let's /plan that
+
+---
+
+### `.claude/skills/update-muthur/catalog.md`:181 — unresolved
+
+```diff
+@@ -177,8 +177,9 @@ the project's first issue on the way through.
+ 
+ | Item | What it does | Requires | Pulls in | Disposition |
+ | --- | --- | --- | --- | --- |
+-| `/issue` | Export and read a GitHub issue, split it into natively-linked sub-issues when the scope demands, then hand the work to `/task`, which makes the plan-or-not call on it — except a split, which always plans. | G2, `gh`, `scripts/export-github-item.py` | `/finalize`, `/pr`, `/plan`, `/task` (G2) | adopt |
+-| `/propose-issue` | File a unit of work as an issue, deduping against what's already open. | G2, `gh`, `jq` | `/plan` (G2) | adopt |
++| `/take-issue` | Pull a GitHub issue onto the branch: export the thread and its attachments, commit them, hand the number back. Decides nothing — its callers are `/task`, `/plan` and `/go`, each running it first when the prompt carries a `#<N>`. | G2, `gh`, `scripts/export-github-item.py` | `/finalize`, `/plan` (G2) | adopt |
++| `/issue` | Redirect for the name `/take-issue` was split out of: with a `#<N>` it runs `/plan` on the argument and names `/task` and `/go` as the same-shape alternatives; with none it names `/propose-issue` and stops. | G2 | `/plan` (G2), `/propose-issue` | conditional — see below |
+```
+
+**@vzakharov (human)** — 2026-09-14T23:29:14Z
+
+"do not take if this is the original adoption (only if it has been already adopted before)", same wording as with implement
+
+---
+
 ## Timeline (status, references, and other events)
 
 - **2026-09-12T14:50:45Z** @vzakharov reviewed (COMMENTED): https://github.com/vzakharov/muthur/pull/71#pullrequestreview-5186802965.
@@ -1641,3 +2222,5 @@ Eleven files in the table now, not twelve.
 - **2026-09-14T14:57:13Z** @vzakharov reviewed (COMMENTED): https://github.com/vzakharov/muthur/pull/71#pullrequestreview-5199246175.
 - **2026-09-14T18:34:26Z** @vzakharov reviewed (COMMENTED): https://github.com/vzakharov/muthur/pull/71#pullrequestreview-5201405003.
 - **2026-09-14T21:25:08Z** @vzakharov reviewed (COMMENTED): https://github.com/vzakharov/muthur/pull/71#pullrequestreview-5203027361.
+- **2026-09-14T22:13:44Z** @vzakharov renamed from «feat: give the plan-or-not call its own skill, and route /issue to it» to «feat: the entry ladder routes on change-or-not, and the carve moves into /plan».
+- **2026-09-14T23:30:05Z** @vzakharov reviewed (COMMENTED): https://github.com/vzakharov/muthur/pull/71#pullrequestreview-5203785128.
