@@ -7,7 +7,7 @@
 - **Draft:** yes
 - **Merged:** _not merged_
 - **Created:** 2026-09-12T14:26:37Z
-- **Updated:** 2026-09-14T21:33:50Z
+- **Updated:** 2026-09-14T21:56:31Z
 - **Closed:** _not closed_
 - **Labels:** _none_
 
@@ -1269,7 +1269,7 @@ this body is just shorter. Say the word and I'll restore the previous text.
 
 ---
 
-### `docs/plans/split-in-plan.draft.do-not-implement.md`:216 — unresolved
+### `docs/plans/split-in-plan.draft.do-not-implement.md`:216 — resolved
 
 ```diff
 @@ -157,49 +171,67 @@ what they do with a list they can't file. Precedent for the conditional edge is
@@ -1364,7 +1364,7 @@ ambiguity: the read-or-file question gets answered by naming both.
 
 ---
 
-### `docs/plans/split-in-plan.draft.do-not-implement.md`:218 — unresolved
+### `docs/plans/split-in-plan.draft.do-not-implement.md`:218 — resolved
 
 ```diff
 @@ -157,49 +171,67 @@ what they do with a list they can't file. Precedent for the conditional edge is
@@ -1455,7 +1455,7 @@ that does the creating, and pruning G3 takes it along instead of stranding it.
 
 ---
 
-### `docs/pr/71/pr.md`:1 — unresolved
+### `docs/pr/71/pr.md`:1 — resolved
 
 **@vzakharov (human)** — 2026-09-14T18:34:23Z
 
@@ -1483,7 +1483,7 @@ routing and this diff is at twelve files.
 
 ---
 
-### `docs/plans/split-in-plan.draft.do-not-implement.md`:99 — unresolved
+### `docs/plans/split-in-plan.draft.do-not-implement.md`:99 — resolved
 
 ```diff
 @@ -63,27 +70,33 @@ from *always* to *when the questions say so*.
@@ -1571,7 +1571,7 @@ aff8005
 
 ---
 
-### `docs/plans/split-in-plan.draft.do-not-implement.md`:200 — unresolved
+### `docs/plans/split-in-plan.draft.do-not-implement.md`:184 — unresolved
 
 ```diff
 @@ -160,11 +173,16 @@ get a step they cannot run. Split the carve along that line:
@@ -1617,6 +1617,16 @@ what shape the plan file takes); G3 gets the half that touches the tracker (the
 rule, carrying an enumerated parent's verbatim reports into each child). That is why
 it is two files rather than one section in `/plan`: a G2-only adopter loading a
 `/plan` that told them to file sub-issues would be reading a step they cannot run.
+
+**@vzakharov (agent)** — 2026-09-14T21:56:30Z
+
+Correcting this in c7ad688 — I misread your earlier "it's not muthur's problem to solve" as licence to omit the *degradation story* while still cutting the procedure along the group line. You meant the cut shouldn't happen at all.
+
+So `splitting.md` is gone and `/plan` states the carve whole, filing included: `/propose-issue` per slice, the `sub_issues` link and its two 422 traps, the ≥5-files granularity rule, the enumerated parent's verbatim reports. Cutting it at G2/G3 left the G2 half stopping exactly where its reader needs the next sentence.
+
+The caveat moves to the catalog, where it belongs: `/plan` joins `/finalize` in § "Closure is not optional"'s conditional-reach bullet, which already says "strip the two citations, or adopt the groups". A G2-only adopter strips the filing half and decides for themselves where the slices live — plan file, backlog doc, whatever tracker they do use — and this repo writes none of that for them.
+
+Eleven files in the table now, not twelve.
 
 ---
 
