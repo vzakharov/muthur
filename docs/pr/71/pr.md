@@ -7,7 +7,7 @@
 - **Draft:** yes
 - **Merged:** _not merged_
 - **Created:** 2026-09-12T14:26:37Z
-- **Updated:** 2026-09-14T21:25:08Z
+- **Updated:** 2026-09-14T21:30:41Z
 - **Closed:** _not closed_
 - **Labels:** _none_
 
@@ -1539,9 +1539,29 @@ routing and this diff is at twelve files.
 
 let's make the stub invoke `/plan` (because that was what the previous `/issue` skill did), but also notify the operator that `/go` and `/task` with the same `<...> #<...>` format are options, too
 
+**@vzakharov (agent)** — 2026-09-14T21:31:05Z
+
+Done — with one correction to the parenthetical, which doesn't change the answer.
+
+The old `/issue` handed to `/task`, not `/plan`: Step 4 is "Load and follow
+`task/SKILL.md`", and only the split case went straight to `/plan`. So precedent
+actually points at `/task`. I'm still taking `/plan`, on a different reason: a
+deprecated name carries no signal about which of the four readings was meant, and
+`/plan` is the one whose wrong guess costs a round trip rather than an unreviewed
+diff.
+
+So the stub forwards rather than prints a map: given a `#<N>` it runs `/plan` on the
+same argument and says in one line that `/task` and `/go` take that shape too — the
+first hands the plan-or-not call back to the agent, the second skips it. Given no
+number there is nothing to take and the prose is an unfiled unit of work, which is
+the `/propose-issue` reading; the stub names it and stops rather than running it,
+filing being the one of the four that writes to the tracker.
+
+b0f036d
+
 ---
 
-### `docs/plans/split-in-plan.draft.do-not-implement.md`:184 — unresolved
+### `docs/plans/split-in-plan.draft.do-not-implement.md`:199 — unresolved
 
 ```diff
 @@ -160,11 +173,16 @@ get a step they cannot run. Split the carve along that line:
@@ -1563,6 +1583,30 @@ let's make the stub invoke `/plan` (because that was what the previous `/issue` 
 **@vzakharov (human)** — 2026-09-14T21:23:39Z
 
 I still don't understand what it is, what we are splitting and why. Can you illustrate with some example maybe?
+
+**@vzakharov (agent)** — 2026-09-14T21:31:06Z
+
+Fair — the section said "split the carve along that line" in a plan whose whole
+subject is splitting issues, so "split" read as the wrong noun. What is split is the
+carve's **documentation**, not the work. Fixed in b0f036d, and an example added:
+
+> "Rebuild the settings area, it's three separate screens." Both adopters get the
+> same `/plan` turn, because judging the seams needs no tracker: the plan file specs
+> the first screen in full, describes the other two in a paragraph each, and lists
+> all three under the heading that proposes them.
+>
+> For an adopter who took G2 and no GitHub skills, that list **is** the tracking, and
+> the turn ends there. For a G3 adopter `/go` reads the same list on the go-ahead and
+> files it — parent, three children, `sub_issues` links — and the PR for screen one
+> carries `Closes #<child>`.
+
+So: one judgement, and a second half that only exists where there is somewhere to
+file. G2 gets the half that is pure judgement (carve or not, where the seams are,
+what shape the plan file takes); G3 gets the half that touches the tracker (the
+`/propose-issue` calls, the two `sub_issues` 422 traps, the ≥5-files granularity
+rule, carrying an enumerated parent's verbatim reports into each child). That is why
+it is two files rather than one section in `/plan`: a G2-only adopter loading a
+`/plan` that told them to file sub-issues would be reading a step they cannot run.
 
 ---
 
