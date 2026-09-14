@@ -20,7 +20,7 @@
 # away with the stack:
 #
 #   check-skill-catalog.sh — asserts that every `@`-reference into
-#     `.claude/skills/` resolves, and that no unhydrated stub stowed away. A
+#     `.claude/` resolves, and that no unhydrated stub stowed away. A
 #     dangling reference fails silently: the agent follows the surviving prose
 #     past the step they could not load. Dropping this line puts the check back
 #     on the agent's memory, which is where it was when it went unrun.

@@ -6,13 +6,17 @@ description: >-
   chain; invoked with a question, it answers that question under the house rule,
   investigation included. Names six defects — symptom-as-finding, buried lede,
   untranslated nouns, broken chain, fog, receipt — so one word calls out a bad
-  report. **Resolve who you are talking to once per session** and apply that
-  person's operator entry from then on; `voice.md` carries how.
+  report.
 ---
 
-`voice.md` beside this file is the short version, and `CLAUDE.md` imports it, so
-the rule itself is already in context — state it there, once. This file is the
-long version: the defects, the invocations, and the pass.
+This file is the procedure: the invocations, the pass, and the six defects it
+runs a draft against.
+
+`.claude/voice/voice.md` is the other thing, resident in every session because
+`CLAUDE.md` imports it: how this team wants to be talked to. The two agree here,
+this team's manner being a plain one, and they drift independently — a house
+voice can be deliberately less plain and still want a way to ask for something
+plainer. Neither tracks the other.
 
 ## Two invocations
 
@@ -42,8 +46,6 @@ Either way the output is an answer, not a plan to produce one.
 3. **Run the six defects below over that draft, then write it out again.** Each
    has a tell you can see in your own text without knowing the subject — but only
    in text you actually put down first.
-4. **Apply the operator's entry** from `operators.md`, which tunes manner and
-   never substance.
 
 ## The six defects
 
