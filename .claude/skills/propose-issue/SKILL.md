@@ -37,7 +37,7 @@ If the title or body references a specific file path, symbol, or feature name, i
 
 If there are many candidates (>4), pre-filter to the most plausible ones in your write-up before asking — don't dump a wall of unrelated issues into the question.
 
-**Steps 1–2 and Step 3 may run in different turns.** `@.claude/skills/plan/SKILL.md` § "Carving a task into issues" runs the search and triage at plan time, where they touch nothing and the operator rules on any match while reviewing the carve, and `/go` runs the creation on the go-ahead. Neither turn needs a mode flag: the split falls on the numbering this skill already has, because Steps 1–2 are read-only and Step 3 is the only one that writes.
+**Steps 1–2 and Step 3 may run in different turns.** `@.claude/skills/plan/carving.md` runs the search and triage at plan time, where they touch nothing and the operator rules on any match while reviewing the carve, and `/go` runs the creation on the go-ahead. Neither turn needs a mode flag: the split falls on the numbering this skill already has, because Steps 1–2 are read-only and Step 3 is the only one that writes.
 
 ## Step 3: Create the issue
 
