@@ -7,7 +7,7 @@
 - **Draft:** yes
 - **Merged:** _not merged_
 - **Created:** 2026-09-12T14:26:37Z
-- **Updated:** 2026-09-14T15:07:00Z
+- **Updated:** 2026-09-14T18:34:26Z
 - **Closed:** _not closed_
 - **Labels:** _none_
 
@@ -761,7 +761,7 @@ somewhere tracked if it turns out to be wanted.
 
 ---
 
-### `docs/plans/split-in-plan.draft.do-not-implement.md`:69 — unresolved
+### `docs/plans/split-in-plan.draft.do-not-implement.md`:69 — resolved
 
 ```diff
 @@ -0,0 +1,185 @@
@@ -1096,7 +1096,7 @@ is the export's location rather than its content, and that's a separate one-line
 
 ---
 
-### `docs/plans/split-in-plan.draft.do-not-implement.md`:1 — unresolved
+### `docs/plans/split-in-plan.draft.do-not-implement.md`:1 — resolved
 
 **@vzakharov (human)** — 2026-09-14T14:40:35Z
 
@@ -1200,7 +1200,7 @@ a one-line fix; say which.
 
 ---
 
-### `docs/plans/split-in-plan.draft.do-not-implement.md`:240 — unresolved
+### `docs/plans/split-in-plan.draft.do-not-implement.md`:240 — resolved
 
 ```diff
 @@ -216,6 +227,17 @@ On the review of this file:
@@ -1244,7 +1244,7 @@ the thread on the export.
 
 ---
 
-### `docs/pr/71/pr.md`:1 — unresolved
+### `docs/pr/71/pr.md`:1 — resolved
 
 **@vzakharov (human)** — 2026-09-14T14:57:03Z
 
@@ -1269,6 +1269,156 @@ this body is just shorter. Say the word and I'll restore the previous text.
 
 ---
 
+### `docs/plans/split-in-plan.draft.do-not-implement.md`:216 — unresolved
+
+```diff
+@@ -157,49 +171,67 @@ what they do with a list they can't file. Precedent for the conditional edge is
+ `/finalize`, whose **Requires** column already reads "**conditionally** `/issue`
+ (G3)".
+ 
+-### Outcome 3 writes a draft too
++### `/task` decides the gate after the plan is written
+ 
+ Making the plan file the gate would leave one route uncovered. `/task` outcome 3
+ — plan, then go — writes straight to `*.in-progress.md` under the conditional
+ go-ahead and enters `/go` at its Step 2, so there is no draft state and no gate; a
+ carve found there files a parent and children off a one-line prompt.
+ 
+-The fix is smaller than a recovery rule: **outcome 3 writes a draft like every
+-other plan and enters `/go` at Step 1.** That step is already the flip, and its
+-commit already quotes the go-ahead — here the `/task` prompt itself. The draft
+-costs one `git mv` and buys the invariant that no plan file claims approval before
+-the thing that would reveal it lacks approval, the carve, has been written down.
++What closes it is a reordering rather than a recovery rule. `/task` asks both its
++questions before the work exists, and the gate question is the one that cannot be
++answered there: it judges what the operator would want to rule on from the single
++line that asked for it. So it moves after the plan, and the skill becomes a
++question, a plan, and a question:
++
++1. **Does this task get a plan?** Either reason counts — writing it down would
++   change what you build, or there is something here the operator may need to rule
++   on. No → `/go` § "Planless entry", where the diff is the plan.
++2. **Write it as a draft**, banner and all, like every other plan.
++3. **Does the operator need to look?** No → enter `/go` at **Step 1**, which flips
++   the draft in a commit quoting the `/task` prompt. Yes → end at `/plan`'s handoff
++   block, and the next session flips it.
++
++All three outcomes survive; two of them stop being decided in advance and become
++the two ends of one route, forking where the plan exists to fork on. Step 1 is
++deliberately over-inclusive — being wrong costs a file `/finalize` sweeps, so a
++close call writes one — and step 3 is the call that costs a round trip.
+ 
+ A carve found while writing that plan then needs no procedure: the file is already
+ a draft carrying its banner, the session does not flip it, and it hands off. What
+ made outcome 3 special was the skipped state, so restoring the state retires the
+ special case rather than adding one.
+ 
+-What the draft state costs is one round trip in the safe direction: a session
+-interrupted between writing the file and flipping it leaves a draft
+-indistinguishable from one awaiting the operator, so a later `/handle` asks for a
+-go-ahead it already had.
++The draft is also the better state to be interrupted in. A session that dies
++between writing the file and flipping it leaves something a later `/handle` reads
++as awaiting a go-ahead, so it asks for one it already had — one round trip. What
++that replaces is an `*.in-progress.md` claiming a live session holds the plan right
++now, which is the reading someone has to untangle by hand.
+ 
+ ## Files
+ 
+ | File | Change |
+ | --- | --- |
+ | `CLAUDE.md` | § "Plan mode & questions in web sessions": replace the planning-session default with Part A's three rows; keep the `/from-branch` / `/handle` continued-work bullet as the launch-vs-continued line |
+-| `.claude/skills/issue/SKILL.md` | delete Step 3; renumber; Step 4 loses the split exception; § "Branch name" drops the issue-number requirement; the argument shape admits prose around the number and says the export outranks it |
+-| `.claude/skills/pr/SKILL.md` | Step 4 reads `docs/issue/<n>/` instead of the slug, and writes `Closes #<tbd>` on a carve whose children are not filed yet; no line at all where no issue is involved; the `<issue>` parameter line follows; the Summary states what the branch delivers and never how it came to deliver it |
++| `.claude/skills/take-issue/SKILL.md` | **renamed from `issue/`**; delete Step 3; renumber; Step 4 loses the split exception; § "Branch name" drops the issue-number requirement; the argument shape admits prose around the number and says the export outranks it |
+```
+
+**@vzakharov (human)** — 2026-09-14T18:32:16Z
+
+I don't think it should point at /take-issue, because /take-issue itself, unlike the former /issue, is transport-only. So we should forward the operator to /task, /go, or /plan, depending on their needs (like, literally say, this skill is deprecated, use this for this, that for that, yet another that for that)
+
+---
+
+### `docs/plans/split-in-plan.draft.do-not-implement.md`:218 — unresolved
+
+```diff
+@@ -157,49 +171,67 @@ what they do with a list they can't file. Precedent for the conditional edge is
+ `/finalize`, whose **Requires** column already reads "**conditionally** `/issue`
+ (G3)".
+ 
+-### Outcome 3 writes a draft too
++### `/task` decides the gate after the plan is written
+ 
+ Making the plan file the gate would leave one route uncovered. `/task` outcome 3
+ — plan, then go — writes straight to `*.in-progress.md` under the conditional
+ go-ahead and enters `/go` at its Step 2, so there is no draft state and no gate; a
+ carve found there files a parent and children off a one-line prompt.
+ 
+-The fix is smaller than a recovery rule: **outcome 3 writes a draft like every
+-other plan and enters `/go` at Step 1.** That step is already the flip, and its
+-commit already quotes the go-ahead — here the `/task` prompt itself. The draft
+-costs one `git mv` and buys the invariant that no plan file claims approval before
+-the thing that would reveal it lacks approval, the carve, has been written down.
++What closes it is a reordering rather than a recovery rule. `/task` asks both its
++questions before the work exists, and the gate question is the one that cannot be
++answered there: it judges what the operator would want to rule on from the single
++line that asked for it. So it moves after the plan, and the skill becomes a
++question, a plan, and a question:
++
++1. **Does this task get a plan?** Either reason counts — writing it down would
++   change what you build, or there is something here the operator may need to rule
++   on. No → `/go` § "Planless entry", where the diff is the plan.
++2. **Write it as a draft**, banner and all, like every other plan.
++3. **Does the operator need to look?** No → enter `/go` at **Step 1**, which flips
++   the draft in a commit quoting the `/task` prompt. Yes → end at `/plan`'s handoff
++   block, and the next session flips it.
++
++All three outcomes survive; two of them stop being decided in advance and become
++the two ends of one route, forking where the plan exists to fork on. Step 1 is
++deliberately over-inclusive — being wrong costs a file `/finalize` sweeps, so a
++close call writes one — and step 3 is the call that costs a round trip.
+ 
+ A carve found while writing that plan then needs no procedure: the file is already
+ a draft carrying its banner, the session does not flip it, and it hands off. What
+ made outcome 3 special was the skipped state, so restoring the state retires the
+ special case rather than adding one.
+ 
+-What the draft state costs is one round trip in the safe direction: a session
+-interrupted between writing the file and flipping it leaves a draft
+-indistinguishable from one awaiting the operator, so a later `/handle` asks for a
+-go-ahead it already had.
++The draft is also the better state to be interrupted in. A session that dies
++between writing the file and flipping it leaves something a later `/handle` reads
++as awaiting a go-ahead, so it asks for one it already had — one round trip. What
++that replaces is an `*.in-progress.md` claiming a live session holds the plan right
++now, which is the reading someone has to untangle by hand.
+ 
+ ## Files
+ 
+ | File | Change |
+ | --- | --- |
+ | `CLAUDE.md` | § "Plan mode & questions in web sessions": replace the planning-session default with Part A's three rows; keep the `/from-branch` / `/handle` continued-work bullet as the launch-vs-continued line |
+-| `.claude/skills/issue/SKILL.md` | delete Step 3; renumber; Step 4 loses the split exception; § "Branch name" drops the issue-number requirement; the argument shape admits prose around the number and says the export outranks it |
+-| `.claude/skills/pr/SKILL.md` | Step 4 reads `docs/issue/<n>/` instead of the slug, and writes `Closes #<tbd>` on a carve whose children are not filed yet; no line at all where no issue is involved; the `<issue>` parameter line follows; the Summary states what the branch delivers and never how it came to deliver it |
++| `.claude/skills/take-issue/SKILL.md` | **renamed from `issue/`**; delete Step 3; renumber; Step 4 loses the split exception; § "Branch name" drops the issue-number requirement; the argument shape admits prose around the number and says the export outranks it |
++| `.claude/skills/issue/SKILL.md` | **new** — compat stub on the `/implement` model, pointing at `/take-issue` and naming `/propose-issue` as the other reading of the noun |
++| `.claude/skills/take-issue/splitting.md` | **new** — the G3 filing half, moved verbatim from Step 3 |
+```
+
+**@vzakharov (human)** — 2026-09-14T18:32:34Z
+
+wait, why? didn't we move this to /plan?
+
+---
+
+### `docs/pr/71/pr.md`:1 — unresolved
+
+**@vzakharov (human)** — 2026-09-14T18:34:23Z
+
+does the pr-export skill/script instruct the agent to only look at the diff after exporting? because if you routinely read it all at ones, at 1200+ lines, it's getting beyond manageable, I'm guessing
+
+---
+
 ## Timeline (status, references, and other events)
 
 - **2026-09-12T14:50:45Z** @vzakharov reviewed (COMMENTED): https://github.com/vzakharov/muthur/pull/71#pullrequestreview-5186802965.
@@ -1278,3 +1428,4 @@ this body is just shorter. Say the word and I'll restore the previous text.
 - **2026-09-14T13:30:33Z** @vzakharov reviewed (COMMENTED): https://github.com/vzakharov/muthur/pull/71#pullrequestreview-5198256935.
 - **2026-09-14T14:40:58Z** @vzakharov reviewed (COMMENTED): https://github.com/vzakharov/muthur/pull/71#pullrequestreview-5199032973.
 - **2026-09-14T14:57:13Z** @vzakharov reviewed (COMMENTED): https://github.com/vzakharov/muthur/pull/71#pullrequestreview-5199246175.
+- **2026-09-14T18:34:26Z** @vzakharov reviewed (COMMENTED): https://github.com/vzakharov/muthur/pull/71#pullrequestreview-5201405003.
