@@ -37,9 +37,13 @@ If the title or body references a specific file path, symbol, or feature name, i
 
 If there are many candidates (>4), pre-filter to the most plausible ones in your write-up before asking — don't dump a wall of unrelated issues into the question.
 
+**Steps 1–2 and Step 3 may run in different turns.** `@.claude/skills/plan/SKILL.md` § "Carving a task into issues" runs the search and triage at plan time, where they touch nothing and the operator rules on any match while reviewing the carve, and `/go` runs the creation on the go-ahead. Neither turn needs a mode flag: the split falls on the numbering this skill already has, because Steps 1–2 are read-only and Step 3 is the only one that writes.
+
 ## Step 3: Create the issue
 
 Create it with the title and body as provided, plus any labels the caller passed in (`gh issue create --title … --body-file … --label …`, or `mcp__github__issue_write` with action `create`). Return the new issue number and URL to the caller.
+
+**Then fill in any `#<tbd>` this issue resolves.** A branch whose PR was opened before its issue existed carries the marker `@.claude/skills/pr/SKILL.md` Step 4 writes; this skill is the one place an issue is ever created, so it is the only party that knows the number the moment it exists. Replace `#<tbd>` in the PR body and anywhere else on the branch that carries it — one marker per issue created, in the order the carve proposed them.
 
 ## Output
 
@@ -54,4 +58,4 @@ The caller decides what to do with the result (log it, surface it in a report, e
 
 - This skill is read-only for source code. It only writes to GitHub.
 - Don't open PRs, don't comment on existing issues, don't change labels on existing issues — those are outside scope.
-- If the user wants the proposal worked on now (not just tracked), the caller should chain into `/issue` after this skill returns.
+- If the user wants the proposal worked on now (not just tracked), the caller should chain into `/task` after this skill returns, passing the proposal and the number.
