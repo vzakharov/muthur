@@ -7,7 +7,7 @@
 - **Draft:** yes
 - **Merged:** _not merged_
 - **Created:** 2026-09-12T14:26:37Z
-- **Updated:** 2026-09-14T09:57:03Z
+- **Updated:** 2026-09-14T13:22:24Z
 - **Closed:** _not closed_
 - **Labels:** _none_
 
@@ -21,6 +21,8 @@
 - **`/issue` makes that same call instead of planning unconditionally.** It used to hand every issue to `/plan`, on the reasoning that filing an issue answers the call by itself. Filing one is evidence the work is worth *tracking*, which comes apart from worth *deliberating*: a two-row docs correction gets filed so a review doesn't lose it, not because anyone needs a page about it first. Step 4 now hands to `/task` like any other work. A split issue is the one exception — it skips the call and plans, since splitting only happens when the work is obviously beyond a single PR, which is the first question's first clause already satisfied.
 - **Nothing threads a parameter to carry that.** The only thing downstream that wants the issue number is `/pr`'s `Closes #N`, which already infers one when no caller passed it; what that inference did not read is the branch, and `/issue` is the one caller that guarantees the number is in the slug. So `/pr` Step 4 reads the branch before the commits — which also settles the split case the explicit parameter existed for, the slug carrying the chosen child and never the parent.
 - **Citations repointed**, so nothing states the old arrangement: CLAUDE.md's routing bullet and its skills list, `/go`'s planless entry, `/issue`'s frontmatter, end-state and chain, and the catalog (a new `/task` row in G2, `/plan`'s row losing the moved clause, `/go`'s and `/issue`'s gaining the new reference). The move also upgrades the `/go` → `/task` pointer into one `scripts/check-skill-catalog.sh` verifies, which a reference to a non-`SKILL.md` page was not.
+
+- **A follow-up plan rides this branch**, at `docs/plans/split-in-plan.draft.do-not-implement.md`: a three-way routing rule for a launch prompt that names no skill, and the relocation of the split decision out of `/issue` Step 3 into `/plan`. It is a draft awaiting a go-ahead; implementing it grows this PR into both changes.
 
 ## QA Checklist
 
@@ -373,6 +375,101 @@ Also note that when I say "create the issue", the agent will likely reach to `/p
 
 So, I'd want you to weigh in on all of that. Then, if you don't find hard stoppers, let's /plan it right away.
 
+**@vzakharov (agent)** — 2026-09-14T10:06:47Z
+
+No hard stoppers, so it's planned: https://github.com/vzakharov/muthur/pull/74
+
+Where I agree outright:
+
+**Codebase-modifying vs. not** is the better cut, and it survives your own
+counter-example — "analyse the latest market trends" is an imperative and still
+lands outside, because the test reads the repo rather than the sentence. One
+condition: the third bucket has to be *written down* as a bucket. Left implicit,
+today's default ("treat a new session as a planning session") swallows it and
+questions route to `/plan` again, which is exactly where we are now.
+
+**`/issue` as transport** removes a special case rather than relocating one. Step
+4's "a split issue is the one case that skips the call and plans" exists only
+because Step 3 carved before `/task` ever saw the work; with the carve in
+`/plan`, Question 1 already covers it.
+
+And the win your comment doesn't claim: **untracked work becomes splittable at
+all.** The carve currently lives only behind an issue number, so "add an admin
+page" typed bare has no path to one.
+
+Four findings.
+
+**1 — The ordering is forced, and it settles when the issues get filed.** `/pr`
+Step 4 reads the closing issue off the branch slug, and `/plan` renames the
+branch *before* writing the plan file. So filing cannot wait for `/go`: defer it
+and the rename has no number to use and the PR loses its `Closes`. Inside the
+plan turn: carve + approval → file parent and children → rename the branch to
+lead with the first child → write the plan → publish. The gate protecting the
+tracker is `/issue` Step 3's existing propose-and-stop, which rides along
+unchanged, so nothing is written ahead of you either way.
+
+**2 — Group closure.** `/plan` is G2; `/issue` and `/propose-issue` are G3. So
+`/plan` can't absorb the filing wholesale — an adopter who declined G3 inherits a
+step they can't run. The carve splits on that line: G2 keeps the decision and the
+plan-file shape (first slice in full, remainder coarse), G3 keeps the filing —
+parent, children, the native `sub_issues` link with its two 422 traps, the
+≥5-files granularity rule, and carrying an enumerated parent's verbatim reports
+and attachments. That half goes to `.claude/skills/issue/splitting.md`, cited
+conditionally. Precedent: `/finalize`'s **Requires** already reads "conditionally
+`/issue` (G3)".
+
+**3 — `/task` outcome 3 is a hole.** "Plan, then go" writes straight to
+`*.in-progress.md` under the conditional go-ahead and implements in the same
+session. A carve discovered inside *that* plan would file issues and open a
+multi-PR programme with no operator gate anywhere. `/plan` needs the recovery
+stated: discovering a split while running outcome 3 sends the task back to the
+gate. It's Question 1's "the scope is itself the question", answered late.
+
+**4 — `/propose-issue`: the parent only.** Both your instincts are right and they
+don't collide, because they're about different issues. The dedupe is worth
+exactly one round — "add an admin page" may already be filed, and a second
+umbrella is the expensive mistake. For the children it's a round-trip per slice
+against a near-always-empty result, on issues just carved out of a parent nobody
+else has seen. Parent through `/propose-issue`, children created directly. And
+when the dedupe hits, the untracked path converges on the tracked one exactly as
+you predicted.
+
+One thing unchanged from before: `let's …` is still on `/plan` § "The approval
+gate"'s token list, so the rule keys on launch-vs-continued rather than on the
+words. The ladder's last bullet already draws that line.
+
+The plan carries two open questions (the `/propose-issue` scope above, and what a
+G2-only adopter gets), both written with the recommendation in force, so silence
+resolves them. It lands after this PR — it edits the same two files again.
+
+**@vzakharov (agent)** — 2026-09-14T13:06:05Z
+
+Correction to my last reply: the plan rides **this** branch, not a new PR. #74 was a misread of "let's /plan it right away" and is closed; the plan is `docs/plans/split-in-plan.draft.do-not-implement.md` here, at 2e9ee4c. Everything above about the design stands — only the link changed.
+
+One consequence worth naming: implementing it grows this PR into both changes rather than leaving #71 landable on its own.
+
+**@vzakharov (human)** — 2026-09-14T13:22:24Z
+
+> defer it and the rename has no number to use
+
+not an issue (pardon the pun), I was meaning to remove the directive to include issue number from branch names for a while as I see no use in it anyway
+
+> Group closure. /plan is G2; /issue and /propose-issue are G3
+
+if an adopted accepted plan but not issue, they'll have to rework around that somehow -- i.e. by suggesting to keep the rest of work, undone in this pr (the one that would otherwise would be posted as an issue) in-repo. But ultimately it's not muthur's problem to solve.
+
+> /task outcome 3 is a hole. "Plan, then go" writes straight to
+*.in-progress.md under the conditional go-ahead and implements in the same
+session.
+
+can you explain again, maybe on an example? I do understand that the decision to "plan then go" could bear a risk, but it's there whether issues or opened or not. Then again, I consider close-to-none the probability of an agent deciding to "plan then go" for an issue they split into subissues.
+
+> And
+when the dedupe hits, the untracked path converges on the tracked one exactly as
+you predicted.
+
+so it's fine, is that what you're saying? I'd add that, in case a dedupe hits, the agent should stop and report because maybe that'll change the operator's judgment. (E.g. someone else is onto this task.)
+
 ---
 
 ### `.claude/skills/task/SKILL.md`:29 — resolved
@@ -406,3 +503,4 @@ where someone deciding whether this change is right will look for it.
 - **2026-09-12T14:50:45Z** @vzakharov reviewed (COMMENTED): https://github.com/vzakharov/muthur/pull/71#pullrequestreview-5186802965.
 - **2026-09-12T15:09:19Z** @vzakharov renamed from «feat: give the plan-or-not call its own skill, /task» to «feat: give the plan-or-not call its own skill, and route /issue to it».
 - **2026-09-12T15:27:12Z** @vzakharov reviewed (COMMENTED): https://github.com/vzakharov/muthur/pull/71#pullrequestreview-5186945235.
+- **2026-09-14T10:05:19Z** @vzakharov cross-referenced this pull request from [#74 feat: route untracked work to /task, and move the split into /plan](https://github.com/vzakharov/muthur/pull/74).

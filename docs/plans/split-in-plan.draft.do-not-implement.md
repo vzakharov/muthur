@@ -66,19 +66,22 @@ go away:
   first slice in full and describes the remainder coarsely, and the slices are
   filed as issues.
 - **The parent.** Arriving from `/issue`, it exists already. Arriving from bare
-  prose, `/plan` creates it: it stays open as a grouping artifact and is never
-  what the PR closes. Either way the first slice is a child, never the parent —
-  the rule `/issue` states today, carried over unchanged.
+  prose, `/plan` creates it through `/propose-issue` — the one issue in a carve
+  worth deduping, since the umbrella is the one somebody else may already have
+  filed. **A dedupe hit stops the turn and reports it** rather than silently
+  adopting the found issue: somebody else being on this work is exactly what
+  changes the operator's judgment, and it is invisible from the dedupe result.
+  Children are created directly. The parent stays open as a grouping artifact and
+  is never what the PR closes; the first slice is a child, never the parent — the
+  rule `/issue` states today, carried over unchanged.
 
 What this buys beyond tidiness: **untracked work becomes splittable at all.**
 Today the carve lives only inside a skill you reach by already having an issue
 number, so "add an admin page" typed bare has no path to one.
 
-### The ordering constraint that fixes when issues are filed
+### When the issues are filed
 
-`/pr` Step 4 reads the closing issue off the **branch slug**, and `/plan` Part 1
-requires the branch renamed **before** the plan file is written, the file being
-named after the slug. So within a `/plan` turn the order is forced:
+Within a `/plan` turn the order is:
 
 1. carve decision, proposed in prose, stopping for approval — creating nothing;
 2. file the parent (when there isn't one) and every child;
@@ -86,11 +89,18 @@ named after the slug. So within a `/plan` turn the order is forced:
 4. write the plan file;
 5. publish via `/pr`.
 
-This settles the question of whether filing waits for `/go`: it cannot. Deferring
-it leaves step 3 with no number and costs the PR its `Closes`. The gate that
-protects the tracker is `/issue` Step 3's existing one — propose in prose, create
-nothing until the operator agrees — and it moves into `/plan` unchanged, so no
-issue is filed ahead of the operator either way.
+Steps 2–3 are in that order because `/pr` Step 4 reads the closing issue off the
+**branch slug**, and `/plan` Part 1 renames the branch before writing the plan
+file, which is named after the slug. **That read is itself under review** — the
+operator means to drop the issue number from branch slugs, and if it goes, `/pr`
+needs another place to read `Closes #N` from (`docs/issue/<n>/` on the branch is
+the cheap candidate; see "Settled in review"). Nothing in this plan changes with
+it: filing stays at step 2 on its own merit, which is that the carve's approval
+and the tracker state land in the same turn the operator reviews the plan.
+
+The gate protecting the tracker is `/issue` Step 3's existing one — propose in
+prose, create nothing until the operator agrees — and it moves into `/plan`
+unchanged, so no issue is filed ahead of the operator either way.
 
 ### Group closure
 
@@ -105,19 +115,20 @@ get a step they cannot run. Split the carve along that line:
   granularity rule, and carrying an enumerated parent's verbatim reports and
   attachments into each child.
 
-`/plan` cites the G3 file conditionally. For a G2-only adopter the carve degrades
-to its plan-file half: the plan names the slices and nothing is filed. Precedent
-for the conditional edge is `/finalize`, whose **Requires** column already reads
-"**conditionally** `/issue` (G3)".
+`/plan` cites the G3 file conditionally. For a G2-only adopter the carve is the
+plan naming its slices, and nothing else: no fallback procedure is written for
+what they do with a list they can't file. Precedent for the conditional edge is
+`/finalize`, whose **Requires** column already reads "**conditionally** `/issue`
+(G3)".
 
-### The outcome-3 hole
+### The carve is not covered by a conditional go-ahead
 
 `/task` outcome 3 — plan, then go — writes the plan straight to `*.in-progress.md`
-under the conditional go-ahead and implements in the same session. A carve
-discovered *inside* that plan would file issues and start a multi-PR programme
-with no operator gate. So `/plan` states the recovery: discovering a split while
-running outcome 3 sends the task back to the gate. It is Question 1's "the scope
-is itself the question", answered late.
+under the conditional go-ahead and implements in the same session, so a carve
+discovered inside it would file issues with no gate in the turn. The carve's own
+propose-and-stop covers this already; the one clause `/plan` adds is that
+`/task`'s conditional go-ahead does **not** extend to it. The go-ahead was scoped
+to the task as described, and a carve is the finding that the task wasn't that.
 
 ## Files
 
@@ -126,7 +137,7 @@ is itself the question", answered late.
 | `CLAUDE.md` | § "Plan mode & questions in web sessions": replace the planning-session default with Part A's three rows; keep the `/from-branch` / `/handle` continued-work bullet as the launch-vs-continued line |
 | `.claude/skills/issue/SKILL.md` | delete Step 3; renumber; Step 4 loses the split exception |
 | `.claude/skills/issue/splitting.md` | **new** — the G3 filing half, moved verbatim from Step 3 |
-| `.claude/skills/plan/SKILL.md` | new section: the carve bar, the plan-file shape, the forced ordering, the outcome-3 recovery, the conditional cite |
+| `.claude/skills/plan/SKILL.md` | new section: the carve bar, the plan-file shape, the propose-and-stop gate and the ordering, the clause excluding the carve from `/task`'s conditional go-ahead, the conditional cite |
 | `.claude/skills/task/SKILL.md` | one line: `/task` is where a launch-time directive lands |
 | `.claude/skills/update-muthur/catalog.md` | `/issue` and `/plan` rows re-described; `/plan` gains a conditional G3 edge |
 
@@ -136,24 +147,35 @@ one catalog row per skill).
 **Not itself split-worthy**, by the bar this plan moves: six files, one seam, one
 PR.
 
-## Open questions
+## Settled in review
 
-1. **Does the parent go through `/propose-issue`?** It is the one issue in a
-   carve worth deduping — "add an admin page" may already be filed, which is
-   worth knowing before creating a second umbrella.
-   - **(a) Parent only — recommended.** Children are created directly; deduping
-     each against the whole backlog is a round-trip per slice for a near-always
-     empty result.
-   - (b) Nothing goes through it — `/plan` creates the parent directly.
-   - (c) Everything goes through it.
-2. **What does a G2-only adopter get?**
-   - **(a) The plan-file half — recommended.** The plan names the slices; nothing
-     is filed; the operator does what they like with the list.
-   - (b) Splitting is G3-only, and `/plan` says nothing about carving without a
-     tracker.
+On the thread at `.claude/skills/task/SKILL.md`:14:
 
-Both are written into the plan with the recommended option in force, so silence
-resolves them.
+- **`/propose-issue` runs on the parent only**, children created directly — and a
+  dedupe hit stops and reports instead of adopting the match.
+- **A G2-only adopter gets the plan naming its slices and nothing more.** Working
+  around a tracker they declined is theirs to solve, not this repo's.
+- **Outcome 3 needs a clause, not a procedure** — the carve's own gate already
+  holds; only the scope of `/task`'s conditional go-ahead needed stating.
+
+## Still open
+
+**Does the issue number stay in the branch slug?** The operator means to remove
+it. It is the mechanism this branch's own change installed: `/pr` Step 4 reads the
+number off the slug precisely because no parameter threads it any more, and that
+read is what keeps a split closing the chosen child rather than a parent mentioned
+in a commit body. Removing it needs a replacement or an accepted loss:
+
+- **(a) `/pr` reads `docs/issue/<n>/` off the branch** — already committed at
+  `/issue` Step 2, survives a rename, and covers the split if the carve exports
+  the chosen child beside the parent. Keeps the no-threading win.
+- (b) Re-thread the `<issue>` parameter — undoes this branch's third change.
+- (c) Drop `Closes #N` and close issues by hand.
+
+Three sites state the rule: `/issue` § "Branch name", `/pr`'s `<issue>` parameter
+line, `/pr` Step 4. Small enough to ride this PR, but it edits this PR's own diff,
+so it waits for the operator rather than being folded in. **Nothing else in this
+plan depends on the answer** — filing at plan time survives either way.
 
 ## DRY notes
 
