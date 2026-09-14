@@ -90,13 +90,18 @@ go away:
   contract to its callers is that the issue has been taken onto the branch —
   exported, committed, and there for a later session to re-read. `/track-` is what
   `/propose-issue` does.
-- **The old name becomes a stub that routes rather than redirects.** `/issue` cannot
-  forward to `/take-issue`, which is no longer something an operator calls; and the
-  bare noun never said which of the two operations was meant anyway. So the stub is a
-  three-line map: `/task <what to do> #<N>` to let the agent make the call, `/plan`
-  or `/go` with the same shape to force it either way, and `/propose-issue` to file
-  one. It is the `/implement` pattern with a fork in it, kept for the muscle memory
-  and for the handoff blocks already written.
+- **The old name becomes a stub that forwards to `/plan`.** `/issue` cannot forward
+  to `/take-issue`, which is no longer something an operator calls, so it forwards to
+  one of the four skills that replaced it and actually runs it: given a `#<N>` it
+  invokes `/plan <the surrounding prose> #<N>`, and says in one line that `/task` and
+  `/go` take that same shape — the first hands the plan-or-not call back to the
+  agent, the second skips it. Given no number there is nothing to take, and the prose
+  is an unfiled unit of work: that reading is `/propose-issue`, which the stub names
+  rather than runs, filing being the one of the four that writes to the tracker.
+  `/plan` is the default because the deprecated name says nothing about which reading
+  was meant, and a plan is the one whose wrong guess costs a round trip rather than
+  an unreviewed diff. It is the `/implement` pattern with a fork in it, kept for the
+  muscle memory and for the handoff blocks already written.
 - **`/task` is untouched.** Work that needs a carve already satisfies Question 1
   ("the scope is itself the question", "costs far more to produce than to
   describe"), so it routes to `/plan` without a special case.
@@ -168,8 +173,9 @@ same principle to a number that does not exist yet.
 ### Group closure
 
 The catalog puts `/plan` in **G2** and `/take-issue` / `/propose-issue` in **G3**, so
-`/plan` cannot simply absorb issue-filing: an adopter who tracks no issues would
-get a step they cannot run. Split the carve along that line:
+`/plan` cannot simply absorb issue-filing: an adopter who took the loop but tracks
+nothing on GitHub would get a step they cannot run. What is split here is the
+carve's **documentation**, not the work — two halves, two homes:
 
 - **G2, stated in `/plan`:** whether to carve, where the seams are, and the plan
   file's shape — first slice in full, remainder coarse.
@@ -178,9 +184,18 @@ get a step they cannot run. Split the carve along that line:
   granularity rule, and carrying an enumerated parent's verbatim reports and
   attachments into each child.
 
-It sits beside `/propose-issue` rather than beside `/take-issue` because it is
-about creating a family of issues, which is that skill's job and no longer has
-anything to do with transport. It also means pruning G3 takes the file with the
+Concretely, on "rebuild the settings area, it's three separate screens": both
+adopters get the same `/plan` turn, because judging the seams needs no tracker.
+The plan file specs the first screen in full, describes the other two in a
+paragraph each, and lists all three under the heading that proposes them. For the
+G2-only adopter that list **is** the tracking, and the turn ends there. For the G3
+adopter `/go` reads the same list on the go-ahead and files it — parent, three
+children, `sub_issues` links — and the PR for screen one carries `Closes #<child>`.
+One judgement, and a second half that only exists where there is somewhere to file.
+
+The G3 half sits beside `/propose-issue` rather than beside `/take-issue` because
+it is about creating a family of issues, which is that skill's job and no longer
+has anything to do with transport. It also means pruning G3 takes the file with the
 skill it belongs to, instead of stranding it under a skill that never reads it.
 
 `/plan` cites the G3 file conditionally. For a G2-only adopter the carve is the
@@ -230,9 +245,9 @@ now, which is the reading someone has to untangle by hand.
 
 | File | Change |
 | --- | --- |
-| `CLAUDE.md` | § "Plan mode & questions in web sessions": replace the planning-session default with Part A's two rows plus the `#<N>` export-first line; keep the `/from-branch` / `/handle` continued-work bullet as the launch-vs-continued line. § "Working with skills": `/take-issue` moves from the entry points to the mechanical pieces |
+| `CLAUDE.md` | § "Plan mode & questions in web sessions": replace the planning-session default with Part A's two rows plus the `#<N>` export-first line; keep the `/from-branch` / `/handle` continued-work bullet as the launch-vs-continued line. § "Working with skills": `/take-issue` moves from the entry points to the mechanical pieces, and `/issue` joins `/implement` as a redirect |
 | `.claude/skills/take-issue/SKILL.md` | **renamed from `issue/`**; delete Steps 3 and 4 and § "Branch name"; what remains is the mode gate, the export and the commit; the argument shape admits prose around the number and says the export outranks it; a closing line that its callers are `/task`, `/plan` and `/go`, and that it returns to them |
-| `.claude/skills/issue/SKILL.md` | **new** — deprecation stub: a three-line map to `/task`, `/plan` / `/go` and `/propose-issue`, forwarding to none of them |
+| `.claude/skills/issue/SKILL.md` | **new** — deprecation stub: with a `#<N>`, forward to `/plan` and report that `/task` and `/go` take the same shape; with none, name `/propose-issue` and stop |
 | `.claude/skills/propose-issue/splitting.md` | **new** — the G3 filing half, moved verbatim from Step 3 |
 | `.claude/skills/pr/SKILL.md` | Step 4 reads `docs/issue/<n>/` instead of the slug, and writes `Closes #<tbd>` on a carve whose children are not filed yet; no line at all where no issue is involved; the `<issue>` parameter line follows |
 | `.claude/skills/propose-issue/SKILL.md` | say that Steps 1–2 and Step 3 may run in different turns; Step 3 fills any `#<tbd>` on the branch and in the PR body |
@@ -288,9 +303,9 @@ On the review of this file:
 - **An issue number is a detail of the prompt, not a destination.** `/task`, `/plan`
   and `/go` all take `<what to do> #<N>`, each exporting the thread first, so the
   entry ladder loses a row and `/take-issue` becomes a mechanical piece with three
-  callers. The old `/issue` is deprecated rather than forwarded: its stub maps the
-  operator onto whichever of those they meant, or onto `/propose-issue` if they meant
-  to file one.
+  callers. The old `/issue` keeps working, as a stub that runs `/plan` on the same
+  argument and names `/task` and `/go` as the other two readings of it — or names
+  `/propose-issue`, where there is no number to take.
 - **`propose-issue/splitting.md`, not `take-issue/splitting.md`.** The filing half is
   about creating a family of issues, which is `/propose-issue`'s job; transport has
   nothing to do with it, and homing it there keeps it with the skill a G2-only
@@ -328,9 +343,10 @@ Nothing is left open. The plan is waiting on a go-ahead, not on an answer.
   carry a line pointing at `/take-issue` rather than a copy of what it does. Three
   callers is what a mechanical piece looks like, and the alternative — the receiving
   skill describing the export — is the convention stated three times.
-- **The `/issue` stub restates nothing.** Each line is a name and the case it
-  covers, so the argument shapes stay with the skills that own them and the stub
-  goes stale only if one of those four skills disappears.
+- **The `/issue` stub restates nothing.** It looks for a `#<N>` and hands the whole
+  argument on unchanged; the lines it prints are names and the case each covers, not
+  argument shapes. Those stay with the skills that own them, and the stub goes stale
+  only if one of those four skills disappears.
 - **Polar-bear watch on the diff.** Deleting `/issue` Step 3 must not leave a
   sentence anywhere saying the split no longer happens there. `/tend-prose
   negation` runs over the result.

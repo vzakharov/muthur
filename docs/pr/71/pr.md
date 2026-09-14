@@ -7,7 +7,7 @@
 - **Draft:** yes
 - **Merged:** _not merged_
 - **Created:** 2026-09-12T14:26:37Z
-- **Updated:** 2026-09-14T18:40:00Z
+- **Updated:** 2026-09-14T21:25:08Z
 - **Closed:** _not closed_
 - **Labels:** _none_
 
@@ -1483,6 +1483,89 @@ routing and this diff is at twelve files.
 
 ---
 
+### `docs/plans/split-in-plan.draft.do-not-implement.md`:99 — unresolved
+
+```diff
+@@ -63,27 +70,33 @@ from *always* to *when the questions say so*.
+ Step 4 then carries the exception that a split "skips the call and plans". Both
+ go away:
+ 
+-- **`/issue` becomes transport**, the shape `/pr` already has: export, commit,
+-  hand to `/task` with `<issue>` = the number the eventual PR must close. No
+-  wording change to how `Closes #N` is planted. Row 2 sends it prose-plus-number,
+-  which its argument shape says is `<number|url>`, so that shape gains the third
+-  form: the number is the argument, surrounding prose is the operator's own
+-  summary, and Step 1's export outranks it — the rule already there as "do not
+-  start solving the task from the title alone".
++- **`/issue` becomes transport, and stops being an entry point.** What is left
++  after Step 3 goes is export and commit — so the handoff to `/task` goes too, along
++  with § "Branch name", whose one contribution this plan removes anyway. The skill
++  no longer decides anything, which is what takes it out of the operator's hands:
++  its callers are `/task`, `/plan` and `/go`, each running it first when the prompt
++  carries a `#<N>`, and the number they pass on as `<issue>` is what the eventual PR
++  must close. No wording change to how `Closes #N` is planted. Its argument shape
++  gains the third form the ladder sends it — the number is the argument, surrounding
++  prose is the operator's own summary, and the export outranks it, which is the rule
++  already there as "do not start solving the task from the title alone".
+ - **And it takes the name that says which half it is: `/take-issue`.** The noun
+   names the argument but not the operation, and this repo has two operations on
+   that argument. Nothing in the naming rule objects: it bars names that double as
+   go-ahead tokens, and "take" is not one — naming a skill after its argument is the
+   stronger guarantee that rule offers, not the convention the repo follows, which
+-  is why `/propose-issue` sits under it without being an exception. **The verb names
+-  the invocation, not its first step.** A turn that starts here ends at a plan or at
+-  a PR, so `/read-`, `/fetch-`, `/load-` and `/import-` all promise a read-only turn
+-  the skill does not deliver — and `/track-` names what `/propose-issue` does. "Take"
+-  is the verb the skill's own description already opens with, and it survives the
+-  handoff: taking an issue on is what the whole chain does. The old name
+-  stays as a compat stub the way `/implement` does, pointing at `/take-issue` and
+-  naming `/propose-issue` as the other reading — a bare `/issue` being exactly the
+-  invocation that does not say which was meant.
++  is why `/propose-issue` sits under it without being an exception. "Take" over
++  "read", "fetch", "load" or "import": those name the export step, and the skill's
++  contract to its callers is that the issue has been taken onto the branch —
++  exported, committed, and there for a later session to re-read. `/track-` is what
++  `/propose-issue` does.
++- **The old name becomes a stub that routes rather than redirects.** `/issue` cannot
++  forward to `/take-issue`, which is no longer something an operator calls; and the
++  bare noun never said which of the two operations was meant anyway. So the stub is a
++  three-line map: `/task <what to do> #<N>` to let the agent make the call, `/plan`
++  or `/go` with the same shape to force it either way, and `/propose-issue` to file
++  one. It is the `/implement` pattern with a fork in it, kept for the muscle memory
++  and for the handoff blocks already written.
+```
+
+**@vzakharov (human)** — 2026-09-14T21:21:39Z
+
+let's make the stub invoke `/plan` (because that was what the previous `/issue` skill did), but also notify the operator that `/go` and `/task` with the same `<...> #<...>` format are options, too
+
+---
+
+### `docs/plans/split-in-plan.draft.do-not-implement.md`:184 — unresolved
+
+```diff
+@@ -160,11 +173,16 @@ get a step they cannot run. Split the carve along that line:
+ 
+ - **G2, stated in `/plan`:** whether to carve, where the seams are, and the plan
+   file's shape — first slice in full, remainder coarse.
+-- **G3, in `.claude/skills/take-issue/splitting.md`:** calling `/propose-issue` for
++- **G3, in `.claude/skills/propose-issue/splitting.md`:** calling `/propose-issue` for
+   each slice, the native `sub_issues` link and its two 422 traps, the ≥5-files
+   granularity rule, and carrying an enumerated parent's verbatim reports and
+   attachments into each child.
+ 
++It sits beside `/propose-issue` rather than beside `/take-issue` because it is
++about creating a family of issues, which is that skill's job and no longer has
++anything to do with transport. It also means pruning G3 takes the file with the
++skill it belongs to, instead of stranding it under a skill that never reads it.
+```
+
+**@vzakharov (human)** — 2026-09-14T21:23:39Z
+
+I still don't understand what it is, what we are splitting and why. Can you illustrate with some example maybe?
+
+---
+
 ## Timeline (status, references, and other events)
 
 - **2026-09-12T14:50:45Z** @vzakharov reviewed (COMMENTED): https://github.com/vzakharov/muthur/pull/71#pullrequestreview-5186802965.
@@ -1493,3 +1576,4 @@ routing and this diff is at twelve files.
 - **2026-09-14T14:40:58Z** @vzakharov reviewed (COMMENTED): https://github.com/vzakharov/muthur/pull/71#pullrequestreview-5199032973.
 - **2026-09-14T14:57:13Z** @vzakharov reviewed (COMMENTED): https://github.com/vzakharov/muthur/pull/71#pullrequestreview-5199246175.
 - **2026-09-14T18:34:26Z** @vzakharov reviewed (COMMENTED): https://github.com/vzakharov/muthur/pull/71#pullrequestreview-5201405003.
+- **2026-09-14T21:25:08Z** @vzakharov reviewed (COMMENTED): https://github.com/vzakharov/muthur/pull/71#pullrequestreview-5203027361.
