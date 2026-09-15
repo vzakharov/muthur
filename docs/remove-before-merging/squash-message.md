@@ -1,7 +1,7 @@
 Proposed squash title/body:
 
 ```
-feat: #69 colocate three minority-entry skill sections (pr #80)
+refactor: #69 colocate three minority-entry skill sections (pr #80)
 ```
 
 ```
