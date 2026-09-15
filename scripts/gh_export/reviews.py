@@ -1,13 +1,24 @@
 """The PR-only review section: review bodies, inline comment threads grouped
 into reply chains, and each thread's resolved state.
+
+A thread renders as an index row plus a body, so the body can move into a
+sibling file without the reader losing the thread. The quoted diff is the
+reviewer's own selection rather than GitHub's enclosing hunk — see `trim_hunk`.
 """
 
 from __future__ import annotations
 
+import re
 from typing import Any
 
 from gh_export.attachments import rewrite_attachment_refs
 from gh_export.authorship import attribution, split_agent_footer
+from gh_export.split import Hoistable, preview
+
+HUNK_CONTEXT_LINES = 3
+CONTEXT_LINE_CHARS = 200
+
+_HUNK_HEADER = re.compile(r"^@@ -(\d+)(?:,\d+)? \+(\d+)(?:,\d+)? @@")
 
 
 def review_threads(comments: list[dict[str, Any]]) -> list[list[dict[str, Any]]]:
@@ -46,20 +57,124 @@ def resolution_label(
     return "resolution unknown"
 
 
-def review_section(
+def selection_of(comment: dict[str, Any]) -> tuple[int | None, int | None, str]:
+    """`(start_line, line, side)` — the lines the reviewer highlighted.
+
+    The pair is read from one side or the other, never mixed: a comment whose
+    line left the diff carries it in `original_line` while `line` is null, and
+    the stale `original_start_line` must not pair with a live `line`.
+    """
+    side = (comment.get("side") or "RIGHT").upper()
+    if comment.get("line") is not None:
+        return comment.get("start_line"), comment.get("line"), side
+    return comment.get("original_start_line"), comment.get("original_line"), side
+
+
+def trim_hunk(
+    hunk: str, start_line: int | None, line: int | None, side: str = "RIGHT"
+) -> str:
+    """Cut GitHub's enclosing hunk down to the reviewer's selection.
+
+    `diff_hunk` runs from the start of the enclosing hunk to the commented line,
+    so a rewritten file arrives as hundreds of lines pointing at three. What
+    survives is the `@@` header, a marker for what was dropped,
+    `HUNK_CONTEXT_LINES` of run-up, and `start_line`..`line` **untouched** —
+    nothing inside the selection is ever shortened, that being the whole point.
+    The full hunk stays one click away on GitHub.
+    """
+    if not hunk:
+        return ""
+    header, rows = _hunk_rows(hunk)
+    if not rows:
+        return hunk
+
+    # The hunk ends at the commented line, so its last row is the fallback when
+    # the numbering doesn't resolve (a mixed-side selection, a malformed hunk).
+    end = _row_index(rows, line, side)
+    if end is None:
+        end = len(rows) - 1
+    start = _row_index(rows, start_line, side) if start_line is not None else end
+    if start is None or start > end:
+        start = end
+
+    run_up_from = max(0, start - HUNK_CONTEXT_LINES)
+    out = [header]
+    if run_up_from:
+        out.append(_elided(run_up_from))
+    out.extend(_cap(rows[i][0]) for i in range(run_up_from, start))
+    out.extend(rows[i][0] for i in range(start, end + 1))
+    trailing = len(rows) - 1 - end
+    if trailing > 0:
+        out.append(_elided(trailing))
+    return "\n".join(out)
+
+
+def render_thread(
+    chain: list[dict[str, Any]],
+    anchor: str,
+    url_to_relative: dict[str, str],
+    resolved_by_comment_id: dict[int, bool],
+) -> str:
+    """One thread's body, opening with the anchor its index row links to."""
+    root = chain[0]
+    start_line, line, side = selection_of(root)
+    label = resolution_label(chain, resolved_by_comment_id)
+    chunks = [
+        f'<a id="{anchor}"></a>',
+        "",
+        f"### {_location(root)} — {label}",
+        "",
+    ]
+    hunk = trim_hunk(root.get("diff_hunk") or "", start_line, line, side)
+    if hunk:
+        chunks.extend(["```diff", hunk, "```", ""])
+    for comment in chain:
+        by_agent, body = split_agent_footer(comment.get("body") or "")
+        chunks.extend(
+            [
+                f"**{attribution(comment.get('user'), by_agent)}**"
+                f" — {comment.get('created_at', '')}",
+                "",
+                rewrite_attachment_refs(body or "_empty_", url_to_relative),
+                "",
+            ]
+        )
+    chunks.extend(["---", ""])
+    return "\n".join(chunks)
+
+
+def thread_summary(
+    chain: list[dict[str, Any]],
+    thread_id: str,
+    resolved_by_comment_id: dict[int, bool],
+) -> str:
+    """The index row: exactly the fields `/handle`'s tail test selects on — the
+    resolved state, the tail author's agent/human label, its timestamp, and
+    enough preview to judge whether the thread needs opening."""
+    tail = chain[-1]
+    by_agent, body = split_agent_footer(tail.get("body") or "")
+    return (
+        f"- **{thread_id}** {_location(chain[0])}"
+        f" — {resolution_label(chain, resolved_by_comment_id)}"
+        f" — last: {attribution(tail.get('user'), by_agent)}"
+        f" {tail.get('created_at', '')} — {preview(body)}"
+    )
+
+
+def review_parts(
     reviews: list[dict[str, Any]],
     comments: list[dict[str, Any]],
     url_to_relative: dict[str, str],
     resolved_by_comment_id: dict[int, bool],
-) -> str:
-    """Render review bodies and inline comment threads, or "" if there are none."""
+) -> tuple[str, list[Hoistable]]:
+    """The section heading plus the review bodies, and the threads as
+    hoistables. Both empty when the PR has neither."""
     bodied = [r for r in reviews if (r.get("body") or "").strip()]
     threads = review_threads(comments)
     if not bodied and not threads:
-        return ""
+        return "", []
 
     chunks = ["## Review threads", ""]
-
     for review in bodied:
         state = (review.get("state") or "COMMENTED").upper()
         by_agent, body = split_agent_footer(review["body"])
@@ -75,25 +190,74 @@ def review_section(
             ]
         )
 
-    for chain in threads:
-        root = chain[0]
-        line = root.get("line") or root.get("original_line") or "?"
-        label = resolution_label(chain, resolved_by_comment_id)
-        chunks.extend([f"### `{root.get('path', '?')}`:{line} — {label}", ""])
-        hunk = root.get("diff_hunk")
-        if hunk:
-            chunks.extend(["```diff", hunk, "```", ""])
-        for comment in chain:
-            by_agent, body = split_agent_footer(comment.get("body") or "")
-            chunks.extend(
-                [
-                    f"**{attribution(comment.get('user'), by_agent)}**"
-                    f" — {comment.get('created_at', '')}",
-                    "",
-                    rewrite_attachment_refs(body or "_empty_", url_to_relative),
-                    "",
-                ]
+    items = []
+    for number, chain in enumerate(threads, start=1):
+        anchor = f"t{number:02d}"
+        items.append(
+            Hoistable(
+                anchor=anchor,
+                group=chain[0].get("path") or "",
+                summary=thread_summary(chain, f"T{number:02d}", resolved_by_comment_id),
+                body=render_thread(
+                    chain, anchor, url_to_relative, resolved_by_comment_id
+                ),
             )
-        chunks.extend(["---", ""])
+        )
+    return "\n".join(chunks), items
 
-    return "\n".join(chunks)
+
+def _location(root: dict[str, Any]) -> str:
+    """`` `path`:line ``, or bare `` `path` `` for a file-level comment, which
+    has a path and no line at all."""
+    _, line, _ = selection_of(root)
+    path = f"`{root.get('path') or '?'}`"
+    return f"{path}:{line}" if line else path
+
+
+def _hunk_rows(hunk: str) -> tuple[str, list[tuple[str, int | None, int | None]]]:
+    """The `@@` header, and each row with its old- and new-file line numbers."""
+    lines = hunk.split("\n")
+    match = _HUNK_HEADER.match(lines[0]) if lines else None
+    if not match:
+        return (lines[0] if lines else ""), []
+
+    old_no, new_no = int(match.group(1)), int(match.group(2))
+    rows: list[tuple[str, int | None, int | None]] = []
+    for text in lines[1:]:
+        if text.startswith("+"):
+            rows.append((text, None, new_no))
+            new_no += 1
+        elif text.startswith("-"):
+            rows.append((text, old_no, None))
+            old_no += 1
+        elif text.startswith("\\"):
+            # "\ No newline at end of file" annotates the row above it.
+            rows.append((text, None, None))
+        else:
+            rows.append((text, old_no, new_no))
+            old_no += 1
+            new_no += 1
+    return lines[0], rows
+
+
+def _row_index(
+    rows: list[tuple[str, int | None, int | None]], number: int | None, side: str
+) -> int | None:
+    if number is None:
+        return None
+    field = 1 if side == "LEFT" else 2
+    for index, row in enumerate(rows):
+        if row[field] == number:
+            return index
+    return None
+
+
+def _elided(count: int) -> str:
+    return f"… {count} line{'' if count == 1 else 's'} elided …"
+
+
+def _cap(text: str) -> str:
+    """Run-up only. The selection is never passed through here."""
+    if len(text) <= CONTEXT_LINE_CHARS:
+        return text
+    return text[:CONTEXT_LINE_CHARS] + "…"

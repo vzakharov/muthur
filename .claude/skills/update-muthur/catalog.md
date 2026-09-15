@@ -173,8 +173,8 @@ the project's first issue on the way through.
 | `/issue` | Export and read a GitHub issue, split it into natively-linked sub-issues when the scope demands, then hand the work to `/pr`. | G2, `gh`, `scripts/export-github-item.py` | `/finalize`, `/pr`, `/plan` (G2) | adopt |
 | `/propose-issue` | File a unit of work as an issue, deduping against what's already open. | G2, `gh`, `jq` | `/plan` (G2) | adopt |
 | `/audit-github-backlog` | Sweep every open issue and PR against today's code and leave a reviewable close/refile/keep plan, prioritising `P0`–`P3` everything it keeps. Mutates nothing on GitHub. | G2, `gh` | `/go`, `/plan` (G2); `/propose-issue`; `/override-gh` (G4) | adopt |
-| `scripts/export-github-item.py` | Download an issue — body, comments, timeline, attachments — into `docs/issue/<n>/`, or a PR (plus review threads, each one's resolved/unresolved state, and diff hunks) into `docs/pr/<n>/`. Stdlib-only. | `python3` ≥3.9, `$GH_TOKEN` or `gh auth token`, `scripts/lib/github.py` (G2), `scripts/gh_export/` | — | adopt |
-| `scripts/gh_export/` | The exporter's pieces, one module per concern: argument parsing, the REST/GraphQL client, attachment download, and a renderer each for the header and comments, the review threads, and the timeline. | `python3` ≥3.9, `scripts/lib/github.py` (G2) | — | adopt |
+| `scripts/export-github-item.py` | Download an issue — body, comments, timeline, attachments — into `docs/issue/<n>/`, or a PR (plus review threads, each one's resolved/unresolved state, and the lines its comment hangs off) into `docs/pr/<n>/`. Threads and comments are always indexed, and hoist into sibling files past 400 lines. Stdlib-only. | `python3` ≥3.9, `$GH_TOKEN` or `gh auth token`, `scripts/lib/github.py` (G2), `scripts/gh_export/` | — | adopt |
+| `scripts/gh_export/` | The exporter's pieces, one module per concern: argument parsing, the REST/GraphQL client, attachment download, the index-and-hoist layout, and a renderer each for the header and comments, the review threads, and the timeline. | `python3` ≥3.9, `scripts/lib/github.py` (G2) | — | adopt |
 
 ### G4 — Remote-session plumbing
 

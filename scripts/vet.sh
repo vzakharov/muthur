@@ -15,7 +15,7 @@
 # Parallel, printing only what failed (worth it once the serial run is the wait):
 #   exec scripts/run-parallel.sh lint='pnpm lint' typecheck='pnpm typecheck' test='pnpm test:unit'
 #
-# The four lines below are not stack-specific. Replacing everything around them
+# The five lines below are not stack-specific. Replacing everything around them
 # is what this file is for, so decide each on its own rather than sweeping it
 # away with the stack:
 #
@@ -37,6 +37,9 @@
 #     through `unittest discover`: `scripts/` carries no `__init__.py`, and
 #     discovery over a namespace package reports `Ran 0 tests ... OK` and exits
 #     0, so the line would pass here without running a test.
+#   test_export_split.py — the export's hunk trimming and its index-plus-hoist
+#     layout. Run by path for the same reason. What it guards above all is that
+#     a trimmed hunk still carries the reviewer's selection byte for byte.
 #
 # See CLAUDE.md → Vetting for the contract.
 
@@ -46,6 +49,7 @@ set -euo pipefail
 "$(dirname "$0")/check-squash-message.sh"
 "$(dirname "$0")/check-repo-identity.sh"
 "$(dirname "$0")/test_authorship.py"
+"$(dirname "$0")/test_export_split.py"
 
 echo "vet: no stack-specific checks are configured; the checks above are the run." >&2
 echo "vet: a repo whose stack is present and unchecked exits 1 here instead" >&2
