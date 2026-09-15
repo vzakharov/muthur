@@ -14,10 +14,13 @@ only when the operator named both by hand.
 part neither pass could resolve alone, since both bottom out at unpushed
 work and so fall through to "nothing to review" on a branch already
 pushed. The composite fetches the base and hands the branch's net diff
-against it to both, floored at the newest commit carrying the trailer
-`Polished: full` — a branch is polished at /go and again at /finalize,
-and the second run has no business re-reading what the first one
-cleared. What the floor narrows is the subject, not the comparison.
+against it to both, floored at the newest `polish:` commit — a branch is
+polished at /go and again at /finalize, and the second run has no
+business re-reading what the first one cleared. A run that finds nothing
+commits empty, since that is the run whose floor the next one needs, and
+what the floor narrows is what gets reviewed, not what it is compared
+against. `polish:` is a branch-local commit type the squash never
+carries to the trunk.
 
 Three call sites reach it. /go Step 3 loads it in place of the two
 passes it used to name; /finalize runs it ahead of its numbered steps,
