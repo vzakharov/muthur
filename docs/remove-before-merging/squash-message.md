@@ -19,16 +19,23 @@ Four rows go — `plan/carving.md`, `update-muthur/watermark.json`,
 that a row records a decision an adopter makes. The criterion is
 physical co-location rather than conceptual ownership, so
 `scripts/check-merge.sh` keeps its row: copying `/check-merge` does
-not bring it along.
+not bring it along. `update-muthur/catalog.md` keeps its `never` row
+too, being the one file the rule gets wrong — it sits inside a skill
+directory and must not travel, which is the divergence the Never
+table exists to record.
 
-`update-muthur/catalog.md` keeps its `never` row, being the one file
-the rule gets wrong — it sits inside a skill directory and must not
-travel, which is the divergence the Never table exists to record.
-Nothing else a dropped row carried is lost: the watermark's rewrite
-moves onto `/update-muthur`'s disposition, the form `.claude/voice/`
-already uses for its `operators/` entries, and `carving.md`'s
-conditional `/propose-issue` closure onto the `/plan` and `/go` rows
-that reach it.
+Each dropped row's content moves to where its reader already is: the
+watermark's rewrite onto `/update-muthur`'s disposition, the form
+`.claude/voice/` already uses for its `operators/` entries, and
+`carving.md`'s conditional `/propose-issue` closure onto the `/plan`
+and `/go` rows that reach it. One fact turned out to have no other
+home in the tree — that an inherited `adopted` array under-filters
+the candidate log silently — and lands in `ADOPTING.md` beside the
+field an adopter writes it into.
+
+`check-skill-catalog.sh` drops assertion 3's tree-parent case, which
+existed only to let a swept `docs/*` tree be absent. Its plain glob
+skip stays load-bearing: `scripts/test_*.py` is still a row.
 
 Closes #72
 
