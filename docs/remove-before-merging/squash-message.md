@@ -29,8 +29,8 @@ was not enough, conversation comments to comments.md. The header, PR
 body and timeline never move, being what the file is opened for.
 Under the budget nothing moves and the export stays one file, so the
 consumer's instruction is the same sentence either way: read the
-index, follow the link. Issue exports keep their current shape, their
-comments never having approached the size that made this worth doing.
+index, follow the link. Issues share the comment stage, so an issue
+export gains the same index and the same budget.
 
 Co-authored-by: Claude <noreply@anthropic.com>
 ```
