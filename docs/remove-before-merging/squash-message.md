@@ -16,10 +16,11 @@ Three sections move to colocated sidecars, each behind a resident
 pointer that names its trigger: /plan's native plan-mode recovery, the
 branch of /squash-message's working-file selection that runs only when
 neither file is on disk, and /take-issue's frame-extraction procedure
-for a video attachment. The plan-mode hook now cites its sidecar by
-path rather than naming a section by heading, which puts that citation
-under the cross-reference check instead of leaving it to break
-silently on a reword.
+for a video attachment, which installs ffmpeg — absent from the session
+image — instead of assuming it. The plan-mode hook now cites its
+sidecar by path rather than naming a section by heading, which puts
+that citation under the cross-reference check instead of leaving it to
+break silently on a reword.
 
 Four candidate sites are declined with the reason recorded, since a
 rejection is the same finding as an extraction: /go's canary and
