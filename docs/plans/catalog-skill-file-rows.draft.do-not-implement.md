@@ -89,13 +89,14 @@ Nothing a dropped row carried may be lost.
 - **`.claude/skills/update-muthur/catalog.md`** — four rows out, three sections
   reworded (§ "Three dispositions", G0 prose, § "Never"), two Pulls-in cells
   amended.
-- **`scripts/check-skill-catalog.sh`** — assertion 3's glob branch exists solely
-  for the two `docs/*` rows: an eight-line comment plus a tree-parent fallback
-  that asserts a swept tree's parent instead of the tree. With no glob row left it
-  is dead machinery explaining an accommodation for rows that are gone. Remove the
-  tree-parent case and its comment; keep a one-line skip for any glob (a glob
-  names no single path to assert) rather than leaving a future glob row to stat a
-  literal `*`. Header comment's assertion-3 clause loses its working-artifact half.
+- **`scripts/check-skill-catalog.sh`** — assertion 3 handles globs in two cases,
+  and only one of them dies. The **tree-parent case** (`*/\*`) exists solely for
+  the two `docs/*` rows: an eight-line comment plus a fallback that asserts a
+  swept tree's *parent* because the tree itself is absent by design. With those
+  rows gone it is machinery explaining an accommodation for rows that no longer
+  exist — remove it and its comment. The **plain glob skip** (`*\**`) stays live:
+  `scripts/test_*.py` is a `never` row and matches it. The header comment's
+  assertion-3 clause loses its working-artifact half and keeps the glob half.
 - **`ADOPTING.md`** — § "Hydrate the sync stub" links the watermark to the
   `#three-dispositions-not-two` anchor, which will no longer name it. Repoint to
   `#g0--the-sync-path`. The § "Vetting"/`vet.sh` citation of the same anchor is
