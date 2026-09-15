@@ -313,8 +313,9 @@ banner is still a stub.
 ### Hydrate the sync stub
 
 `/update-muthur` is a stub for want of a watermark, not a procedure, so
-hydrating it is `.claude/skills/update-muthur/watermark.json` — a
-[`rewrite`](.claude/skills/update-muthur/catalog.md#three-dispositions-not-two). Write it for **your**
+hydrating it is `.claude/skills/update-muthur/watermark.json` — the file the
+skill's [own row](.claude/skills/update-muthur/catalog.md#g0--the-sync-path) tells
+you to rewrite. Write it for **your**
 repo, then clear both stub markers: delete the `⚠️ **STUB.**` banner and drop
 `STUB` from the frontmatter `description`. Half of either leaves the skill
 failing assertion 4.
@@ -346,7 +347,10 @@ delete the skill rather than carrying it unhydrated.
   alone — so that first sync overwrites the only other trace of the birth point.
   Write it now, in the same breath.
 - `adopted` lists what you actually took, at whatever granularity is true —
-  directories or files.
+  directories or files. The shipped array is a placeholder naming *this* repo's
+  paths, and inheriting it is the one field whose failure is silent: a foreign
+  set under-filters the candidate log, so `/update-muthur` offers you nothing
+  and reports nothing wrong.
 - `declined` maps path → why-not. Fill this in as you go; it is what keeps
   re-sync quiet.
 
