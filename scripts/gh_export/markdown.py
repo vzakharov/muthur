@@ -1,9 +1,8 @@
 """The sections every export carries: the header block and the conversation
 comments.
 
-A conversation comment belongs to no file, so it is the case a layout keyed on
-paths has to name rather than let fall through — it indexes and hoists as its
-own stage.
+A conversation comment belongs to no file, so it indexes and hoists as its own
+stage rather than falling through a layout keyed on paths.
 """
 
 from __future__ import annotations

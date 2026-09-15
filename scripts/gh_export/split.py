@@ -1,11 +1,10 @@
 """Fit a rendered export into a line budget by hoisting bodies into sibling
 files, leaving an index behind.
 
-Knows nothing about GitHub. A caller hands it the document as a list of parts —
-literal Markdown, plus `Stage`s of `Hoistable` items — and gets back the main
-document and the extra files to write beside it. Every item is indexed whether
-or not it moves, so a consumer's instruction is one sentence in both shapes:
-read the index, follow the link.
+Knows nothing about GitHub — a caller passes parts and gets back the main
+document plus the files to write beside it. Every item is indexed whether or not
+it moves, so a consumer's instruction is one sentence in both shapes: read the
+index, follow the link.
 """
 
 from __future__ import annotations
@@ -23,8 +22,7 @@ class Hoistable(NamedTuple):
     """One body that may move out, with the index row that survives either way.
 
     `summary` carries no link — `split_export` appends the arrow and resolves
-    the target, which is the one thing that differs between the two shapes.
-    `body` is expected to open with its own `anchor_tag(anchor)`.
+    the target. `body` opens with its own `anchor_tag(anchor)`.
     """
 
     anchor: str
@@ -48,8 +46,7 @@ class Stage(NamedTuple):
 
 def anchor_tag(anchor: str) -> str:
     """What a hoistable's body opens with, so an index row's `#anchor` resolves
-    the same whether the body stayed put or moved into a sibling file. The two
-    halves of that convention live here together."""
+    the same whether the body stayed put or moved into a sibling file."""
     return f'<a id="{anchor}"></a>'
 
 
@@ -65,8 +62,7 @@ def preview(body: str, limit: int = PREVIEW_CHARS) -> str:
 
 def hoist_targets(parts: list[Any]) -> list[str]:
     """Every path the stages could occupy. A re-export clears these first, so a
-    run that now fits under the budget leaves no orphans from the run that
-    didn't."""
+    run that fits under the budget leaves no orphans from one that didn't."""
     return [p.target for p in parts if isinstance(p, Stage)]
 
 
@@ -135,7 +131,7 @@ def _hoist(stage: Stage, budget: int) -> tuple[dict[str, str], dict[str, str]]:
         groups.setdefault(item.group, []).append(item)
 
     # `NN` is the order of the group's first item, so the directory sorts the
-    # way the threads arrived.
+    # way the items arrived.
     for number, (group, items) in enumerate(groups.items(), start=1):
         for part, chunk in enumerate(_chunks(items, budget), start=1):
             suffix = "" if part == 1 else f"-{part}"

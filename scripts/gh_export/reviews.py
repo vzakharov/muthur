@@ -2,8 +2,8 @@
 into reply chains, and each thread's resolved state.
 
 A thread renders as an index row plus a body, so the body can move into a
-sibling file without the reader losing the thread. The quoted diff is the
-reviewer's own selection rather than GitHub's enclosing hunk — see `trim_hunk`.
+sibling file and still be reachable. The quoted diff is the reviewer's own
+selection rather than GitHub's enclosing hunk.
 """
 
 from __future__ import annotations
@@ -76,11 +76,9 @@ def trim_hunk(
     """Cut GitHub's enclosing hunk down to the reviewer's selection.
 
     `diff_hunk` runs from the start of the enclosing hunk to the commented line,
-    so a rewritten file arrives as hundreds of lines pointing at three. What
-    survives is the `@@` header, a marker for what was dropped,
-    `HUNK_CONTEXT_LINES` of run-up, and `start_line`..`line` **untouched** —
-    nothing inside the selection is ever shortened, that being the whole point.
-    The full hunk stays one click away on GitHub.
+    so a rewritten file arrives as hundreds of lines pointing at three. Nothing
+    inside `start_line`..`line` is ever shortened — only the run-up around it,
+    and the full hunk stays one click away on GitHub.
     """
     if not hunk:
         return ""
@@ -143,9 +141,9 @@ def thread_summary(
     thread_id: str,
     resolved_by_comment_id: dict[int, bool],
 ) -> str:
-    """The index row: exactly the fields `/handle`'s tail test selects on — the
-    resolved state, the tail author's agent/human label, its timestamp, and
-    enough preview to judge whether the thread needs opening."""
+    """The index row. Its fields are the ones `/handle`'s tail test selects on —
+    the resolved state, the tail author's agent/human label and timestamp —
+    so dropping one leaves that test reading bodies again."""
     tail = chain[-1]
     by_agent, body = split_agent_footer(tail.get("body") or "")
     return (

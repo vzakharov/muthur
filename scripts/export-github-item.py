@@ -13,8 +13,8 @@ chains, the lines each chain hangs off, and whether the reviewer resolved it.
 Conversation comments and review threads are always indexed — one row each,
 carrying who posted last, when, and the thread's resolved state — so a consumer
 reads the index and follows a link rather than the whole document. Past
-SPLIT_THRESHOLD_LINES the bodies hoist out behind those links, threads first
-into docs/pr/<n>/threads/ grouped by the file each hangs off, then conversation
+SPLIT_THRESHOLD_LINES the bodies hoist out behind those links: threads into
+docs/pr/<n>/threads/, grouped by the file each hangs off, then conversation
 comments into docs/pr/<n>/comments.md. The header, body and timeline never move,
 being what the file is opened for.
 
