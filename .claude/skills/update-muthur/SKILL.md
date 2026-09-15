@@ -57,7 +57,7 @@ fields, not the command.
     "scripts/",
     { "scripts/run-parallel.py": "taken as a POSIX sh port, scripts/run-parallel.sh" }
   ],
-  "declined": { ".claude/skills/issue/": "we track work in Linear, not GitHub issues" }
+  "declined": { ".claude/skills/take-issue/": "we track work in Linear, not GitHub issues" }
 }
 ```
 

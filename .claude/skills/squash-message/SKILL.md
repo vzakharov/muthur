@@ -158,7 +158,12 @@ number>)`. **One line, at most 80 chars** — the mandatory suffix eats ~10 of i
   which is why it isn't the body's own 72.
 - **Body** — the why, then what changed, at the altitude Step 3 sets. When the PR or diff references an issue, end
   the prose with a `Closes #N` (for `feat`/`refactor`/…) or `Fixes #N` (for
-  `fix`) trailer. Then a blank line, then `Co-authored-by: Claude
+  `fix`) trailer. **Never carry `#<tbd>` into the title or the trailer** — the
+  marker is a placeholder `@.claude/skills/pr/SKILL.md` Step 4 writes for an
+  issue that does not exist yet, and a squash message is pasted verbatim into
+  history, where a placeholder is permanent. Omit the reference entirely until
+  it resolves; the proposal is re-synced whenever the branch changes, so the
+  number lands in the next pass. Then a blank line, then `Co-authored-by: Claude
 <noreply@anthropic.com>` as the final line (or your other assigned vendor email
   if you aren't running on Claude Code) — the body is pasted verbatim, so the
   byline has to be inside it.

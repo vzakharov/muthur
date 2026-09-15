@@ -154,11 +154,12 @@ hydrate-now-or-delete; the reverse-closure edits; the derived watermark and
 `scripts/vet.sh`'s disposition; the language answer; and the deletion list. Plus
 the `## DRY notes` section CLAUDE.md requires of every plan.
 
-**Two dispositions are pre-decided, and the plan states them rather than asking.**
-`/implement` goes, unconditionally: it redirects a name that predates `/go`, and
-a fork has no plan file or PR comment old enough to still say it — the catalog's
-"ask the operator" applies to a repo that shipped `/implement` under its own
-history, which a tree one commit old cannot have. And this skill goes (Step 5.8).
+**Three dispositions are pre-decided, and the plan states them rather than asking.**
+`/implement` and `/issue` go, unconditionally: each redirects a name this repo
+shipped before a split, and a fork has no plan file, PR comment or muscle memory
+old enough to still say it — the catalog's "ask the operator" applies to a repo
+that shipped those names under its own history, which a tree one commit old
+cannot have. And this skill goes (Step 5.8).
 
 ## Step 5 — The execution order the plan prescribes
 
@@ -188,7 +189,7 @@ Ordering is load-bearing at exactly one point, and it is the first step:
    brief, any spec the operator attached, and any answer they gave for the
    prune's sake that also describes the product. A scarce brief makes a scarce
    issue: the issue exists to *keep* what they said, not to elicit more, and
-   `/issue` splits an over-broad one when the next session gets there. The only
+   `/plan` carves an over-broad one when the next session gets there. The only
    thing that cancels this is the operator declining G3 at plan review (Step 1),
    and then the `CLAUDE.md` brief is the whole record and the report says so.
 6. **Write the watermark** (Step 3) and clear both of `/update-muthur`'s stub
@@ -258,11 +259,11 @@ that starts the project once it merges — the same shape `/plan` hands over, on
 stage later:
 
 ```
-/issue #<N> <the issue's title>
+/task <the issue's title> #<N>
 ```
 
 A fresh session, because this one's context is the template it just deleted.
-Where Step 5.5 filed no issue, hand over `/plan <the brief>` instead.
+Where Step 5.5 filed no issue, hand over `/task <the brief>` instead.
 
 ## Recognizing an undetemplated fork
 
