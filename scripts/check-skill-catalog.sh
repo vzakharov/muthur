@@ -14,6 +14,9 @@
 #      absent by design.
 #   4. A skill's two stub markers agree, and no unhydrated stub is present
 #      downstream.
+#   5. Every `.md` beside a `SKILL.md` is reachable — something other than the
+#      page itself names its path. The reverse of 1: that one catches a pointer
+#      to nothing, this one a page nothing points at.
 #
 # Assertions 2-3 skip when the catalog is absent — the normal downstream
 # case, since the catalog describes the source repo and is never vendored. So the
@@ -186,17 +189,13 @@ fi
 
 # --- Assertion 5: no orphaned colocated page -------------------------------
 #
-# The reverse of assertion 1. That one walks references to files; this one walks
-# files to references, and catches the other half of the same silent failure: a
-# page beside a `SKILL.md` that nothing points at is prose no session ever loads,
-# and the agent follows the surviving skill body without learning it exists.
+# A page beside a `SKILL.md` that nothing points at is prose no session loads,
+# and it fails the way assertion 1's dangling pointer does: the agent follows the
+# surviving skill body and never learns the page is there. The page and its
+# pointer are separate edits, so assertion 1 catches losing the page and this one
+# catches losing the pointer.
 #
-# Colocating a minority-entry section creates exactly this risk, the page and the
-# pointer that reaches it being separate edits — and a later rewrite of the skill
-# body can drop the pointer while leaving the page behind.
-#
-# The reference must be the page's path, from somewhere other than the page
-# itself and other than the catalog: a catalog row is an inventory entry, not a
+# The catalog does not count as a reference: a row is an inventory entry, not a
 # load path, so a page listed only there is still unreachable.
 
 echo "5. Every colocated skill page is referenced"

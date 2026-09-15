@@ -1,11 +1,8 @@
 # Picking the working file when neither is on disk
 
 Loaded by `@.claude/skills/squash-message/SKILL.md` Step 2 when
-`docs/remove-before-merging/squash-message.md` is **not** on the branch. A branch
-that carries it has its answer already: that file is the working file, and it is
-a live doc this run edits.
-
-Absence has two causes, and the PR's draft state tells them apart.
+`docs/remove-before-merging/squash-message.md` is **not** on the branch. Absence
+has two causes, and the PR's draft state tells them apart.
 
 ## Draft PR — nothing has been created yet
 
@@ -38,10 +35,3 @@ If history has nothing, the branch never had the file: a bare `/squash-message`
 on a branch no PR-opening lane ever ran on. Use `tmp/squash-message.md`
 (`mkdir -p tmp`; `tmp/` is gitignored), which Step 5 `rm`s — with nothing prior
 on disk, that path composes fresh every time.
-
-## Why the tracked file exists at all
-
-It lives from PR-open until CI goes green, spanning `/finalize`'s own reconcile:
-at that point the PR is ready but the file is still there, so presence picks it
-and the final edit — the one that becomes the permanent record — is made with the
-doc in hand.

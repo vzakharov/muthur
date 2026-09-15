@@ -91,7 +91,10 @@ sheet**: what's already in it — earlier wording, the operator's edits, whateve
 previous run settled on — is the starting point, and this run edits it in light of
 what has changed since. Step 5 commits and pushes it. The path is a tripwire: the
 tree's name states its whole contract, and `/finalize` sweeps it once CI is green,
-so the proposal's own source never rides the squash onto the base branch.
+so the proposal's own source never rides the squash onto the base branch. The
+sweep is the last thing that happens to it, after that run's own reconcile — so
+even the final edit, the one that becomes the permanent record, is made with the
+doc in hand.
 
 **Absent → load `@.claude/skills/squash-message/working-file.md`**, which picks
 the file and says whether there is prior text to start from. Absence has two

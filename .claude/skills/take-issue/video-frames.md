@@ -1,11 +1,9 @@
 # Reading a video attachment
 
 Loaded by `@.claude/skills/take-issue/SKILL.md` Step 1 when `file` reports an
-exported attachment as a video (e.g. `ISO Media, Apple QuickTime movie`) —
-usually a screen recording of a repro.
+exported attachment as a video — usually a screen recording of a repro.
 
-You can read **images** but not play **videos**. Extract frames with `ffmpeg`, if
-it's available, and read the frames as images:
+Extract frames with `ffmpeg`, if it's available, and read the frames as images:
 
 ```bash
 mkdir -p tmp/frames   # tmp/ is gitignored — never commit frames
