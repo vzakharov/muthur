@@ -59,7 +59,7 @@ Three things put the floor back at the base:
 
 - **No file, or no row in it** — the first full run on this branch.
 - **A watermark `HEAD` does not descend from** (`git merge-base --is-ancestor <sha> HEAD`) — the branch was rebased, amended or reset, so the row names a commit that no longer describes this history.
-- **`/polish full`** — the operator asking for the whole branch again, which is the override for a watermark that is merely *wrong*: written by a run that cut itself short, or by one whose judgment they don't share.
+- **`/polish full`** — the operator asking for the whole branch again. It is the override for a watermark that is simply wrong: written by a run that cut itself short, or by one whose judgment they don't share.
 
 **A focused run writes no row.** Guidance narrows what the passes look for, so a clean result says nothing about the defects they weren't looking for, and a row claiming otherwise would bury those for the rest of the branch's life.
 

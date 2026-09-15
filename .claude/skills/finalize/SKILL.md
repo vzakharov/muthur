@@ -109,7 +109,7 @@ Steps (stop on first unresolved failure):
 
    One predicate governs, and the list below only spells out how it fails: **merge only when the run's whole effect on the branch was step 3's sweep, the quality passes' own edits, and whatever a tool's own fixer rewrote, and every check it ran passed the first time it ran.** The gate is evaluated once, here, by walking the run back against the list — not decided step by step as the run goes.
 
-   **The quality passes are inside the predicate rather than against it**, because what they do by construction is rewrite prose and fold duplication, leaving what the code does alone. A run of them that found something is the ordinary state of a branch that reached land prep without `/go`, so standing down on it would stand down on nearly every such branch. A fold that turns out to change behavior is the exception that proves it: that is no longer a polish edit, and it stands the merge down like any other change you authored.
+   **The quality passes are part of that predicate** because what they do by construction is rewrite prose and fold duplication, leaving what the code does alone — and a run of them that found something is the ordinary state of a branch that reached land prep without `/go`, so a gate that fired on it would fire on nearly every such branch. The boundary is behavior: a fold that turns out to change what the code does is no longer a polish edit, and stands the merge down like any other change you authored.
 
    **Stand down if any of this happened**, at whichever step it happened:
 
