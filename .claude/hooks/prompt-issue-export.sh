@@ -4,28 +4,23 @@
 # context, so the session starts holding the thread instead of spending a round
 # trip fetching it.
 #
-# `SessionStart` is where this belongs by intent and is the one event it cannot
-# use: that hook fires before the opening prompt exists anywhere. Measured in a
-# web session, the `SessionStart` record precedes the prompt's own record by ~79
-# seconds, and the payload carries no prompt field — so the event named for the
-# start of the session is the only one blind to what the session was started to
-# do. `UserPromptSubmit` is the first event that sees the prompt, and it sees it
-# before the agent does, which is the whole requirement.
+# `SessionStart` is where this belongs by intent and cannot carry it: the
+# `SessionStart` payload has no prompt field, and in a web session that hook's
+# record precedes the prompt's own by ~79 seconds. `UserPromptSubmit` is the
+# first event that sees the prompt, and sees it before the agent does.
 #
-# Every prompt is therefore in scope, not just the opening one. That costs
-# nothing: an export whose directory is already on disk is skipped, so the
-# prompts that actually fetch are the ones naming a thread this branch has not
-# taken yet — and a `#<N>` the operator raises mid-session is owed the thread on
-# the same grounds as one they launched with.
+# So every prompt is in scope, not only the opening one, and that costs nothing:
+# an export already on disk is skipped, leaving the fetches to prompts naming a
+# thread this branch has not taken.
 #
 # Commits nothing, for `.claude/hooks/session-images.sh`'s reason: a hook that
 # commits lands on whatever branch HEAD happens to be on, and a `/from-branch`
 # session abandons the branch it starts on. The commit is
 # `@.claude/skills/take-issue/SKILL.md` Step 2, and it stays the agent's.
 #
-# Never fails the turn. Every failure here — no `jq`, no token, a private repo,
-# a dead network, a slow attachment — costs one round trip back to the loop the
-# agent already had, so each path is stderr plus exit 0.
+# Never fails the turn: a failure here — no `jq`, no token, a private repo, a
+# dead network — costs one round trip back to the loop the agent already had,
+# so each path is stderr plus exit 0.
 
 set -uo pipefail
 
@@ -46,8 +41,8 @@ project="${CLAUDE_PROJECT_DIR:-$(jq -r '.cwd // empty' <<<"$payload")}"
 cd "$project" || exit 0
 
 # At most three, so a prompt that pastes a log or a diff cannot turn the turn
-# into a fetch queue. Deduped by number: a bare `#55` and a URL ending in 55
-# land in the same export directory, and the first form wins.
+# into a fetch queue. Deduped by number, since a bare `#55` and a URL ending in
+# 55 land in the same export directory.
 mapfile -t targets < <(python3 - "$prompt" <<'PY'
 import re
 import sys
@@ -67,6 +62,16 @@ print("\n".join(found[:3]))
 PY
 )
 
+# Both roots are candidates for any number: whether it names an issue or a PR
+# resolves from the API, never from the prompt.
+landed_export() {
+  local path
+  for path in "docs/issue/$1/issue.md" "docs/pr/$1/pr.md"; do
+    [ -f "$path" ] && { printf '%s\n' "$path"; return 0; }
+  done
+  return 1
+}
+
 exports=()
 failures=()
 
@@ -75,12 +80,10 @@ for target in "${targets[@]}"; do
   number="${target##*/}"
   number="${number#\#}"
 
-  for landed in "docs/issue/$number/issue.md" "docs/pr/$number/pr.md"; do
-    if [ -f "$landed" ]; then
-      exports+=("$landed")
-      continue 2
-    fi
-  done
+  if landed="$(landed_export "$number")"; then
+    exports+=("$landed")
+    continue
+  fi
 
   # The exporter exits non-zero on a partial run too — the Markdown written, an
   # attachment missing — so a failure is reported with its output rather than
@@ -90,9 +93,9 @@ for target in "${targets[@]}"; do
     continue
   fi
 
-  for landed in "docs/issue/$number/issue.md" "docs/pr/$number/pr.md"; do
-    [ -f "$landed" ] && exports+=("$landed")
-  done
+  if landed="$(landed_export "$number")"; then
+    exports+=("$landed")
+  fi
 done
 
 [ ${#exports[@]} -gt 0 ] || [ ${#failures[@]} -gt 0 ] || exit 0
