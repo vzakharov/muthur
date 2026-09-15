@@ -3,7 +3,20 @@
 Loaded by `@.claude/skills/take-issue/SKILL.md` Step 1 when `file` reports an
 exported attachment as a video — usually a screen recording of a repro.
 
-Extract frames with `ffmpeg`, if it's available, and read the frames as images:
+**`ffmpeg` is usually absent** — it and `ffprobe` both, and one package carries
+the pair. Install it before anything else; it takes about twenty seconds:
+
+```bash
+command -v ffmpeg >/dev/null ||
+  { apt-get update && apt-get install -y --no-install-recommends ffmpeg; }
+```
+
+Prefix `sudo` where the session is not root, or `brew install ffmpeg` on macOS.
+It installs here, not in the environment setup script CLAUDE.md § "Vetting"
+sends a toolchain to: that script runs for every session, and a video
+attachment is the rare one.
+
+Then extract frames and read them as images:
 
 ```bash
 mkdir -p tmp/frames   # tmp/ is gitignored — never commit frames
