@@ -1,5 +1,5 @@
 ---
-description: Finalize (a.k.a. "prep merge") — land prep: verify there's a draft PR, run the vet suite, merge the base branch, mark ready for review, propose a squash title/body, and post the attestation comment. Pass an optional branch/PR target first (`/finalize <branch|#PR|PR-url>`) to attach to that existing branch before finalizing. `/finalize no vet` is the docs-only mode; `/finalize and merge` squash-merges the PR as well, but only if the run turned up nothing to decide.
+description: Finalize (a.k.a. "prep merge") — land prep: verify there's a draft PR, run the quality passes (`/polish`), run the vet suite, merge the base branch, mark ready for review, propose a squash title/body, and post the attestation comment. Pass an optional branch/PR target first (`/finalize <branch|#PR|PR-url>`) to attach to that existing branch before finalizing. `/finalize no vet` is the docs-only mode; `/finalize and merge` squash-merges the PR as well, but only if the run turned up nothing to decide.
 ---
 
 **Optional branch/PR target**: if the first token of the argument is a branch name, `#NNN` PR number, or PR URL, then `/finalize <target>` is shorthand for attaching to that branch first and then finalizing — equivalent to `/from-branch <target> /finalize`. Load `@.claude/skills/from-branch/SKILL.md` and follow it to attach to `<target>`, then run the finalize steps below. If the argument has no target token, skip this and finalize the current branch as usual.
@@ -27,6 +27,10 @@ description: Finalize (a.k.a. "prep merge") — land prep: verify there's a draf
 - **If a workflow does run on PRs**, the vet run still happens here — it's faster and it catches things before a reviewer sees red — but step 4 also means watching that run to green (`@.claude/skills/watch-ci/SKILL.md`), and step 7 attests to both.
 
 Either way, **step 7's attestation comment is the record.** A reviewer cannot see from the diff what was run; if it isn't written down it did not happen as far as anyone else is concerned.
+
+**First, the quality passes.** Before step 1, load and follow `@.claude/skills/polish/SKILL.md` over this branch. Land prep is the funnel every branch reaches whatever route its work took, so this is where a branch written without `/go` in front of it still gets the passes — and the last point at which changing the diff is cheap, since the vet run, the base merge, the squash message and the attestation's SHA are all statements about a diff that has stopped moving.
+
+It carries no step number because the numbers below are cited from other skills and stay put; it runs first regardless. **`no vet` does not skip it** — a docs-only diff is squarely what both passes are for: `/tend-prose` by construction, and `/dry` because a constraint stated in two places is a duplication like any other.
 
 Steps (stop on first unresolved failure):
 
@@ -103,7 +107,9 @@ Steps (stop on first unresolved failure):
 
 8. **Merge — under `and merge` only, and only if the run was uneventful.** Without the flag, stop at step 7 and report.
 
-   One predicate governs, and the list below only spells out how it fails: **merge only when the run's whole effect on the branch was step 3's sweep and whatever a tool's own fixer rewrote, and every check it ran passed the first time it ran.** The gate is evaluated once, here, by walking the run back against the list — not decided step by step as the run goes.
+   One predicate governs, and the list below only spells out how it fails: **merge only when the run's whole effect on the branch was step 3's sweep, the quality passes' own edits, and whatever a tool's own fixer rewrote, and every check it ran passed the first time it ran.** The gate is evaluated once, here, by walking the run back against the list — not decided step by step as the run goes.
+
+   **The quality passes are part of that predicate** because what they do by construction is rewrite prose and fold duplication, leaving what the code does alone — and a run of them that found something is the ordinary state of a branch that reached land prep without `/go`, so a gate that fired on it would fire on nearly every such branch. The boundary is behavior: a fold that turns out to change what the code does is no longer a polish edit, and stands the merge down like any other change you authored.
 
    **Stand down if any of this happened**, at whichever step it happened:
 
@@ -116,7 +122,7 @@ Steps (stop on first unresolved failure):
    - **Anywhere** — the two-shot rule engaged; the PR carries feedback nobody answered (`@.claude/skills/handle/SKILL.md` Step 2's tail test, which is what keeps a merge from burying an open thread); or you reached a point where you would otherwise have asked the operator something.
    - **Under `no vet`** — the mode is the operator's call and does not stand the merge down, but its stated precondition is yours to check: if any check in the vet run would have had something to say about this diff, the mode was misapplied, and that misapplication is a stand-down.
 
-   The list is walked step by step so the verdict is auditable, and it is **not exhaustive** — a procedure that grows a step grows a way for a run to be eventful. So the predicate, not the list, is the verdict: **if the run made you decide anything, stand down.** Deciding it well is not the same as the operator having decided it.
+   The list is walked step by step so the verdict is auditable, and it is **not exhaustive** — a procedure that grows a step grows a way for a run to be eventful. So the predicate, not the list, is the verdict: **if the run made you decide anything the passes above don't cover, stand down.** Deciding it well is not the same as the operator having decided it.
 
    **Merging.** Step 7 goes up first: the record of what the merge rests on belongs on the PR before the merge, not after it. Then squash-merge with the title and body **step 5 settled**, verbatim; do not recompose them here. The comment is the source, so read it back rather than reconstructing it:
 

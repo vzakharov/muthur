@@ -139,6 +139,9 @@ Use semantic commit prefixes:
 - `test:` — adding or updating tests
 - `ci:` — CI/CD changes
 - `perf:` — performance improvements
+- `polish:` — a `/polish` run's own edits (see below)
+
+**`polish:` is a branch-local type**, outside the standard set on purpose. `@.claude/skills/polish/SKILL.md` finds where it last ran by that subject line, and nothing else would carry the mark: the run's edits are `refactor:` or `docs:` by nature, which says nothing about who made them or why. It reaches no trunk — the squash gives the branch one subject of its own, written by hand — so the extension costs a reader of `main` nothing and a reader of the branch a legible `git log --oneline`. That skill owns the form the subject takes.
 
 **In this repo the agent loop is the product, so a change to it is `feat:` / `fix:` — never `docs:`, however Markdown-shaped the diff.** What an adopting project takes from here _is_ the loop, so a new skill, a changed procedure, a new convention or a corrected rule is a behavior change to the thing this repo ships. That covers `.claude/skills/**`, `.claude/rules/**`, this file's own conventions, and the `scripts/` the skills call. `docs:` is left for prose **about** the repo that no session executes: `README.md`, catalog rows, tombstones, and the working artifacts (`docs/issue/`, `docs/plans/`, `docs/remove-before-merging/`) that `/finalize` sweeps before they land.
 
@@ -250,8 +253,9 @@ This project ships a set of Claude Code skills under `.claude/skills/`. Invoke t
 - **`/implement`** — a redirect to `/go`, kept because handoff blocks written before the rename still say it.
 - **`/issue`** — a redirect too, and a forked one: the work the name covers is spread across four skills, so with a `#<N>` it runs `/plan` on the argument and names `/task` and `/go` as the same-shape alternatives, and with no number it names `/propose-issue` and stops.
 
-**Quality passes** (both are mandatory inside `/go`):
+**Quality passes** (the pair is mandatory inside `/go`, and runs first inside `/finalize`):
 
+- **`/polish`** — run the pair below over the branch's diff, in order, and commit what they change. The composite exists because work reaches a PR by routes that never touch `/go`: a task asked for and done directly gets the passes only if something names them, and this is what the operator names.
 - **`/dry`** — review the session's diff for DRY opportunities; applies obvious wins, surfaces ambiguous ones.
 - **`/tend-prose`** — cut prose that shouldn't exist, rewrite what narrates the change into present-tense contracts, trim what the names and types already say, and delete what only denies a thing the change removed. Naming one lens (`existence`, `durability`, `tightness`, `negation`) runs only that one.
 **Mechanical pieces**, individually invocable and composed by the loop above:

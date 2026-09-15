@@ -280,8 +280,8 @@ the sync.
 ### Step 8 — Report and hand off
 
 Report the triage table — every candidate, with its verdict and one line of
-reasoning, skips included. Then hand off to `@.claude/skills/dry/SKILL.md`,
-`@.claude/skills/tend-prose/SKILL.md` and `@.claude/skills/pr/SKILL.md`; the
+reasoning, skips included. Then hand off to `@.claude/skills/polish/SKILL.md`
+and `@.claude/skills/pr/SKILL.md`; the
 skipped commits' reasoning belongs in the PR body, since the watermark advances
 past them and nothing else records why.
 
