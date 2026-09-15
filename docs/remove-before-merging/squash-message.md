@@ -1,38 +1,35 @@
 Proposed squash title/body:
 
 ```
-feat: export a prompt's #<N> before the turn reads it (pr #78)
+feat: export the issue a prompt ends in before the turn reads it (pr #78)
 ```
 
 ```
 A session launched with `fix the sidebar #55` spent its first tool
 call fetching the thread it was launched to work on, and answered
 nothing until it came back. `.claude/hooks/prompt-issue-export.sh`
-does that fetch ahead of the turn and names the export in its
-context, so `/take-issue` Step 1 is already done by the time the
-agent reads the prompt.
+does that fetch on `UserPromptSubmit` — the first event that sees
+the prompt, and it sees it before the agent does — and names the
+export in the turn's context, so `/take-issue` Step 1 is already
+done by the time the agent reads the prompt.
 
-`SessionStart` is where this belongs by intent and cannot carry it:
-its payload has no prompt field, and in a web session that hook's
-record precedes the prompt's own by some eighty seconds, so the
-event named for the start of the session is the one blind to what
-the session was started to do. `UserPromptSubmit` is the first
-event that sees the prompt, and sees it before the agent does —
-which puts every prompt in scope rather than only the opening one.
-That costs nothing, since an export already on disk is skipped:
-the prompts that fetch are the ones naming a thread this branch
-has not taken. At most three per prompt, deduped by number, PR
-references included — the exporter resolves the type, so a `#<N>`
-that turns out to be a PR lands under `docs/pr/<n>/`.
+Only a trailing reference counts, `#<N>` or a pasted thread URL,
+because that is the shape of an operator handing a thread over. A
+number mid-sentence is usually about something else — "what should
+rule #1 be?" — and the match is bash's own, so a prompt ending in
+anything else costs one `jq` and runs nothing further: 9ms
+measured, against 3.5s for a fetch. Every prompt is in scope
+rather than only the opening one, which is free for the same
+reason plus one more: an export already on disk is skipped.
 
-The hook commits nothing and never fails the turn. The commit
-stays `/take-issue` Step 2's, because a hook that commits lands on
-whatever branch HEAD is on and a `/from-branch` session abandons
-the branch it starts on; every failure path is stderr plus exit 0,
-with the injected report handing Step 1 back to the agent, because
-a broken hook should cost one round trip rather than the session.
-CLAUDE.md's `#<N>` bullet, `/take-issue` Step 1 and the catalog
-each gain a pointer at it rather than restating the rule.
+Guessing wrong is made cheap rather than prevented. The hook
+commits nothing — `/take-issue` Step 2's commit stays the agent's,
+so a stray export is untracked and the injected context says to
+delete it — and it never fails the turn, each failure path being
+stderr plus exit 0 with a report that a number which would not
+fetch was probably never a thread reference. CLAUDE.md's `#<N>`
+bullet, `/take-issue` Step 1 and the catalog each gain a pointer
+at the hook, and that bullet is halved on the way past.
 
 Co-authored-by: Claude <noreply@anthropic.com>
 ```

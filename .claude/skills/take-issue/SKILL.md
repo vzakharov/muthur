@@ -22,7 +22,7 @@ Do not work around it, and do not fall back to a chat-only plan.
 
 ## Step 1 — Export the issue locally (then read the export)
 
-**Look under `docs/issue/<n>/` before running anything: the export is normally already there.** `.claude/hooks/prompt-issue-export.sh` runs this step's command ahead of the turn on every `#<N>` and thread URL an operator's prompt carries, and names what it wrote in that turn's context — so where the export exists, this step is the reading below and nothing else. Run the command when it is absent: a number that reached you some other way, a hook that reported a failure, or a tree that adopted `/take-issue` without the hook.
+**Look under `docs/issue/<n>/` before running anything: the export is normally already there.** `.claude/hooks/prompt-issue-export.sh` runs this step's command ahead of any turn whose prompt *ends* in the reference, and names what it wrote in that turn's context — so where the export exists, this step is the reading below and nothing else. Run the command when it is absent: a number that reached you mid-sentence or some other way, a hook that reported a failure, or a tree that adopted `/take-issue` without the hook.
 
 **First command:** run the bundled exporter:
 
