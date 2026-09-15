@@ -1,5 +1,3 @@
-> ⛔ **DRAFT — DO NOT IMPLEMENT.** This plan is not approved. Do not edit source while this file is named `*.draft.do-not-implement.md` — prep and spikes go in `tmp/`. On an explicit operator go-ahead, `git mv` it to `*.in-progress.md` and delete this banner (quoting the go-ahead in the commit) *before* touching code.
-
 # Make a long PR export readable without reading all of it
 
 `scripts/export-github-item.py` writes one `docs/pr/<n>/pr.md` whatever the PR's size. On a long PR that file is unreadable and, worse, unskippable: the two things a consumer actually selects on — which threads are unresolved, and whose post each thread ends on — are buried inside the bodies, so `/handle`'s review lane has to load the whole document to find the handful of threads it will act on.
