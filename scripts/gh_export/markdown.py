@@ -12,7 +12,7 @@ from typing import Any
 
 from gh_export.attachments import rewrite_attachment_refs
 from gh_export.authorship import attribution, split_agent_footer
-from gh_export.split import Hoistable, preview
+from gh_export.split import Hoistable, anchor_tag, preview
 
 
 def header_section(
@@ -89,7 +89,7 @@ def comments_parts(
                 summary=f"- **C{number:02d}** {who} — {created} — {preview(body)}",
                 body="\n".join(
                     [
-                        f'<a id="{anchor}"></a>',
+                        anchor_tag(anchor),
                         "",
                         f"### Comment by {who} on {created}",
                         "",

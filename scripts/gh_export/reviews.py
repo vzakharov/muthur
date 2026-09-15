@@ -13,7 +13,7 @@ from typing import Any
 
 from gh_export.attachments import rewrite_attachment_refs
 from gh_export.authorship import attribution, split_agent_footer
-from gh_export.split import Hoistable, preview
+from gh_export.split import Hoistable, anchor_tag, preview
 
 HUNK_CONTEXT_LINES = 3
 CONTEXT_LINE_CHARS = 200
@@ -119,12 +119,7 @@ def render_thread(
     root = chain[0]
     start_line, line, side = selection_of(root)
     label = resolution_label(chain, resolved_by_comment_id)
-    chunks = [
-        f'<a id="{anchor}"></a>',
-        "",
-        f"### {_location(root)} — {label}",
-        "",
-    ]
+    chunks = [anchor_tag(anchor), "", f"### {_location(root)} — {label}", ""]
     hunk = trim_hunk(root.get("diff_hunk") or "", start_line, line, side)
     if hunk:
         chunks.extend(["```diff", hunk, "```", ""])

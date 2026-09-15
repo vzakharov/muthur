@@ -17,7 +17,7 @@ from gh_export.reviews import (
     thread_summary,
     trim_hunk,
 )
-from gh_export.split import Hoistable, Stage, split_export
+from gh_export.split import Hoistable, Stage, anchor_tag, split_export
 
 # Rows, in order: context(9/9), -old ten(10/-), +new ten(-/10),
 # +new eleven(-/11), +new twelve(-/12), context after(11/13).
@@ -167,7 +167,7 @@ class ThreadIndex(unittest.TestCase):
 
 def item(anchor: str, group: str, lines: int) -> Hoistable:
     body = "\n".join(
-        [f'<a id="{anchor}"></a>'] + [f"{anchor} body {n}" for n in range(lines - 1)]
+        [anchor_tag(anchor)] + [f"{anchor} body {n}" for n in range(lines - 1)]
     )
     return Hoistable(anchor=anchor, group=group, summary=f"- **{anchor}**", body=body)
 

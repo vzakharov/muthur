@@ -24,7 +24,7 @@ class Hoistable(NamedTuple):
 
     `summary` carries no link — `split_export` appends the arrow and resolves
     the target, which is the one thing that differs between the two shapes.
-    `body` is expected to open with its own `<a id="{anchor}"></a>`.
+    `body` is expected to open with its own `anchor_tag(anchor)`.
     """
 
     anchor: str
@@ -44,6 +44,13 @@ class Stage(NamedTuple):
     hoist_order: int
     title: str
     items: list[Hoistable]
+
+
+def anchor_tag(anchor: str) -> str:
+    """What a hoistable's body opens with, so an index row's `#anchor` resolves
+    the same whether the body stayed put or moved into a sibling file. The two
+    halves of that convention live here together."""
+    return f'<a id="{anchor}"></a>'
 
 
 def preview(body: str, limit: int = PREVIEW_CHARS) -> str:
