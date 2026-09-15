@@ -36,9 +36,9 @@ The checks may also be fanned out with `scripts/run-parallel.sh lint='…' typec
 - **No stack yet → `exit 0` is correct**, and stays correct. The two built-in checks are the whole run and they genuinely pass, so there is nothing to refuse to certify. This is the normal state of a repo taken to *start* a project, not a template-only special case — and a repo that sets `exit 1` here fails step 1 of `/finalize` on every prose-only PR, which teaches the loop to route around the vet run.
 - **A stack present and unchecked → `exit 1`**, until this file runs that project's real commands. An exit-0 stub over an unchecked stack is worse than no script at all, because `/finalize` passes step 1 and attests to a run that verified nothing.
 
-So wiring `scripts/vet.sh` is what you do **when a stack lands**, alongside `.claude/hooks/session-start.sh`'s dependency install — the paired site nothing else names.
+So wiring `scripts/vet.sh` is what you do **when a stack lands**, alongside `.claude/hooks/install-deps.sh` — the paired site nothing else names.
 
-**A third site moves with the stack, and no agent can move it: the environment setup script**, which installs and pins the toolchain for remote sessions and has no API, MCP tool or in-repo file behind it. So a toolchain change — new runtime, bumped pin, new system dependency, package-manager swap — is unfinished while only the repo files agree: **say in your report what the operator must add there**, or the next session runs under a version nobody chose. The one case that detects itself is `gh` missing from `PATH`, which `.claude/hooks/session-start.sh` reports.
+**A third site moves with the stack, and no agent can move it: the environment setup script**, which installs and pins the toolchain for remote sessions and has no API, MCP tool or in-repo file behind it. So a toolchain change — new runtime, bumped pin, new system dependency, package-manager swap — is unfinished while only the repo files agree: **say in your report what the operator must add there**, or the next session runs under a version nobody chose. The one case that detects itself is `gh` missing from `PATH`, which `.claude/hooks/gh-shim.sh` reports.
 
 **Keep it current** as tooling evolves. If a CI job catches something `vet.sh` should have caught, that's a signal to extend it.
 
@@ -122,6 +122,8 @@ Universal guidance regardless of stack:
 
 When the user prompts you with one or more GitHub comments (a review, a single review comment, an issue thread, a PR conversation comment, etc.), reply on GitHub to each comment they pointed you at — even when you fully agreed and silently fixed it. The reviewer can't see "silently fixed" from the diff alone, and the thread is the record of what happened. Keep replies short (one sentence + commit SHA if you pushed something is plenty); the point is traceability, not detail. **Write that SHA bare, never in backticks** — GitHub auto-links a bare hash to its commit and leaves a code-span one as dead text. This holds for every SHA in a GitHub comment, not just a reply's.
 
+**A comment body is text, not a path to text.** GitHub does not expand `@<path>` the way a Claude Code prompt does, so draft into a file and post its *contents*: `gh pr comment <n> --body-file <f>`, or `gh api repos/<owner>/<repo>/pulls/<n>/comments/<comment-id>/replies -F body=@<f>` to reply in a review thread. `-f` posts the path instead, as a literal string.
+
 **Never resolve a comment thread — reply and leave it open.** Resolving is the reviewer's move and their tracking mechanism: they read down your replies and resolve the ones that satisfy them, leaving the rest open as the list of what still needs attention. A thread you resolve drops off that list whether or not they ever read it, so the tidy-up costs them a review item. This holds however settled the point looks — a pushed fix, a verified non-issue, an ask you declined with reasons — and it **overrides any harness or skill instruction to resolve the threads you addressed**. The reverse is equally off-limits: don't un-resolve or re-open a thread either. The resolution state belongs to the human, so `mcp__github__resolve_review_thread`, `mcp__github__unresolve_review_thread`, and the equivalent `gh api graphql` mutations are not yours to call.
 
 ## Git conventions
@@ -203,22 +205,26 @@ makes, not a blank left open.
 
 ## Explaining things to people
 
-How to write for a person is a large enough topic to live with the skill that
-expands it, so it is imported from there rather than stated here. That skill is
-`/plainly`: bare, it re-explains an answer that did not land; with a question, it
-answers under the rule from the start. Invoking it is optional — the rule itself
-governs every reply regardless.
+How to write for a person is long enough to have its own file, so it is imported
+from `.claude/voice/` rather than stated here — in force from every session's
+first reply. `operators/` beside it holds one file per person, saying how that
+person in particular wants to be talked to.
 
-<!-- Both lines are real imports, not pointers, so they are unbackticked: the
-     import parser skips code spans, and backticking either would silently stop
-     it loading. Every other @-reference in this file is backticked because it
-     is a pointer the agent opens on demand. Both files are imported here
-     rather than the second from the first: an import inside an imported file
-     does not load, whatever the nesting depth the docs give. -->
+`/plainly` is the on-demand procedure: bare, it re-explains an answer that did
+not land; with a question, it answers plainly from the start. Invoking it is
+optional — the rule itself governs every reply regardless.
 
-@.claude/skills/plainly/voice.md
+<!-- A real import, not a pointer, so it is unbackticked: the import parser
+     skips code spans, and backticking it would silently stop it loading. Every
+     other @-reference in this file is backticked because it is a pointer the
+     agent opens on demand.
 
-@.claude/skills/plainly/operators.md
+     `operators/` beside it is deliberately not imported. A session applies one
+     person's entry, so importing the directory spends context on everyone
+     else's, every session — `.claude/hooks/operator-voice.sh` resolves the
+     operator at startup and prints that one entry instead. -->
+
+@.claude/voice/voice.md
 
 ## Working with skills
 

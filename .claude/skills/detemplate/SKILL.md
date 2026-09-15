@@ -24,7 +24,7 @@ deliberately writes no source. With no brief, ask for it before anything else.
 **A fresh fork is the one place `gh` may genuinely be absent** — the rest of what
 `/override-gh` says about `gh` and `GH_TOKEN` holds here unchanged. The fork
 arrives before the operator has set an environment setup script, and `apt-get
-install -y gh` lives in that script (Step 6), so `.claude/hooks/session-start.sh`
+install -y gh` lives in that script (Step 6), so `.claude/hooks/gh-shim.sh`
 finds nothing to shim and says so on startup — `/override-gh` owns that signal
 and what it means. Take it at face value rather than re-deriving it; to probe by
 hand, use `gh api repos/{owner}/{repo} --jq .visibility` rather than `gh auth
@@ -180,11 +180,11 @@ Ordering is load-bearing at exactly one point, and it is the first step:
    with it — and delete § "Git conventions"'s adopter-inverts rule, which
    instructs adopters to delete it. **§ "Language"'s stub is replaced in the same
    pass** with the Step 1 answer, one line; the rest of that section holds as
-   shipped. **Replace `.claude/skills/plainly/operators.md`'s shipped entry**
-   with one for whoever ran the detemplate if they stated a standing preference
-   about how you talk to them during the run, and otherwise leave the template
-   alone — the rule is complete with no entries, and inventing one for a person
-   who never asked is worse than an empty file.
+   shipped. **Delete `.claude/voice/operators/`'s shipped entry** and
+   write one for whoever ran the detemplate, at `<their handle>.md`, if they
+   stated a standing preference about how you talk to them during the run —
+   otherwise leave none. The rule is complete with no entries at all, and
+   inventing one for a person who never asked is worse than an empty directory.
 5. **File the project's first issue** through `/propose-issue`, carrying the
    brief, any spec the operator attached, and any answer they gave for the
    prune's sake that also describes the product. A scarce brief makes a scarce
@@ -199,7 +199,7 @@ Ordering is load-bearing at exactly one point, and it is the first step:
    taken to start a project has no stack for the script to check. Wire the real
    checks only where the operator pushed a stack before realising they should
    have detemplated first. CLAUDE.md § "Vetting" owns that contract, and names
-   `.claude/hooks/session-start.sh`'s dependency install as the paired site.
+   `.claude/hooks/install-deps.sh` as the paired site.
 8. **Delete this skill.** Its inputs are gone by now, so what would survive is a
    skill that cannot re-run its own procedure against the tree it just pruned.
 9. **`bash scripts/vet.sh`** — now enforcing the stub prune, the catalog being
@@ -218,15 +218,15 @@ Two reasons it matters:
 - **It is where `gh` comes from.** `apt-get install -y gh` belongs in it. Without
   `gh` on `PATH` there is nothing for the proxy shim to wrap, and every
   `gh`-dependent skill fails later, far from the cause — so
-  `.claude/hooks/session-start.sh` reports the missing install into the session
+  `.claude/hooks/gh-shim.sh` reports the missing install into the session
   context. That notice is the one part of this step that detects itself.
 - **It is the only place a toolchain version can be pinned** for remote sessions,
   and `scripts/vet.sh` running under the wrong one is a confusing failure.
 
 It runs **once, when the environment snapshot is built**, then is cached
 ([docs](https://code.claude.com/docs/en/claude-code-on-the-web#setup-scripts)) —
-which is why the session-start hook re-syncs dependencies on every session start
-rather than trusting the snapshot.
+which is why `.claude/hooks/install-deps.sh` re-syncs dependencies on every
+session start rather than trusting the snapshot.
 
 **Where it goes**, since "the settings" is not enough to find it: in the session
 composer, the environment picker → **Cloud** → the environment itself, whose
