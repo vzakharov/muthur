@@ -65,7 +65,11 @@ The floor is the newest full-polish commit the branch still carries:
 git log origin/<base>..HEAD --format='%H %s' | awk '$2 == "polish:" { print $1; exit }'
 ```
 
-The commit's subject line is matched rather than `--grep`, which would also hit a body line that happens to open the same way. Found → `git diff <that sha>..HEAD`. Nothing → the full `origin/<base>...HEAD` above. The search is bounded by the branch, so a rebase, amend or reset needs no separate invalidation: a commit this history no longer contains cannot come back as the answer. `/polish full` ignores the answer and re-reads the branch. It is the override for a floor that lies, which is the one failure this mechanism cannot detect on its own: a run that committed its mark and then stopped early, or a standard that has since moved — `/tend-prose` gaining a lens, `/dry` tightening what counts. Both leave a commit claiming ground was cleared that was not.
+The commit's subject line is matched rather than `--grep`, which would also hit a body line that happens to open the same way. Found → `git diff <that sha>..HEAD`. **Nothing found is the first run on this branch**, and the scope stays the full `origin/<base>...HEAD` above.
+
+Everything else falls out of the range being two-dot: only the commits this branch added are candidates. A `polish:` commit the base carries is never the floor — the type is branch-local by convention, and this is what makes the lookup independent of that holding — and a commit a rebase, amend or reset rewrote away cannot come back as one, so there is nothing to invalidate. Both rest on `origin/<base>` being the fetched one, which is the second thing the fetch above buys.
+
+`/polish full` ignores the answer and re-reads the branch. It is the override for a floor that lies, which is the one failure this mechanism cannot detect on its own: a run that committed its mark and then stopped early, or a standard that has since moved — `/tend-prose` gaining a lens, `/dry` tightening what counts. Both leave a commit claiming ground was cleared that was not.
 
 **The floor narrows what gets reviewed, not what it is compared against.** `/dry`'s findings are duplications *between* the new code and what was already there, so the commits below the floor and the rest of the codebase stay readable as context.
 
@@ -78,6 +82,6 @@ The commit's subject line is matched rather than `--grep`, which would also hit 
 
 ## Do NOT
 
-- Run the vet suite, touch the PR, or flip a plan file — every caller owns its own land prep, and `/go` flips its plan file once this returns. The push above is not in this list.
+- Run the vet suite, touch the PR, or flip a plan file — every caller owns its own land prep, and `/go` flips its plan file once this returns.
 - Widen past the scope above into a general refactor of code the branch did not touch. Both passes are about the change, not the codebase.
 - Skip either pass. Two passes are the whole skill; running one is not running it.
