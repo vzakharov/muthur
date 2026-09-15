@@ -19,6 +19,8 @@ Two passes, in this order, over one scope:
 
 Each pass is a real read of the diff and commits its own edits. "The diff looks clean" is a conclusion a pass reaches, never a reason not to run it — and a pass that changes nothing is a result, reported as one.
 
+**Push before reporting.** Every run leaves a commit — each pass's edits, or the empty mark below — and in a remote session an unpushed commit is invisible to the operator reviewing from their own machine, which is what CLAUDE.md § "Git conventions" has a branch pushed after each unit of work for. This pre-empts no caller: `/go` and `/finalize` each push again for their own reasons, and the ordinary-development rule against vetting before every commit is what makes an unvetted push here the normal case rather than a shortcut.
+
 Any argument other than `full` is focus guidance and rides through to both passes unchanged — including a lens name, which is `/tend-prose`'s to read. `full` is this skill's own, and § "The floor" below says what it does.
 
 ## Scope: the branch, not the session
@@ -76,6 +78,6 @@ The commit's subject line is matched rather than `--grep`, which would also hit 
 
 ## Do NOT
 
-- Run the vet suite, push, touch the PR, or flip a plan file — every caller owns its own land prep, and `/go` flips its plan file once this returns.
+- Run the vet suite, touch the PR, or flip a plan file — every caller owns its own land prep, and `/go` flips its plan file once this returns. The push above is not in this list — it carries nothing forward for a caller, it only makes the branch readable.
 - Widen past the scope above into a general refactor of code the branch did not touch. Both passes are about the change, not the codebase.
 - Skip either pass. Two passes are the whole skill; running one is not running it.
