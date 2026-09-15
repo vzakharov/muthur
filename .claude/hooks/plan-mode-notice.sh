@@ -30,12 +30,11 @@ This repo plans on disk: the deliverable is a git-tracked
 the session to read-only work, so writing it means leaving first.
 
 Take plan mode's own exit now — plan mode's own, not an override of it — by
-following `.claude/skills/plan/SKILL.md` § "If the session is already in native
-plan mode". It owns the steps, the dialog copy that goes in front of the
-operator, and what a rejected approval means. Questions go as numbered prose,
-never `AskUserQuestion`.
+following `@.claude/skills/plan/native-plan-mode.md`. It owns the steps, the
+dialog copy that goes in front of the operator, and what a rejected approval
+means. Questions go as numbered prose, never `AskUserQuestion`.
 
-Two things that section cannot assume you read. The restriction gates
+Two things that page cannot assume you read. The restriction gates
 `Edit`/`Write` and not Bash, so the plan file is writable from in here — writing
 it anyway takes the operator's approval instead of asking for it. And this
 notice re-fires on every prompt while the mode is on, so if the operator
