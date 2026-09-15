@@ -4,8 +4,9 @@ description: >-
   `/tend-prose` — scoped to what the branch has changed since it was last
   polished, committing what they change. These are the passes `/go` runs at its
   Step 3; this skill is how work that never went through `/go` gets them. Invoke
-  as `/polish [focus guidance]`, or `/polish full` to re-read the whole branch
-  rather than what it has changed since the last polish commit.
+  as `/polish [focus guidance]`, or `/polish full` to re-read the branch's whole
+  diff against its base rather than only what it changed since the last polish
+  commit.
   Use when the operator says "polish this", "tidy this up", or "run the checks
   that come after `/go`".
 ---
@@ -69,7 +70,7 @@ The commit's subject line is matched rather than `--grep`, which would also hit 
 
 Everything else falls out of the range being two-dot: only the commits this branch added are candidates. A `polish:` commit the base carries is never the floor, so the lookup does not rest on the convention above holding — and a commit a rebase, amend or reset rewrote away cannot come back as one, so there is nothing to invalidate. Both need `origin/<base>` to be the fetched one, which is the second thing the fetch above buys.
 
-`/polish full` ignores the answer and re-reads the branch. It is the override for a floor that lies, which is the one failure this mechanism cannot detect on its own: a run that committed its mark and then stopped early, or a standard that has since moved — `/tend-prose` gaining a lens, `/dry` tightening what counts. Both leave a commit claiming ground was cleared that was not.
+`/polish full` ignores the answer: the floor drops back to the base, and no further. **The scope is the branch's own diff either way** — `full` lowers the floor, it does not widen the range the § above resolved. It is the override for a floor that lies, which is the one failure this mechanism cannot detect on its own: a run that committed its mark and then stopped early, or a standard that has since moved — `/tend-prose` gaining a lens, `/dry` tightening what counts. Both leave a commit claiming ground was cleared that was not.
 
 **The floor narrows what gets reviewed, not what it is compared against.** `/dry`'s findings are duplications *between* the new code and what was already there, so the commits below the floor and the rest of the codebase stay readable as context.
 
