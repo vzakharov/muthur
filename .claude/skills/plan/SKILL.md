@@ -1,5 +1,5 @@
 ---
-description: Plan on disk instead of in the plan-mode UI — write the plan to a git-tracked file under docs/plans/ whose name doubles as the approval gate, publish it as a draft PR so it can be reviewed as a diff, and ask clarifying questions as numbered prose instead of AskUserQuestion. Use whenever you would otherwise enter plan mode or call AskUserQuestion (ExitPlanMode); mandatory in a remote/web session, where both of those UIs lose answers. Invoked as `plan or go: <task>`, it hands the plan-or-not judgment to the agent itself — plan and hand off, plan and then implement, or implement with no plan at all.
+description: Plan on disk instead of in the plan-mode UI — write the plan to a git-tracked file under docs/plans/ whose name doubles as the approval gate, publish it as a draft PR so it can be reviewed as a diff, and ask clarifying questions as numbered prose instead of AskUserQuestion. Use whenever you would otherwise enter plan mode or call AskUserQuestion (ExitPlanMode); mandatory in a remote/web session, where both of those UIs lose answers.
 ---
 
 ## Why this skill exists
@@ -35,21 +35,15 @@ Plan mode is reached two ways, neither of which asks the agent: the operator swi
 
 **Exiting plan mode is not the go-ahead**, however the approval reads — it comes back as "you can now start coding", in accept-edits mode. It authorizes writing the plan file and nothing past it; the `do-not-implement` gate is untouched and still needs the token from § "The approval gate".
 
-## The `plan or go` entry
-
-`plan or go: <task>` hands the agent a decision the rest of this file takes as settled: **does this task get a plan, and does the plan block on the operator?** Two questions pick between three outcomes. The prose form is the invocation, like a bare `plan:`.
-
-**Load `@.claude/skills/plan/plan-or-go.md` when the prompt carries those words**, and only then. It owns both questions and what each outcome runs. Most sessions are not that entry, which is why the page sits beside this file rather than in it — a paragraph they skip is cheap, a page they load is not.
-
-Absent the words there is nothing to load and nothing here changes: § "The approval gate" governs as written.
-
 ## Part 1 — Plan instead of plan mode
 
 A `/plan` session's deliverable is the **plan file on a draft PR**, not code. The operator reviews it from another machine, often hours later, and begins implementation in a **different** session via `/go <branch>` (`@.claude/skills/go/SKILL.md` routes that through `/from-branch`, which attaches to the branch and finds the plan under `docs/plans/`) — the handoff works because the plan file rides the branch. So a plan turn ends in a handoff, not a continuation; same-session implementation is the rare exception.
 
+**A `#<N>` in the argument means the thread is read first:** load and follow `@.claude/skills/take-issue/SKILL.md` with the whole argument before planning anything, and plan against what it puts on the branch. CLAUDE.md § "Plan mode & questions in web sessions" is that rule's home.
+
 Do **exactly what you would do in plan mode** — same research, same rigor, same "don't touch code until approved" discipline. The _only_ difference is where the plan goes and how it's approved:
 
-- Instead of presenting the plan via `ExitPlanMode`, **write it to `docs/plans/<branch-slug>.draft.do-not-implement.md`** (one file per session; name it after the current branch's task slug, or the issue number when working an issue — e.g. `docs/plans/1234.draft.do-not-implement.md`). The slug comes off the branch, so a harness auto-branch is renamed **before** the plan file is written, per CLAUDE.md § "Git conventions" — rename afterwards and the file keeps a slug naming nothing. The `.draft.do-not-implement.md` suffix is load-bearing: it is the on-disk marker that this plan has **not** been approved, visible in every `ls`, tool-call path, and `git status` so you can't drift past the gate without noticing. This directory is **not** gitignored on purpose: it rides the branch so the operator can pull and review the plan from another machine. Follow the repo's usual plan-content expectations, including the `## DRY notes` section CLAUDE.md requires.
+- Instead of presenting the plan via `ExitPlanMode`, **write it to `docs/plans/<branch-slug>.draft.do-not-implement.md`** (one file per session, named after the current branch's task slug). The slug comes off the branch, so a harness auto-branch is renamed **before** the plan file is written, per CLAUDE.md § "Git conventions" — rename afterwards and the file keeps a slug naming nothing. The `.draft.do-not-implement.md` suffix is load-bearing: it is the on-disk marker that this plan has **not** been approved, visible in every `ls`, tool-call path, and `git status` so you can't drift past the gate without noticing. This directory is **not** gitignored on purpose: it rides the branch so the operator can pull and review the plan from another machine. Follow the repo's usual plan-content expectations, including the `## DRY notes` section CLAUDE.md requires.
 - **Make line 1 of the file a banner** that restates the gate:
   ```
   > ⛔ **DRAFT — DO NOT IMPLEMENT.** This plan is not approved. Do not edit source while this file is named `*.draft.do-not-implement.md` — prep and spikes go in `tmp/`. On an explicit operator go-ahead, `git mv` it to `*.in-progress.md` and delete this banner (quoting the go-ahead in the commit) *before* touching code.
@@ -57,11 +51,27 @@ Do **exactly what you would do in plan mode** — same research, same rigor, sam
 - Then **commit it and publish it** (§ "Publishing the plan" below), **end the turn with the handoff block** (§ "Handing off") and stop — do not start implementing.
 - **The in-session path is the exception, not the default.** If a literal go-ahead token does arrive in _this_ session, "The approval gate" below governs it unchanged — and on approval you hand off to `@.claude/skills/go/SKILL.md`, whose Step 1 performs the flip that unlocks source edits (`git mv` the plan to `docs/plans/<branch-slug>.in-progress.md`, drop the draft banner, quote the go-ahead in the commit) as its first action, before any source edit. That flip is the on-record receipt that approval was given, so don't front-run it here; the mechanics live in `/go` to avoid two copies drifting apart. The gate is exactly as strict on this path as on any other; it just fires rarely.
 
+### Carving a task into issues
+
+Some work is too big for one PR, and the plan is where that gets decided — it is the first moment anyone has read the code. A carve produces two things: a plan file that specs one slice and describes the rest, and a list of issues the plan **proposes**. Nothing is filed here. `/go` files them on the go-ahead that flips the plan, so a plan turn that ends unapproved leaves the tracker exactly as it found it. The plan file is already the gate, which is what makes the carve's approval free rather than a second propose-and-stop layered inside the planning turn.
+
+**The bar is high.** Do **not** carve because:
+
+- the task touches several files (most do)
+- you can imagine a "phase 1 / phase 2" framing (most things admit one)
+- decomposition feels tidy
+
+Default to taking the task whole. Carve only when the size is obviously beyond a single PR and the seams are real, not invented. **Genuinely large** means multiple unrelated subsystems, weeks of work, or distinct deliverables that ship independently — not "many files" or a tidy phase breakdown.
+
+Deciding **not** to carve is not a gate and never becomes one: say so in a line and write the plan. Do not ask whether the task looks big enough, and do not offer a carve you don't think is warranted — the operator disagrees in the plan review, which costs them a sentence, whereas a question here costs a round trip on every task.
+
+**Carving → load `@.claude/skills/plan/carving.md`** and follow it: how coarse the parked slices may be, what the plan file names, and what `/go` files from that list. It sits beside this file rather than inside it because most plans take their task whole, and those should not carry a procedure in context to decide they don't need it.
+
 ### Publishing the plan
 
 Once the plan file is committed, invoke `@.claude/skills/pr/SKILL.md` with no args — load and follow it; do **not** inline-copy its steps. Its plan-open mode is what a branch carrying one plan commit and no PR reaches. `/pr` owns the `gh` mechanics; `/plan` owns only the decision to publish.
 
-The trigger lives here rather than in `/pr` because this is where a plan becomes pushed, so **every** entry into planning gets a PR. CLAUDE.md § "Plan mode & questions in web sessions" names a bare `/plan` as the default entry for a new web session — more common than `/issue` — and hanging PR-creation off `/pr` would leave exactly that entry on a PR-less branch.
+The trigger lives here rather than in `/pr` because this is where a plan becomes pushed, so **every** entry into planning gets a PR. CLAUDE.md § "Plan mode & questions in web sessions" names a bare `/plan` as the default entry for a new web session — more common than a prompt naming an issue — and hanging PR-creation off `/pr` would leave exactly that entry on a PR-less branch.
 
 ### Handing off — end the plan turn with a copyable `/go` block
 

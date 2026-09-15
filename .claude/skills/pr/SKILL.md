@@ -23,7 +23,7 @@ Refresh exists because the body written at plan time is a **forecast**. Step 4 w
 An outer skill may pass these; a bare `/pr` takes the defaults, so the ordinary path reads as if they weren't there.
 
 - **`<base>`** — the branch the PR merges into, and the left side of every diff range below (`origin/<base>..HEAD`). Defaults to the repo default branch (`main` in most projects). When a PR already exists, its `baseRefName` wins over what the caller said.
-- **`<issue>`** — the issue number this PR closes, passed by `@.claude/skills/issue/SKILL.md`. Absent, Step 4's inference from the commits stands. Explicit beats inference for a split issue, where a stray reference to the parent in a commit body would otherwise close the umbrella.
+- **`<issue>`** — the issue number this PR closes, where the caller has one in hand. Absent, Step 4's ladder stands: `docs/issue/<n>/` on the branch, then `#<tbd>` on a carve, then nothing. Where a carve is involved the number is always the child being worked, never the parent umbrella.
 - **The plan** — passed by `/plan`'s publish step, and the input Step 4 composes from in plan-open mode.
 
 ## Environment note (read this before running gh)
@@ -76,7 +76,12 @@ git diff --stat origin/<base>..HEAD
 - **Summary** — 2-4 bullets explaining _what_ changed and _why_. Pull from commit bodies, not just subjects.
 - **QA Checklist** — a `## QA Checklist` markdown checklist of how to verify the change end-to-end. For how to derive it, follow the "Derive the checklist" guidance in `@.claude/skills/qa-checklist/SKILL.md`, over whichever input this mode composes from.
 
-End the body with `Closes #N` (for `feat`/`refactor`/etc.) or `Fixes #N` (for `fix`), where `N` is the caller's `<issue>` when one was passed, and otherwise any issue the PR or a commit references.
+**A `Closes` line appears only where the work is tracked, or is about to be.** Most PRs close no issue and carry no line. Two origins put one there:
+
+- **The caller passed `<issue>`**, or `docs/issue/<n>/` exists on the branch — a `/take-issue` call, where the number was never in doubt. End the body with `Closes #N` (for `feat`/`refactor`/etc.) or `Fixes #N` (for `fix`). The caller's parameter wins; the export directory is what a resumed session reads it off instead, after a handoff or a compaction boundary. Falling back to an issue a commit merely references is the last rung and the weakest: a commit that mentions a number may be citing it rather than closing it.
+- **A carve whose children are not filed yet** — `@.claude/skills/plan/carving.md` has the plan propose the issues and `/go` file them, so at plan-open time the number does not exist. Write **`Closes #<tbd>`**. The marker means "an issue is coming and its number belongs here", which is a durable state on the branch rather than something lost with the turn; `@.claude/skills/propose-issue/SKILL.md` Step 3 fills it in when it creates the child. It is never a stand-in for not having looked.
+
+A session that still has the number in front of it should use it — that is the cheapest read there is. Both rungs are written against the branch because that is what a session resumed after a handoff or a compaction boundary still has.
 
 Append the session attribution line: `https://claude.ai/code/session_<id>` (the actual session id from the system prompt).
 

@@ -332,7 +332,7 @@ delete the skill rather than carrying it unhydrated.
   "lastSyncedAt": "<YYYY-MM-DD>",
   "lineage": [{ "repo": "vzakharov/muthur", "atSha": "<the same sha>" }],
   "adopted": ["CLAUDE.md", ".claude/skills/pr/", "scripts/check-merge.sh"],
-  "declined": { ".claude/skills/issue/": "we track work in Linear, not GitHub issues" }
+  "declined": { ".claude/skills/take-issue/": "we track work in Linear, not GitHub issues" }
 }
 ```
 
@@ -370,7 +370,7 @@ quiet forever:
 
 ```json
 "declined": {
-  ".claude/skills/issue/":     "work is tracked in Linear, not GitHub issues",
+  ".claude/skills/take-issue/": "work is tracked in Linear, not GitHub issues",
   ".claude/skills/watch-ci/":  "no CI yet — revisit when a workflow runs on PRs"
 }
 ```

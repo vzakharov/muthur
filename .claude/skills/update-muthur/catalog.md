@@ -133,11 +133,13 @@ says nothing.
 
 | Item | What it does | Requires | Pulls in | Disposition |
 | --- | --- | --- | --- | --- |
-| `/plan` | Write the plan to a `docs/plans/` file whose name is the approval gate, publish it as a draft PR so it is reviewed as a diff, and ask questions as numbered prose. Invoked as `plan or go`, judge for itself whether the task needs the operator's gate, a plan for the agent's own sake, or neither. | `gh` | `/finalize`, `/go`, `/pr` | adopt |
-| `/go` | The go-ahead: flip the plan file, do the work, run the quality passes, hand the PR back to `/pr`. Also takes a branch to attach to, or a task with no plan behind it. | — | `/dry`, `/tend-prose` (G1); `/from-branch`, `/plan`, `/pr` | adopt |
+| `/task` | Judge for itself whether a task needs a plan, write the draft, then judge whether the operator has to look — a question, a draft, and a question, running whichever of the three outcomes they pick. `/task <what to do>` is a conditional go-ahead scoped to that task, and CLAUDE.md's entry ladder routes every change-asking prompt here. | — | `/go`, `/plan`, `/pr`; **conditionally** `/take-issue` (G3) | adopt |
+| `/plan` | Write the plan to a `docs/plans/` file whose name is the approval gate, publish it as a draft PR so it is reviewed as a diff, and ask questions as numbered prose. Also owns the call on whether work is beyond one PR, and the bar that keeps the answer usually "no". | `gh` | `/finalize`, `/go`, `/pr`, `carving.md`; **conditionally** `/take-issue` (G3) | adopt |
+| `.claude/skills/plan/carving.md` | The carve itself, colocated with `/plan` so a plan that takes its task whole never loads it: how coarse the parked slices may be, what the plan file names as its proposed parent and children, and what `/go` files from that list on the go-ahead — one `/propose-issue` run per slice, the native `sub_issues` link, the `#<tbd>` fill-in. | G2 | `/pr`; **conditionally** `/propose-issue` (G3) | adopt |
+| `/go` | The go-ahead: flip the plan file, file the issues the plan proposed, do the work, run the quality passes, hand the PR back to `/pr`. Also takes a branch to attach to, or a task with no plan behind it. | — | `/dry`, `/tend-prose` (G1); `/from-branch`, `/plan`, `/pr`, `/task`, `carving.md`; **conditionally** `/take-issue` (G3) | adopt |
 | `/implement` | Redirect to `/go`, for handoff blocks written before the rename. | — | `/go` | conditional — see below |
 | `/pr` | Own the PR object: rename the auto-branch, push, then open the draft PR or refresh the one that exists. | `gh` | `/branch-rename`, `/qa-checklist`, `/squash-message` | adopt |
-| `/finalize` | Land prep: vet, merge the base, sweep working artifacts, flip to ready, reconcile the squash message, attest — and, on `and merge`, merge the PR when the run turned up nothing to decide. | `gh`, `scripts/vet.sh` | `/check-merge`, `/from-branch`, `/plan`, `/squash-message`; **conditionally** `/issue` (G3), `/watch-ci` (G5) | adopt |
+| `/finalize` | Land prep: vet, merge the base, sweep working artifacts, flip to ready, reconcile the squash message, attest — and, on `and merge`, merge the PR when the run turned up nothing to decide. | `gh`, `scripts/vet.sh` | `/check-merge`, `/from-branch`, `/plan`, `/squash-message`; **conditionally** `/take-issue` (G3), `/watch-ci` (G5) | adopt |
 | `/from-branch` | Attach the session to an existing branch or PR, abandoning the auto-created session branch. | `gh` | `/finalize`, `/go` | adopt |
 | `/handle` | Pick up a branch and do what it needs: attach, read off whether it carries an approved plan, a plan still under review, or feedback on shipped code, run that lane, land-prep only if asked. | `gh`; `scripts/export-github-item.py` (G3) for the review lane's thread export | `/from-branch`, `/go`, `/plan`, `/finalize` | adopt |
 | `/branch-rename` | Rename a harness auto-branch (`claude/<adjective>-<noun>-<hash>`) to a semantic name, keeping the random suffix. | `gh` | `/pr` | adopt |
@@ -170,8 +172,9 @@ the project's first issue on the way through.
 
 | Item | What it does | Requires | Pulls in | Disposition |
 | --- | --- | --- | --- | --- |
-| `/issue` | Export and read a GitHub issue, split it into natively-linked sub-issues when the scope demands, then hand the work to `/pr`. | G2, `gh`, `scripts/export-github-item.py` | `/finalize`, `/pr`, `/plan` (G2) | adopt |
-| `/propose-issue` | File a unit of work as an issue, deduping against what's already open. | G2, `gh`, `jq` | `/plan` (G2) | adopt |
+| `/take-issue` | Pull a GitHub issue onto the branch: export the thread and its attachments, commit them, hand the number back. Decides nothing — its callers are `/task`, `/plan` and `/go`, each running it first when the prompt carries a `#<N>`. | G2, `gh`, `scripts/export-github-item.py` | `/finalize`, `/plan` (G2) | adopt |
+| `/issue` | Redirect for the name `/take-issue` was split out of: with a `#<N>` it runs `/plan` on the argument and names `/task` and `/go` as the same-shape alternatives; with none it names `/propose-issue` and stops. | G2 | `/plan` (G2), `/propose-issue` | conditional — see below |
+| `/propose-issue` | File a unit of work as an issue, deduping against what's already open. Steps 1–2 are read-only and may run a turn earlier than Step 3, which is also where a `#<tbd>` on the branch gets its number. | G2, `gh`, `jq` | `/pr`, `/plan` (G2) | adopt |
 | `/audit-github-backlog` | Sweep every open issue and PR against today's code and leave a reviewable close/refile/keep plan, prioritising `P0`–`P3` everything it keeps. Mutates nothing on GitHub. | G2, `gh` | `/go`, `/plan` (G2); `/propose-issue`; `/override-gh` (G4) | adopt |
 | `scripts/export-github-item.py` | Download an issue — body, comments, timeline, attachments — into `docs/issue/<n>/`, or a PR (plus review threads, each one's resolved/unresolved state, and diff hunks) into `docs/pr/<n>/`. Stdlib-only. | `python3` ≥3.9, `$GH_TOKEN` or `gh auth token`, `scripts/lib/github.py` (G2), `scripts/gh_export/` | — | adopt |
 | `scripts/gh_export/` | The exporter's pieces, one module per concern: argument parsing, the REST/GraphQL client, attachment download, and a renderer each for the header and comments, the review threads, and the timeline. | `python3` ≥3.9, `scripts/lib/github.py` (G2) | — | adopt |
@@ -351,11 +354,25 @@ Four closure facts are counter-intuitive enough to state outright:
   `scripts/check-skill-catalog.sh`, `scripts/check-squash-message.sh` and
   `scripts/check-repo-identity.sh` are the part a rewrite decides separately;
   the comment above them says what dropping each costs.
-- **`/finalize` reaches into G3 and G5 conditionally.** Its working-artifact
-  sweep cites `/issue`, and its CI steps cite `/watch-ci`. Both citations are
-  guarded by prose conditions ("if a workflow runs on PRs"), so the behavior
-  degrades gracefully — but the `@`-references still dangle if you decline those
-  groups. Strip the two citations, or adopt the groups.
+- **`/finalize` and `/plan` reach into G3 conditionally, and `/finalize` into G5
+  as well.** `/finalize`'s working-artifact sweep cites `/take-issue` and its CI
+  steps cite `/watch-ci`; `/plan` cites `/take-issue` for the `#<N>` export and
+  its `carving.md` cites `/propose-issue` for the filing, and `/go` and `/task`
+  carry the same `#<N>` pointer. Every citation is guarded by a prose condition ("if a
+  workflow runs on PRs", "a `#<N>` in the argument"), so the behavior degrades
+  gracefully — but the `@`-references still dangle if you decline those groups.
+  Strip the citations, or adopt the groups.
+
+  **`carving.md` is the one worth reading before you strip it.** It states the
+  filing in full because the carve is one procedure, and cutting it at the group
+  line would leave the half you keep stopping exactly where its reader needs the
+  next sentence. Declining G3 means stripping the filing half — the
+  `/propose-issue` calls, the `sub_issues` link, the `#<tbd>` marker — and
+  keeping the judgment: the bar, the seams, the first slice specced in full and
+  the rest coarse. Where the remaining slices then live is **yours to decide**:
+  in the plan file, in a backlog doc, in whatever tracker you do use. This repo
+  writes no degradation path for it, and that is a choice rather than an
+  omission — a path written here would be a guess about your tracker.
 - **`/override-gh` is pulled in by G0 and G3**, not just G4. See G4 above.
 
 Two G2 rows are adopter choices rather than defaults:
@@ -375,6 +392,23 @@ Two G2 rows are adopter choices rather than defaults:
   case and asks nothing: it carries `/implement` because it carries everything,
   and a tree one commit old has no plan file or PR comment old enough to say it,
   so `/detemplate` deletes it outright.
+
+**The `/issue` redirect is the same choice one group over.** It is worth taking
+only where `/issue` was already the shipped name — that is where a handoff block,
+a PR comment, or an operator's own muscle memory might still say it. Never
+adopted `/issue` → decline the row and put `.claude/skills/issue/` in `declined`:
+there is nothing to redirect, and the stub would be a permanent extra row
+standing in for a name the repo never had. **A first adoption is that case** —
+take `/take-issue` alone, and leave the redirect for a later sync to offer if the
+name ever does ship. Already adopted it → take the redirect, since the name
+covers two operations with different destinations, and record the answer in
+`watermark.json` so the question does not come back. A **fork** is neither case
+and asks nothing: it carries `/issue` because it carries everything, and a tree
+one commit old has no handoff block or muscle memory old enough to say it, so
+`/detemplate` deletes it outright.
+Declining
+G3 outright takes the redirect with it: its no-number branch names
+`/propose-issue`, which you do not have.
 
 ## Reverse closure
 
