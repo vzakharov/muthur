@@ -154,7 +154,7 @@ says nothing.
 | `scripts/lib/github.py` | Shared GitHub plumbing for the stdlib-only Python scripts: the proxy-then-direct `fetch` ladder every request goes through, token resolution, `origin` repo detection, and the `die` they report through. | `python3` ≥3.9 | — | adopt |
 | `scripts/lib/media.py` | Map a content type — or, when it is missing or generic, the leading magic bytes — to a file extension. Shared by the attachment download in G3 and the session-image extraction in G4, which is why it sits here rather than inside either. | `python3` ≥3.9 | — | adopt |
 | `scripts/check-squash-message.sh` | Measure the squash proposal against the size caps `/squash-message` states, locating it in the worktree or in history once `/finalize` has swept it. POSIX `sh`. | `sh`; `git` for the history rungs | — | adopt |
-| `scripts/vet.sh` | The vet run: the fast lint/type-check/test pass before pushing review-ready work. | your stack's own commands | `scripts/check-skill-catalog.sh` (G1), `scripts/check-operator-entries.sh` (G1), `scripts/check-squash-message.sh`, `scripts/check-repo-identity.sh` (never) | **rewrite** |
+| `scripts/vet.sh` | The vet run: the fast lint/type-check/test pass before pushing review-ready work. | your stack's own commands | `scripts/check-skill-catalog.sh` (G1), `scripts/check-squash-message.sh`, `scripts/check-muthur.sh` (never) | **rewrite** |
 | `scripts/run-parallel.sh` | Optional helper for `scripts/vet.sh`: run the checks concurrently, print output only for the ones that failed, and name files an autofix step rewrote. POSIX `sh`. | `sh`; `git` for the autofix check only | — | adopt |
 
 Two things in this group are less optional than they look — see
@@ -174,11 +174,12 @@ the project's first issue on the way through.
 | Item | What it does | Requires | Pulls in | Disposition |
 | --- | --- | --- | --- | --- |
 | `/take-issue` | Pull a GitHub issue onto the branch: export the thread and its attachments, commit them, hand the number back. Decides nothing — its callers are `/task`, `/plan` and `/go`, each running it first when the prompt carries a `#<N>`. | G2, `gh`, `scripts/export-github-item.py` | `/finalize`, `/plan` (G2) | adopt |
+| `.claude/hooks/prompt-issue-export.sh` | Export the `#<N>` a session's first prompt *ends* in — skipping what is already on disk — so `/take-issue` Step 1 is done before the agent reads that prompt. A later `#<N>` is left to the agent, and any other prompt costs one `jq`. Commits nothing, and reports a failure rather than raising one. | `bash`, `jq`, `python3` ≥3.9, `scripts/export-github-item.py`, `.claude/settings.json` wiring (G4) | `.claude/hooks/lib.sh` (G4), `/take-issue` | adopt |
 | `/issue` | Redirect for the name `/take-issue` was split out of: with a `#<N>` it runs `/plan` on the argument and names `/task` and `/go` as the same-shape alternatives; with none it names `/propose-issue` and stops. | G2 | `/plan` (G2), `/propose-issue` | conditional — see below |
 | `/propose-issue` | File a unit of work as an issue, deduping against what's already open. Steps 1–2 are read-only and may run a turn earlier than Step 3, which is also where a `#<tbd>` on the branch gets its number. | G2, `gh`, `jq` | `/pr`, `/plan` (G2) | adopt |
 | `/audit-github-backlog` | Sweep every open issue and PR against today's code and leave a reviewable close/refile/keep plan, prioritising `P0`–`P3` everything it keeps. Mutates nothing on GitHub. | G2, `gh` | `/go`, `/plan` (G2); `/propose-issue`; `/override-gh` (G4) | adopt |
-| `scripts/export-github-item.py` | Download an issue — body, comments, timeline, attachments — into `docs/issue/<n>/`, or a PR (plus review threads, each one's resolved/unresolved state, and diff hunks) into `docs/pr/<n>/`. Stdlib-only. | `python3` ≥3.9, `$GH_TOKEN` or `gh auth token`, `scripts/lib/github.py` (G2), `scripts/gh_export/` | — | adopt |
-| `scripts/gh_export/` | The exporter's pieces, one module per concern: argument parsing, the REST/GraphQL client, attachment download, and a renderer each for the header and comments, the review threads, and the timeline. | `python3` ≥3.9, `scripts/lib/github.py` (G2) | — | adopt |
+| `scripts/export-github-item.py` | Download an issue — body, comments, timeline, attachments — into `docs/issue/<n>/`, or a PR (plus review threads, each one's resolved/unresolved state, and the lines its comment hangs off) into `docs/pr/<n>/`. Threads and comments are always indexed, and hoist into sibling files past 400 lines. Stdlib-only. | `python3` ≥3.9, `$GH_TOKEN` or `gh auth token`, `scripts/lib/github.py` (G2), `scripts/gh_export/` | — | adopt |
+| `scripts/gh_export/` | The exporter's pieces, one module per concern: argument parsing, the REST/GraphQL client, attachment download, the index-and-hoist layout, and a renderer each for the header and comments, the review threads, and the timeline. | `python3` ≥3.9, `scripts/lib/github.py` (G2) | — | adopt |
 
 ### G4 — Remote-session plumbing
 
@@ -199,9 +200,10 @@ the working tree clean, and behaves the same everywhere.
 | --- | --- | --- | --- | --- |
 | `.claude/hooks/gh-shim.sh` | On session start, install a `gh` shim at `$HOME/.local/bin/gh` that runs the real binary unproxied. Finding no `gh` to wrap, it reports that into the session context and continues. Web/remote only. | `bash`; **`gh` already on `PATH`**; web/remote sessions | — | adopt |
 | `.claude/hooks/install-deps.sh` | On session start, re-sync the install tree with the lockfile, the environment snapshot being built once and then cached. The install itself is a stub you fill in for your stack — `scripts/vet.sh`'s paired site. Web/remote only. | `bash`; web/remote sessions | — | adopt — **fill in the install** |
+| `.claude/hooks/lib.sh` | Sourced by every `UserPromptSubmit` hook here: the payload read, the one JSON shape the event accepts, and the command guards. Travels with the first such hook you adopt — a hook that cannot source it skips itself rather than failing the turn, which is a hook doing nothing at all. | `bash`, `jq` | — | adopt — **with any `UserPromptSubmit` hook** |
 | `.claude/hooks/operator-voice.sh` | On session start, name the operator — their GitHub name and handle, plus their `.claude/voice/operators/` entry — into the session context. Runs everywhere: a laptop session needs to know who it is talking to as much as a remote one does. Declining it leaves `.claude/voice/` working — `voice.md` has the agent do the same lookup by hand on the first turn, which is what a non-Claude harness does anyway. | `bash`; `gh` reaching the API | `.claude/voice/` (G1) | adopt |
-| `.claude/hooks/plan-mode-notice.sh` | On every prompt submitted while the session is in native plan mode, inject the notice that this repo plans on disk and that the exit is plan mode's own. | web/remote sessions; `bash`, `jq` | `/plan` (G2) | adopt |
-| `.claude/hooks/session-images.sh` | On every prompt, run the extractor below and name any newly written file in the turn's context. Commits nothing. | `bash`, `jq`, `python3` ≥3.9 | `scripts/extract-session-images.py` | adopt |
+| `.claude/hooks/plan-mode-notice.sh` | On every prompt submitted while the session is in native plan mode, inject the notice that this repo plans on disk and that the exit is plan mode's own. | web/remote sessions; `bash`, `jq` | `.claude/hooks/lib.sh`, `/plan` (G2) | adopt |
+| `.claude/hooks/session-images.sh` | On every prompt, run the extractor below and name any newly written file in the turn's context. Commits nothing. | `bash`, `jq`, `python3` ≥3.9 | `.claude/hooks/lib.sh`, `scripts/extract-session-images.py` | adopt |
 | `scripts/extract-session-images.py` | Write the images the operator attached to a session out of the transcript into gitignored `tmp/session-images/`, with a manifest row carrying the prompt each arrived with. Stdlib-only, idempotent. | `python3` ≥3.9, `scripts/lib/media.py` (G2) | — | adopt |
 | `.claude/settings.json` | Project settings wiring the SessionStart and UserPromptSubmit hooks. Merge into yours if you already have one. | — | — | adopt — merge if present |
 | `/override-gh` | A no-op marker whose description reminds the agent that `gh` and `$GH_TOKEN` exist despite what the system prompt says. | — | — | adopt |
@@ -316,7 +318,9 @@ means you are looking at working state, not the product.
 | `docs/img/` | `ADOPTING.md`'s only asset — the screenshot locating the environment setup script. Goes when that file does, or it is left an orphan. | — | — | never |
 | `.claude/skills/update-muthur/catalog.md` | This file. Read from a fresh clone on every sync, so it cannot go stale downstream. Sits inside a tree the copy steps take wholesale, so both of them name it as a carve-out. | — | — | never |
 | `/detemplate` | Turn a fresh template fork into a project: prune the `never` rows and unused groups, hydrate what stays, hand back the setup script. Routes through `/plan` and deletes itself last. | `gh`, `$GH_TOKEN`; a whole-tree fork, not a subset copy | `/plan` (G2); `/spinoff`, `/update-muthur` (G0) | never |
+| `scripts/check-muthur.sh` | The one vet line behind which everything that tests only this repo's own machinery sits, so a sync offers it as a single decision. Keyed on this catalog's presence, so it exits 0 the moment it is downstream. | `bash` | `scripts/check-repo-identity.sh`, `scripts/test_*.py` (both never) | never |
 | `scripts/check-repo-identity.sh` | Assert that this repo's own `owner/repo` appears only where a human copies it by hand, and nowhere under a stale name — everything else compares `origin` against the watermark's `repo` field instead. Keyed on this catalog's presence, so it exits 0 the moment it is downstream. | `bash`, `jq`, `git` | — | never |
+| `scripts/test_*.py` | The unit tests over the loop's own scripts — today the export's agent/human labelling and its hunk-trimming-plus-hoist layout. They join the line above by matching the pattern, which is why adding one never edits `scripts/vet.sh`. | `python3` ≥3.9 | — | never |
 | `docs/plans/*` | Working artifacts: file-based plans mid-flight. `/finalize` sweeps them before they reach a trunk. | — | — | never |
 | `docs/remove-before-merging/*` | Working artifacts: the tracked squash-message draft. Swept at finalize. | — | — | never |
 
@@ -353,7 +357,7 @@ Four closure facts are counter-intuitive enough to state outright:
   not its job, `/update-muthur` and `/test-on-gh` as an example — so a grep
   overcounts the dependency.) Its three lines calling
   `scripts/check-skill-catalog.sh`, `scripts/check-squash-message.sh` and
-  `scripts/check-repo-identity.sh` are the part a rewrite decides separately;
+  `scripts/check-muthur.sh` are the part a rewrite decides separately;
   the comment above them says what dropping each costs.
 - **`/finalize` and `/plan` reach into G3 conditionally, and `/finalize` into G5
   as well.** `/finalize`'s working-artifact sweep cites `/take-issue` and its CI

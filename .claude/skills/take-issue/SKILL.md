@@ -22,6 +22,8 @@ Do not work around it, and do not fall back to a chat-only plan.
 
 ## Step 1 — Export the issue locally (then read the export)
 
+**Look under `docs/issue/<n>/` before running anything: the export is normally already there.** `.claude/hooks/prompt-issue-export.sh` runs this step's command ahead of a session's first turn when that prompt *ends* in `#<N>`, and names what it wrote in that turn's context — so where the export exists, this step is the reading below and nothing else. Run the command when it is absent: a number that reached you any other way, a hook that reported a failure, or a tree that adopted `/take-issue` without the hook.
+
 **First command:** run the bundled exporter:
 
 ```bash
@@ -32,7 +34,7 @@ The script writes `docs/issue/<n>/issue.md` (body + comments + timeline) and dow
 
 Consult the issue only through the export — never `gh issue view`, the GitHub MCP tools, or `WebFetch` in its place. `gh issue view` alone does **not** fetch attachments: GitHub's `private-user-images.githubusercontent.com` URLs require an authenticated request even when the issue is public, which is why the export script exists. `WebFetch` on a github.com issue page often fails outright in isolated environments. For a quick metadata check unrelated to the task at hand — labels, assignees, linked PRs — `gh issue view <n> --json title,body,labels,assignees,state,url` is still fine.
 
-**Then read** `docs/issue/<n>/issue.md` end to end, and **open the files under** `docs/issue/<n>/attachments/` when you need pixels (screenshots, mockups, design references).
+**Then read** `docs/issue/<n>/issue.md` end to end, and **open the files under** `docs/issue/<n>/attachments/` when you need pixels (screenshots, mockups, design references). A long thread indexes its comments and may hoist their bodies into `docs/issue/<n>/comments.md` — "end to end" includes that file, an issue being read whole rather than selectively.
 
 **Auth:** the script reads `$GH_TOKEN` (or `$GITHUB_TOKEN`) first, then falls back to `gh auth token`. One of those must be available. **Deps:** stdlib Python 3.9+ only — no `pip install` needed.
 
