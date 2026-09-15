@@ -14,16 +14,21 @@ only when the operator named both by hand.
 part neither pass could resolve alone, since both bottom out at unpushed
 work and so fall through to "nothing to review" on a branch already
 pushed. The composite fetches the base and hands the branch's net diff
-against it to both.
+against it to both, floored at the head a previous full run recorded in
+docs/remove-before-merging/polished.md — a branch is polished at /go and
+again at /finalize, and the second run has no business re-reading what
+the first one cleared. What the floor narrows is the subject, not the
+comparison.
 
 Three call sites reach it. /go Step 3 loads it in place of the two
 passes it used to name; /finalize runs it ahead of its numbered steps,
 land prep being the funnel every branch reaches whatever route its work
 took; and the operator invokes it over work that took neither. That last
 entry is the one the other two exist to make unnecessary and routinely
-don't. /finalize's `and merge` gate gains a clause to match: a run that
-changed anything stands the merge down, the edit being a judgment about
-the diff made after the operator last looked at it.
+don't. /finalize's `and merge` predicate names the passes among what an
+uneventful run may contain: they rewrite prose and fold duplication
+without changing what the code does, and a fold that does is no longer
+a polish edit.
 
 Co-authored-by: Claude <noreply@anthropic.com>
 ```
