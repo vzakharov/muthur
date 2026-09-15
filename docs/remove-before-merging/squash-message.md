@@ -20,7 +20,8 @@ business re-reading what the first one cleared. A run that finds nothing
 commits empty, since that is the run whose floor the next one needs, and
 what the floor narrows is what gets reviewed, not what it is compared
 against. `polish:` is a branch-local commit type the squash never
-carries to the trunk.
+carries to the trunk. The run pushes what it commits: invoked by the
+operator it has no caller behind it to do so.
 
 Three call sites reach it. /go Step 3 loads it in place of the two
 passes it used to name; /finalize runs it ahead of its numbered steps,
