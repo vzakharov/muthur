@@ -31,6 +31,13 @@ fetch was probably never a thread reference. CLAUDE.md's `#<N>`
 bullet, `/take-issue` Step 1 and the catalog each gain a pointer
 at the hook, and that bullet is halved on the way past.
 
+All three `UserPromptSubmit` hooks now share
+`.claude/hooks/lib.sh`: the payload read, the one
+`additionalContext` shape the event accepts, and the command
+guards. A hook that cannot source it skips itself rather than
+failing the turn, so the lib travels with the first hook an
+adopter takes.
+
 Co-authored-by: Claude <noreply@anthropic.com>
 ```
 

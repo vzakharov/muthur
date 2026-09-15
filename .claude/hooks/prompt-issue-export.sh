@@ -23,13 +23,10 @@
 
 set -uo pipefail
 
-payload="$(cat)"
+. "$(dirname "${BASH_SOURCE[0]}")/lib.sh" || exit 0
 
-say() { echo "prompt-issue-export: $*" >&2; }
-
-command -v jq >/dev/null || { say "jq not found; skipping the export."; exit 0; }
-
-field() { jq -r --arg k "$1" '.[$k] // empty' <<<"$payload"; }
+need_command jq "skipping the export."
+read_payload
 
 prompt="$(field prompt)"
 [ -n "$prompt" ] || exit 0
@@ -49,7 +46,7 @@ transcript="$(field transcript_path)"
 
 project="${CLAUDE_PROJECT_DIR:-$(field cwd)}"
 [ -n "$project" ] && [ -d "$project" ] || exit 0
-command -v python3 >/dev/null || { say "python3 not found; skipping the export."; exit 0; }
+need_command python3 "skipping the export."
 cd "$project" || exit 0
 [ -f scripts/export-github-item.py ] || exit 0
 
@@ -95,9 +92,4 @@ else
   exit 0
 fi
 
-jq -n --arg ctx "$context" '{
-  hookSpecificOutput: {
-    hookEventName: "UserPromptSubmit",
-    additionalContext: $ctx
-  }
-}'
+emit_context "$context"

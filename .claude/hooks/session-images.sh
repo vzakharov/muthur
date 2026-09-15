@@ -26,20 +26,11 @@
 
 set -euo pipefail
 
-payload="$(cat)"
+. "$(dirname "${BASH_SOURCE[0]}")/lib.sh" || exit 0
 
-say() { echo "session-images: $*" >&2; }
-
-if ! command -v jq >/dev/null; then
-  say "jq not found; skipping image extraction."
-  exit 0
-fi
-if ! command -v python3 >/dev/null; then
-  say "python3 not found; skipping image extraction."
-  exit 0
-fi
-
-field() { jq -r --arg k "$1" '.[$k] // empty' <<<"$payload"; }
+need_command jq "skipping image extraction."
+need_command python3 "skipping image extraction."
+read_payload
 
 transcript="$(field transcript_path)"
 project="${CLAUDE_PROJECT_DIR:-$(field cwd)}"
@@ -58,9 +49,10 @@ fi
 [ -n "$written" ] || exit 0
 
 names="$(sed "s|^$out/|$rel_dir/|" <<<"$written")"
-jq -n --arg names "$names" '{
-  hookSpecificOutput: {
-    hookEventName: "UserPromptSubmit",
-    additionalContext: ("Images the operator attached earlier in this session are on disk under gitignored `tmp/`:\n" + $names + "\nThey die with the machine. One the repo has a lasting use for moves into the repo proper and is committed with the prose that references it; leave the rest where they are.")
-  }
-}'
+
+context=$'Images the operator attached earlier in this session are on disk under gitignored `tmp/`:\n'
+context+="$names"
+context+=$'\nThey die with the machine. One the repo has a lasting use for moves into the repo '
+context+=$'proper and is committed with the prose that references it; leave the rest where they are.'
+
+emit_context "$context"
