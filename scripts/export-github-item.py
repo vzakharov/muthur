@@ -8,7 +8,15 @@ Issues land in docs/issue/<n>/issue.md, pull requests in docs/pr/<n>/pr.md; both
 put downloaded attachments under <out-dir>/attachments/. A bare number works for
 either — the type comes from the API, not from the argument. A PR export also
 carries its review threads: review bodies, inline comments grouped into reply
-chains, the diff hunk each chain hangs off, and whether the reviewer resolved it.
+chains, the lines each chain hangs off, and whether the reviewer resolved it.
+
+Conversation comments and review threads are always indexed — one row each,
+carrying who posted last, when, and the thread's resolved state — so a consumer
+reads the index and follows a link rather than the whole document. Past
+SPLIT_THRESHOLD_LINES the bodies hoist out behind those links: threads into
+docs/pr/<n>/threads/, grouped by the file each hangs off, then conversation
+comments into docs/pr/<n>/comments.md. The header, body and timeline never move,
+being what the file is opened for.
 
 Exit status is non-zero when any attachment fails to download; the Markdown is
 still written, with the failed attachments still linked remotely.
@@ -28,6 +36,7 @@ Stdlib only — no third-party deps, here or under `gh_export/`. Python 3.9+.
 
 from __future__ import annotations
 
+import shutil
 import sys
 from pathlib import Path
 from typing import Any
@@ -45,8 +54,9 @@ from gh_export.attachments import (
 )
 from gh_export.cli import parse_args
 from gh_export.authorship import split_agent_footer
-from gh_export.markdown import comments_section, header_section
-from gh_export.reviews import review_section
+from gh_export.markdown import comments_parts, header_section
+from gh_export.reviews import review_parts
+from gh_export.split import Stage, hoist_targets, split_export
 from gh_export.timeline import timeline_section
 from lib.github import (
     AllRoutesFailed,
@@ -57,6 +67,17 @@ from lib.github import (
 
 DOCS_ISSUE_ROOT = Path("docs") / "issue"
 DOCS_PR_ROOT = Path("docs") / "pr"
+
+
+def _clear_previous_hoists(out_dir: Path, targets: list[str]) -> None:
+    """A re-export that now fits under the budget must not leave the previous
+    run's hoisted files behind, linked from nothing and no longer current."""
+    for target in targets:
+        path = out_dir / target.rstrip("/")
+        if target.endswith("/"):
+            shutil.rmtree(path, ignore_errors=True)
+        elif path.exists():
+            path.unlink()
 
 
 def main() -> None:
@@ -110,31 +131,52 @@ def main() -> None:
     body_md = rewrite_attachment_refs(body_md, url_to_relative)
     noun = "this pull request" if is_pr else "this issue"
 
-    # The review section is dropped rather than joined as "" — an empty element
-    # would leave a stray blank line in every issue export.
-    sections = [
+    comments_heading, comment_items = comments_parts(comments, url_to_relative)
+    review_prelude, thread_items = review_parts(
+        reviews, review_comments, url_to_relative, resolved_by_comment_id
+    )
+
+    # An empty section is left out rather than joined as "" — an empty element
+    # would leave a stray blank line in every export that lacks it.
+    parts: list[Any] = [
         header_section(item, pr, body_by_agent),
         body_md,
         "",
         "---",
         "",
-        comments_section(comments, url_to_relative),
-        *filter(
-            None,
-            [
-                review_section(
-                    reviews, review_comments, url_to_relative, resolved_by_comment_id
-                )
-            ],
-        ),
-        timeline_section(timeline, noun),
     ]
-    full_md = "\n".join(sections)
+    threads_stage = Stage(
+        target="threads/", hoist_order=1, title="Threads", items=thread_items
+    )
+    comments_stage = Stage(
+        target="comments.md",
+        hoist_order=2,
+        title="Conversation comments",
+        items=comment_items,
+    )
+    if comment_items:
+        parts.extend([comments_heading, comments_stage])
+    if review_prelude:
+        parts.append(review_prelude)
+    if thread_items:
+        parts.append(threads_stage)
+    parts.append(timeline_section(timeline, noun))
+
+    full_md, extra_files = split_export(parts)
 
     out_dir.mkdir(parents=True, exist_ok=True)
+    # Cleared from both stages rather than from `parts`, so a re-export that has
+    # lost a whole section still sweeps that section's old files.
+    _clear_previous_hoists(out_dir, hoist_targets([threads_stage, comments_stage]))
     md_path.write_text(full_md, encoding="utf-8")
+    for relative, text in extra_files.items():
+        path = out_dir / relative
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(text, encoding="utf-8")
 
     print(f"Wrote {md_path}")
+    if extra_files:
+        print(f"Hoisted {len(extra_files)} body file(s) under {out_dir}")
     total = len(url_to_relative) + len(downloads.failures)
     if total:
         print(
