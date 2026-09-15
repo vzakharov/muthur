@@ -67,7 +67,7 @@ git log origin/<base>..HEAD --format='%H %s' | awk '$2 == "polish:" { print $1; 
 
 The commit's subject line is matched rather than `--grep`, which would also hit a body line that happens to open the same way. Found → `git diff <that sha>..HEAD`. **Nothing found is the first run on this branch**, and the scope stays the full `origin/<base>...HEAD` above.
 
-Everything else falls out of the range being two-dot: only the commits this branch added are candidates. A `polish:` commit the base carries is never the floor — the type is branch-local by convention, and this is what makes the lookup independent of that holding — and a commit a rebase, amend or reset rewrote away cannot come back as one, so there is nothing to invalidate. Both rest on `origin/<base>` being the fetched one, which is the second thing the fetch above buys.
+Everything else falls out of the range being two-dot: only the commits this branch added are candidates. A `polish:` commit the base carries is never the floor, so the lookup does not rest on the convention above holding — and a commit a rebase, amend or reset rewrote away cannot come back as one, so there is nothing to invalidate. Both need `origin/<base>` to be the fetched one, which is the second thing the fetch above buys.
 
 `/polish full` ignores the answer and re-reads the branch. It is the override for a floor that lies, which is the one failure this mechanism cannot detect on its own: a run that committed its mark and then stopped early, or a standard that has since moved — `/tend-prose` gaining a lens, `/dry` tightening what counts. Both leave a commit claiming ground was cleared that was not.
 
