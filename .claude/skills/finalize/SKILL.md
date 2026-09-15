@@ -1,5 +1,5 @@
 ---
-description: Finalize (a.k.a. "prep merge") — land prep: verify there's a draft PR, run the vet suite, merge the base branch, mark ready for review, propose a squash title/body, and post the attestation comment. Pass an optional branch/PR target first (`/finalize <branch|#PR|PR-url>`) to attach to that existing branch before finalizing. `/finalize no vet` is the docs-only mode; `/finalize and merge` squash-merges the PR as well, but only if the run turned up nothing to decide.
+description: Finalize (a.k.a. "prep merge") — land prep: verify there's a draft PR, run the quality passes (`/polish`), run the vet suite, merge the base branch, mark ready for review, propose a squash title/body, and post the attestation comment. Pass an optional branch/PR target first (`/finalize <branch|#PR|PR-url>`) to attach to that existing branch before finalizing. `/finalize no vet` is the docs-only mode; `/finalize and merge` squash-merges the PR as well, but only if the run turned up nothing to decide.
 ---
 
 **Optional branch/PR target**: if the first token of the argument is a branch name, `#NNN` PR number, or PR URL, then `/finalize <target>` is shorthand for attaching to that branch first and then finalizing — equivalent to `/from-branch <target> /finalize`. Load `@.claude/skills/from-branch/SKILL.md` and follow it to attach to `<target>`, then run the finalize steps below. If the argument has no target token, skip this and finalize the current branch as usual.
@@ -27,6 +27,10 @@ description: Finalize (a.k.a. "prep merge") — land prep: verify there's a draf
 - **If a workflow does run on PRs**, the vet run still happens here — it's faster and it catches things before a reviewer sees red — but step 4 also means watching that run to green (`@.claude/skills/watch-ci/SKILL.md`), and step 7 attests to both.
 
 Either way, **step 7's attestation comment is the record.** A reviewer cannot see from the diff what was run; if it isn't written down it did not happen as far as anyone else is concerned.
+
+**First, the quality passes.** Before step 1, load and follow `@.claude/skills/polish/SKILL.md` over this branch. It is unnumbered because the numbers below are cited from other skills, not because it is optional or because it runs late: it is the first thing this skill does, and everything after it — the vet run, the base merge, the squash message, the attestation's SHA — is a statement about a diff that has stopped moving.
+
+Land prep is the funnel every branch reaches, whatever route the work took to get here, so this is where a branch written without `/go` in front of it still gets the passes. On a branch `/go` already polished, the run is expected to find little or nothing; that is a result, not a reason to have skipped it. **`no vet` does not skip this** — a docs-only diff is the case `/tend-prose` exists for.
 
 Steps (stop on first unresolved failure):
 
@@ -108,6 +112,7 @@ Steps (stop on first unresolved failure):
    **Stand down if any of this happened**, at whichever step it happened:
 
    - **Pre-check** — `HEAD` was detached, or there was no PR and you created one. A PR opened and merged inside one turn was never a reviewable object. (A PR you flipped back to draft is fine — that is the ordinary re-finalize.)
+   - **The quality passes** — `/polish` changed anything. An edit there is a judgment about the diff, made after the operator last looked at it, and it is the ordinary outcome on a branch that never went through `/go`. Finding nothing is what clears this.
    - **Step 1** — the vet run needed a change **you authored** to go green. A tool's own fixer (`--fix`, a formatter rewriting its own output) that clears it does not count; that is the autofix this flag allows. The test is whether you had to read the failure and decide what to change.
    - **Step 2** — any conflict, however trivially resolved; or you applied a dedup/simplification the base merge opened, or surfaced one as ambiguous. A clean merge that **brought commits in** is survivable, but step 1 vetted a tree without them: re-run it, green first try, and stand down on any interaction of the kind that step already has you reading the incoming diff for.
    - **Step 4** — a red CI run. Same autofix exception as step 1, plus one case it does not cover: a red run that cleared itself on a re-run with no change at all. "It was a flake" is a judgment, and an unexplained red is the most ordinary reason to want a human at the button.

@@ -250,8 +250,9 @@ This project ships a set of Claude Code skills under `.claude/skills/`. Invoke t
 - **`/implement`** — a redirect to `/go`, kept because handoff blocks written before the rename still say it.
 - **`/issue`** — a redirect too, and a forked one: the work the name covers is spread across four skills, so with a `#<N>` it runs `/plan` on the argument and names `/task` and `/go` as the same-shape alternatives, and with no number it names `/propose-issue` and stops.
 
-**Quality passes** (both are mandatory inside `/go`):
+**Quality passes** (the pair is mandatory inside `/go`, and runs first inside `/finalize`):
 
+- **`/polish`** — run the pair below over the branch's diff, in order, and commit what they change. The composite exists because work reaches a PR by routes that never touch `/go`: a task asked for and done directly gets the passes only if something names them, and this is what the operator names.
 - **`/dry`** — review the session's diff for DRY opportunities; applies obvious wins, surfaces ambiguous ones.
 - **`/tend-prose`** — cut prose that shouldn't exist, rewrite what narrates the change into present-tense contracts, trim what the names and types already say, and delete what only denies a thing the change removed. Naming one lens (`existence`, `durability`, `tightness`, `negation`) runs only that one.
 **Mechanical pieces**, individually invocable and composed by the loop above:
