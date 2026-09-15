@@ -28,9 +28,9 @@ description: Finalize (a.k.a. "prep merge") — land prep: verify there's a draf
 
 Either way, **step 7's attestation comment is the record.** A reviewer cannot see from the diff what was run; if it isn't written down it did not happen as far as anyone else is concerned.
 
-**First, the quality passes.** Before step 1, load and follow `@.claude/skills/polish/SKILL.md` over this branch. It is unnumbered because the numbers below are cited from other skills, not because it is optional or because it runs late: it is the first thing this skill does, and everything after it — the vet run, the base merge, the squash message, the attestation's SHA — is a statement about a diff that has stopped moving.
+**First, the quality passes.** Before step 1, load and follow `@.claude/skills/polish/SKILL.md` over this branch. Land prep is the funnel every branch reaches whatever route its work took, so this is where a branch written without `/go` in front of it still gets the passes — and the last point at which changing the diff is cheap, since the vet run, the base merge, the squash message and the attestation's SHA are all statements about a diff that has stopped moving.
 
-Land prep is the funnel every branch reaches, whatever route the work took to get here, so this is where a branch written without `/go` in front of it still gets the passes. On a branch `/go` already polished, the run is expected to find little or nothing; that is a result, not a reason to have skipped it. **`no vet` does not skip this** — a docs-only diff is the case `/tend-prose` exists for.
+It carries no step number because the numbers below are cited from other skills and stay put; it runs first regardless. **`no vet` does not skip it** — a docs-only diff is the case `/tend-prose` exists for.
 
 Steps (stop on first unresolved failure):
 
