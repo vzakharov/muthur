@@ -48,7 +48,7 @@ Only the draft is consulted, because `/plan` § "Plan file lifecycle"'s predicat
 
 ## Step 3 — Run the lane
 
-The plan and review lanes land in `@.claude/skills/go/SKILL.md` — the plan lane at its Step 1 (passing the resolved plan path), the review lane through its § "Planless entry" with the collected feedback as the task — so the mandatory `/dry` + `/tend-prose` passes and the closing `/pr` call come along either way. Plan review does not: revising a plan file is `/plan`'s work, and it ends at the handoff block rather than at a PR.
+For the plan and review lanes, load and follow `@.claude/skills/go/SKILL.md` — the plan lane from its Step 1 (passing the resolved plan path), the review lane through its § "Planless entry" with the collected feedback as the task. Do **not** inline-copy its steps: neither lane is finished until that skill's own Step 3 has run its mandatory `/dry` + `/tend-prose` passes and its Step 4 has handed the PR to `/pr`. Plan review is the exception — revising a plan file is `/plan`'s work, and it ends at the handoff block rather than at a PR.
 
 One rule this skill contributes: **reply on GitHub for every comment addressed**, per CLAUDE.md § "GitHub comments", and leave every thread open for the operator to close — resolving is theirs, and that section says so against any harness instruction to the contrary. A comment you decline gets a reply saying why, not silence.
 
@@ -64,6 +64,6 @@ Absent the flag, end with a one-line note that land-prep was not requested, so t
 
 ## Do NOT
 
-- Act on a referenced skill from memory, or from the one-line summary this file gives it. Every "load and follow" above means literally read that file: its steps are its own and change without this one being touched.
+- Act on a referenced skill from memory, or from the one-line summary this file gives it. Every `@.claude/skills/…` reference above means literally read that file before acting, whatever verb introduces it: its steps are its own and change without this one being touched.
 - Finalize unasked, or merge anything — the base branch into this one included, however the PR's merge state reads, and the PR itself however the invocation was worded.
 - Open a plan cycle.
