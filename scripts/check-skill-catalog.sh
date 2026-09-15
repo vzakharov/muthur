@@ -184,6 +184,40 @@ else
   done
 fi
 
+# --- Assertion 5: no orphaned colocated page -------------------------------
+#
+# The reverse of assertion 1. That one walks references to files; this one walks
+# files to references, and catches the other half of the same silent failure: a
+# page beside a `SKILL.md` that nothing points at is prose no session ever loads,
+# and the agent follows the surviving skill body without learning it exists.
+#
+# Colocating a minority-entry section creates exactly this risk, the page and the
+# pointer that reaches it being separate edits — and a later rewrite of the skill
+# body can drop the pointer while leaving the page behind.
+#
+# The reference must be the page's path, from somewhere other than the page
+# itself and other than the catalog: a catalog row is an inventory entry, not a
+# load path, so a page listed only there is still unreachable.
+
+echo "5. Every colocated skill page is referenced"
+
+for page in .claude/skills/*/*.md; do
+  [ -f "$page" ] || continue
+  [ "$(basename "$page")" != "SKILL.md" ] || continue
+
+  referenced=0
+  while IFS= read -r hit; do
+    [ "$hit" = "$page" ] && continue
+    [ "$hit" = "$CATALOG" ] && continue
+    referenced=1
+    break
+  done < <(grep -lF "$page" "${sources[@]}" 2>/dev/null)
+
+  if [ "$referenced" -eq 0 ]; then
+    fail "$page is referenced by nothing — no session can reach it"
+  fi
+done
+
 # --- Report ---------------------------------------------------------------
 
 echo

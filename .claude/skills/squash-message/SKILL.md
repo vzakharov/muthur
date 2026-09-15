@@ -91,39 +91,13 @@ sheet**: what's already in it — earlier wording, the operator's edits, whateve
 previous run settled on — is the starting point, and this run edits it in light of
 what has changed since. Step 5 commits and pushes it. The path is a tripwire: the
 tree's name states its whole contract, and `/finalize` sweeps it once CI is green,
-so the proposal's own source never rides the squash onto the base branch. If the
-file isn't there, fall back to `tmp/squash-message.md` (`mkdir -p tmp`; `tmp/` is
-gitignored), which Step 5 `rm`s — with nothing prior on disk, that path composes
-fresh every time.
+so the proposal's own source never rides the squash onto the base branch.
 
-When neither exists there is nothing on disk to infer from, so the PR's draft
-state decides whether to create the tracked file: a **draft** PR has not been
-through a finalize yet, so absence means not-yet-created → make
-`docs/remove-before-merging/squash-message.md` (create the tree; it carries no
-`.gitkeep`, since `git rm -r` is the sweep). This is the first creation, at
-PR-open.
-
-On a PR that is already **ready**, absence means one of two things and git history
-tells them apart. If the branch ever carried the file, a finalize swept it — so
-**restore it** instead of starting over:
-
-```bash
-P=docs/remove-before-merging/squash-message.md
-DEL=$(git log --diff-filter=D -1 --format=%H -- "$P")
-mkdir -p "$(dirname "$P")" && git show "$DEL^:$P" > "$P"
-```
-
-The sweep ends the doc's life on the branch, not its history, so the last text it
-reached is still the starting point — which is what matters when an
-operator-initiated `/check-merge` finds an advanced base carrying something the
-record should mention. If history has nothing, the branch never had the file — a
-bare `/squash-message` on a branch no PR-opening lane ever ran on: compose fresh
-in `tmp/`.
-
-The tracked file therefore lives from PR-open until CI goes green, spanning
-`/finalize`'s own reconcile: at that point the PR is ready but the file is still
-there, so presence picks it and the final edit — the one that becomes the
-permanent record — is made with the doc in hand.
+**Absent → load `@.claude/skills/squash-message/working-file.md`**, which picks
+the file and says whether there is prior text to start from. Absence has two
+causes taking different paths — the first run on the branch, or a run after
+`/finalize` already swept the file — which is why it is a page rather than a
+fallback line. A branch carrying the file needs nothing from it.
 
 ````markdown
 Proposed squash title/body:
@@ -317,7 +291,8 @@ Split by which working file Step 2 selected:
   evolved, so each refresh is its own commit. On a **non-draft** PR add `[no ci]`
   to the subject — a commit touching only this file is inert to every CI job, and
   without the marker each refresh burns a full run.
-- **A file this run restored** (the swept-then-restored case in Step 2) → commit
+- **A file this run restored** (the swept-then-restored case in
+  `@.claude/skills/squash-message/working-file.md`) → commit
   and push it the same way, then **sweep the tree again before the turn ends**, as
   `/finalize` step 6 does. The PR is already ready, so a restored file left on the
   branch is merge-able. Both commits belong in the history: the operator can read
