@@ -9,8 +9,8 @@
 #      scope is the directory.
 #   2. Every `.claude/skills/*/` directory has exactly one row in
 #      `.claude/skills/update-muthur/catalog.md`.
-#   3. Every path named in a catalog row's first column exists. A row whose
-#      first column is a glob names a set rather than a path, and is skipped.
+#   3. Every path named in a catalog row's first column exists; a row naming a
+#      glob names a set rather than a path, and is skipped.
 #   4. A skill's two stub markers agree, and no unhydrated stub is present
 #      downstream.
 #

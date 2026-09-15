@@ -42,9 +42,8 @@ inventory, so every item appears under exactly one, and
 
 - **adopt** — copy as-is.
 - **rewrite** — copy the shape, replace the contents for your repo. One row
-  carries it alone, and it is load-bearing: `scripts/vet.sh`, where what the
-  script must exit turns on whether your repo has a stack yet and
-  [`CLAUDE.md` § "Vetting"](../CLAUDE.md#vetting) is that contract's home.
+  carries it: `scripts/vet.sh`, whose exit turns on whether your repo has a stack
+  yet, with [`CLAUDE.md` § "Vetting"](../CLAUDE.md#vetting) the contract's home.
   Elsewhere the word qualifies an **adopt** — `/update-muthur`'s watermark,
   `.claude/voice/`'s `operators/` entries — where the item travels whole and one
   file inside it is yours to write.
@@ -298,20 +297,19 @@ it describes no repo at all, it *converts* a whole-tree fork — an operation a
 subset adopter is not performing and a fork performs exactly once, deleting the
 skill as it finishes.
 
-**A clone can also hold what the sweep missed, and that is not an item here.**
-`/finalize` deletes `docs/plans/`, `docs/issue/` and `docs/remove-before-merging/`
-before a branch goes green, but the sweep is a discipline rather than a
-guarantee: a merge that bypassed it leaves them behind, and a clone taken
-mid-flight from a feature branch has them by construction. Seeing any of those
-directories in your clone means you are looking at working state, not the
-product — someone else's, and nothing you decide about.
+**A clone can also hold working state.** `/finalize` deletes `docs/plans/`,
+`docs/issue/` and `docs/remove-before-merging/` before a branch goes green, but
+the sweep is a discipline rather than a guarantee: a merge that bypassed it
+leaves them behind, and a clone taken mid-flight from a feature branch has them
+by construction. Seeing any of those directories means you are looking at
+someone else's work in progress, not the product.
 
 | Item | What it does | Requires | Pulls in | Disposition |
 | --- | --- | --- | --- | --- |
 | `README.md` | What this repo is, and the two ways to acquire it. Yours already exists. | — | — | never |
 | `ADOPTING.md` | The acquisition procedure. Read once, over the network, from the clone. | — | — | never |
 | `docs/img/` | `ADOPTING.md`'s only asset — the screenshot locating the environment setup script. Goes when that file does, or it is left an orphan. | — | — | never |
-| `.claude/skills/update-muthur/catalog.md` | This file, and the only row naming something a skill directory would otherwise carry in: taking `/update-muthur` brings it along, which is exactly what must not happen. Read it from a fresh clone on every sync instead, so it cannot go stale downstream — both copy steps name it as a carve-out. | — | — | never |
+| `.claude/skills/update-muthur/catalog.md` | This file, and the only row naming something a skill directory would otherwise carry in: taking `/update-muthur` brings it along, which must not happen. Read it from a fresh clone on every sync instead, so it cannot go stale downstream — both copy steps name it as a carve-out. | — | — | never |
 | `/detemplate` | Turn a fresh template fork into a project: prune the `never` rows and unused groups, hydrate what stays, hand back the setup script. Routes through `/plan` and deletes itself last. | `gh`, `$GH_TOKEN`; a whole-tree fork, not a subset copy | `/plan` (G2); `/spinoff`, `/update-muthur` (G0) | never |
 | `scripts/check-muthur.sh` | The one vet line behind which everything that tests only this repo's own machinery sits, so a sync offers it as a single decision. Keyed on this catalog's presence, so it exits 0 the moment it is downstream. | `bash` | `scripts/check-repo-identity.sh`, `scripts/test_*.py` (both never) | never |
 | `scripts/check-repo-identity.sh` | Assert that this repo's own `owner/repo` appears only where a human copies it by hand, and nowhere under a stale name — everything else compares `origin` against the watermark's `repo` field instead. Keyed on this catalog's presence, so it exits 0 the moment it is downstream. | `bash`, `jq`, `git` | — | never |
