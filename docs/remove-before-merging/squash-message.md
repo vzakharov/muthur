@@ -14,17 +14,20 @@ state and whose post it ends on are buried in the bodies, so
 /handle's review lane loads the whole document to reach the few
 threads it acts on.
 
-The export now trims each diff hunk to the commented range plus three
-lines of context, keeping the @@ header and marking what was elided,
-and never truncating the line the comment is about. pr.md opens its
-review section with an index — one line per thread carrying the path,
-the state, the tail author's agent/human label, its timestamp and a
-preview — which is exactly what the tail test reads. Above a
-character budget the thread bodies move to docs/pr/<n>/threads/,
-grouped by the file each thread hangs off, since that is the unit the
-reader works in and where the overlapping hunks live.
+The quoted diff is now the reviewer's own selection: start_line
+through line, byte for byte, preceded by the @@ header, a marker for
+what was elided and three lines of run-up. What it replaces was
+whatever GitHub padded around that selection — across the same PR's
+182 comments the hunks ran to 11,955 lines against 390 selected.
+pr.md opens its review section with an index — one line per thread
+carrying the path, the state, the tail author's agent/human label, its
+timestamp and a preview — which is exactly what the tail test reads.
 
-Below the budget nothing moves and the export stays one file, so the
+Past 400 rendered lines the bodies hoist out in stages: threads to
+docs/pr/<n>/threads/ grouped by the file each hangs off, then, if that
+was not enough, conversation comments to comments.md. The header, PR
+body and timeline never move, being what the file is opened for.
+Under the budget nothing moves and the export stays one file, so the
 consumer's instruction is the same sentence either way: read the
 index, follow the link. Issue exports keep their current shape, their
 comments never having approached the size that made this worth doing.
