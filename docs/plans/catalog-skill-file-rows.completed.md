@@ -63,10 +63,12 @@ Nothing a dropped row carried may be lost.
    `lib.sh` and `.claude/settings.json`. § "Three dispositions, not two" loses its
    second `rewrite` member, so its "Exactly two files qualify" sentence is
    rewritten around `scripts/vet.sh` alone. The *why* — a placeholder SHA halts
-   the skill, a foreign `adopted` set under-filters silently — already lives in
-   full in `/update-muthur` § "Never sync the watermark file itself" and
-   `ADOPTING.md` § "Hydrate the sync stub"; G0's own prose already says hydrating
-   the skill *is* filling in the watermark. No fact needs writing anywhere new.
+   the skill, a foreign `adopted` set under-filters silently — was checked
+   against the tree rather than assumed, and **half of it had no other home**.
+   `/update-muthur` § "Never sync the watermark file itself" and `ADOPTING.md`
+   § "Hydrate the sync stub" cover the placeholder SHA; the `adopted`-set half
+   existed nowhere but this bullet, so it moves to `ADOPTING.md`'s `adopted`
+   field bullet, where the adopter is writing the array.
 2. **`carving.md`'s closure, which is the one thing genuinely at risk.** Its row
    is the only place recording that the carve conditionally pulls in
    `/propose-issue` (G3). `/plan` and `/go` both reach `carving.md`, so both rows
