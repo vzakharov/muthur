@@ -4,7 +4,8 @@ description: >-
   `/tend-prose` — scoped to what the branch has changed since it was last
   polished, committing what they change. These are the passes `/go` runs at its
   Step 3; this skill is how work that never went through `/go` gets them. Invoke
-  as `/polish [focus guidance]`, or `/polish full` to re-read the whole branch.
+  as `/polish [focus guidance]`, or `/polish full` to re-read the whole branch
+  rather than what it has changed since the last polish commit.
   Use when the operator says "polish this", "tidy this up", or "run the checks
   that come after `/go`".
 ---
@@ -18,7 +19,7 @@ Two passes, in this order, over one scope:
 
 Each pass is a real read of the diff and commits its own edits. "The diff looks clean" is a conclusion a pass reaches, never a reason not to run it — and a pass that changes nothing is a result, reported as one.
 
-Any argument other than `full` is focus guidance and rides through to both passes unchanged — including a lens name, which is `/tend-prose`'s to read. `full` is this skill's own, and § "The watermark" below says what it does.
+Any argument other than `full` is focus guidance and rides through to both passes unchanged — including a lens name, which is `/tend-prose`'s to read. `full` is this skill's own, and § "The floor" below says what it does.
 
 ## Scope: the branch, not the session
 
@@ -36,34 +37,29 @@ git diff origin/<base>...HEAD                     # the branch's net change
 
 `<base>` is the repo's default branch wherever that lookup has no answer — no PR yet, no `gh`, no GitHub at all. Nothing here needs the PR except the name of the branch this work merges into.
 
-That range plus anything uncommitted is the scope, unless the watermark below moves its floor up.
+That range plus anything uncommitted is the scope, unless the floor below moves up.
 
-## The watermark
+## The floor: the last polish commit
 
-A branch is polished more than once — at `/go`, again at `/finalize` — and the second run has no business re-reading what the first one cleared. So a full run records where it got to, in `docs/remove-before-merging/polished.md`:
+A branch is polished more than once — at `/go`, again at `/finalize` — and the second run has no business re-reading what the first one cleared. The passes commit their own edits, so the run is already in the history; what makes it findable is a trailer on every commit either pass makes here:
 
-```markdown
-# Polished
-
-| Head | When | Range read |
-| --- | --- | --- |
-| `a1b2c3d` | 2026-09-15 | `origin/main...HEAD` |
-| `e4f5a6b` | 2026-09-16 | `a1b2c3d..HEAD` |
+```
+Polished: full
 ```
 
-**The last row is the watermark.** The rows above it are the branch's polish history, and the directory's sweep at `/finalize` throws the lot away before anything lands. So the scope resolved above gets one rung narrower: `git diff <watermark>..HEAD` where a row names a commit, the full `origin/<base>...HEAD` where none does.
+A focused run writes `Polished: <the guidance>` instead, and the lookup skips it: guidance narrows what the passes look for, so a clean result says nothing about the defects they were not looking for. **The trailer belongs to this skill, not to the passes** — `/dry` invoked on its own is not a polish and marks nothing.
 
-Write the row **after** both passes have committed, recording `git rev-parse --short HEAD` as it stands then, and commit it on its own (`docs: record /polish watermark`). That commit lands inside the next run's range and is not work — skip it, and any later commit that touches nothing else.
+The floor is the newest full-polish commit the branch still carries:
 
-Three things put the floor back at the base:
+```bash
+git log origin/<base>..HEAD --grep='^Polished: full$' --format=%H -1
+```
 
-- **No file, or no row in it** — the first full run on this branch.
-- **A watermark `HEAD` does not descend from** (`git merge-base --is-ancestor <sha> HEAD`) — the branch was rebased, amended or reset, so the row names a commit that no longer describes this history.
-- **`/polish full`** — the operator asking for the whole branch again. It is the override for a watermark that is simply wrong: written by a run that cut itself short, or by one whose judgment they don't share.
+Found → `git diff <that sha>..HEAD`. Nothing → the full `origin/<base>...HEAD` above. The search is bounded by the branch, so a rebase, amend or reset needs no separate invalidation: a commit this history no longer contains cannot come back as the answer. `/polish full` ignores the answer and re-reads the branch — the override for a floor that is simply wrong, left by a run that cut itself short or by one whose judgment the operator doesn't share.
 
-**A focused run writes no row.** Guidance narrows what the passes look for, so a clean result says nothing about the defects they weren't looking for, and a row claiming otherwise would bury those for the rest of the branch's life.
+**A run that changes nothing leaves no commit, so it leaves no floor** and the next run re-reads ground that was already clear, reaching the same answer more slowly. That is the price of keeping the record in the history: the alternative is a tracked file, written by a commit of its own, with a rule for skipping that commit in the next range — more machinery than an occasional re-read is worth.
 
-**The watermark narrows the subject, not the comparison.** `/dry`'s findings are duplications *between* the new code and what was already there, so the commits below the watermark and the rest of the codebase stay readable as context. It is what gets reviewed that starts at the watermark, not what it gets compared against.
+**The floor narrows the subject, not the comparison.** `/dry`'s findings are duplications *between* the new code and what was already there, so the commits below the floor and the rest of the codebase stay readable as context. It is what gets reviewed that starts at the floor, not what it gets compared against.
 
 ## Where it runs
 
