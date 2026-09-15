@@ -41,25 +41,31 @@ That range plus anything uncommitted is the scope, unless the floor below moves 
 
 ## The floor: the last polish commit
 
-A branch is polished more than once — at `/go`, again at `/finalize` — and the second run has no business re-reading what the first one cleared. The passes commit their own edits, so the run is already in the history; what makes it findable is a trailer on every commit either pass makes here:
+A branch is polished more than once — at `/go`, again at `/finalize` — and the second run has no business re-reading what the first one cleared. The passes commit their own edits, so the run is already in the history; what makes it findable is the subject line every commit either pass makes here carries:
 
 ```
-Polished: full
+polish: <what the passes changed>
 ```
 
-A focused run writes `Polished: <the guidance>` instead, and the lookup skips it: guidance narrows what the passes look for, so a clean result says nothing about the defects they were not looking for. **The trailer belongs to this skill, not to the passes** — `/dry` invoked on its own is not a polish and marks nothing.
+`polish:` is a branch-local commit type, and CLAUDE.md § "Git conventions" is the home of what makes a type outside the standard set legitimate. A focused run writes `polish(<the guidance>):` instead, which the lookup below skips: guidance narrows what the passes look for, so a clean result says nothing about the defects they were not looking for. **The type belongs to this skill, not to the passes** — `/dry` invoked on its own is not a polish and marks nothing.
+
+**A run that changes nothing commits anyway, empty:**
+
+```bash
+git commit --allow-empty -m 'polish: nothing to change'
+```
+
+Finding nothing is the ordinary result on a branch `/go` has already polished, and it is precisely the run whose floor the next one needs. An empty commit is how git records that something was done to a tree without changing it, which is exactly the claim being made.
 
 The floor is the newest full-polish commit the branch still carries:
 
 ```bash
-git log origin/<base>..HEAD --grep='^Polished: full$' --format=%H -1
+git log origin/<base>..HEAD --format='%H %s' | awk '$2 == "polish:" { print $1; exit }'
 ```
 
-Found → `git diff <that sha>..HEAD`. Nothing → the full `origin/<base>...HEAD` above. The search is bounded by the branch, so a rebase, amend or reset needs no separate invalidation: a commit this history no longer contains cannot come back as the answer. `/polish full` ignores the answer and re-reads the branch — the override for a floor that is simply wrong, left by a run that cut itself short or by one whose judgment the operator doesn't share.
+The commit's subject line is matched rather than `--grep`, which would also hit a body line that happens to open the same way. Found → `git diff <that sha>..HEAD`. Nothing → the full `origin/<base>...HEAD` above. The search is bounded by the branch, so a rebase, amend or reset needs no separate invalidation: a commit this history no longer contains cannot come back as the answer. `/polish full` ignores the answer and re-reads the branch. It is the override for a floor that lies, which is the one failure this mechanism cannot detect on its own: a run that committed its mark and then stopped early, or a standard that has since moved — `/tend-prose` gaining a lens, `/dry` tightening what counts. Both leave a commit claiming ground was cleared that was not.
 
-**A run that changes nothing leaves no commit, so it leaves no floor** and the next run re-reads ground that was already clear, reaching the same answer more slowly. That is the price of keeping the record in the history: the alternative is a tracked file, written by a commit of its own, with a rule for skipping that commit in the next range — more machinery than an occasional re-read is worth.
-
-**The floor narrows the subject, not the comparison.** `/dry`'s findings are duplications *between* the new code and what was already there, so the commits below the floor and the rest of the codebase stay readable as context. It is what gets reviewed that starts at the floor, not what it gets compared against.
+**The floor narrows what gets reviewed, not what it is compared against.** `/dry`'s findings are duplications *between* the new code and what was already there, so the commits below the floor and the rest of the codebase stay readable as context.
 
 ## Where it runs
 
