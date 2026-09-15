@@ -352,10 +352,7 @@ Four closure facts are counter-intuitive enough to state outright:
   overcounts the dependency.) Its three lines calling
   `scripts/check-skill-catalog.sh`, `scripts/check-squash-message.sh` and
   `scripts/check-muthur.sh` are the part a rewrite decides separately; the
-  comment above them says what dropping each costs. The third is one line on
-  purpose: everything that tests only the source repo's own machinery sits
-  behind it, so a sync brings those in as a single decision rather than as a
-  line per test.
+  comment above them says what dropping each costs.
 - **`/finalize` reaches into G3 and G5 conditionally.** Its working-artifact
   sweep cites `/issue`, and its CI steps cite `/watch-ci`. Both citations are
   guarded by prose conditions ("if a workflow runs on PRs"), so the behavior

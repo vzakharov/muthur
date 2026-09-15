@@ -28,12 +28,10 @@
 #     `/squash-message` states, passing quietly when a branch has no proposal.
 #     Dropping it leaves nothing catching a proposal edited by hand or outgrown
 #     by a later base merge.
-#   check-muthur.sh — the checks that test only this repo's own machinery: the
-#     repo-identity check, and every `scripts/test_*.py` — today the export's
-#     agent/human labelling and its hunk trimming. One line rather than one per
-#     check, because a repo that adopted the loop drops all of them together and
-#     should not have to decide that test by test. It keys on the catalog and
-#     exits 0 downstream, so the line is harmless if a rewrite leaves it.
+#   check-muthur.sh — everything that tests only this repo's own machinery: the
+#     repo-identity check and every `scripts/test_*.py`. One line because an
+#     adopting repo drops them together; it keys on the catalog and exits 0
+#     downstream, so the line is harmless if a rewrite leaves it.
 #
 # See CLAUDE.md → Vetting for the contract.
 
