@@ -81,7 +81,7 @@ enforces it the same way.
 
 | Item | What it does | Requires | Pulls in | Disposition |
 | --- | --- | --- | --- | --- |
-| `/update-muthur` | Pull the agent infrastructure forward from the repo you adopted it from: diff since the watermark, triage commit by commit, port what applies. Carries `watermark.json` — which repo you sync from, the SHA you last synced to, what you adopted or declined, and the ancestry that led here — shipped pointed at this repo with the rest as placeholders, this tree being the root. | `gh`, `$GH_TOKEN`, git transport to the source repo; hydration (the watermark) | `/dry`, `/tend-prose` (G1); `/pr`, `/squash-message` (G2); `/override-gh` (G4) | adopt — **rewrite the watermark** |
+| `/update-muthur` | Pull the agent infrastructure forward from the repo you adopted it from: diff since the watermark, triage commit by commit, port what applies. Carries `watermark.json` — which repo you sync from, the SHA you last synced to, what you adopted or declined, and the ancestry that led here — shipped pointed at this repo with the rest as placeholders, this tree being the root. | `gh`, `$GH_TOKEN`, git transport to the source repo; hydration (the watermark) | `/polish` (G1); `/pr`, `/squash-message` (G2); `/override-gh` (G4) | adopt — **rewrite the watermark** |
 | `/spinoff` | Seed a new sibling repo out of the adopter you are standing in: triage what travels, write the target's watermark, seed its `main` and a session branch, and hand over a session in it. Ships hydrated. | `gh`, `$GH_TOKEN`, repo-creation rights on the target's owner; a caller that adopted this infrastructure rather than being it | `/update-muthur` (this group); `/pr` (G2) | adopt |
 
 **Both skills are inert in this repo, for one structural reason: this tree is the
@@ -89,9 +89,9 @@ root.** There is no source above it to sync from, and it is not an adopter, so
 there is nothing to spin off out of either — `/spinoff` refuses the moment it
 finds this catalog. Downstream both work.
 
-`/update-muthur`'s Step 8 hands off to `/dry`, `/tend-prose` and `/pr`, and
-cites `/squash-message` for how the sync's own squash record is titled; the first
-two come with G1, which you are adopting anyway. `/spinoff` reaches `/pr` as
+`/update-muthur`'s Step 8 hands off to `/polish` and `/pr`, and
+cites `/squash-message` for how the sync's own squash record is titled; `/polish`
+comes with G1, which you are adopting anyway. `/spinoff` reaches `/pr` as
 well, at its Step 4, to open the seed PR in the new repo. **G2 is the escape**:
 if you decline it, strip those citations from both skills and land the sync PR —
 and the seed PR — however your repo normally does. `scripts/check-skill-catalog.sh`
@@ -109,6 +109,7 @@ there is no condition under which it fails to apply.
 | `.claude/rules/` | The path-scoped convention mechanism: a rule file loads only when a session touches the paths it declares. Ships with a README and no rules. | — | — | adopt |
 | `/dry` | Review the session's diff for DRY opportunities; apply the obvious wins, surface the ambiguous ones. | — | — | adopt |
 | `/tend-prose` | Cut prose that shouldn't exist, rewrite what narrates a change into present-tense contracts, trim what names and types already say, delete what survives only to deny a thing the change removed. The long version of CLAUDE.md § "Writing things down". | — | — | adopt |
+| `/polish` | Run `/dry` then `/tend-prose` over the branch's diff, committing what they change. `/go` runs it after implementing and `/finalize` before anything else it does; the operator runs it over work that reached neither. | — | `/dry`, `/tend-prose` (this group) | adopt |
 | `.claude/voice/` | The house rule for writing to a person, imported by CLAUDE.md § "Explaining things to people" and so resident in every session. `voice.md` is the rule, and the place a team edits if it wants a house manner of its own; `operators/` holds one file per person and ships carrying this repo's operator. | — | `/tend-prose` (this group) | adopt — **rewrite its `operators/` entries** |
 | `/plainly` | Explain something to a person cause-first and in their nouns: re-explain an answer that did not land, or answer a question under the rule from the start. Names six defects so a bad report can be called out in one word. | — | `/tend-prose` (this group) | adopt |
 | `scripts/check-skill-catalog.sh` | Assert that no skill `@`-reference dangles. Downstream, that first assertion is the whole value: it is how you find out a subset copy was incomplete. | `bash` | — | adopt |
@@ -131,10 +132,10 @@ says nothing.
 | --- | --- | --- | --- | --- |
 | `/task` | Judge for itself whether a task needs a plan, write the draft, then judge whether the operator has to look — a question, a draft, and a question, running whichever of the three outcomes they pick. `/task <what to do>` is a conditional go-ahead scoped to that task, and CLAUDE.md's entry ladder routes every change-asking prompt here. | — | `/go`, `/plan`, `/pr`; **conditionally** `/take-issue` (G3) | adopt |
 | `/plan` | Write the plan to a `docs/plans/` file whose name is the approval gate, publish it as a draft PR so it is reviewed as a diff, and ask questions as numbered prose. Also owns the call on whether work is beyond one PR, and the bar that keeps the answer usually "no". Carries `carving.md`, the procedure for the work that is: how coarse the parked slices may be, and what the plan names as its proposed parent and children. | `gh` | `/finalize`, `/go`, `/pr`; **conditionally** `/take-issue`, `/propose-issue` (G3) | adopt |
-| `/go` | The go-ahead: flip the plan file, file the issues the plan proposed, do the work, run the quality passes, hand the PR back to `/pr`. Also takes a branch to attach to, or a task with no plan behind it. | — | `/dry`, `/tend-prose` (G1); `/from-branch`, `/plan`, `/pr`, `/task`; **conditionally** `/take-issue`, `/propose-issue` (G3) | adopt |
+| `/go` | The go-ahead: flip the plan file, file the issues the plan proposed, do the work, run the quality passes, hand the PR back to `/pr`. Also takes a branch to attach to, or a task with no plan behind it. | — | `/polish` (G1); `/from-branch`, `/plan`, `/pr`, `/task`; **conditionally** `/take-issue`, `/propose-issue` (G3) | adopt |
 | `/implement` | Redirect to `/go`, for handoff blocks written before the rename. | — | `/go` | conditional — see below |
 | `/pr` | Own the PR object: rename the auto-branch, push, then open the draft PR or refresh the one that exists. | `gh` | `/branch-rename`, `/qa-checklist`, `/squash-message` | adopt |
-| `/finalize` | Land prep: vet, merge the base, sweep working artifacts, flip to ready, reconcile the squash message, attest — and, on `and merge`, merge the PR when the run turned up nothing to decide. | `gh`, `scripts/vet.sh` | `/check-merge`, `/from-branch`, `/plan`, `/squash-message`; **conditionally** `/take-issue` (G3), `/watch-ci` (G5) | adopt |
+| `/finalize` | Land prep: the quality passes, vet, merge the base, sweep working artifacts, flip to ready, reconcile the squash message, attest — and, on `and merge`, merge the PR when the run turned up nothing to decide. | `gh`, `scripts/vet.sh` | `/polish` (G1); `/check-merge`, `/from-branch`, `/plan`, `/squash-message`; **conditionally** `/take-issue` (G3), `/watch-ci` (G5) | adopt |
 | `/from-branch` | Attach the session to an existing branch or PR, abandoning the auto-created session branch. | `gh` | `/finalize`, `/go` | adopt |
 | `/handle` | Pick up a branch and do what it needs: attach, read off whether it carries an approved plan, a plan still under review, or feedback on shipped code, run that lane, land-prep only if asked. | `gh`; `scripts/export-github-item.py` (G3) for the review lane's thread export | `/from-branch`, `/go`, `/plan`, `/finalize` | adopt |
 | `/branch-rename` | Rename a harness auto-branch (`claude/<adjective>-<noun>-<hash>`) to a semantic name, keeping the random suffix. | `gh` | `/pr` | adopt |

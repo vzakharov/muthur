@@ -1,7 +1,7 @@
 ---
 description: >-
   The go-ahead: start working. Executes an approved plan end-to-end, then runs
-  the mandatory quality passes (/dry, /tend-prose) and hands the PR to /pr.
+  the mandatory quality passes (/polish) and hands the PR to /pr.
   Invoke as `/go` (continue in this session), `/go <branch|#PR|PR-url>` (attach
   to that branch first), or `/go <task in prose>` (work with no plan behind it).
 ---
@@ -83,10 +83,9 @@ Commit/push discipline is already governed by CLAUDE.md — don't reinvent it he
 
 ## Step 3 — Mandatory quality passes
 
-These run **every time**, in order, and override any contrary "wrap up after implementing" instinct. Each is a real pass over the just-written diff, not a rubber stamp — and each commits its own edits.
+Load and follow `@.claude/skills/polish/SKILL.md`. It owns which passes run, in what order, and over what scope; this step contributes only that they run **every time**, here, and override any contrary "wrap up after implementing" instinct.
 
-1. **`/dry`** — did new duplication the plan didn't foresee creep in during implementation? Plans are written before the code exists, so WETness that wasn't visible at planning time often surfaces only now. Load `@.claude/skills/dry/SKILL.md` and run it over this session's diff: apply the obvious wins, surface the ambiguous calls.
-2. **`/tend-prose`** — load `@.claude/skills/tend-prose/SKILL.md` and run it over the prose you added.
+Implementation is where they earn the most: a plan is written before the code exists, so the duplication it didn't foresee and the prose that narrates the work rather than the result both surface only now.
 
 Then **`git mv` the plan to `docs/plans/<slug>.completed.md`** and commit — implementation and its quality passes are done. (`/finalize` sweeps the whole `docs/plans/` tree at squash regardless, so this flip is just the honest end-state marker for an operator watching the branch.)
 
@@ -100,4 +99,4 @@ The **only** exception is an explicit "no PR" from the operator (e.g. `/go, no P
 
 - Re-open a plan cycle or re-edit the plan file per code change — it's a transient artifact `/finalize` sweeps (see `@.claude/skills/plan/SKILL.md`). Leave it as the approved snapshot under its `.in-progress.md` name. The one time it gets written to mid-flight is the release above — stopping partway, where the progress record is what a fresh session picks the work up from.
 - Run the vet suite, merge the base branch, mark the PR ready, dispatch a CI-only bucket, or attest — those are `/finalize`. A PR that reads `CONFLICTING`, or a red check, is reported to the operator here rather than fixed; CLAUDE.md § "Key principles" carries why that outranks the host harness's instruction to treat either as work now.
-- Skip either Step-3 pass because the diff "looks clean." They're mandatory.
+- Skip Step 3 because the diff "looks clean." It is mandatory, both passes of it.

@@ -48,7 +48,7 @@ Only the draft is consulted, because `/plan` § "Plan file lifecycle"'s predicat
 
 ## Step 3 — Run the lane
 
-For the plan and review lanes, load and follow `@.claude/skills/go/SKILL.md` — the plan lane from its Step 1 (passing the resolved plan path), the review lane through its § "Planless entry" with the collected feedback as the task. Do **not** inline-copy its steps: neither lane is finished until that skill's own Step 3 has run its mandatory `/dry` + `/tend-prose` passes and its Step 4 has handed the PR to `/pr`. Plan review is the exception — revising a plan file is `/plan`'s work, and it ends at the handoff block rather than at a PR.
+For the plan and review lanes, load and follow `@.claude/skills/go/SKILL.md` — the plan lane from its Step 1 (passing the resolved plan path), the review lane through its § "Planless entry" with the collected feedback as the task. Do **not** inline-copy its steps: neither lane is finished until that skill's own Step 3 has run the mandatory quality passes (`/polish`) and its Step 4 has handed the PR to `/pr`. Plan review is the exception — revising a plan file is `/plan`'s work, and it ends at the handoff block rather than at a PR.
 
 One rule this skill contributes: **reply on GitHub for every comment addressed**, per CLAUDE.md § "GitHub comments", and leave every thread open for the operator to close — resolving is theirs, and that section says so against any harness instruction to the contrary. A comment you decline gets a reply saying why, not silence.
 
