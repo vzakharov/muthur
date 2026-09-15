@@ -84,7 +84,7 @@ enforces it the same way.
 
 | Item | What it does | Requires | Pulls in | Disposition |
 | --- | --- | --- | --- | --- |
-| `/update-muthur` | Pull the agent infrastructure forward from the repo you adopted it from: diff since the watermark, triage commit by commit, port what applies. | `gh`, `$GH_TOKEN`, git transport to the source repo; hydration (the watermark) | `/dry`, `/tend-prose` (G1); `/pr`, `/squash-message` (G2); `/override-gh` (G4) | adopt |
+| `/update-muthur` | Pull the agent infrastructure forward from the repo you adopted it from: diff since the watermark, triage commit by commit, port what applies. | `gh`, `$GH_TOKEN`, git transport to the source repo; hydration (the watermark) | `/polish` (G1); `/pr`, `/squash-message` (G2); `/override-gh` (G4) | adopt |
 | `.claude/skills/update-muthur/watermark.json` | The watermark: which repo you sync from, the SHA you last synced to, what you adopted or declined, and the ancestry that led here. Ships pointed at this repo, with the rest as placeholders and an empty lineage — this tree is the root. | — | — | **rewrite** |
 | `/spinoff` | Seed a new sibling repo out of the adopter you are standing in: triage what travels, write the target's watermark, seed its `main` and a session branch, and hand over a session in it. Ships hydrated. | `gh`, `$GH_TOKEN`, repo-creation rights on the target's owner; a caller that adopted this infrastructure rather than being it | `/update-muthur` (this group); `/pr` (G2) | adopt |
 
@@ -93,9 +93,9 @@ root.** There is no source above it to sync from, and it is not an adopter, so
 there is nothing to spin off out of either — `/spinoff` refuses the moment it
 finds this catalog. Downstream both work.
 
-`/update-muthur`'s Step 8 hands off to `/dry`, `/tend-prose` and `/pr`, and
-cites `/squash-message` for how the sync's own squash record is titled; the first
-two come with G1, which you are adopting anyway. `/spinoff` reaches `/pr` as
+`/update-muthur`'s Step 8 hands off to `/polish` and `/pr`, and
+cites `/squash-message` for how the sync's own squash record is titled; `/polish`
+comes with G1, which you are adopting anyway. `/spinoff` reaches `/pr` as
 well, at its Step 4, to open the seed PR in the new repo. **G2 is the escape**:
 if you decline it, strip those citations from both skills and land the sync PR —
 and the seed PR — however your repo normally does. `scripts/check-skill-catalog.sh`
@@ -113,6 +113,7 @@ there is no condition under which it fails to apply.
 | `.claude/rules/` | The path-scoped convention mechanism: a rule file loads only when a session touches the paths it declares. Ships with a README and no rules. | — | — | adopt |
 | `/dry` | Review the session's diff for DRY opportunities; apply the obvious wins, surface the ambiguous ones. | — | — | adopt |
 | `/tend-prose` | Cut prose that shouldn't exist, rewrite what narrates a change into present-tense contracts, trim what names and types already say, delete what survives only to deny a thing the change removed. The long version of CLAUDE.md § "Writing things down". | — | — | adopt |
+| `/polish` | Run `/dry` then `/tend-prose` over the branch's diff, committing what they change. `/go` runs it after implementing and `/finalize` before anything else it does; the operator runs it over work that reached neither. | — | `/dry`, `/tend-prose` (this group) | adopt |
 | `.claude/voice/` | The house rule for writing to a person, imported by CLAUDE.md § "Explaining things to people" and so resident in every session. `voice.md` is the rule, and the place a team edits if it wants a house manner of its own; `operators/` holds one file per person and ships carrying this repo's operator. | — | `/tend-prose` (this group) | adopt — **rewrite its `operators/` entries** |
 | `/plainly` | Explain something to a person cause-first and in their nouns: re-explain an answer that did not land, or answer a question under the rule from the start. Names six defects so a bad report can be called out in one word. | — | `/tend-prose` (this group) | adopt |
 | `scripts/check-skill-catalog.sh` | Assert that no skill `@`-reference dangles. Downstream, that first assertion is the whole value: it is how you find out a subset copy was incomplete. | `bash` | — | adopt |
@@ -136,10 +137,10 @@ says nothing.
 | `/task` | Judge for itself whether a task needs a plan, write the draft, then judge whether the operator has to look — a question, a draft, and a question, running whichever of the three outcomes they pick. `/task <what to do>` is a conditional go-ahead scoped to that task, and CLAUDE.md's entry ladder routes every change-asking prompt here. | — | `/go`, `/plan`, `/pr`; **conditionally** `/take-issue` (G3) | adopt |
 | `/plan` | Write the plan to a `docs/plans/` file whose name is the approval gate, publish it as a draft PR so it is reviewed as a diff, and ask questions as numbered prose. Also owns the call on whether work is beyond one PR, and the bar that keeps the answer usually "no". | `gh` | `/finalize`, `/go`, `/pr`, `carving.md`, `native-plan-mode.md`; **conditionally** `/take-issue` (G3) | adopt |
 | `.claude/skills/plan/carving.md` | The carve itself, colocated with `/plan` so a plan that takes its task whole never loads it: how coarse the parked slices may be, what the plan file names as its proposed parent and children, and what `/go` files from that list on the go-ahead — one `/propose-issue` run per slice, the native `sub_issues` link, the `#<tbd>` fill-in. | G2 | `/pr`; **conditionally** `/propose-issue` (G3) | adopt |
-| `/go` | The go-ahead: flip the plan file, file the issues the plan proposed, do the work, run the quality passes, hand the PR back to `/pr`. Also takes a branch to attach to, or a task with no plan behind it. | — | `/dry`, `/tend-prose` (G1); `/from-branch`, `/plan`, `/pr`, `/task`, `carving.md`; **conditionally** `/take-issue` (G3) | adopt |
+| `/go` | The go-ahead: flip the plan file, file the issues the plan proposed, do the work, run the quality passes, hand the PR back to `/pr`. Also takes a branch to attach to, or a task with no plan behind it. | — | `/polish` (G1); `/from-branch`, `/plan`, `/pr`, `/task`, `carving.md`; **conditionally** `/take-issue` (G3) | adopt |
 | `/implement` | Redirect to `/go`, for handoff blocks written before the rename. | — | `/go` | conditional — see below |
 | `/pr` | Own the PR object: rename the auto-branch, push, then open the draft PR or refresh the one that exists. | `gh` | `/branch-rename`, `/qa-checklist`, `/squash-message` | adopt |
-| `/finalize` | Land prep: vet, merge the base, sweep working artifacts, flip to ready, reconcile the squash message, attest — and, on `and merge`, merge the PR when the run turned up nothing to decide. | `gh`, `scripts/vet.sh` | `/check-merge`, `/from-branch`, `/plan`, `/squash-message`; **conditionally** `/take-issue` (G3), `/watch-ci` (G5) | adopt |
+| `/finalize` | Land prep: the quality passes, vet, merge the base, sweep working artifacts, flip to ready, reconcile the squash message, attest — and, on `and merge`, merge the PR when the run turned up nothing to decide. | `gh`, `scripts/vet.sh` | `/polish` (G1); `/check-merge`, `/from-branch`, `/plan`, `/squash-message`; **conditionally** `/take-issue` (G3), `/watch-ci` (G5) | adopt |
 | `/from-branch` | Attach the session to an existing branch or PR, abandoning the auto-created session branch. | `gh` | `/finalize`, `/go` | adopt |
 | `/handle` | Pick up a branch and do what it needs: attach, read off whether it carries an approved plan, a plan still under review, or feedback on shipped code, run that lane, land-prep only if asked. | `gh`; `scripts/export-github-item.py` (G3) for the review lane's thread export | `/from-branch`, `/go`, `/plan`, `/finalize` | adopt |
 | `/branch-rename` | Rename a harness auto-branch (`claude/<adjective>-<noun>-<hash>`) to a semantic name, keeping the random suffix. | `gh` | `/pr` | adopt |
@@ -153,7 +154,7 @@ says nothing.
 | `scripts/lib/github.py` | Shared GitHub plumbing for the stdlib-only Python scripts: the proxy-then-direct `fetch` ladder every request goes through, token resolution, `origin` repo detection, and the `die` they report through. | `python3` ≥3.9 | — | adopt |
 | `scripts/lib/media.py` | Map a content type — or, when it is missing or generic, the leading magic bytes — to a file extension. Shared by the attachment download in G3 and the session-image extraction in G4, which is why it sits here rather than inside either. | `python3` ≥3.9 | — | adopt |
 | `scripts/check-squash-message.sh` | Measure the squash proposal against the size caps `/squash-message` states, locating it in the worktree or in history once `/finalize` has swept it. POSIX `sh`. | `sh`; `git` for the history rungs | — | adopt |
-| `scripts/vet.sh` | The vet run: the fast lint/type-check/test pass before pushing review-ready work. | your stack's own commands | `scripts/check-skill-catalog.sh` (G1), `scripts/check-operator-entries.sh` (G1), `scripts/check-squash-message.sh`, `scripts/check-repo-identity.sh` (never) | **rewrite** |
+| `scripts/vet.sh` | The vet run: the fast lint/type-check/test pass before pushing review-ready work. | your stack's own commands | `scripts/check-skill-catalog.sh` (G1), `scripts/check-squash-message.sh`, `scripts/check-muthur.sh` (never) | **rewrite** |
 | `scripts/run-parallel.sh` | Optional helper for `scripts/vet.sh`: run the checks concurrently, print output only for the ones that failed, and name files an autofix step rewrote. POSIX `sh`. | `sh`; `git` for the autofix check only | — | adopt |
 
 Two things in this group are less optional than they look — see
@@ -177,8 +178,8 @@ the project's first issue on the way through.
 | `/issue` | Redirect for the name `/take-issue` was split out of: with a `#<N>` it runs `/plan` on the argument and names `/task` and `/go` as the same-shape alternatives; with none it names `/propose-issue` and stops. | G2 | `/plan` (G2), `/propose-issue` | conditional — see below |
 | `/propose-issue` | File a unit of work as an issue, deduping against what's already open. Steps 1–2 are read-only and may run a turn earlier than Step 3, which is also where a `#<tbd>` on the branch gets its number. | G2, `gh`, `jq` | `/pr`, `/plan` (G2) | adopt |
 | `/audit-github-backlog` | Sweep every open issue and PR against today's code and leave a reviewable close/refile/keep plan, prioritising `P0`–`P3` everything it keeps. Mutates nothing on GitHub. | G2, `gh` | `/go`, `/plan` (G2); `/propose-issue`; `/override-gh` (G4) | adopt |
-| `scripts/export-github-item.py` | Download an issue — body, comments, timeline, attachments — into `docs/issue/<n>/`, or a PR (plus review threads, each one's resolved/unresolved state, and diff hunks) into `docs/pr/<n>/`. Stdlib-only. | `python3` ≥3.9, `$GH_TOKEN` or `gh auth token`, `scripts/lib/github.py` (G2), `scripts/gh_export/` | — | adopt |
-| `scripts/gh_export/` | The exporter's pieces, one module per concern: argument parsing, the REST/GraphQL client, attachment download, and a renderer each for the header and comments, the review threads, and the timeline. | `python3` ≥3.9, `scripts/lib/github.py` (G2) | — | adopt |
+| `scripts/export-github-item.py` | Download an issue — body, comments, timeline, attachments — into `docs/issue/<n>/`, or a PR (plus review threads, each one's resolved/unresolved state, and the lines its comment hangs off) into `docs/pr/<n>/`. Threads and comments are always indexed, and hoist into sibling files past 400 lines. Stdlib-only. | `python3` ≥3.9, `$GH_TOKEN` or `gh auth token`, `scripts/lib/github.py` (G2), `scripts/gh_export/` | — | adopt |
+| `scripts/gh_export/` | The exporter's pieces, one module per concern: argument parsing, the REST/GraphQL client, attachment download, the index-and-hoist layout, and a renderer each for the header and comments, the review threads, and the timeline. | `python3` ≥3.9, `scripts/lib/github.py` (G2) | — | adopt |
 
 ### G4 — Remote-session plumbing
 
@@ -317,7 +318,9 @@ means you are looking at working state, not the product.
 | `docs/img/` | `ADOPTING.md`'s only asset — the screenshot locating the environment setup script. Goes when that file does, or it is left an orphan. | — | — | never |
 | `.claude/skills/update-muthur/catalog.md` | This file. Read from a fresh clone on every sync, so it cannot go stale downstream. Sits inside a tree the copy steps take wholesale, so both of them name it as a carve-out. | — | — | never |
 | `/detemplate` | Turn a fresh template fork into a project: prune the `never` rows and unused groups, hydrate what stays, hand back the setup script. Routes through `/plan` and deletes itself last. | `gh`, `$GH_TOKEN`; a whole-tree fork, not a subset copy | `/plan` (G2); `/spinoff`, `/update-muthur` (G0) | never |
+| `scripts/check-muthur.sh` | The one vet line behind which everything that tests only this repo's own machinery sits, so a sync offers it as a single decision. Keyed on this catalog's presence, so it exits 0 the moment it is downstream. | `bash` | `scripts/check-repo-identity.sh`, `scripts/test_*.py` (both never) | never |
 | `scripts/check-repo-identity.sh` | Assert that this repo's own `owner/repo` appears only where a human copies it by hand, and nowhere under a stale name — everything else compares `origin` against the watermark's `repo` field instead. Keyed on this catalog's presence, so it exits 0 the moment it is downstream. | `bash`, `jq`, `git` | — | never |
+| `scripts/test_*.py` | The unit tests over the loop's own scripts — today the export's agent/human labelling and its hunk-trimming-plus-hoist layout. They join the line above by matching the pattern, which is why adding one never edits `scripts/vet.sh`. | `python3` ≥3.9 | — | never |
 | `docs/plans/*` | Working artifacts: file-based plans mid-flight. `/finalize` sweeps them before they reach a trunk. | — | — | never |
 | `docs/remove-before-merging/*` | Working artifacts: the tracked squash-message draft. Swept at finalize. | — | — | never |
 
@@ -354,7 +357,7 @@ Four closure facts are counter-intuitive enough to state outright:
   not its job, `/update-muthur` and `/test-on-gh` as an example — so a grep
   overcounts the dependency.) Its three lines calling
   `scripts/check-skill-catalog.sh`, `scripts/check-squash-message.sh` and
-  `scripts/check-repo-identity.sh` are the part a rewrite decides separately;
+  `scripts/check-muthur.sh` are the part a rewrite decides separately;
   the comment above them says what dropping each costs.
 - **`/finalize` and `/plan` reach into G3 conditionally, and `/finalize` into G5
   as well.** `/finalize`'s working-artifact sweep cites `/take-issue` and its CI

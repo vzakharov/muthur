@@ -1,5 +1,8 @@
 """The sections every export carries: the header block and the conversation
 comments.
+
+A conversation comment belongs to no file, so it indexes and hoists as its own
+stage rather than falling through a layout keyed on paths.
 """
 
 from __future__ import annotations
@@ -8,6 +11,7 @@ from typing import Any
 
 from gh_export.attachments import rewrite_attachment_refs
 from gh_export.authorship import attribution, split_agent_footer
+from gh_export.split import Hoistable, anchor_tag, preview
 
 
 def header_section(
@@ -63,26 +67,39 @@ def header_section(
     return "\n".join(lines)
 
 
-def comments_section(
+def comments_parts(
     comments: list[dict[str, Any]], url_to_relative: dict[str, str]
-) -> str:
+) -> tuple[str, list[Hoistable]]:
+    """The section heading, and each comment as a hoistable. Both empty when
+    the item has no conversation comments."""
     if not comments:
-        return ""
-    chunks = ["## Comments", ""]
-    for c in comments:
+        return "", []
+
+    items = []
+    for number, c in enumerate(comments, start=1):
+        anchor = f"c{number:02d}"
         by_agent, body = split_agent_footer(c.get("body") or "")
-        text = rewrite_attachment_refs(body or "_empty_", url_to_relative)
-        chunks.extend(
-            [
-                f"### Comment by {attribution(c.get('user'), by_agent)}"
-                f" on {c.get('created_at', '')}",
-                "",
-                f"[{c.get('html_url', '')}]({c.get('html_url', '')})",
-                "",
-                text,
-                "",
-                "---",
-                "",
-            ]
+        who = attribution(c.get("user"), by_agent)
+        created = c.get("created_at", "")
+        items.append(
+            Hoistable(
+                anchor=anchor,
+                group="",
+                summary=f"- **C{number:02d}** {who} — {created} — {preview(body)}",
+                body="\n".join(
+                    [
+                        anchor_tag(anchor),
+                        "",
+                        f"### Comment by {who} on {created}",
+                        "",
+                        f"[{c.get('html_url', '')}]({c.get('html_url', '')})",
+                        "",
+                        rewrite_attachment_refs(body or "_empty_", url_to_relative),
+                        "",
+                        "---",
+                        "",
+                    ]
+                ),
+            )
         )
-    return "\n".join(chunks)
+    return "## Comments\n", items
