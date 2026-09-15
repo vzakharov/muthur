@@ -28,7 +28,7 @@ The script writes `docs/issue/<n>/issue.md` (body + comments + timeline) and dow
 
 Consult the issue only through the export — never `gh issue view`, the GitHub MCP tools, or `WebFetch` in its place. `gh issue view` alone does **not** fetch attachments: GitHub's `private-user-images.githubusercontent.com` URLs require an authenticated request even when the issue is public, which is why the export script exists. `WebFetch` on a github.com issue page often fails outright in isolated environments. For a quick metadata check unrelated to the task at hand — labels, assignees, linked PRs — `gh issue view <n> --json title,body,labels,assignees,state,url` is still fine.
 
-**Then read** `docs/issue/<n>/issue.md` end to end, and **open the files under** `docs/issue/<n>/attachments/` when you need pixels (screenshots, mockups, design references).
+**Then read** `docs/issue/<n>/issue.md` end to end, and **open the files under** `docs/issue/<n>/attachments/` when you need pixels (screenshots, mockups, design references). A long thread indexes its comments and may hoist their bodies into `docs/issue/<n>/comments.md` — "end to end" includes that file, an issue being read whole rather than selectively.
 
 **Auth:** the script reads `$GH_TOKEN` (or `$GITHUB_TOKEN`) first, then falls back to `gh auth token`. One of those must be available. **Deps:** stdlib Python 3.9+ only — no `pip install` needed.
 

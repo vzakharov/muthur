@@ -82,9 +82,11 @@ Two path-shaped edge cases the grouping must not drop: a comment on an **outdate
 
 `/finalize` already sweeps `docs/pr/<m>/` whole, so nothing about landing changes.
 
-### Not changing: `issue.md`
+### Mostly not changing: `issue.md`
 
-Issues carry no review threads, and conversation comments were 2 % of the worst export on record. The splitter is keyed to the review section; issue exports keep their current single-file shape until something measures otherwise.
+Issues carry no review threads, and conversation comments were 2 % of the worst export on record, so nothing here is aimed at them.
+
+**Implemented wider than planned, deliberately.** The comment stage is the same code for both kinds, so an issue export gets the comment index too, and hoists past the same 400 lines. Keeping issues on their old shape would have meant a second rendering path for comments — the one thing the DRY notes below rule out — to suppress an index that is useful wherever a thread is long. `@.claude/skills/issue/SKILL.md` names the extra file, an issue being read whole rather than selectively.
 
 ## Implementation
 
