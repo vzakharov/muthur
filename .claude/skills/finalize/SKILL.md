@@ -30,7 +30,7 @@ Either way, **step 7's attestation comment is the record.** A reviewer cannot se
 
 **First, the quality passes.** Before step 1, load and follow `@.claude/skills/polish/SKILL.md` over this branch. Land prep is the funnel every branch reaches whatever route its work took, so this is where a branch written without `/go` in front of it still gets the passes — and the last point at which changing the diff is cheap, since the vet run, the base merge, the squash message and the attestation's SHA are all statements about a diff that has stopped moving.
 
-It carries no step number because the numbers below are cited from other skills and stay put; it runs first regardless. **`no vet` does not skip it** — a docs-only diff is the case `/tend-prose` exists for.
+It carries no step number because the numbers below are cited from other skills and stay put; it runs first regardless. **`no vet` does not skip it** — a docs-only diff is squarely what both passes are for: `/tend-prose` by construction, and `/dry` because a constraint stated in two places is a duplication like any other.
 
 Steps (stop on first unresolved failure):
 
@@ -107,12 +107,13 @@ Steps (stop on first unresolved failure):
 
 8. **Merge — under `and merge` only, and only if the run was uneventful.** Without the flag, stop at step 7 and report.
 
-   One predicate governs, and the list below only spells out how it fails: **merge only when the run's whole effect on the branch was step 3's sweep and whatever a tool's own fixer rewrote, and every check it ran passed the first time it ran.** The gate is evaluated once, here, by walking the run back against the list — not decided step by step as the run goes.
+   One predicate governs, and the list below only spells out how it fails: **merge only when the run's whole effect on the branch was step 3's sweep, the quality passes' own edits, and whatever a tool's own fixer rewrote, and every check it ran passed the first time it ran.** The gate is evaluated once, here, by walking the run back against the list — not decided step by step as the run goes.
+
+   **The quality passes are inside the predicate rather than against it**, because what they do by construction is rewrite prose and fold duplication, leaving what the code does alone. A run of them that found something is the ordinary state of a branch that reached land prep without `/go`, so standing down on it would stand down on nearly every such branch. A fold that turns out to change behavior is the exception that proves it: that is no longer a polish edit, and it stands the merge down like any other change you authored.
 
    **Stand down if any of this happened**, at whichever step it happened:
 
    - **Pre-check** — `HEAD` was detached, or there was no PR and you created one. A PR opened and merged inside one turn was never a reviewable object. (A PR you flipped back to draft is fine — that is the ordinary re-finalize.)
-   - **The quality passes** — `/polish` changed anything. An edit there is a judgment about the diff, made after the operator last looked at it, and it is the ordinary outcome on a branch that never went through `/go`. Finding nothing is what clears this.
    - **Step 1** — the vet run needed a change **you authored** to go green. A tool's own fixer (`--fix`, a formatter rewriting its own output) that clears it does not count; that is the autofix this flag allows. The test is whether you had to read the failure and decide what to change.
    - **Step 2** — any conflict, however trivially resolved; or you applied a dedup/simplification the base merge opened, or surfaced one as ambiguous. A clean merge that **brought commits in** is survivable, but step 1 vetted a tree without them: re-run it, green first try, and stand down on any interaction of the kind that step already has you reading the incoming diff for.
    - **Step 4** — a red CI run. Same autofix exception as step 1, plus one case it does not cover: a red run that cleared itself on a re-run with no change at all. "It was a flake" is a judgment, and an unexplained red is the most ordinary reason to want a human at the button.
@@ -121,7 +122,7 @@ Steps (stop on first unresolved failure):
    - **Anywhere** — the two-shot rule engaged; the PR carries feedback nobody answered (`@.claude/skills/handle/SKILL.md` Step 2's tail test, which is what keeps a merge from burying an open thread); or you reached a point where you would otherwise have asked the operator something.
    - **Under `no vet`** — the mode is the operator's call and does not stand the merge down, but its stated precondition is yours to check: if any check in the vet run would have had something to say about this diff, the mode was misapplied, and that misapplication is a stand-down.
 
-   The list is walked step by step so the verdict is auditable, and it is **not exhaustive** — a procedure that grows a step grows a way for a run to be eventful. So the predicate, not the list, is the verdict: **if the run made you decide anything, stand down.** Deciding it well is not the same as the operator having decided it.
+   The list is walked step by step so the verdict is auditable, and it is **not exhaustive** — a procedure that grows a step grows a way for a run to be eventful. So the predicate, not the list, is the verdict: **if the run made you decide anything the passes above don't cover, stand down.** Deciding it well is not the same as the operator having decided it.
 
    **Merging.** Step 7 goes up first: the record of what the merge rests on belongs on the PR before the merge, not after it. Then squash-merge with the title and body **step 5 settled**, verbatim; do not recompose them here. The comment is the source, so read it back rather than reconstructing it:
 
