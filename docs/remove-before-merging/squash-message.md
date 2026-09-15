@@ -32,6 +32,15 @@ consumer's instruction is the same sentence either way: read the
 index, follow the link. Issues share the comment stage, so an issue
 export gains the same index and the same budget.
 
+Riding along: the vet run grew a line per test file, and each one
+reached an adopting repo as its own accept-or-reject alongside that
+repo's real checks. scripts/check-muthur.sh is now the single line for
+everything that tests only this repo's machinery — the repo-identity
+check and every scripts/test_*.py, which a new test joins by matching
+rather than by editing vet.sh. The skill-catalog and squash-message
+checks stay outside it, measuring as they do the adopting repo's own
+skills and its own branches.
+
 Co-authored-by: Claude <noreply@anthropic.com>
 ```
 
