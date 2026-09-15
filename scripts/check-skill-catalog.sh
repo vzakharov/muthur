@@ -103,12 +103,10 @@ else
 
   echo "3. Every path in a catalog row exists"
   for item in "${row_items[@]}"; do
-    # A glob row (`scripts/test_*.py`) names a set, not a path, so there is
-    # nothing single to stat.
     case "$item" in
+      # A glob row (`scripts/test_*.py`) names a set, not a path, so there is
+      # nothing single to stat.
       *\**) continue ;;
-    esac
-    case "$item" in
       /*) path=".claude/skills/${item#/}" ;;  # `/skill-name`
       *) path="$item" ;;
     esac
