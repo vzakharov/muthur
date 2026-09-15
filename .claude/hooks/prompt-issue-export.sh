@@ -1,12 +1,13 @@
 #!/bin/bash
-# UserPromptSubmit hook: a prompt that *ends* in a GitHub reference — `#<N>` or
-# a pasted thread URL — is an operator handing that thread over, so export it
-# and name the export in the turn's context. The session then starts holding the
-# thread instead of spending a round trip fetching it.
+# UserPromptSubmit hook: a session's *first* prompt ending in `#<N>` is an
+# operator handing that thread over — the shape a title copied out of GitHub's
+# own UI arrives in — so export the thread and name the export in the turn's
+# context. The session then starts holding the thread instead of spending a
+# round trip fetching it.
 #
-# Only a trailing reference counts. A number mid-sentence is usually about
-# something else ("what should rule #1 be?"), and the match is bash's own, so a
-# prompt that ends in anything else costs one `jq` and nothing further runs.
+# Only that first prompt. A `#<N>` later in the session is the agent's call,
+# they having by then the context to weigh whether the number names a thread at
+# all — the judgement a launch prompt arrives with nobody to make.
 #
 # An export that lands may still be one nobody wanted, so the injected context
 # names it as untracked and the agent's to delete. Deleting a stray export is
@@ -28,32 +29,25 @@ say() { echo "prompt-issue-export: $*" >&2; }
 
 command -v jq >/dev/null || { say "jq not found; skipping the export."; exit 0; }
 
-prompt="$(jq -r '.prompt // empty' <<<"$payload")"
+field() { jq -r --arg k "$1" '.[$k] // empty' <<<"$payload"; }
+
+prompt="$(field prompt)"
 [ -n "$prompt" ] || exit 0
 
-# `#90?` and `#90.` hand a thread over the way `#90` does, so trailing space and
-# sentence punctuation come off before the reference has to sit at the end. The
-# closers are listed rather than matched as "any non-alphanumeric tail", which
-# under an unset locale swallows Cyrillic and matches a reference mid-sentence;
-# and they are a `case` glob rather than a bracket class, which inside
-# `[[ =~ ]]` loses its escaping before the regex sees it.
-while [ -n "$prompt" ]; do
-  case "${prompt: -1}" in
-    [[:space:]] | . | , | ';' | : | '!' | '?' | '"' | "'" | ')' | ']') prompt="${prompt%?}" ;;
-    *) break ;;
-  esac
-done
+number_re='#([0-9]+)$'
+[[ "$prompt" =~ $number_re ]] || exit 0
+number="${BASH_REMATCH[1]}"
 
-# The leading boundary is what keeps a hex colour, a fragment and a path out:
-# `#` may not sit against a word character, a `/` or another `#`. Held in a
-# variable for the quoting reason above.
-reference_re='(^|[^[:alnum:]_/#])(#|https://github\.com/[^[:space:]/]+/[^[:space:]/]+/(issues|pull)/)([0-9]+)$'
-[[ "$prompt" =~ $reference_re ]] || exit 0
+# The first prompt is the one whose transcript holds nothing the agent wrote:
+# `UserPromptSubmit` fires before the prompt is recorded, so an assistant record
+# in there means an earlier turn already ran. Tool results are `user` records
+# too, so the agent's own record is the mark to grep for. A missing or
+# unreadable transcript reads as a first prompt — one re-fetched thread costs
+# less than a launched session holding none.
+transcript="$(field transcript_path)"
+[ -n "$transcript" ] && grep -q '"type":"assistant"' "$transcript" 2>/dev/null && exit 0
 
-reference="${BASH_REMATCH[2]}${BASH_REMATCH[4]}"
-number="${BASH_REMATCH[4]}"
-
-project="${CLAUDE_PROJECT_DIR:-$(jq -r '.cwd // empty' <<<"$payload")}"
+project="${CLAUDE_PROJECT_DIR:-$(field cwd)}"
 [ -n "$project" ] && [ -d "$project" ] || exit 0
 command -v python3 >/dev/null || { say "python3 not found; skipping the export."; exit 0; }
 cd "$project" || exit 0
@@ -74,7 +68,7 @@ if ! landed="$(landed_export "$number")"; then
   # The exporter exits non-zero on a partial run too — the Markdown written, an
   # attachment missing — so a failure is reported with its output rather than
   # swallowed or retried: which of those happened is the agent's to read.
-  if ! output="$(timeout 50 python3 scripts/export-github-item.py "$reference" 2>&1)"; then
+  if ! output="$(timeout 50 python3 scripts/export-github-item.py "$number" 2>&1)"; then
     failure="$(tail -n 5 <<<"$output")"
   fi
   landed="$(landed_export "$number")" || true
@@ -84,15 +78,15 @@ context=""
 if [ -n "$landed" ]; then
   context+=$'The GitHub thread this prompt ends in is on disk already — this hook ran\n'
   context+="\`scripts/export-github-item.py\` for it before the turn: $landed"
-  context+=$'\n\nSo `/take-issue` Step 1 is done: read that export end to end, and open the files '
-  context+=$'under its `attachments/` when you need pixels. Do not re-export it, and do not '
-  context+=$'reach for `gh issue view`, the GitHub MCP tools or `WebFetch` in its place.'
+  context+=$'\n\nSo `/take-issue` Step 1 is done: read that export end to end, opening the files '
+  context+=$'under its `attachments/` when you need pixels, and consult the thread only through '
+  context+=$'it — never re-exporting it or fetching it some other way.'
   context+=$'\n\nNothing is committed. Step 2\'s commit is yours for a thread you are taking on — '
   context+=$'and where the number turns out to have been something else (a rule, a version, a '
   context+=$'quantity), delete the export instead. The prompt says what the session is about; '
   context+=$'this fetch only guessed.'
 elif [ -n "$failure" ]; then
-  context+="This export failed ahead of the turn — \`$reference\`: $failure"
+  context+="This export failed ahead of the turn — \`#$number\`: $failure"
   context+=$'\n\nMost often that means the number was never a thread reference, in which case '
   context+=$'there is nothing to fetch and nothing to do. Where the prompt really is handing a '
   context+=$'thread over, run `scripts/export-github-item.py` yourself per `/take-issue` Step 1, '

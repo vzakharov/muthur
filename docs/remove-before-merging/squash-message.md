@@ -1,7 +1,7 @@
 Proposed squash title/body:
 
 ```
-feat: export the issue a prompt ends in before the turn reads it (pr #78)
+feat: export the issue a session's opening prompt ends in (pr #78)
 ```
 
 ```
@@ -13,14 +13,14 @@ the prompt, and it sees it before the agent does — and names the
 export in the turn's context, so `/take-issue` Step 1 is already
 done by the time the agent reads the prompt.
 
-Only a trailing reference counts, `#<N>` or a pasted thread URL,
-because that is the shape of an operator handing a thread over. A
-number mid-sentence is usually about something else — "what should
-rule #1 be?" — and the match is bash's own, so a prompt ending in
-anything else costs one `jq` and runs nothing further: 9ms
-measured, against 3.5s for a fetch. Every prompt is in scope
-rather than only the opening one, which is free for the same
-reason plus one more: an export already on disk is skipped.
+The trigger is a session's opening prompt ending in `#<N>`: the
+shape a title copied out of GitHub's own UI arrives in. A number
+later in the session is the agent's call instead, they being the
+one who by then holds the context to weigh whether it names a
+thread at all. The match is bash's own, so an opening prompt that
+ends in anything else costs one `jq` — 7ms measured, against 3.5s
+for a fetch — and a later one costs a `grep` over the transcript
+for the agent's own first record.
 
 Guessing wrong is made cheap rather than prevented. The hook
 commits nothing — `/take-issue` Step 2's commit stays the agent's,
