@@ -33,7 +33,7 @@ The checks may also be fanned out with `scripts/run-parallel.sh lint='…' typec
 
 **This section is the exit rule's home.** `scripts/vet.sh`, `ADOPTING.md` and the catalog each point here rather than restating it, because the rule has a clause that is easy to drop and expensive to get wrong:
 
-- **No stack yet → `exit 0` is correct**, and stays correct. The two built-in checks are the whole run and they genuinely pass, so there is nothing to refuse to certify. This is the normal state of a repo taken to *start* a project, not a template-only special case — and a repo that sets `exit 1` here fails step 1 of `/finalize` on every prose-only PR, which teaches the loop to route around the vet run.
+- **No stack yet → `exit 0` is correct**, and stays correct. The built-in checks are the whole run and they genuinely pass, so there is nothing to refuse to certify. This is the normal state of a repo taken to *start* a project, not a template-only special case — and a repo that sets `exit 1` here fails step 1 of `/finalize` on every prose-only PR, which teaches the loop to route around the vet run.
 - **A stack present and unchecked → `exit 1`**, until this file runs that project's real commands. An exit-0 stub over an unchecked stack is worse than no script at all, because `/finalize` passes step 1 and attests to a run that verified nothing.
 
 So wiring `scripts/vet.sh` is what you do **when a stack lands**, alongside `.claude/hooks/install-deps.sh` — the paired site nothing else names.

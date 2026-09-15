@@ -1,8 +1,11 @@
 #!/usr/bin/env python3
 """Tests for hunk trimming and the export's index-plus-hoist layout.
 
-Run by path, as `scripts/vet.sh` does — see the note there on why never through
-`unittest discover`.
+What they guard above all is that a trimmed hunk still carries the reviewer's
+selection byte for byte.
+
+Run by path, as `scripts/check-muthur.sh` does — see the note there on why never
+through `unittest discover`.
 """
 
 from __future__ import annotations

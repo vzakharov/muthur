@@ -151,7 +151,7 @@ says nothing.
 | `scripts/lib/github.py` | Shared GitHub plumbing for the stdlib-only Python scripts: the proxy-then-direct `fetch` ladder every request goes through, token resolution, `origin` repo detection, and the `die` they report through. | `python3` ≥3.9 | — | adopt |
 | `scripts/lib/media.py` | Map a content type — or, when it is missing or generic, the leading magic bytes — to a file extension. Shared by the attachment download in G3 and the session-image extraction in G4, which is why it sits here rather than inside either. | `python3` ≥3.9 | — | adopt |
 | `scripts/check-squash-message.sh` | Measure the squash proposal against the size caps `/squash-message` states, locating it in the worktree or in history once `/finalize` has swept it. POSIX `sh`. | `sh`; `git` for the history rungs | — | adopt |
-| `scripts/vet.sh` | The vet run: the fast lint/type-check/test pass before pushing review-ready work. | your stack's own commands | `scripts/check-skill-catalog.sh` (G1), `scripts/check-operator-entries.sh` (G1), `scripts/check-squash-message.sh`, `scripts/check-repo-identity.sh` (never) | **rewrite** |
+| `scripts/vet.sh` | The vet run: the fast lint/type-check/test pass before pushing review-ready work. | your stack's own commands | `scripts/check-skill-catalog.sh` (G1), `scripts/check-squash-message.sh`, `scripts/check-muthur.sh` (never) | **rewrite** |
 | `scripts/run-parallel.sh` | Optional helper for `scripts/vet.sh`: run the checks concurrently, print output only for the ones that failed, and name files an autofix step rewrote. POSIX `sh`. | `sh`; `git` for the autofix check only | — | adopt |
 
 Two things in this group are less optional than they look — see
@@ -312,7 +312,9 @@ means you are looking at working state, not the product.
 | `docs/img/` | `ADOPTING.md`'s only asset — the screenshot locating the environment setup script. Goes when that file does, or it is left an orphan. | — | — | never |
 | `.claude/skills/update-muthur/catalog.md` | This file. Read from a fresh clone on every sync, so it cannot go stale downstream. Sits inside a tree the copy steps take wholesale, so both of them name it as a carve-out. | — | — | never |
 | `/detemplate` | Turn a fresh template fork into a project: prune the `never` rows and unused groups, hydrate what stays, hand back the setup script. Routes through `/plan` and deletes itself last. | `gh`, `$GH_TOKEN`; a whole-tree fork, not a subset copy | `/plan` (G2); `/spinoff`, `/update-muthur` (G0) | never |
+| `scripts/check-muthur.sh` | The one vet line behind which everything that tests only this repo's own machinery sits, so a sync offers it as a single decision. Keyed on this catalog's presence, so it exits 0 the moment it is downstream. | `bash` | `scripts/check-repo-identity.sh`, `scripts/test_*.py` (both never) | never |
 | `scripts/check-repo-identity.sh` | Assert that this repo's own `owner/repo` appears only where a human copies it by hand, and nowhere under a stale name — everything else compares `origin` against the watermark's `repo` field instead. Keyed on this catalog's presence, so it exits 0 the moment it is downstream. | `bash`, `jq`, `git` | — | never |
+| `scripts/test_*.py` | The unit tests over the loop's own scripts — today the export's agent/human labelling and its hunk-trimming-plus-hoist layout. They join the line above by matching the pattern, which is why adding one never edits `scripts/vet.sh`. | `python3` ≥3.9 | — | never |
 | `docs/plans/*` | Working artifacts: file-based plans mid-flight. `/finalize` sweeps them before they reach a trunk. | — | — | never |
 | `docs/remove-before-merging/*` | Working artifacts: the tracked squash-message draft. Swept at finalize. | — | — | never |
 
@@ -349,8 +351,11 @@ Four closure facts are counter-intuitive enough to state outright:
   not its job, `/update-muthur` and `/test-on-gh` as an example — so a grep
   overcounts the dependency.) Its three lines calling
   `scripts/check-skill-catalog.sh`, `scripts/check-squash-message.sh` and
-  `scripts/check-repo-identity.sh` are the part a rewrite decides separately;
-  the comment above them says what dropping each costs.
+  `scripts/check-muthur.sh` are the part a rewrite decides separately; the
+  comment above them says what dropping each costs. The third is one line on
+  purpose: everything that tests only the source repo's own machinery sits
+  behind it, so a sync brings those in as a single decision rather than as a
+  line per test.
 - **`/finalize` reaches into G3 and G5 conditionally.** Its working-artifact
   sweep cites `/issue`, and its CI steps cite `/watch-ci`. Both citations are
   guarded by prose conditions ("if a workflow runs on PRs"), so the behavior

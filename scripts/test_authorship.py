@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
-"""Tests for the export's agent/human labelling.
+"""Tests for the export's agent/human labelling, which `/handle` reads to tell
+its own replies from an operator's.
 
-Run by path, as `scripts/vet.sh` does — see the note there on why never through
-`unittest discover`.
+Run by path, as `scripts/check-muthur.sh` does — see the note there on why never
+through `unittest discover`.
 """
 
 from __future__ import annotations
