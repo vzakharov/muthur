@@ -70,6 +70,8 @@ git rev-list --count origin/main..HEAD     # expected: 0
 
 If the count is `0` and the working tree is clean, proceed — the auto-branch is empty and will be discarded in Step 4.
 
+An untracked `docs/pr/<n>/` is the one thing that does not count as work to lose: `.claude/hooks/prompt-handle-pr-export.sh` writes it before the turn, on whatever branch HEAD was on, and `git checkout` carries it across. Leave it and proceed.
+
 If the count is non-zero, or there are uncommitted changes, **stop and ask the user**. This shouldn't happen in normal `/from-branch` usage (the skill is meant for fresh sessions), so it's a signal that something is off — maybe the user invoked the skill mid-session after doing work, maybe the harness behavior changed. Don't auto-cherry-pick or auto-discard; surface the situation and let the user direct.
 
 ## Step 3 — Fetch and check out the target
