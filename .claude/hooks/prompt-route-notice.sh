@@ -33,20 +33,13 @@ prompt="$(field prompt)"
 [ -n "$prompt" ] || exit 0
 [[ "$prompt" =~ ^[[:space:]]*/ ]] && exit 0
 
-# The first prompt is the one whose transcript holds nothing the agent wrote —
-# `.claude/hooks/prompt-issue-export.sh` owns the reasoning for this test.
-transcript="$(field transcript_path)"
-[ -n "$transcript" ] && grep -q '"type":"assistant"' "$transcript" 2>/dev/null && exit 0
+first_prompt || exit 0
 
 read -r -d '' notice <<'NOTICE' || true
 This is the session's opening prompt, so the route comes before the work: read
 CLAUDE.md § "Plan mode & questions in web sessions"'s entry ladder, say which
-row this prompt is, and enter the skill that row names.
-
-That ladder is in your context already and gets skipped anyway — a prompt
-describing work you know how to do reads as leave to start it. What the skipped
-route costs is the plan-or-not call, the quality passes and the PR: the change
-lands committed on a branch nobody opened.
+row this prompt is, and enter the skill that row names. That route is what
+carries a change through the plan-or-not call and the quality passes onto a PR.
 NOTICE
 
 emit_context "$notice"

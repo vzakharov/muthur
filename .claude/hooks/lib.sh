@@ -25,6 +25,20 @@ say() { echo "$(basename "$0" .sh): $*" >&2; }
 
 need_command() { command -v "$1" >/dev/null || { say "$1 not found; $2"; exit 0; }; }
 
+# True on the prompt a session opens with — the one whose transcript holds
+# nothing the agent wrote. `UserPromptSubmit` fires before the prompt is
+# recorded, so an assistant record in there means an earlier turn already ran;
+# tool results are `user` records too, which is why the agent's own record is the
+# mark to grep for. A missing or unreadable transcript reads as a first prompt:
+# both callers do something the session can undo in a turn, and neither can
+# recover a launch they slept through.
+first_prompt() {
+  local transcript
+  transcript="$(field transcript_path)"
+  [ -n "$transcript" ] || return 0
+  ! grep -q '"type":"assistant"' "$transcript" 2>/dev/null
+}
+
 emit_context() {
   jq -n --arg ctx "$1" '{
     hookSpecificOutput: {
