@@ -1,9 +1,5 @@
 """The sections every export carries: the header block and the conversation
-comments.
-
-A conversation comment belongs to no file, so it indexes and hoists as its own
-stage rather than falling through a layout keyed on paths.
-"""
+comments."""
 
 from __future__ import annotations
 
@@ -11,7 +7,7 @@ from typing import Any
 
 from gh_export.attachments import rewrite_attachment_refs
 from gh_export.authorship import attribution, split_agent_footer
-from gh_export.split import Hoistable, anchor_tag, preview
+from gh_export.index import Indexed, anchor_tag, preview
 
 
 def header_section(
@@ -69,8 +65,8 @@ def header_section(
 
 def comments_parts(
     comments: list[dict[str, Any]], url_to_relative: dict[str, str]
-) -> tuple[str, list[Hoistable]]:
-    """The section heading, and each comment as a hoistable. Both empty when
+) -> tuple[str, list[Indexed]]:
+    """The section heading, and each comment as an indexed body. Both empty when
     the item has no conversation comments."""
     if not comments:
         return "", []
@@ -82,9 +78,8 @@ def comments_parts(
         who = attribution(c.get("user"), by_agent)
         created = c.get("created_at", "")
         items.append(
-            Hoistable(
+            Indexed(
                 anchor=anchor,
-                group="",
                 summary=f"- **C{number:02d}** {who} — {created} — {preview(body)}",
                 body="\n".join(
                     [

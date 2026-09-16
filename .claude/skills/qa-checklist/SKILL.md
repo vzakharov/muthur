@@ -81,7 +81,7 @@ Everything you don't edit in the file stays verbatim. Then push it back (this PA
 python3 scripts/pr-body.py push <n>
 ```
 
-`pr-body.py` goes through the REST API, so it sidesteps the `gh pr edit` "Projects (classic)" GraphQL error (`repository.pullRequest.projectCards`) that can break body edits in this environment.
+`pr-body.py` goes through the REST API, which is also what keeps it clear of the `gh pr edit` failure `@.claude/skills/pr/SKILL.md` Step 5 describes.
 
 ## Step 4 — Report
 

@@ -12,7 +12,7 @@ End state of this skill: a draft PR exists against `<base>`, targeting a semanti
 |---|---|
 | **plan-open** (caller: `/plan`'s publish step) | rename → push → create draft → body **from the plan**, since there is no diff yet → `/squash-message` |
 | **`/pr`, no PR** | open from the commits already on the branch |
-| **`/pr`, PR exists** | **refresh**: re-compose the body against the real diff — Step 4 unchanged, `gh pr edit` in place of `gh pr create` |
+| **`/pr`, PR exists** | **refresh**: re-compose the body against the real diff — Step 4 unchanged, a REST `PATCH` in place of `gh pr create` |
 
 Refresh exists because the body written at plan time is a **forecast**. Step 4 writes the Summary from the branch and delegates the QA section to `/qa-checklist`; at plan time both come from the plan. By the end of `/go` there is a diff and the body still says what the change was *going to* be. Reconciling it is the same Step 4 composition over a different input.
 
@@ -110,7 +110,16 @@ EOF
 
 If `gh` fails with "none of the git remotes … point to a known GitHub host" (the remote-execution proxy quirk), re-run with `--repo OWNER/REPO` prepended.
 
-**In refresh mode**, swap the `create` for `gh pr edit <PR> --title … --body …`. Pass no `--base` — re-asserting it would silently undo a retarget someone made on purpose.
+**In refresh mode**, both halves go over REST rather than through `gh pr edit`:
+
+```bash
+python3 scripts/pr-body.py pull <PR>     # writes docs/pr/<PR>/body.md
+# edit that file, then:
+python3 scripts/pr-body.py push <PR>     # PATCHes it back and deletes it
+gh api repos/<owner>/<repo>/pulls/<PR> -X PATCH -f title='…'
+```
+
+`gh pr edit` asks for project cards on every edit, so where classic projects are deprecated it fails on `repository.pullRequest.projectCards` and leaves the PR exactly as it was. Neither call above asks that question, and neither sends `base` — re-asserting it would silently undo a retarget someone made on purpose.
 
 ## Step 6 — Post the squash proposal
 
