@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Tests for hunk trimming and the export's index-plus-hoist layout.
+"""Tests for hunk trimming and the export's index-plus-bodies layout.
 
 What they guard above all is that a trimmed hunk still carries the reviewer's
 selection byte for byte.
@@ -20,7 +20,7 @@ from gh_export.reviews import (
     thread_summary,
     trim_hunk,
 )
-from gh_export.split import Hoistable, Stage, anchor_tag, split_export
+from gh_export.index import Indexed, indexed_section
 
 # Rows, in order: context(9/9), -old ten(10/-), +new ten(-/10),
 # +new eleven(-/11), +new twelve(-/12), context after(11/13).
@@ -155,8 +155,7 @@ class ThreadIndex(unittest.TestCase):
 
     def test_a_row_renders_end_to_end_and_links_to_the_body(self) -> None:
         heading, items = review_parts([], [COMMENT], {}, {1: False})
-        main, extra = split_export(["# PR", heading, Stage("threads/", 1, "", items)])
-        self.assertEqual(extra, {})
+        main = "\n".join(["# PR", heading, indexed_section(items)])
         self.assertIn(
             "- **T01** `scripts/vet.sh`:12 — unresolved"
             " — last: @vzakharov (human) 2026-09-14T21:16:32Z"
@@ -168,89 +167,28 @@ class ThreadIndex(unittest.TestCase):
         self.assertIn("+new twelve", main)
 
 
-def item(anchor: str, group: str, lines: int) -> Hoistable:
-    body = "\n".join(
-        [anchor_tag(anchor)] + [f"{anchor} body {n}" for n in range(lines - 1)]
-    )
-    return Hoistable(anchor=anchor, group=group, summary=f"- **{anchor}**", body=body)
-
-
-def document(threads: list[Hoistable], comments: list[Hoistable]) -> list[object]:
-    return [
-        "# PR",
-        Stage("comments.md", 2, "Conversation comments", comments),
-        Stage("threads/", 1, "Threads", threads),
-        "## Timeline",
-    ]
-
-
-class SplitExport(unittest.TestCase):
-    def test_under_the_budget_nothing_moves(self) -> None:
-        main, extra = split_export(
-            document([item("t01", "a.py", 3)], [item("c01", "", 3)]), budget=400
-        )
-        self.assertEqual(extra, {})
-        self.assertIn("t01 body 0", main)
-        self.assertIn("c01 body 0", main)
-        self.assertIn("- **t01** → [↓](#t01)", main)
-
-    def test_threads_hoist_before_conversation_comments(self) -> None:
-        threads = [item(f"t{n:02d}", "a.py", 8) for n in range(1, 4)]
-        comments = [item("c01", "", 2)]
-        main, extra = split_export(document(threads, comments), budget=30)
-        self.assertEqual(list(extra), ["threads/01-a-py.md"])
-        self.assertNotIn("t01 body 0", main)
-        self.assertIn("c01 body 0", main)
-        self.assertIn("- **t01** → [threads/01-a-py.md](threads/01-a-py.md#t01)", main)
-
-    def test_both_stages_hoist_when_one_is_not_enough(self) -> None:
-        threads = [item("t01", "a.py", 20)]
-        comments = [item("c01", "", 20)]
-        main, extra = split_export(document(threads, comments), budget=3)
-        self.assertEqual(sorted(extra), ["comments.md", "threads/01-a-py.md"])
-        self.assertNotIn("body 0", main)
-        self.assertIn("# Conversation comments", extra["comments.md"])
-
-    def test_threads_group_by_path_numbered_by_first_appearance(self) -> None:
-        threads = [
-            item("t01", "src/b.py", 8),
-            item("t02", "src/a.py", 8),
-            item("t03", "src/b.py", 8),
+class IndexedSection(unittest.TestCase):
+    def test_every_body_follows_the_rows_in_order(self) -> None:
+        items = [
+            Indexed(anchor=f"x{n:02d}", summary=f"- **x{n:02d}**", body=f"body {n}")
+            for n in (1, 2)
         ]
-        _, extra = split_export(document(threads, []), budget=20)
         self.assertEqual(
-            sorted(extra), ["threads/01-src-b-py.md", "threads/02-src-a-py.md"]
-        )
-        self.assertIn("t03 body 0", extra["threads/01-src-b-py.md"])
-        self.assertIn("# `src/b.py`", extra["threads/01-src-b-py.md"])
-
-    def test_a_group_that_blows_the_budget_alone_splits_further(self) -> None:
-        threads = [item(f"t{n:02d}", "a.py", 10) for n in range(1, 4)]
-        main, extra = split_export(document(threads, []), budget=15)
-        self.assertEqual(
-            sorted(extra),
-            ["threads/01-a-py-2.md", "threads/01-a-py-3.md", "threads/01-a-py.md"],
-        )
-        self.assertIn("(continued)", extra["threads/01-a-py-2.md"])
-        self.assertIn(
-            "- **t02** → [threads/01-a-py-2.md](threads/01-a-py-2.md#t02)", main
+            indexed_section(items).split("\n"),
+            ["- **x01** → [↓](#x01)", "- **x02** → [↓](#x02)", "", "body 1", "body 2"],
         )
 
-    def test_a_path_with_no_latin_characters_still_gets_its_own_file(self) -> None:
-        threads = [item("t01", "документы/пост", 40)]
-        _, extra = split_export(document(threads, []), budget=20)
-        self.assertEqual([name.startswith("threads/01-path-") for name in extra], [True])
-
-    def test_a_comment_attached_to_no_file_hoists_by_its_own_stage(self) -> None:
+    def test_a_conversation_comment_indexes_and_renders_in_one_file(self) -> None:
         _, items = comments_parts(
             [{**COMMENT, "html_url": "https://example.test/1"}], {}
         )
-        main, extra = split_export(
-            ["# PR", Stage("comments.md", 2, "Conversation comments", items)], budget=3
+        section = indexed_section(items)
+        self.assertIn(
+            "- **C01** @vzakharov (human) — 2026-09-14T21:16:32Z", section
         )
-        self.assertEqual(list(extra), ["comments.md"])
-        self.assertIn("- **C01** @vzakharov (human) — 2026-09-14T21:16:32Z", main)
-        self.assertIn("→ [comments.md](comments.md#c01)", main)
+        self.assertIn("→ [↓](#c01)", section)
+        self.assertIn('<a id="c01"></a>', section)
+        self.assertIn("why not just make the whole thing one function?", section)
 
 
 if __name__ == "__main__":
