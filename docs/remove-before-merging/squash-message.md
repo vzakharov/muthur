@@ -34,10 +34,10 @@ Three smaller things. A bare `/handle` targets the branch the session
 is on, that being what a session types once it is already attached; on
 the trunk it still stops and asks. `/from-branch` exempts an untracked
 `docs/pr/<n>/` from its work-to-lose check, a hook writing one before
-the turn on whatever branch HEAD was on. And `/pr` records the
-`Projects (classic)` GraphQL failure that leaves `gh pr edit` printing
-an error while the PR keeps its old title and body, with the REST route
-around it.
+the turn on whatever branch HEAD was on. And `/pr` refreshes a PR over
+REST rather than through `gh pr edit`, which asks for project cards on
+every edit and so fails outright, leaving the PR as it was, wherever
+classic projects are deprecated.
 
 Co-authored-by: Claude <noreply@anthropic.com>
 ```
