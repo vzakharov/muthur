@@ -35,14 +35,7 @@ number_re='#([0-9]+)$'
 [[ "$prompt" =~ $number_re ]] || exit 0
 number="${BASH_REMATCH[1]}"
 
-# The first prompt is the one whose transcript holds nothing the agent wrote:
-# `UserPromptSubmit` fires before the prompt is recorded, so an assistant record
-# in there means an earlier turn already ran. Tool results are `user` records
-# too, so the agent's own record is the mark to grep for. A missing or
-# unreadable transcript reads as a first prompt — one re-fetched thread costs
-# less than a launched session holding none.
-transcript="$(field transcript_path)"
-[ -n "$transcript" ] && grep -q '"type":"assistant"' "$transcript" 2>/dev/null && exit 0
+first_prompt || exit 0
 
 project="$(project_root)"
 [ -n "$project" ] || exit 0
