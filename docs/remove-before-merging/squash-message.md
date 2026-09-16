@@ -5,34 +5,39 @@ feat: re-export and commit a /handle branch's PR every turn (pr #83)
 ```
 
 ```
-A second `/handle` on the same branch — the ordinary move after a
-compaction boundary — answered "has anything arrived on the PR?" off an
-export taken an hour earlier, and reported there was nothing to handle.
-The agent was obeying a rule rather than skipping a step: `/finalize`'s
-sweep told a resumed session to read the committed export instead of
-re-exporting, and said it of issue and PR exports in one breath. That
-holds for an issue thread, which is a snapshot taken once and read
-forever. A PR moves while the branch works.
+`/handle` spent a round-trip of its own on the PR export before it could
+say whether anything had arrived, and a session that skipped that step
+answered off whatever export an earlier turn had left in the tree. A
+`UserPromptSubmit` hook now takes the export before the turn starts: it
+resolves the prompt's target — the last token when it names a real
+branch, otherwise the branch HEAD is on — to a PR through `gh`, and
+re-exports it.
 
-So the sweep's sentence covers issues only, and `/handle` Step 2 states
-the opposite rule for PRs: take the export every time, then commit it. A
-`UserPromptSubmit` hook normally has the taking done before the turn —
-it resolves the prompt's target to a PR through `gh` and re-exports
-whatever is already there — and reports what arrived as a `git diff`
-against the export the previous turn committed. An empty diff is the
-answer to "has anything changed?", not the absence of one.
-
-Committing every export is a record for the person reviewing the branch
-before it is anything for the agent: consecutive exports differ by the
+The turn then commits what it read, so the next export arrives as a
+`git diff` against it. An empty diff is the answer to "has anything
+changed?", not the absence of one. Committing is first of all a record
+for the person reviewing the branch: consecutive exports differ by the
 comments and thread resolutions each turn was answering, which the
-turn's own commits do not say. `/finalize` sweeps the tree either way,
-so the adds and that delete cancel out in the squash.
+turn's own commits do not say. `/finalize` sweeps the tree before the
+PR goes ready, so the adds and that delete cancel out in the squash —
+and its sweep stops telling a resumed session to read the committed
+export rather than re-take it, that being true of an issue thread,
+which is a snapshot, and not of a PR.
 
-A bare `/handle` now targets the branch the session is on, that being
-what a session types once it is already attached; on the trunk it still
-stops and asks, there being no work to read off it. And `/from-branch`
-exempts an untracked `docs/pr/<n>/` from its work-to-lose check, a hook
-writing one before the turn on whatever branch HEAD was on.
+An export is one file however long the PR: bodies no longer hoist into
+`threads/` and `comments.md` past 400 lines. The index survives, being
+how a reader picks threads to open, but the hoist turned a single
+arriving comment into a ten-file commit — and the diff is what the
+next turn reads anyway.
+
+Three smaller things. A bare `/handle` targets the branch the session
+is on, that being what a session types once it is already attached; on
+the trunk it still stops and asks. `/from-branch` exempts an untracked
+`docs/pr/<n>/` from its work-to-lose check, a hook writing one before
+the turn on whatever branch HEAD was on. And `/pr` records the
+`Projects (classic)` GraphQL failure that leaves `gh pr edit` printing
+an error while the PR keeps its old title and body, with the REST route
+around it.
 
 Co-authored-by: Claude <noreply@anthropic.com>
 ```
