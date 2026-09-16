@@ -112,6 +112,16 @@ If `gh` fails with "none of the git remotes … point to a known GitHub host" (t
 
 **In refresh mode**, swap the `create` for `gh pr edit <PR> --title … --body …`. Pass no `--base` — re-asserting it would silently undo a retarget someone made on purpose.
 
+**`gh pr edit` can fail on a repo it has nothing to do with**, reporting `GraphQL: Projects (classic) is being deprecated … (repository.pullRequest.projectCards)` — it asks for project cards on every edit, and the PR is left exactly as it was. The failure is loud but easy to read past, so **verify the edit landed** (`gh pr view <PR> --json title,body`) rather than trusting the exit. The route around it is REST, which `scripts/pr-body.py` already speaks:
+
+```bash
+python3 scripts/pr-body.py pull <PR>     # writes docs/pr/<PR>/body.md
+# edit that file, then:
+python3 scripts/pr-body.py push <PR>     # PATCHes it back and deletes it
+```
+
+A title needs the API call itself: `gh api repos/<owner>/<repo>/pulls/<PR> -X PATCH -f title='…'`.
+
 ## Step 6 — Post the squash proposal
 
 Invoke `@.claude/skills/squash-message/SKILL.md` in default mode, passing the PR's base — load and follow it; do **not** inline-copy its steps, exactly as Step 4 delegates the QA checklist to `/qa-checklist`. That skill owns the format, the draft-then-tighten pass, where the draft is tracked, and when it must be re-synced.
