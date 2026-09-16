@@ -13,7 +13,7 @@ routes an opening prompt sat in CLAUDE.md, resident and routinely
 skipped, so a change asked for in prose got made directly — no
 plan-or-not call, no quality passes, no PR.
 
-Every bullet in `/handle` § "Argument shape" now fires on presence, the
+Every flag in `/handle` § "Argument shape" now fires on presence, the
 reporting included, and the section says so once. The one place a flag
 nobody typed is still named is Step 5's note that land-prep was not
 requested, and it names `/finalize` alone.
