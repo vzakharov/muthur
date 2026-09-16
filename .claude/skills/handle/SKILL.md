@@ -13,7 +13,7 @@ Four parts, order-free:
 - **`and merge`** (`@.claude/skills/finalize/SKILL.md`'s flag): read as `and finalize`, and **not forwarded** — a lane produces its diff in this same turn, so the flag was typed before the thing it would merge existed. Land-prep as asked, then report that the merge was held and that `/finalize <branch> and merge` lands it once the operator has looked.
 - **Extra guidance** (optional): any remaining prose. Not a lane of its own — it directs whichever lane runs, and when no lane is discovered it _is_ the work (Step 4).
 
-**Every bullet here fires on presence, the reporting included.** What a flag would have done had it been typed is a rule for you to apply, never a finding for the operator to read — it rules on an argument they did not write, in a turn that had no occasion to raise it. So an invocation carrying no `and merge` produces no note about a held merge, and each bullet above reads the same way.
+**Every bullet here fires on presence, the reporting included.** What a flag would have done had it been typed is a rule for you to apply, never a finding for the operator to read — it rules on an argument they did not write, in a turn that had no occasion to raise it. So an invocation carrying no `and merge` produces no note about a held merge.
 
 ## A `/handle` session is continued work
 

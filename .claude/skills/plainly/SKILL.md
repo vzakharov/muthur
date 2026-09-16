@@ -75,11 +75,9 @@ that on board").
 
 *Polar bear* is cured by cutting, and its source is usually a rule you had just
 read: a skill states when a flag applies, and the reply relays the rule instead
-of the run, so the operator reads a ruling on an argument they never typed. The
-word is `@.claude/skills/tend-prose/SKILL.md`'s, borrowed because the shape is
-the same one — a mention that survives only to deny itself — and the two homes
-split by where the text lands: that lens sweeps prose the repo keeps, this row
-catches it in a reply nobody will ever sweep.
+of the run. The word is `@.claude/skills/tend-prose/SKILL.md`'s, and the two
+split by where the text lands — that lens sweeps prose the repo keeps, this row
+catches the same shape in a reply nobody will ever sweep.
 
 Whether to return a joke at all is an operator entry — some people want the
 deadpan. Acknowledging one instead of either returning it or passing it by is a

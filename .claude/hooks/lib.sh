@@ -29,9 +29,9 @@ need_command() { command -v "$1" >/dev/null || { say "$1 not found; $2"; exit 0;
 # nothing the agent wrote. `UserPromptSubmit` fires before the prompt is
 # recorded, so an assistant record in there means an earlier turn already ran;
 # tool results are `user` records too, which is why the agent's own record is the
-# mark to grep for. A missing or unreadable transcript reads as a first prompt:
-# both callers do something the session can undo in a turn, and neither can
-# recover a launch they slept through.
+# mark to grep for. A missing or unreadable transcript reads as a first prompt —
+# a firing too many costs a turn's context, a launch slept through costs the
+# thing the hook was for.
 first_prompt() {
   local transcript
   transcript="$(field transcript_path)"

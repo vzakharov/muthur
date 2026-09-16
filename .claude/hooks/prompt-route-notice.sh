@@ -1,23 +1,17 @@
 #!/bin/bash
 # UserPromptSubmit hook: a session's *first* prompt is the one that gets routed,
-# and the routing is the step a session skips — it reads the prompt, sees work
-# it knows how to do, and does it. The result is the same change minus the
-# plan-or-not call, the quality passes and the PR: committed on a branch nobody
-# opened. So the ladder arrives at the moment the call is made, rather than
-# waiting in CLAUDE.md to be remembered.
+# and routing is the step a session skips — it reads the prompt, sees work it
+# knows how to do, and starts. What the skipped route costs is the plan-or-not
+# call, the quality passes and the PR, so the ladder arrives at the moment the
+# call is made rather than waiting in CLAUDE.md to be remembered.
 #
-# So the notice points at the ladder rather than restating it: what a session
-# lacks at that moment is not the rows — CLAUDE.md is resident, the rows are
-# already in context — but the prompt to stop and apply them. A copy here would
-# add nothing at the decision point and would drift from the home the moment the
-# ladder changes.
+# It points at the ladder rather than restating it: CLAUDE.md is resident, so
+# the rows are in context already and a copy here would only drift from them.
 #
 # Only the first prompt. Everything after it is continued work, which CLAUDE.md
 # § "Plan mode & questions in web sessions" has the session handle directly —
-# re-routing mid-session would open a plan cycle over a follow-up.
-#
-# A prompt that opens with `/` is already routed: the operator named the skill,
-# and this hook has nothing to add to a call they made themselves.
+# re-routing mid-session would open a plan cycle over a follow-up. A prompt that
+# opens with `/` is already routed: the operator named the skill themselves.
 #
 # Never fails the turn: no `jq`, no transcript, no payload — each path is
 # stderr plus exit 0, the contract every hook beside it keeps.
