@@ -9,10 +9,10 @@
 # exists for is a second `/handle` on the same branch, after a compaction
 # boundary, reading "nothing changed" off an export an hour old.
 #
-# It then says whether the re-export differed, that question answered from
-# memory being the failure itself. The comparison is against a copy taken before
-# the run: `docs/pr/` is untracked — a working-tree artifact `/finalize` sweeps —
-# so `git diff` cannot answer it.
+# It then says what arrived, that question answered from memory being the failure
+# itself. `/handle` Step 2 commits each export, so the answer is a `git diff`
+# against the one the previous turn read — which is also what lets the operator
+# see, in the branch's own history, what the agent was reacting to.
 #
 # The branch is resolved by name through `gh`, never off the working tree: at a
 # session's first prompt `/from-branch` has not checked anything out yet, and the
@@ -93,11 +93,8 @@ fi
 # session's first prompt from exporting something it was never pointed at.
 [ -n "$number" ] || exit 0
 
-export_path="docs/pr/$number/pr.md"
-previous=""
-if [ -f "$export_path" ]; then
-  previous="$(mktemp)" && cp "$export_path" "$previous" || previous=""
-fi
+export_dir="docs/pr/$number"
+export_path="$export_dir/pr.md"
 
 failure=""
 # A partial run exits non-zero too (`/take-issue` Step 1 owns what that covers),
@@ -110,26 +107,28 @@ context=""
 if [ -f "$export_path" ]; then
   context+="PR #$number is exported fresh at \`$export_path\` — this hook ran "
   context+=$'`scripts/export-github-item.py` for it before the turn.'
-  if [ -n "$previous" ] && cmp -s "$previous" "$export_path"; then
-    context+=$' It is byte-identical to the export that was already on disk, so nothing has '
-    context+=$'arrived on the PR since that one was taken. That is the answer to "has anything '
-    context+=$'changed?", established by comparing two exports — do not reach it any other way.'
-  elif [ -n "$previous" ]; then
-    context+=$' It differs from the export that was already on disk, so something has arrived on '
-    context+=$'the PR since that one was taken:\n\n```diff\n'
-    context+="$(diff -u "$previous" "$export_path" | tail -n +3 | head -n 40)"
-    context+=$'\n```\n\nThat diff is truncated at 40 lines — read the export for the rest.'
+  # `/handle` Step 2 commits each export, so the re-export lands as a working-tree
+  # change against the last one and git states what arrived. An empty diff on a
+  # branch whose export is committed is the answer, not an absence of one.
+  arrived="$(git diff -- "$export_dir" 2>/dev/null)"
+  if [ -n "$arrived" ]; then
+    context+=$' Against the export committed last time, this is what arrived:\n\n```diff\n'
+    context+="$(head -n 40 <<<"$arrived")"
+    context+=$'\n```\n\nTruncated at 40 lines — `git diff -- '"$export_dir"$'` has the rest.'
+  elif git ls-files --error-unmatch "$export_path" >/dev/null 2>&1; then
+    context+=$' `git diff` against the export committed last time is empty, so nothing has '
+    context+=$'arrived on the PR since. That is the answer to "has anything changed?" — do not '
+    context+=$'reach it any other way.'
   fi
-  context+=$'\n\nSo `/handle` Step 2\'s export is done: read the export\'s thread index and open the '
-  context+=$'threads its tail test selects. Nothing is committed, and nothing here decides which '
-  context+=$'lane runs.'
+  context+=$'\n\nSo `/handle` Step 2\'s export is done, but its commit is still yours: commit the '
+  context+=$'export before working the lane, so the next turn diffs against what you read. '
+  context+=$'Nothing here decides which lane runs.'
 elif [ -n "$failure" ]; then
   context+="This PR export failed ahead of the turn — \`#$number\` on \`$branch\`: $failure"
   context+=$'\n\nRun `scripts/export-github-item.py` yourself per `/handle` Step 2, and stop and '
   context+=$'report rather than reading the PR some other way if it fails there too.'
 fi
 
-[ -n "$previous" ] && rm -f "$previous"
 [ -n "$context" ] || exit 0
 
 emit_context "$context"
