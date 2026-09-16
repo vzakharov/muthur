@@ -1,7 +1,7 @@
 Proposed squash title/body:
 
 ```
-feat: route the opening prompt, and report the run not the rules (pr #84)
+fix: route the opening prompt, and report the run not the rules (pr #84)
 ```
 
 ```
@@ -25,10 +25,6 @@ decision point and would drift from its home. It stays quiet for a
 prompt the operator routed with a leading `/`, and for every prompt
 after the first — the test it now shares with the issue-export hook
 through `first_prompt` in `.claude/hooks/lib.sh`.
-
-`/plainly` gains a seventh defect, `polar bear`, borrowed from
-`/tend-prose`'s negation lens: that lens sweeps prose the repo keeps,
-this row catches the same shape in a reply nobody ever sweeps.
 
 Co-authored-by: Claude <noreply@anthropic.com>
 ```
