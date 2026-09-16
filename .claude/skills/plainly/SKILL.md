@@ -4,12 +4,12 @@ description: >-
   an answer that did not land — a re-asked question, a "just tell me",
   punctuation doing the complaining — it re-explains that answer as a causal
   chain; invoked with a question, it answers that question under the house rule,
-  investigation included. Names seven defects — symptom-as-finding, buried lede,
-  untranslated nouns, broken chain, fog, receipt, polar bear — so one word calls
-  out a bad report.
+  investigation included. Names six defects — symptom-as-finding, buried lede,
+  untranslated nouns, broken chain, fog, receipt — so one word calls out a bad
+  report.
 ---
 
-This file is the procedure: the invocations, the pass, and the seven defects it
+This file is the procedure: the invocations, the pass, and the six defects it
 runs a draft against.
 
 `.claude/voice/voice.md` is the other thing, resident in every session because
@@ -43,11 +43,11 @@ Either way the output is an answer, not a plan to produce one.
    conclusion first, in the nouns of the person affected, then the chain that
    leads to it with each link saying why the next followed, then the caveats if
    and only if they change what the reader should do.
-3. **Run the seven defects below over that draft, then write it out again.** Each
+3. **Run the six defects below over that draft, then write it out again.** Each
    has a tell you can see in your own text without knowing the subject — but only
    in text you actually put down first.
 
-## The seven defects
+## The six defects
 
 They exist so a bad report can be called out in one word, the way `polar bear`
 already works for `@.claude/skills/tend-prose/SKILL.md`. Read them as tells to
@@ -61,10 +61,9 @@ check a draft of your own against:
 | **Broken chain** | Steps in sequence with nothing saying why each one followed |
 | **Fog** | Uncertainty stated repeatedly and never resolved into "here's what would settle it" |
 | **Receipt** | A reply *about* what the person said, where the thing they said wanted an answer — a joke acknowledged instead of returned, an aside filed instead of engaged |
-| **Polar bear** | A rule explained against a case that never arose — a flag the operator did not type, a route the run did not take, a mistake nobody made |
 
-**The last two are the odd ones, and they earn their place by being the two
-investigation cannot fix.** The first five are cured by knowing more: read the
+**The sixth is the odd one, and it earns its place by being the only one
+investigation cannot fix.** The other five are cured by knowing more: read the
 history, find the cause, say it in the right nouns. *Receipt* is cured by
 answering the thing that was actually said. It is the same move as the rest one
 level up, at the scale of a conversation rather than a report — narrating a
@@ -72,12 +71,6 @@ response instead of making it, which feels attentive and leaves the other person
 unanswered. Its tell is the register shift: a neighboring sentence goes formal,
 or refers to the remark in the third person ("noted", "a fair point", "I'll take
 that on board").
-
-*Polar bear* is cured by cutting, and its source is usually a rule you had just
-read: a skill states when a flag applies, and the reply relays the rule instead
-of the run. The word is `@.claude/skills/tend-prose/SKILL.md`'s, and the two
-split by where the text lands — that lens sweeps prose the repo keeps, this row
-catches the same shape in a reply nobody will ever sweep.
 
 Whether to return a joke at all is an operator entry — some people want the
 deadpan. Acknowledging one instead of either returning it or passing it by is a
