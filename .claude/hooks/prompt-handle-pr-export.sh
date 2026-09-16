@@ -45,8 +45,8 @@ prompt="$(field prompt)"
 # resolution below drops it.
 [[ "$prompt" =~ ^[[:space:]]*/?handle([[:space:]]|$) ]] || exit 0
 
-project="${CLAUDE_PROJECT_DIR:-$(field cwd)}"
-[ -n "$project" ] && [ -d "$project" ] || exit 0
+project="$(project_root)"
+[ -n "$project" ] || exit 0
 cd "$project" || exit 0
 [ -f scripts/export-github-item.py ] || exit 0
 need_command gh "skipping the export."
