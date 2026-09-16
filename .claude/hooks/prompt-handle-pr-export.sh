@@ -2,22 +2,17 @@
 # UserPromptSubmit hook: a `/handle` prompt names the branch whose PR is about
 # to be the session's whole input, so re-export that PR before the turn.
 #
-# Two things separate this from `.claude/hooks/prompt-issue-export.sh`, and both
-# follow from what the two exports are. An issue export is a snapshot: taken
-# once, read forever. A PR export is a moving target — `/handle`'s review lane
-# is defined against what arrived since the last push — so:
+# A PR moves while the branch works, which is what separates this from
+# `.claude/hooks/prompt-issue-export.sh`, whose issue thread is a snapshot taken
+# once and read forever. So this one fires on *every* prompt rather than a
+# session's first, and re-exports whatever is already on disk: the case it
+# exists for is a second `/handle` on the same branch, after a compaction
+# boundary, reading "nothing changed" off an export an hour old.
 #
-#   - it fires on *every* prompt, not the session's first. The case it exists
-#     for is a second `/handle` on the same branch, after a compaction boundary,
-#     where the agent holds an export it took an hour ago and reads "nothing
-#     changed" off it;
-#   - it re-exports unconditionally. "Already on disk" is what makes that case
-#     worse, not a reason to skip.
-#
-# It then says whether the re-export changed anything, because the whole failure
-# it addresses is that question answered from memory. Untracked files make `git
-# diff` no help here — `docs/pr/` is a working-tree artifact `/finalize` sweeps,
-# never committed — so the comparison is against a copy taken before the run.
+# It then says whether the re-export differed, that question answered from
+# memory being the failure itself. The comparison is against a copy taken before
+# the run: `docs/pr/` is untracked — a working-tree artifact `/finalize` sweeps —
+# so `git diff` cannot answer it.
 #
 # The branch is resolved by name through `gh`, never off the working tree: at a
 # session's first prompt `/from-branch` has not checked anything out yet, and the
@@ -52,11 +47,10 @@ cd "$project" || exit 0
 need_command gh "skipping the export."
 need_command python3 "skipping the export."
 
-# The target is the prompt's last token, accepted only if it names a branch that
-# exists. Existence is the whole predicate — no pattern for "looks like a
-# branch", which would have to guess at `#NNN`, a URL and a bare slug alike, and
-# would read the trailing word of `/handle <branch> and finalize` as a target.
-# That invocation simply misses, and the agent exports it itself.
+# Existence is the whole predicate for the target. A pattern for "looks like a
+# branch" would have to guess at `#NNN`, a URL and a bare slug alike, and would
+# read the trailing word of `/handle <branch> and finalize` as one; that
+# invocation instead misses, and the agent exports it itself.
 last="$(tr -s '[:space:]' '\n' <<<"$prompt" | sed '/^$/d' | tail -n1)"
 branch=""
 if [ -n "$last" ] && {
@@ -95,9 +89,8 @@ if [ -z "$number" ] && ! number="$(pr_number all)"; then
   say "gh could not list PRs for $branch: $(tail -n 2 <<<"$number")"
   exit 0
 fi
-# No PR on the branch is the ordinary state of a fresh harness auto-branch, so
-# this is also what keeps a session's first prompt from exporting anything it
-# was never pointed at.
+# A fresh harness auto-branch has no PR, so this doubles as the gate keeping a
+# session's first prompt from exporting something it was never pointed at.
 [ -n "$number" ] || exit 0
 
 export_path="docs/pr/$number/pr.md"
@@ -107,9 +100,8 @@ if [ -f "$export_path" ]; then
 fi
 
 failure=""
-# The exporter exits non-zero on a partial run too — the Markdown written, an
-# attachment missing — so a failure is reported with its output rather than
-# swallowed or retried: which of those happened is the agent's to read.
+# A partial run exits non-zero too (`/take-issue` Step 1 owns what that covers),
+# so a failure is reported with its output rather than swallowed or retried.
 if ! output="$(timeout 50 python3 scripts/export-github-item.py "$number" 2>&1)"; then
   failure="$(tail -n 5 <<<"$output")"
 fi

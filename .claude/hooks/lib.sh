@@ -25,10 +25,9 @@ say() { echo "$(basename "$0" .sh): $*" >&2; }
 
 need_command() { command -v "$1" >/dev/null || { say "$1 not found; $2"; exit 0; }; }
 
-# The project root, preferring the harness's own variable over the payload's
-# `cwd`. Empty output is the whole signal, and callers read it as nothing to do:
-# a hook that cannot find the tree has no work in it. The status stays 0 so that
-# `root="$(project_root)"` under `set -e` is not itself the failure.
+# Empty output is the whole signal — a hook that cannot find the tree has no work
+# in it — and the status stays 0 so that assigning from this under `set -e` is
+# not itself the failure.
 project_root() {
   local root="${CLAUDE_PROJECT_DIR:-$(field cwd)}"
   [ -n "$root" ] && [ -d "$root" ] && printf '%s\n' "$root"
