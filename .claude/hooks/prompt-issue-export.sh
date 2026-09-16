@@ -37,8 +37,8 @@ number="${BASH_REMATCH[1]}"
 
 first_prompt || exit 0
 
-project="${CLAUDE_PROJECT_DIR:-$(field cwd)}"
-[ -n "$project" ] && [ -d "$project" ] || exit 0
+project="$(project_root)"
+[ -n "$project" ] || exit 0
 need_command python3 "skipping the export."
 cd "$project" || exit 0
 [ -f scripts/export-github-item.py ] || exit 0

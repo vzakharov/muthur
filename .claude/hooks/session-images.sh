@@ -33,10 +33,10 @@ need_command python3 "skipping image extraction."
 read_payload
 
 transcript="$(field transcript_path)"
-project="${CLAUDE_PROJECT_DIR:-$(field cwd)}"
+project="$(project_root)"
 
 [ -n "$transcript" ] && [ -f "$transcript" ] || exit 0
-[ -n "$project" ] && [ -d "$project" ] || exit 0
+[ -n "$project" ] || exit 0
 
 rel_dir="tmp/session-images"
 out="$project/$rel_dir"

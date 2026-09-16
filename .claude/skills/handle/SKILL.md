@@ -1,5 +1,5 @@
 ---
-description: Pick up an existing branch or PR and do whatever it needs — attach to it, read off which lane applies (an approved plan to implement, review of a plan still in draft, or feedback on shipped code), and run that lane. Invoke as `/handle <branch|#PR|PR-url> [and finalize] [extra guidance]`. Use when the operator says "/handle", "handle <branch>", "handle and finalize <branch>", "pick up <branch>", or hands over a branch without saying what it needs.
+description: Pick up an existing branch or PR and do whatever it needs — attach to it, read off which lane applies (an approved plan to implement, review of a plan still in draft, or feedback on shipped code), and run that lane. Invoke as `/handle [<branch|#PR|PR-url>] [and finalize] [extra guidance]`, the target defaulting to the branch you are on. Use when the operator says "/handle", "handle <branch>", "handle and finalize <branch>", "pick up <branch>", or hands over a branch without saying what it needs.
 ---
 
 End state of this skill: the branch is attached, the one lane the branch called for has run and pushed, every review comment addressed has been replied to on GitHub, and land-prep has run **iff** the invocation asked for it.
@@ -8,12 +8,12 @@ End state of this skill: the branch is attached, the one lane the branch called 
 
 Four parts, order-free:
 
-- **Target** (**required**, first token by convention): a branch name, `#NNN`, or any PR URL — the grammar `@.claude/skills/from-branch/SKILL.md` § "Argument shape" defines, used as-is. With no target, **stop and ask which branch**: a bare `/handle` has nothing to attach to.
+- **Target** (first token by convention): a branch name, `#NNN`, or any PR URL — the grammar `@.claude/skills/from-branch/SKILL.md` § "Argument shape" defines, used as-is. **With no target, the branch you are on is the target** — a bare `/handle` is what a session types when it is already attached, most often after a compaction boundary. The exception is the trunk: there is no work to read off it, so **stop and ask which branch** when that is where HEAD sits.
 - **`and finalize`** (flag; bare `finalize` counts too): recognized **anywhere** in the argument, since the operator writes it before the target as often as after (`/handle and finalize <branch>`).
 - **`and merge`** (`@.claude/skills/finalize/SKILL.md`'s flag): read as `and finalize`, and **not forwarded** — a lane produces its diff in this same turn, so the flag was typed before the thing it would merge existed. Land-prep as asked, then report that the merge was held and that `/finalize <branch> and merge` lands it once the operator has looked.
 - **Extra guidance** (optional): any remaining prose. Not a lane of its own — it directs whichever lane runs, and when no lane is discovered it _is_ the work (Step 4).
 
-**Every bullet here fires on presence, the reporting included.** What a flag would have done had it been typed is a rule for you to apply, never a finding for the operator to read — it rules on an argument they did not write, in a turn that had no occasion to raise it. So an invocation carrying no `and merge` produces no note about a held merge.
+**Every flag here fires on presence, the reporting included.** What a flag would have done had it been typed is a rule for you to apply, never a finding for the operator to read — it rules on an argument they did not write, in a turn that had no occasion to raise it. So an invocation carrying no `and merge` produces no note about a held merge.
 
 ## A `/handle` session is continued work
 
@@ -22,6 +22,8 @@ It attaches to work started elsewhere, so **no plan cycle opens** — the same s
 ## Step 1 — Attach
 
 Load and follow `@.claude/skills/from-branch/SKILL.md` with the target and **no follow-up** — the dispatch is this skill's. Its Step 1 already skims the branch's PR history and notes the PR's base ref, which is Step 2's input; don't re-fetch it.
+
+Where the target defaulted to the branch you are on, that skill's "Target branch already checked out" case applies: only its Step 1 does anything, and the PR skim it performs is the part Step 2 needs.
 
 ## Step 2 — Read what the branch needs
 
@@ -32,7 +34,17 @@ Two lanes, and which runs is read off the branch:
   - **Unresolved threads whose newest comment is guidance nobody has answered**, from reviews of any age. Unresolved is necessary but not sufficient: an operator who read your reply and moved on routinely never clicks Resolve, so firing on `unresolved` alone re-works threads that are already done. The test runs on the thread's **tail**, not on whether a reply exists anywhere in it — which is also what catches the mirrored case, a thread a prior agent answered and the operator then came back on unsatisfied.
   - **Reviews submitted since the branch's last push**, plus top-level PR comments by the same recency test — they carry no resolved state, so recency is the only handle on them. Compare `reviews[].submittedAt` and `comments[].createdAt` against the head commit's `committedDate` (`gh pr view <n> --repo <owner>/<repo> --json commits,reviews,comments`).
 
-  The realistic case is both at once — a fresh review _plus_ operator follow-ups on older threads — and the lane's input is their union. `python3 scripts/export-github-item.py <n>` writes the PR to `docs/pr/<n>/pr.md`, whose review section opens with **one index row per thread** carrying both halves the tail test needs: the `resolved` / `unresolved` state, and the tail's author label, timestamp and opening words. **Read the index and follow the link** — to an anchor further down the same file on a short PR, to `docs/pr/<n>/threads/<file>.md` on a long one. Open only the threads the tail test selects; a long PR's bodies are the reason the export splits at all.
+  The realistic case is both at once — a fresh review _plus_ operator follow-ups on older threads — and the lane's input is their union. `python3 scripts/export-github-item.py <n>` writes the PR to `docs/pr/<n>/pr.md`, whose review section opens with **one index row per thread** carrying both halves the tail test needs: the `resolved` / `unresolved` state, and the tail's author label, timestamp and opening words.
+
+  **Run the export every time, and never read an export you did not just take.** The export is a snapshot of something that moves: `docs/pr/<n>/pr.md` sitting in the tree says what the PR held when some turn took it, and nothing about what it holds now — the comment you are here to answer may have arrived since. `.claude/hooks/prompt-handle-pr-export.sh` normally has the taking done before the turn; run the command yourself where it reported a failure, or where a tree adopted `/handle` without the hook.
+
+  **Then commit the export, before working the lane:**
+
+  ```bash
+  git add docs/pr/<n> && git commit -m "docs: #<n> refresh the PR export"
+  ```
+
+  The commit is what makes the next re-export a `git diff` rather than a guess, and it is the same answer `/take-issue` Step 2 gives for an issue — with a difference that is the whole point here: an issue is committed once, a PR every time it is re-taken. What that leaves on the branch is the sequence of states the PR was in when each turn read it, so the operator reviewing the branch sees what the agent was reacting to rather than only what it did about it. `@.claude/skills/finalize/SKILL.md` deletes the tree before `gh pr ready`, so these commits and that delete cancel out in the squash. **Read the index and follow the link** — every row's anchor is further down the same file. Open only the threads the tail test selects.
 
   **Whose post the tail is comes off the export's label, not the login** — shared identity puts both under the same `@login`. Every rendered author reads `@login (agent)` or `@login (human)`: a tail labelled `(agent)` is your own reply, `(human)` is guidance. `scripts/gh_export/authorship.py` owns the test, and why the footer it reads stays mandatory.
 

@@ -1,9 +1,9 @@
 """The PR-only review section: review bodies, inline comment threads grouped
 into reply chains, and each thread's resolved state.
 
-A thread renders as an index row plus a body, so the body can move into a
-sibling file and still be reachable. The quoted diff is the reviewer's own
-selection rather than GitHub's enclosing hunk.
+A thread renders as an index row plus a body, so a reader picks the threads
+worth opening off the index. The quoted diff is the reviewer's own selection
+rather than GitHub's enclosing hunk.
 """
 
 from __future__ import annotations
@@ -13,7 +13,7 @@ from typing import Any
 
 from gh_export.attachments import rewrite_attachment_refs
 from gh_export.authorship import attribution, split_agent_footer
-from gh_export.split import Hoistable, anchor_tag, preview
+from gh_export.index import Indexed, anchor_tag, preview
 
 HUNK_CONTEXT_LINES = 3
 CONTEXT_LINE_CHARS = 200
@@ -159,9 +159,9 @@ def review_parts(
     comments: list[dict[str, Any]],
     url_to_relative: dict[str, str],
     resolved_by_comment_id: dict[int, bool],
-) -> tuple[str, list[Hoistable]]:
-    """The section heading plus the review bodies, and the threads as
-    hoistables. Both empty when the PR has neither."""
+) -> tuple[str, list[Indexed]]:
+    """The section heading plus the review bodies, and the threads as indexed
+    bodies. Both empty when the PR has neither."""
     bodied = [r for r in reviews if (r.get("body") or "").strip()]
     threads = review_threads(comments)
     if not bodied and not threads:
@@ -187,9 +187,8 @@ def review_parts(
     for number, chain in enumerate(threads, start=1):
         anchor = f"t{number:02d}"
         items.append(
-            Hoistable(
+            Indexed(
                 anchor=anchor,
-                group=chain[0].get("path") or "",
                 summary=thread_summary(chain, f"T{number:02d}", resolved_by_comment_id),
                 body=render_thread(
                     chain, anchor, url_to_relative, resolved_by_comment_id
