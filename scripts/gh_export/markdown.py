@@ -1,6 +1,5 @@
 """The sections every export carries: the header block and the conversation
-comments.
-"""
+comments."""
 
 from __future__ import annotations
 

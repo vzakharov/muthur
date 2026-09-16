@@ -13,9 +13,9 @@ chains, the lines each chain hangs off, and whether the reviewer resolved it.
 Conversation comments and review threads are always indexed — one row each,
 carrying who posted last, when, and the thread's resolved state — so a consumer
 reads the index and follows a link to the body rather than the whole document.
-The whole export is one file however long the thread gets, because the file is
-committed on every re-take and a reviewer reads what a turn saw as a diff: bodies
-spread over sibling files turn one arriving comment into a ten-file commit.
+The export is one file however long the thread: it is committed on each re-take
+and read as a diff, so bodies spread over sibling files would turn one arriving
+comment into a ten-file commit.
 
 Exit status is non-zero when any attachment fails to download; the Markdown is
 still written, with the failed attachments still linked remotely.
@@ -70,7 +70,7 @@ DOCS_PR_ROOT = Path("docs") / "pr"
 
 def _clear_sibling_bodies(out_dir: Path) -> None:
     """The export is one Markdown file, so a sibling holding bodies is a stale
-    copy of what this run writes inline — and one nothing links to."""
+    copy of what this run writes inline."""
     shutil.rmtree(out_dir / "threads", ignore_errors=True)
     comments = out_dir / "comments.md"
     if comments.exists():
