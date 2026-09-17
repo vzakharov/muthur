@@ -13,7 +13,7 @@ Four parts, order-free:
 - **`and merge`** (`@.claude/skills/finalize/SKILL.md`'s flag): read as `and finalize`, and **not forwarded** — a lane produces its diff in this same turn, so the flag was typed before the thing it would merge existed. Land-prep as asked, then report that the merge was held and that `/finalize <branch> and merge` lands it once the operator has looked.
 - **Extra guidance** (optional): any remaining prose. Not a lane of its own — it directs whichever lane runs, and when no lane is discovered it _is_ the work (Step 4).
 
-**Every flag here fires on presence, the reporting included.** What a flag would have done had it been typed is a rule for you to apply, never a finding for the operator to read — it rules on an argument they did not write, in a turn that had no occasion to raise it. So an invocation carrying no `and merge` produces no note about a held merge.
+**Every flag here fires on presence, the reporting included.** What a flag would have done had it been typed is a rule for you to apply, never a finding for the operator to read — it rules on an argument they did not write, in a turn that had no occasion to raise it. So an invocation carrying no `and merge` produces no note about a held merge, and one carrying no `and finalize` no note that land-prep was not run.
 
 ## A `/handle` session is continued work
 
@@ -74,7 +74,7 @@ With extra guidance in the argument, that guidance is the task → `/go` § "Pla
 
 Load and follow `@.claude/skills/finalize/SKILL.md` with no target token — the branch is already attached — and, where the invocation carried `and merge`, without that flag, per § "Argument shape". It runs only after a lane actually did something, since land-prepping a branch you just declined to touch is exactly the unasked-for finalize the flag exists to prevent. Two turns cancel it: a Step-4 stop, and a plan-review turn, which ends with the plan still awaiting a go-ahead and nothing implemented to land.
 
-Absent the flag, end with a one-line note that land-prep was not requested, so the operator knows the lever is there — the one place a flag nobody typed is named, and it names `/finalize` alone. It is opt-in because `/finalize` is the one lane whose consequences an unaware operator wouldn't want: it ends with the PR reading as merge-ready to anyone who looks at it.
+The flag is opt-in because `/finalize` is the one lane whose consequences an unaware operator wouldn't want: it ends with the PR reading as merge-ready to anyone who looks at it. Absent the flag, the turn ends on the lane's own report (§ "Argument shape").
 
 ## Do NOT
 
