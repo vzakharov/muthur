@@ -74,7 +74,7 @@ With extra guidance in the argument, that guidance is the task → `/go` § "Pla
 
 Load and follow `@.claude/skills/finalize/SKILL.md` with no target token — the branch is already attached — and, where the invocation carried `and merge`, without that flag, per § "Argument shape". It runs only after a lane actually did something, since land-prepping a branch you just declined to touch is exactly the unasked-for finalize the flag exists to prevent. Two turns cancel it: a Step-4 stop, and a plan-review turn, which ends with the plan still awaiting a go-ahead and nothing implemented to land.
 
-The flag is opt-in because `/finalize` is the one lane whose consequences an unaware operator wouldn't want: it ends with the PR reading as merge-ready to anyone who looks at it. Absent the flag, § "Argument shape" holds with no carve-out: the turn ends on the lane's own report.
+The flag is opt-in because `/finalize` is the one lane whose consequences an unaware operator wouldn't want: it ends with the PR reading as merge-ready to anyone who looks at it. Absent the flag, the turn ends on the lane's own report (§ "Argument shape").
 
 ## Do NOT
 
