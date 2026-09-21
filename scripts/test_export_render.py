@@ -12,6 +12,7 @@ from __future__ import annotations
 
 import unittest
 
+from gh_export.cli import parse_args
 from gh_export.markdown import comments_parts
 from gh_export.reviews import (
     CONTEXT_LINE_CHARS,
@@ -167,6 +168,51 @@ class ThreadIndex(unittest.TestCase):
         self.assertIn("+new twelve", main)
 
 
+class ResolvedThreads(unittest.TestCase):
+    def test_a_resolved_thread_is_dropped_with_a_count_by_default(self) -> None:
+        heading, items = review_parts([], [COMMENT], {}, {1: True})
+        self.assertEqual(items, [])
+        self.assertIn("1 resolved thread omitted", heading)
+        self.assertIn("--include-resolved", heading)
+
+    def test_include_resolved_keeps_the_thread_and_drops_the_count(self) -> None:
+        heading, items = review_parts(
+            [], [COMMENT], {}, {1: True}, include_resolved=True
+        )
+        self.assertEqual(len(items), 1)
+        self.assertIn("— resolved", items[0].summary)
+        self.assertNotIn("omitted", heading)
+
+    def test_an_unresolved_thread_survives_the_default(self) -> None:
+        _, items = review_parts([], [COMMENT], {}, {1: False})
+        self.assertEqual(len(items), 1)
+
+    def test_a_resolution_unknown_thread_survives_the_default(self) -> None:
+        # An empty resolution map leaves the thread's state unknown, which reads
+        # as open — only the state the reviewer explicitly closed is dropped.
+        _, items = review_parts([], [COMMENT], {}, {})
+        self.assertEqual(len(items), 1)
+
+    def test_the_omitted_count_pluralizes(self) -> None:
+        second = {**COMMENT, "id": 2, "created_at": "2026-09-15T00:00:00Z"}
+        heading, items = review_parts([], [COMMENT, second], {}, {1: True, 2: True})
+        self.assertEqual(items, [])
+        self.assertIn("2 resolved threads omitted", heading)
+
+
+class ParseArgs(unittest.TestCase):
+    def test_include_resolved_defaults_off(self) -> None:
+        self.assertEqual(
+            parse_args(["prog", "12", "--repo", "o/r"]), (12, "o/r", False)
+        )
+
+    def test_include_resolved_flag_turns_it_on(self) -> None:
+        self.assertEqual(
+            parse_args(["prog", "12", "--repo", "o/r", "--include-resolved"]),
+            (12, "o/r", True),
+        )
+
+
 class IndexedSection(unittest.TestCase):
     def test_every_body_follows_the_rows_in_order(self) -> None:
         items = [
@@ -183,9 +229,7 @@ class IndexedSection(unittest.TestCase):
             [{**COMMENT, "html_url": "https://example.test/1"}], {}
         )
         section = indexed_section(items)
-        self.assertIn(
-            "- **C01** @vzakharov (human) — 2026-09-14T21:16:32Z", section
-        )
+        self.assertIn("- **C01** @vzakharov (human) — 2026-09-14T21:16:32Z", section)
         self.assertIn("→ [↓](#c01)", section)
         self.assertIn('<a id="c01"></a>', section)
         self.assertIn("why not just make the whole thing one function?", section)

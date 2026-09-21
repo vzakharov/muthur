@@ -9,13 +9,16 @@ from lib.github import detect_origin_repo, die
 USAGE = (
     "Usage: python3 scripts/export-github-item.py "
     "<number|https://github.com/OWNER/REPO/issues/N"
-    "|https://github.com/OWNER/REPO/pull/N> [--repo OWNER/REPO]"
+    "|https://github.com/OWNER/REPO/pull/N> [--repo OWNER/REPO] [--include-resolved]"
 )
 
 
-def parse_args(argv: list[str]) -> tuple[int, str]:
+def parse_args(argv: list[str]) -> tuple[int, str, bool]:
+    """`(number, OWNER/REPO, include_resolved)`. `--include-resolved` keeps
+    resolved review threads, which a PR export drops by default."""
     rest = [a for a in argv[1:] if a != "--"]
     repo_flag: str | None = None
+    include_resolved = False
     nums: list[int] = []
     i = 0
     while i < len(rest):
@@ -23,6 +26,10 @@ def parse_args(argv: list[str]) -> tuple[int, str]:
         if arg == "--repo" and i + 1 < len(rest):
             repo_flag = rest[i + 1]
             i += 2
+            continue
+        if arg == "--include-resolved":
+            include_resolved = True
+            i += 1
             continue
         m_url = re.match(
             r"^https://github\.com/([^/]+)/([^/]+)/(?:issues|pull)/(\d+)/?$",
@@ -55,4 +62,4 @@ def parse_args(argv: list[str]) -> tuple[int, str]:
     if len(parts) != 2 or not parts[0] or not parts[1]:
         die("--repo and item URLs must use OWNER/REPO (e.g. octocat/hello-world).")
 
-    return nums[0], repo_flag
+    return nums[0], repo_flag, include_resolved
