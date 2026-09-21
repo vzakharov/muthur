@@ -2,13 +2,19 @@
 """Export a GitHub issue or pull request to Markdown plus downloaded attachments.
 
 Usage:
-  python3 scripts/export-github-item.py <number|issue-url|pr-url> [--repo OWNER/REPO]
+  python3 scripts/export-github-item.py <number|issue-url|pr-url> \
+      [--repo OWNER/REPO] [--include-resolved]
 
 Issues land in docs/issue/<n>/issue.md, pull requests in docs/pr/<n>/pr.md; both
 put downloaded attachments under <out-dir>/attachments/. A bare number works for
 either — the type comes from the API, not from the argument. A PR export also
 carries its review threads: review bodies, inline comments grouped into reply
 chains, the lines each chain hangs off, and whether the reviewer resolved it.
+
+Threads the reviewer resolved are left out by default — the reader skims every
+thread the export carries, so a closed one is cost with no signal; a count line
+in the review section marks how many were dropped. `--include-resolved` keeps
+them.
 
 Conversation comments and review threads are always indexed — one row each,
 carrying who posted last, when, and the thread's resolved state — so a consumer
@@ -74,7 +80,7 @@ def _clear_sibling_bodies(out_dir: Path) -> None:
 
 
 def main() -> None:
-    number, repo = parse_args(sys.argv)
+    number, repo, include_resolved = parse_args(sys.argv)
     token = gh_token()
     base = f"repos/{repo}/issues/{number}"
 
@@ -126,7 +132,11 @@ def main() -> None:
 
     comments_heading, comment_items = comments_parts(comments, url_to_relative)
     review_prelude, thread_items = review_parts(
-        reviews, review_comments, url_to_relative, resolved_by_comment_id
+        reviews,
+        review_comments,
+        url_to_relative,
+        resolved_by_comment_id,
+        include_resolved,
     )
 
     # An empty section is left out rather than joined as "" — an empty element
