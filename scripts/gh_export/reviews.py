@@ -3,7 +3,9 @@ into reply chains, and each thread's resolved state.
 
 A thread renders as an index row plus a body, so a reader picks the threads
 worth opening off the index. The quoted diff is the reviewer's own selection
-rather than GitHub's enclosing hunk.
+rather than GitHub's enclosing hunk. Threads the reviewer resolved are dropped
+by default (a count line marks how many); `review_parts(..., include_resolved=True)`
+keeps them.
 """
 
 from __future__ import annotations
@@ -159,12 +161,31 @@ def review_parts(
     comments: list[dict[str, Any]],
     url_to_relative: dict[str, str],
     resolved_by_comment_id: dict[int, bool],
+    include_resolved: bool = False,
 ) -> tuple[str, list[Indexed]]:
     """The section heading plus the review bodies, and the threads as indexed
-    bodies. Both empty when the PR has neither."""
+    bodies. Both empty when the PR has neither.
+
+    Resolved threads are dropped unless `include_resolved`, since the reader
+    skims every thread the export carries and a closed one is cost with no
+    signal. When any are dropped, the heading still carries a one-line count so
+    the section never vanishes silently — a PR whose every thread is resolved
+    reads as "N omitted", not as no review at all. `resolution unknown` and
+    `unresolved` are kept: only the state the reviewer explicitly closed goes.
+    """
     bodied = [r for r in reviews if (r.get("body") or "").strip()]
     threads = review_threads(comments)
-    if not bodied and not threads:
+    if not include_resolved:
+        kept = [
+            chain
+            for chain in threads
+            if resolution_label(chain, resolved_by_comment_id) != "resolved"
+        ]
+        omitted = len(threads) - len(kept)
+        threads = kept
+    else:
+        omitted = 0
+    if not bodied and not threads and not omitted:
         return "", []
 
     chunks = ["## Review threads", ""]
@@ -173,12 +194,20 @@ def review_parts(
         by_agent, body = split_agent_footer(review["body"])
         chunks.extend(
             [
-                f"### Review by {attribution(review.get('user'), by_agent)}"
-                f" — {state}",
+                f"### Review by {attribution(review.get('user'), by_agent)} — {state}",
                 "",
                 f"_{review.get('submitted_at', '')}_",
                 "",
                 rewrite_attachment_refs(body or "_empty_", url_to_relative),
+                "",
+            ]
+        )
+    if omitted:
+        plural = "" if omitted == 1 else "s"
+        chunks.extend(
+            [
+                f"_{omitted} resolved thread{plural} omitted; "
+                f"re-run with `--include-resolved` to export {'it' if omitted == 1 else 'them'}._",
                 "",
             ]
         )
