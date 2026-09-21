@@ -11,10 +11,8 @@ either — the type comes from the API, not from the argument. A PR export also
 carries its review threads: review bodies, inline comments grouped into reply
 chains, the lines each chain hangs off, and whether the reviewer resolved it.
 
-Threads the reviewer resolved are left out by default — the reader skims every
-thread the export carries, so a closed one is cost with no signal; a count line
-in the review section marks how many were dropped. `--include-resolved` keeps
-them.
+Threads the reviewer resolved are left out by default, with a count line in the
+review section marking how many; `--include-resolved` keeps them.
 
 Conversation comments and review threads are always indexed — one row each,
 carrying who posted last, when, and the thread's resolved state — so a consumer

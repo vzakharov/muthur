@@ -14,10 +14,8 @@ USAGE = (
 
 
 def parse_args(argv: list[str]) -> tuple[int, str, bool]:
-    """`(number, OWNER/REPO, include_resolved)`. Resolved review threads are
-    dropped from a PR export unless `--include-resolved` asks for them: the
-    reader has to skim whatever the export carries, so a thread the reviewer
-    already closed is cost with no signal."""
+    """`(number, OWNER/REPO, include_resolved)`. `--include-resolved` keeps
+    resolved review threads, which a PR export drops by default."""
     rest = [a for a in argv[1:] if a != "--"]
     repo_flag: str | None = None
     include_resolved = False
