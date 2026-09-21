@@ -2,251 +2,258 @@
 
 # Agent-as-a-backend
 
-Дать человеку, который не знает слова «репозиторий», пользоваться собственным
-Claude Code через кнопку на сайте — на его подписке, его лимитах и его
-инфраструктуре, без единого агентского чата в кадре.
+Let someone who does not know the word "repository" use their own Claude Code
+through a button on a web page — on their subscription, their limits, their
+infrastructure, with no agent chat anywhere in sight.
 
-Фронт пишет запрос в очередь. Что-то поднимает изолированный прогон Claude Code
-в хозяйстве пользователя. Прогон читает строку, делает работу, пишет обратно
-статусы и ответ. Фронт опрашивает и показывает. Никто никогда не видит слова
-«ветка».
+The front end writes a request to a queue. Something starts an isolated Claude
+Code run in that person's own estate. The run reads the row, does the work,
+writes progress and a result back. The front end polls and renders. Nobody ever
+sees the word "branch".
 
-Это обобщение уже работающего частного случая: `vzakharov/leisan-psy-work` — репозиторий,
-чей основной оператор не знает, что это репозиторий. Там посредником служит
-агентский чат; здесь его место занимает кнопка.
+This generalizes a case that already works: `vzakharov/leisan-psy-work`, a
+repository whose primary operator does not know it is a repository. There the
+intermediary is an agent chat; here a button takes its place.
 
-## Что уже установлено эмпирически
+## What this session established empirically
 
-Проверено в этой сессии; фиксируется, чтобы не переоткрывать.
+Recorded so it is not rediscovered.
 
-| Вопрос | Ответ | Чем подтверждено |
+| Question | Answer | Evidence |
 | --- | --- | --- |
-| Можно ли поднять сессию в аккаунте пользователя извне | Да, `POST /v1/claude_code/routines/{trig_id}/fire` с токеном рутины | [API reference](https://platform.claude.com/docs/en/api/claude-code/routines-fire) |
-| Сколько таких запусков в сутки | Pro 5, Max 15 — на аккаунт, не на рутину | Дневной кап рутин |
-| Есть ли креды аккаунта внутри облачного контейнера | Нет. `claude auth status` рапортует `loggedIn`, но это хост-управляемый провайдер | `claude -p --cloud <несуществующий id>` → ошибка аутентификации, а не «не найдено» |
-| Есть ли `create_session` в рутинной сессии | Нет. Сервер `Claude_Code_Remote` там не подключён вовсе | Прогон рутины «create_session check» |
-| Есть ли он в обычной облачной сессии | Да, работает, ~7 секунд на порождение | Прогон «Проверка create_session» |
-| Самовоспроизводится ли | Да. Внук родился, `parent_session_id` указывает на дочернюю — иерархия настоящая | Прогон «Recursion test» |
-| Есть ли отсечка глубины у сессий | Не обнаружена. Тормоз — только ручной `interrupt_session` | Там же |
-| Поддерживает ли GitHub Actions подписочную аутентификацию | Да, `CLAUDE_CODE_OAUTH_TOKEN` из `claude setup-token` | [GitHub Actions](https://code.claude.com/docs/en/github-actions) |
-| Что умеет этот токен | Только модельные запросы; срок — год; ни Remote Control, ни коннекторов | [Authentication](https://code.claude.com/docs/en/authentication) |
+| Can a session be started in a user's account from outside | Yes — `POST /v1/claude_code/routines/{trig_id}/fire` with a per-routine token | [API reference](https://platform.claude.com/docs/en/api/claude-code/routines-fire) |
+| How many such starts per day | Pro 5, Max 15 — per account, not per routine | Routine daily cap |
+| Are account credentials present inside a cloud container | No. `claude auth status` reports `loggedIn`, but the provider is host-managed | `claude -p --cloud <nonexistent id>` → an auth error, not "not found" |
+| Does a routine-fired session have `create_session` | No. The `Claude_Code_Remote` server is not mounted there at all | Routine run "create_session check" |
+| Does an ordinary cloud session | Yes, and it works — ~7s to spawn | Session "Проверка create_session" |
+| Does it recurse | Yes. A grandchild was born, and its `parent_session_id` points at the child, so the hierarchy is real | Session "Recursion test" |
+| Is there a depth limit on sessions | None found. The only brake is a manual `interrupt_session` | Same run |
+| Does GitHub Actions support subscription auth | Yes — `CLAUDE_CODE_OAUTH_TOKEN` from `claude setup-token` | [GitHub Actions](https://code.claude.com/docs/en/github-actions) |
+| What that token can do | Model requests only; one year; no Remote Control, no connectors | [Authentication](https://code.claude.com/docs/en/authentication) |
 
-Из этого следует выбор линии. Подробности отвергнутой — в разделе
-«Исследованная альтернатива»; здесь достаточно причины: в линии с сессиями всё
-несущее недокументировано **и уже доказано различающимся между поверхностями**,
-а режим отказа — неограниченное размножение, делящее один лимит аккаунта, с
-ручным тормозом.
+That settles the execution lane. The rejected one is kept under "The
+researched alternative"; the reason fits in a sentence. Everything load-bearing
+in the session lane is undocumented **and already demonstrably varies by
+surface**, and its failure mode is unbounded reproduction sharing one account
+rate limit, with a manual brake.
 
-## Архитектура v0
+## Architecture, v0
 
 ```
-кнопка на фронте
+button on the front end
       │
       ▼
- бэкенд аппа ──► строка в очереди (статус queued)
+ app backend ──► row in the queue (status queued)
       │
       ▼
  POST /repos/<user>/<repo>/dispatches   (client_payload: {request_id})
       │
       ▼
- GitHub Actions, эфемерный раннер в хозяйстве пользователя
+ GitHub Actions, an ephemeral runner in the user's own estate
       │  checkout → npx claude -p "/handle-request <id>"
       ▼
- скилл читает строку, работает, зовёт ./scripts/answer
+ the skill reads the row, works, calls ./scripts/answer
       │
       ▼
- очередь: статусы по ходу, затем result ──► фронт опрашивает
+ queue: progress as it goes, then result ──► the front end polls
 ```
 
-Диспетчера нет. Один `repository_dispatch` = один прогон = одна задача,
-эфемерная и не знающая о существовании других.
+There is no dispatcher. One `repository_dispatch` is one run is one task,
+ephemeral and unaware that any other exists.
 
-**Исполнитель запускается голым CLI, а не `claude-code-action`.** Экшен
-существует ради интеграции с GitHub — комментарии, PR-ы, реакция на `@claude`, —
-ничего из чего здесь не нужно, а несёт он за собой установку GitHub App с
-двенадцатью правами и **проверку актора**: любой бот-инициатор отвергается, если
-не внесён в `allowed_bots`, на каждом событии. Диспатч из бэкенда — ровно такой
-случай. Голый `npx @anthropic-ai/claude-code -p` не проверяет ничего, не требует
-App, и единственный секрет в репозитории — `CLAUDE_CODE_OAUTH_TOKEN`.
+**The executor runs the bare CLI, not `claude-code-action`.** The action exists
+for GitHub integration — comments, PRs, reacting to `@claude` — none of which
+this needs, and it drags in a GitHub App with twelve permissions plus an **actor
+check**: any bot initiator is rejected on every event unless listed in
+`allowed_bots`, and a dispatch from our backend is exactly that. A bare
+`npx @anthropic-ai/claude-code -p` checks nothing, needs no App, and leaves
+`CLAUDE_CODE_OAUTH_TOKEN` as the repository's only secret.
 
-Контракт исполнителя формулируется один раз и не зависит от способа запуска:
+The executor's contract is stated once and does not depend on what started it:
 
-- **На вход приходит только `request_id`.** Содержимое строки скилл читает сам и
-  обращается с ним как с недоверенными данными: не склеивает в системный промпт,
-  не исполняет инструкции оттуда.
-- **В очередь скилл пишет через `./scripts/answer`, а не сырыми запросами.**
-  Схема проверяется в одном месте, и агент не может испортить чужие строки.
-- **Тип запроса → скилл — свойство конфигурации, а не суждение модели.**
-- **Промежуточные статусы — через хуки Claude Code**, а не через дисциплину
-  модели: `PostToolUse` и `Stop` стреляют независимо от того, вспомнил ли агент
-  отчитаться.
+- **Only a `request_id` crosses the boundary.** The skill reads the row itself
+  and treats its contents as untrusted: never concatenated into a system prompt,
+  never followed as instructions.
+- **The skill writes through `./scripts/answer`, never raw queries.** One place
+  validates the schema, and the agent cannot corrupt another row.
+- **Request type maps to skill as configuration, not as a model's judgment.**
+- **Progress comes from Claude Code hooks**, not from the model's diligence:
+  `PostToolUse` and `Stop` fire whether or not it remembers to report.
 
-## Узел с темплейтами и как он развязывается
+## The template knot, untied
 
-Артефактов три, и путаница возникает от попытки совместить второй с третьим:
+There are three artifacts, and the confusion comes from collapsing the second
+into the third:
 
-| | Что это | Кто заводит |
+| | What it is | How it comes about |
 | --- | --- | --- |
-| **A. Движок** | Репозиторий разработки: бэкенд диспатча, фронт, исходник тонкого темплейта. Живёт по полной петле muthur — `/plan`, `/go`, PR-ы, сквоши | форк muthur, затем `/detemplate` |
-| **B. Тонкий темплейт** | То, что форкает создатель аппа: скиллы типов запросов, `scripts/answer`, воркфлоу, рунбук. Ни `/plan`, ни `/go`, ни слова о ветках | **артефакт сборки A** |
-| **C. Реп-фронт** | «Подбери одежду» — конкретный апп конкретного создателя | «Use this template» на B |
+| **A. The engine** | The development repository: dispatch backend, front end, and the source of the thin template. Runs the full muthur loop — `/plan`, `/go`, PRs, squashes | a muthur fork, then `/detemplate` |
+| **B. The thin template** | What an app author forks: request-type skills, `scripts/answer`, the workflow, a runbook. No `/plan`, no `/go`, no mention of branches | **a build artifact of A** |
+| **C. A front repo** | "Pick clothing" — one author's actual app | "Use this template" on B |
 
-**B — не репозиторий, который ведут, а каталог `template/` внутри A**, который
-релизный воркфлоу выкладывает в отдельный репозиторий с проставленным флагом
-темплейта. Кнопке «Use this template» нужен репозиторий; источнику правды — нет.
-Так снимается единственная настоящая сложность: не приходится синхронизировать
-два дерева руками, и B не может отстать от A незаметно.
+**B is not a repository anyone maintains; it is a `template/` directory inside
+A**, which a release workflow publishes to a separate repository carrying
+GitHub's template flag. The "Use this template" button needs a repository; the
+source of truth does not. That removes the only real difficulty — two trees kept
+in step by hand, where B falls behind A silently.
 
-До того момента, как B кому-то понадобится, он просто каталог. Публикация —
-последний шаг, а не первый.
+Until someone needs B, it is just a directory. Publishing it is the last step,
+not the first.
 
-## Шаги
+## Steps
 
-### Шаг 0 — завести A и переехать
+### Step 0 — create A and move in
 
-Выполняется отсюда, из muthur, и заканчивается тем, что эта сессия больше не нужна.
+Runs from muthur, and ends with this session no longer needed.
 
-1. `gh repo create vzakharov/<имя-A> --template vzakharov/muthur --private`
-2. Перенести этот файл плана в A первым коммитом, под тем же именем.
-3. Закрыть PR в muthur **без мержа**: план описывает работу в другом
-   репозитории, и в темплейт он попасть не должен.
-4. В A: `/detemplate <что строим>` — обычным порядком, через `/plan`.
+1. `gh repo create vzakharov/<A-name> --template vzakharov/muthur --private`
+2. Carry this plan file into A as its first commit, under the same name.
+3. Close the muthur PR **without merging**: the plan describes work in another
+   repository and must not reach the template.
+4. In A: `/detemplate <what we're building>`, the ordinary way, through `/plan`.
 
-Дальнейшие шаги выполняются в A.
+Everything below happens in A.
 
-### Шаг 1 — контракт исполнителя
+### Step 1 — the executor contract
 
-Не зависит от линии запуска, поэтому делается первым: что бы ни решилось про
-Actions против сессий, это не переписывается.
+Independent of the launch lane, so it comes first: whatever is decided between
+Actions and sessions, none of this is rewritten.
 
-- Схема строки запроса: `id`, `type`, `status` (`queued` / `working` / `done` / `failed`),
-  `input`, `progress[]`, `result`, `error`, временны́е метки. Определяется один раз
-  на zod, тип выводится из схемы, схема таблицы — из неё же.
-- `scripts/answer` — единственный путь записи: `answer <id> --status working --note "…"`,
-  `answer <id> --result <файл.json>`, `answer <id> --failed "…"`. Валидирует по схеме типа.
-- Один скилл типа запроса с жёстким входом-выходом.
-- Хуки в `.claude/settings.json`, дописывающие `progress[]` автоматически.
-- Проверка: руками положить строку, запустить скилл локально, увидеть корректно
-  заполненную строку.
+- Request-row schema: `id`, `type`, `status` (`queued` / `working` / `done` /
+  `failed`), `input`, `progress[]`, `result`, `error`, timestamps. Declared once
+  in zod; the type is inferred from it and the table schema derived from it.
+- `scripts/answer` as the only write path: `answer <id> --status working --note "…"`,
+  `answer <id> --result <file.json>`, `answer <id> --failed "…"`. Validates
+  against the type's schema.
+- One request-type skill with a hard input/output contract.
+- Hooks in `.claude/settings.json` that append to `progress[]` automatically.
+- Verification: hand-write a row, run the skill, see the row correctly filled.
 
-### Шаг 2 — линия запуска
+### Step 2 — the launch lane
 
 - `.github/workflows/handle-request.yml`, `on: repository_dispatch: types: [request]`.
-- Шаг: `actions/checkout`, затем `npx @anthropic-ai/claude-code@latest -p "/handle-request ${{ github.event.client_payload.request_id }}"`
-  с `CLAUDE_CODE_OAUTH_TOKEN` из секретов и `--allowedTools`, перечисляющим ровно
-  нужное этому типу.
-- `timeout-minutes`, `concurrency` с потолком, `--max-turns` — чтобы застрявший
-  прогон стоил минуты, а не сутки.
-- Секреты: `CLAUDE_CODE_OAUTH_TOKEN` и то, что нужно `scripts/answer` для записи
-  в очередь.
-- Проверка: `gh api repos/<repo>/dispatches` руками, посмотреть, что строка
-  прошла путь до `done`.
+- Steps: `actions/checkout`, then
+  `npx @anthropic-ai/claude-code@latest -p "/handle-request ${{ github.event.client_payload.request_id }}"`
+  with `CLAUDE_CODE_OAUTH_TOKEN` from secrets and an `--allowedTools` listing
+  exactly what this request type needs.
+- `timeout-minutes`, a `concurrency` ceiling, `--max-turns` — so a stuck run
+  costs minutes rather than a day.
+- Secrets: `CLAUDE_CODE_OAUTH_TOKEN`, plus whatever `scripts/answer` needs to
+  reach the queue.
+- Verification: `gh api repos/<repo>/dispatches` by hand, and watch a row travel
+  to `done`.
 
-### Шаг 3 — фронт и диспатч
+### Step 3 — front end and dispatch
 
-- Одна кнопка. Пишет строку, опрашивает её, показывает `progress[]` и `result`.
-- Бэкенд аппа держит гитхабовский креденшл с правом `actions: write` на один
-  репозиторий пользователя. Клодовского токена не держит **никогда** — тот лежит
-  у GitHub.
-- «Логин» = пользователь называет свой репозиторий и выдаёт узкий доступ.
-  Настоящего OAuth-протокола тут не нужно: это передача ключа, а не связывание
-  устройства.
+- One button. Writes a row, polls it, renders `progress[]` and `result`.
+- The app backend holds a GitHub credential scoped to `actions: write` on one
+  repository. It **never** holds a Claude credential — that one lives at GitHub.
+- "Logging in" is the user naming their repository and granting that narrow
+  access. No device-authorization protocol is warranted: this is handing over a
+  key, not binding a device.
 
-### Шаг 4 — тонкий темплейт B
+### Step 4 — the thin template, B
 
-- Каталог `template/` в A: `.claude/skills/<типы>/`, `scripts/answer`,
-  `.github/workflows/handle-request.yml`, `CLAUDE.md` (агентский, английский,
-  только контракты), `README.md` (рунбук установки, человеческим языком).
-- Релизный воркфлоу, выкладывающий `template/` в репозиторий B.
-- В B **нет** петли разработки: ни `/plan`, ни `/go`, ни `/finalize`. Конечный
-  пользователь с этим репозиторием не разговаривает, там нечего планировать.
+- `template/` in A: `.claude/skills/<types>/`, `scripts/answer`,
+  `.github/workflows/handle-request.yml`, `CLAUDE.md` (agent-facing, English,
+  contracts only), `README.md` (a setup runbook in human language).
+- A release workflow that publishes `template/` to repository B.
+- B carries **no** development loop: no `/plan`, no `/go`, no `/finalize`. The
+  end user never converses with that repository, so there is nothing there to
+  plan.
 
-### Шаг 5 — рунбук и первый живой пользователь
+### Step 5 — runbook and a first live user
 
-Честный список того, что человек делает руками один раз:
+An honest list of what a person does by hand, once:
 
-1. «Use this template» на B → свой приватный репозиторий.
-2. Установить Claude Code, выполнить `claude setup-token`, положить результат в
-   секреты репозитория как `CLAUDE_CODE_OAUTH_TOKEN`. **Терминал нужен ровно
-   здесь и больше нигде** — браузерного способа выпустить этот токен нет.
-3. На сайте аппа назвать репозиторий и выдать доступ.
+1. "Use this template" on B → their own private repository.
+2. Install Claude Code, run `claude setup-token`, and put the result in the
+   repository's secrets as `CLAUDE_CODE_OAUTH_TOKEN`. **A terminal is needed
+   here and nowhere else** — there is no browser path to minting that token.
+3. On the app's site, name the repository and grant access.
 
-Шаг 2 — единственное место, где рунбук упирается в командную строку. Скриншоты
-и дословные команды обязательны; всё остальное — клики.
+Step 2 is the single place the runbook meets a command line. Screenshots and
+verbatim commands are mandatory there; everything else is clicks.
 
 ## DRY notes
 
-- **`scripts/answer` существует в одном экземпляре — в `template/`.** Он часть
-  продукта, а не инструментария A. A им не пользуется; A его выкладывает.
-- **Схема строки — единственный источник правды.** zod-схема на тип, тип выводится
-  из неё, схема таблицы выводится из неё же. Руками не дублируется нигде: это
-  прямое применение правила CLAUDE.md «Derive types and schemas from the source of truth».
-- **Каталог `template/` — источник, репозиторий B — копия.** Два дерева
-  существуют, но редактируется одно; второе собирается. Иначе это классическая
-  пара, расходящаяся молча.
-- **Абстракция «способ запуска» — одна функция в бэкенде**, `dispatch(requestId)`.
-  Не интерфейс, не фабрика, не стратегия: пока реализация одна, обобщать нечего.
-  Вторая появится, если и когда линия с сессиями заработает; тогда там будет
-  `if`, и этого достаточно.
-- **Общей библиотеки между A и B не заводим.** Соблазн есть — обе стороны знают
-  схему запроса, — но A и B выпускаются с разной частотой и живут у разных людей,
-  и разделяемый пакет между ними означает версионирование ради двух файлов. Схема
-  физически лежит в `template/` и копируется в A сборкой, а не импортом.
-- **Скиллы типов запросов не наследуют ничего от скиллов muthur.** Совпадение
-  только в формате файла; общего содержания нет, и попытка вынести «базовый
-  скилл» дала бы абстракцию над двумя несвязанными задачами.
+- **`scripts/answer` exists once, in `template/`.** It is part of the product,
+  not of A's tooling. A does not use it; A publishes it.
+- **The request schema is a single source of truth.** One zod schema per type,
+  the TypeScript type inferred from it, the table schema derived from it, nothing
+  hand-written twice — a direct application of CLAUDE.md § "Derive types and
+  schemas from the source of truth".
+- **`template/` is the source and repository B is a copy.** Two trees exist, but
+  one is edited and the other is built. Any other arrangement is the classic pair
+  that diverges silently.
+- **The "launch mechanism" abstraction is one function** in the backend,
+  `dispatch(requestId)`. Not an interface, not a factory, not a strategy: with
+  one implementation there is nothing to generalize. A second appears if and when
+  the session lane works, and then it is an `if`.
+- **No shared library between A and B.** The temptation is real — both sides know
+  the request schema — but A and B ship at different rates and live with
+  different people, so a shared package between them means versioning for the
+  sake of two files. The schema lives physically in `template/` and reaches A by
+  the build, not by an import.
+- **Request-type skills inherit nothing from muthur's skills.** The only thing in
+  common is the file format; extracting a "base skill" would abstract over two
+  unrelated jobs.
 
-## Риски и что с ними делать
+## Risks
 
-| Риск | Что делаем |
+| Risk | What we do |
 | --- | --- |
-| Инъекция через пейлоад запроса | На вход подаётся только `id`; содержимое читается скиллом и трактуется как данные. `--allowedTools` по типу запроса, а не общий |
-| Утечка токена пользователя | Токен не проходит через наш бэкенд вообще. Живёт в секретах его репозитория, умеет только модельные запросы, отзывается перевыпуском |
-| Утечка нашего гитхабовского креденшла | Скоуп `actions: write` на один репозиторий; максимальный ущерб — чужие прогоны, жгущие лимит владельца. Потолок `concurrency` ограничивает и это |
-| Минуты Actions | 2000/мес на приватных при ~2 мин на запрос ≈ тысяча запросов. Мониторить, не оптимизировать заранее |
-| Застрявший прогон | `timeout-minutes` + `--max-turns` + потолок параллельности |
-| Двойной запуск по ретраю | Идемпотентность на стороне очереди: переход `queued → working` атомарным апдейтом, повтор на уже занятой строке — no-op |
+| Injection through the request payload | Only an `id` crosses; contents are read by the skill and handled as data. `--allowedTools` per request type, never one blanket list |
+| The user's Claude token leaking | It never passes through our backend. It lives in their repository's secrets, can only make model requests, and is revoked by reissuing |
+| Our GitHub credential leaking | Scoped to `actions: write` on one repository; worst case is spurious runs burning the owner's limits, which the `concurrency` ceiling also bounds |
+| Actions minutes | 2000/month on private repos at ~2 min per request is roughly a thousand requests. Monitor; do not optimize ahead of it |
+| A stuck run | `timeout-minutes` plus `--max-turns` plus the concurrency ceiling |
+| A retry running the work twice | Idempotency on the queue side: `queued → working` as an atomic update, and a repeat against a claimed row is a no-op |
 
-## Исследованная альтернатива: облачные сессии
+## The researched alternative: cloud sessions
 
-Сохранена потому, что она рабочая, а не потому, что запасная: если Anthropic
-документирует `create_session`, она становится проще нашей.
+Kept because it works, not because it is a fallback. If Anthropic documents
+`create_session`, it becomes the simpler of the two.
 
-**Устройство.** Долгоживущий диспетчер — обычная облачная сессия в Auto mode —
-ждёт запросов и на каждый порождает исполнителя. Выбор порождающего механизма
-неочевиден, и правильный ответ гибридный: **сессии только для наследования,
-подагенты для работы.** У подагентов есть настоящая отсечка глубины
-(`CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH` стоит в окружении), у сессий — нет, так
-что размножение исполнителей должно идти по механически ограниченному пути.
+**Shape.** A long-lived dispatcher — an ordinary cloud session in Auto mode —
+waits for requests and spawns an executor per request. Which spawning mechanism
+is not obvious, and the right answer is hybrid: **sessions for succession,
+subagents for work.** Subagents have a real depth limit
+(`CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH` is set in the environment) and sessions
+have none, so the path that runs per request must be the mechanically bounded
+one.
 
-**Живучесть** решается не предотвращением смерти, а тремя приёмами:
+**Survival** is not achieved by preventing death but by three moves:
 
-- Плановая ротация: диспетчер рожает преемника до того, как кончится контекст. С
-  самовоспроизведением это бесплатно, и требование «прожить сутки» сводится к
-  «прожить до передачи».
-- Взаимный сторож: два диспетчера, хартбит, каждый умеет родить замену другому.
-- Коррелированный отказ — человек в браузере. Рутина воскресить не может: её
-  сессия не умеет порождать сессии.
+- Planned rotation: the dispatcher spawns its successor before its context fills.
+  Self-recursion makes that free, and reduces "must live a day" to "must live
+  until handover".
+- A mutual watchdog: two dispatchers, a heartbeat each, either able to spawn a
+  replacement for the other.
+- A correlated failure still needs a human in a browser. A routine cannot
+  resurrect them: its session cannot spawn sessions.
 
-**Чего не хватает, чтобы выбрать её:** документированности, отсечки глубины у
-сессий и браузерного генезиса — Auto mode ставит человек. Два первых пункта —
-не наши.
+**What it lacks before it can be chosen:** documentation, a depth limit on
+sessions, and a non-browser genesis — Auto mode is set by a person. The first two
+are not ours to supply.
 
-**Что общего с выбранной линией:** всё, кроме шага 2. Контракт исполнителя,
-схема, `scripts/answer`, скиллы и темплейт переносятся без изменений. Поэтому
-шаг 1 делается раньше шага 2, а не наоборот.
+**What it shares with the chosen lane:** everything but Step 2. The executor
+contract, the schema, `scripts/answer`, the skills and the template all carry
+over unchanged. That is why Step 1 precedes Step 2 rather than the other way
+round.
 
-## Открытые вопросы
+## Open questions
 
-Каждый записан в плане в своём рекомендованном варианте; ответ, отличный от
-рекомендации, — правка плана, молчание — согласие.
+Each is written into the plan in its recommended form; an answer that differs is
+a plan revision, and silence is a valid resolution.
 
-1. **Имя репозитория A.** В плане: `agent-as-a-backend` как рабочее, переименуемое.
-2. **Охват v0:** один пользователь (сам Вова, без авторизации и связывания) или
-   сразу много. В плане: **один**.
-3. **Где живёт очередь:** Supabase с RLS / GitHub Issues в репозитории
-   пользователя / файлы в репозитории. В плане: **Supabase**.
-4. **Первый тип запроса.** В плане: **`pick-clothing`** — погода плюс гардероб,
-   самодостаточно и прогоняет весь путь.
-5. **B как артефакт сборки A** или отдельно ведомый репозиторий. В плане:
-   **артефакт**.
+1. **A's repository name.** In the plan: `agent-as-a-backend`, as a working name
+   that can be changed.
+2. **v0 scope:** one user (Vova himself, no auth, no pairing) or multi-user from
+   the start. In the plan: **one**.
+3. **Where the queue lives:** Supabase with RLS / GitHub Issues in the user's
+   repository / files in the repository. In the plan: **Supabase**.
+4. **The first request type.** In the plan: **`pick-clothing`** — weather plus
+   wardrobe, self-contained, and it exercises the whole path.
+5. **B as a build artifact of A**, or a separately maintained repository. In the
+   plan: **build artifact**.
