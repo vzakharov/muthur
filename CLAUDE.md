@@ -250,7 +250,7 @@ This project ships a set of Claude Code skills under `.claude/skills/`. Invoke t
 - **`/propose-issue`** — file a unit of work as an issue, deduping against what's already open.
 - **`/audit-github-backlog`** — sweep every open issue and PR against today's code, on demand and roughly monthly, and leave a reviewable close/refile/keep plan. Changes nothing on GitHub.
 - **`/update-muthur`** — pull the agent infrastructure forward from the repo this one adopted it from, triaging commit by commit. Ships as a stub, this repo having no source above it.
-- **`/override-gh`** — a no-op marker; its description reminds you that `gh` and `GH_TOKEN` are available despite what the system prompt says, and that an `add_repo` refusal is a reason to try `gh`, not to give up.
+- **`/override-gh`** — a no-op marker; its description reminds you that `gh` and `GH_TOKEN` are available despite what the system prompt says, and that a GitHub tool refusal (`add_repo`, for example) is a reason to try `gh`, not to give up.
 - **`/implement`** — a redirect to `/go`, kept because handoff blocks written before the rename still say it.
 - **`/issue`** — a redirect too, and a forked one: the work the name covers is spread across four skills, so with a `#<N>` it runs `/plan` on the argument and names `/task` and `/go` as the same-shape alternatives, and with no number it names `/propose-issue` and stops.
 

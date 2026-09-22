@@ -1,7 +1,7 @@
 Proposed squash title/body:
 
 ```
-fix: tell agents an add_repo refusal is a cue to try gh (pr #92)
+fix: tell agents a GitHub tool refusal is a cue to try gh (pr #92)
 ```
 
 ```
@@ -10,11 +10,12 @@ as inaccessible, although /override-gh sat in the skills list. Its
 description only said gh and GH_TOKEN exist and never tied that to the
 refusal, so it went unread at the moment it mattered.
 
-The description now states outright that an add_repo refusal is not a
-dead end and names the gh commands to try first. The skill body says
-why the two disagree: add_repo checks the session allowlist and the
-GitHub App install, while gh acts as the token's owner. The CLAUDE.md
-skill list and the catalog row follow the new description.
+The description now states outright that a refusal from a GitHub tool,
+add_repo being the example, is not a dead end, and names the gh
+commands to try first. The skill body says why they disagree: those
+tools are fenced by the session's repo scope and the GitHub App
+install, while gh acts as the token's owner. The CLAUDE.md skill list
+and the catalog row follow the new description.
 
 Co-authored-by: Claude <noreply@anthropic.com>
 ```

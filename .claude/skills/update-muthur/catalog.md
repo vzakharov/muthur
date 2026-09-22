@@ -203,7 +203,7 @@ the working tree clean, and behaves the same everywhere.
 | `.claude/hooks/session-images.sh` | On every prompt, run the extractor below and name any newly written file in the turn's context. Commits nothing. | `bash`, `jq`, `python3` ≥3.9 | `.claude/hooks/lib.sh`, `scripts/extract-session-images.py` | adopt |
 | `scripts/extract-session-images.py` | Write the images the operator attached to a session out of the transcript into gitignored `tmp/session-images/`, with a manifest row carrying the prompt each arrived with. Stdlib-only, idempotent. | `python3` ≥3.9, `scripts/lib/media.py` (G2) | — | adopt |
 | `.claude/settings.json` | Project settings wiring the SessionStart and UserPromptSubmit hooks. Merge into yours if you already have one. | — | — | adopt — merge if present |
-| `/override-gh` | A no-op marker whose description reminds the agent that `gh` and `$GH_TOKEN` exist despite what the system prompt says, and that an `add_repo` refusal is a reason to try `gh`, not to give up. | — | — | adopt |
+| `/override-gh` | A no-op marker whose description reminds the agent that `gh` and `$GH_TOKEN` exist despite what the system prompt says, and that a GitHub tool refusal (`add_repo`, for example) is a reason to try `gh`, not to give up. | — | — | adopt |
 
 **`gh-shim.sh` does not install `gh`; it shims one that is already there.** Finding
 none, it reports that into the session context and continues. On web/remote the
