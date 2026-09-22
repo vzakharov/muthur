@@ -66,8 +66,8 @@ With no lens named, all four run.
 
 - After an autonomous run (several commits since the operator last engaged),
   before handing back — all four defects accumulate step-to-step.
-- When the scoped work **removed** a module, file, field or concept that prose
-  described. That is the condition lens 4 exists for, and the only one that puts
+- When the scoped work **removed** a module, file, field or concept — or a
+  property of one — that prose described. That is the condition lens 4 exists for, and the only one that puts
   a defect in prose nobody rewrote.
 - Any time you notice a comment reads like a diff note, or a docstring restates
   its own signature. If that is the whole complaint, name the lens.
@@ -216,11 +216,13 @@ the sentence in place** rather than delete it. The mention survives as its own
 denial, and every later reader pays for a thing that is not there. Tells:
 
 - **A subject from Step 1's removed-noun list.** The name survives only inside
-  prose; grep says the tree no longer has it. This is the tell that does the
-  work — the other only confirms it.
+  prose; grep says the tree no longer has it.
 - **A negated predicate in clean present tense** — "X is not a Y", "nothing
   generates X", "X is not a segment". No change verb, which is exactly why lens
-  2 waves it through.
+  2 waves it through. Step 3's negator sweep is its search, and the only one a
+  change gets when it removes a **property** rather than a noun — the PDFs
+  become build artifacts, and the PDFs, their manifests and their script all
+  still exist, so the removed-noun list comes back empty.
 
 The test: **with the sentence gone, would its subject have crossed the reader's
 mind at all?** If the sentence is the only reason they are thinking about the
@@ -299,6 +301,32 @@ draft did, which no longer threatens anyone.
 **Resolve in this order** — existence, negation, durability, tightness (1, 4, 2,
 3): the two deletion verdicts first, so no rewrite or trim is ever spent on a
 line that is about to go.
+
+**Then sweep the result for negators.** The order above runs lens 4 before the
+two lenses that manufacture bears: durability's own fix turns "the emoji is no
+longer parsed" into "nothing parses the emoji", and tightness can trim the
+positive half off a sentence that had both. So once every fix is applied, grep
+the **resulting** text of each prose line in scope — every added line, plus
+whatever lens 4 read outside the diff:
+
+```bash
+git diff -U0 <range-start> -- <files> | grep '^+' \
+  | grep -niE "\b(not|no|nothing|none|neither|nor|never|nobody|without|cannot)\b|n't\b"
+```
+
+`<range-start>` against the working tree, so the uncommitted fixes are what gets
+read. Only comments and Markdown prose count: a flag (`--no-sandbox`), a string
+literal or a code span is code, and code is never a bear.
+
+**The grep proposes; the discriminator decides.** Most negative sentences in a
+codebase are constraints, so every hit goes through the constraint-vs-residue
+test above, and only residue is fixed — by the negation fixes, on a line some
+other lens already rewrote. A `no longer` hit is a durability miss: rephrase it
+there, then put the rephrasing through the same test.
+
+The sweep belongs to lens 4 and runs wherever it does. It also runs after a
+`durability` or `tightness` single-lens pass, over the lines that pass
+rewrote — those are the two that write bears.
 
 ## Step 4: Do NOT touch
 
