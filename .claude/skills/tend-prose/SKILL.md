@@ -219,10 +219,12 @@ denial, and every later reader pays for a thing that is not there. Tells:
   prose; grep says the tree no longer has it.
 - **A negated predicate in clean present tense** — "X is not a Y", "nothing
   generates X", "X is not a segment". No change verb, which is exactly why lens
-  2 waves it through. Step 3's negator sweep is its search, and the only one a
-  change gets when it removes a **property** rather than a noun: files that
-  stop being committed and become build artifacts still exist, so the
-  removed-noun list comes back empty.
+  2 waves it through. Step 3's negator sweep is its search, and it is the only
+  one that fires when a change takes away something a thing *was* rather than
+  the thing itself. A branch that stops committing `reports/*.pdf` and builds
+  them in CI instead deletes no file, script or name, so the removed-noun list
+  comes back empty — while "the PDFs are build artifacts, not committed files"
+  is a bear all the same.
 
 The test: **with the sentence gone, would its subject have crossed the reader's
 mind at all?** If the sentence is the only reason they are thinking about the
