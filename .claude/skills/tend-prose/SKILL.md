@@ -220,9 +220,9 @@ denial, and every later reader pays for a thing that is not there. Tells:
 - **A negated predicate in clean present tense** — "X is not a Y", "nothing
   generates X", "X is not a segment". No change verb, which is exactly why lens
   2 waves it through. Step 3's negator sweep is its search, and the only one a
-  change gets when it removes a **property** rather than a noun — the PDFs
-  become build artifacts, and the PDFs, their manifests and their script all
-  still exist, so the removed-noun list comes back empty.
+  change gets when it removes a **property** rather than a noun: files that
+  stop being committed and become build artifacts still exist, so the
+  removed-noun list comes back empty.
 
 The test: **with the sentence gone, would its subject have crossed the reader's
 mind at all?** If the sentence is the only reason they are thinking about the
@@ -303,9 +303,8 @@ draft did, which no longer threatens anyone.
 line that is about to go.
 
 **Then sweep the result for negators.** The order above runs lens 4 before the
-two lenses that manufacture bears: durability's own fix turns "the emoji is no
-longer parsed" into "nothing parses the emoji", and tightness can trim the
-positive half off a sentence that had both. So once every fix is applied, grep
+lens that manufactures bears: durability's own fix turns "the emoji is no
+longer parsed" into "nothing parses the emoji". So once every fix is applied, grep
 the **resulting** text of each prose line in scope — every added line, plus
 whatever lens 4 read outside the diff:
 
@@ -320,13 +319,11 @@ literal or a code span is code, and code is never a bear.
 
 **The grep proposes; the discriminator decides.** Most negative sentences in a
 codebase are constraints, so every hit goes through the constraint-vs-residue
-test above, and only residue is fixed — by the negation fixes, on a line some
-other lens already rewrote. A `no longer` hit is a durability miss: rephrase it
+test above, and only residue is fixed, by the negation fixes. A `no longer` hit is a durability miss: rephrase it
 there, then put the rephrasing through the same test.
 
 The sweep belongs to lens 4 and runs wherever it does. It also runs after a
-`durability` or `tightness` single-lens pass, over the lines that pass
-rewrote — those are the two that write bears.
+`durability` single-lens pass, over the lines that pass rewrote.
 
 ## Step 4: Do NOT touch
 
