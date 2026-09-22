@@ -7,7 +7,7 @@
 - **Draft:** yes
 - **Merged:** _not merged_
 - **Created:** 2026-09-22T17:27:37Z
-- **Updated:** 2026-09-22T17:37:28Z
+- **Updated:** 2026-09-22T17:51:14Z
 - **Closed:** _not closed_
 - **Labels:** _none_
 
@@ -18,9 +18,9 @@
 ## Summary
 
 - The negation lens's second tell, a negated predicate in clean present tense, had nothing searching for it. A change that removes a **property** rather than a noun (vzakharov/vovazakharov.com#78) therefore left the lens nothing to grep, and three bears got through to review.
-- The lens also ran before durability and tightness, and those two lenses write bears: durability's own worked example rewrites "no longer parsed" as "Nothing parses".
+- The lens also ran before durability, which writes bears: its own worked example rewrites "no longer parsed" as "Nothing parses".
 - Step 3 now ends with a negator sweep that lens 4 owns. Once every fix is applied, it greps the **resulting** prose lines for a closed list of negators, and each hit goes through the constraint-vs-residue discriminator. The grep only proposes; the discriminator decides.
-- On the issue's open question: a `no longer` hit counts as a durability miss and goes back to that lens. Durability-only and tightness-only passes also sweep the lines they rewrote.
+- On the issue's open question: a `no longer` hit counts as a durability miss and goes back to that lens. A durability-only pass also sweeps the lines it rewrote.
 
 ## QA Checklist
 
@@ -39,6 +39,8 @@
 Closes #90
 
 https://claude.ai/code/session_013vdNtPWfoTLf44j6xJkhpr
+
+🤖 Generated with [Claude Code](https://claude.com/claude-code)
 
 ---
 
@@ -61,8 +63,8 @@ feat: #90 tend-prose sweeps the rewritten prose for negators (pr #91)
 ```
 The negation lens had a search for only one of its two tells: removed
 nouns. A change that removes a property instead leaves that grep empty,
-and the lens also ran before durability and tightness, whose own fixes
-turn narration into present-tense denials. Three bears got through to
+and the lens also ran before durability, whose own fix turns narration
+into present-tense denials. Three bears got through to
 review on vzakharov/vovazakharov.com#78 that way.
 
 /tend-prose Step 3 now ends with a negator sweep that lens 4 owns. Once
@@ -70,8 +72,7 @@ every fix is applied, it greps the resulting comment and Markdown lines
 for a closed list of negators, and each hit goes through the
 constraint-vs-residue discriminator: the grep proposes and the
 discriminator decides. A "no longer" hit goes back to durability as a
-miss, and durability- or tightness-only passes sweep the lines they
-rewrote.
+miss, and a durability-only pass sweeps the lines it rewrote.
 
 Closes #90
 
@@ -82,29 +83,11 @@ Co-authored-by: Claude <noreply@anthropic.com>
 
 ## Review threads
 
-- **T01** `.claude/skills/tend-prose/SKILL.md`:328 — unresolved — last: @vzakharov (human) 2026-09-22T17:36:44Z — "а после tightness зачем? она ж не может добавить информации" → [↓](#t01)
-- **T02** `.claude/skills/tend-prose/SKILL.md`:225 — unresolved — last: @vzakharov (human) 2026-09-22T17:37:22Z — "мы выше где-то говорили (в скилле) про пдфы, иначе они как-т…" → [↓](#t02)
+_1 resolved thread omitted; re-run with `--include-resolved` to export it._
+
+- **T01** `.claude/skills/tend-prose/SKILL.md`:225 — unresolved — last: @vzakharov (human) 2026-09-22T17:51:14Z — "я все равно не понимаю, о чём это. что этот буллет имеет цел…" → [↓](#t01)
 
 <a id="t01"></a>
-
-### `.claude/skills/tend-prose/SKILL.md`:328 — unresolved
-
-```diff
-@@ -300,6 +302,32 @@ draft did, which no longer threatens anyone.
-… 23 lines elided …
-+there, then put the rephrasing through the same test.
-+
-+The sweep belongs to lens 4 and runs wherever it does. It also runs after a
-+`durability` or `tightness` single-lens pass, over the lines that pass
-```
-
-**@vzakharov (human)** — 2026-09-22T17:36:44Z
-
-а после tightness зачем? она ж не может добавить информации
-
----
-
-<a id="t02"></a>
 
 ### `.claude/skills/tend-prose/SKILL.md`:225 — unresolved
 
@@ -122,6 +105,14 @@ Co-authored-by: Claude <noreply@anthropic.com>
 **@vzakharov (human)** — 2026-09-22T17:37:22Z
 
 мы выше где-то говорили (в скилле) про пдфы, иначе они как-то случайно тут взялись (понятно что это из примера из тикета, но про него читатель не знает)
+
+**@vzakharov (agent)** — 2026-09-22T17:38:54Z
+
+Да, PDF взялись из тикета без контекста. Переписал пример в общем виде: «files that stop being committed and become build artifacts still exist» — f316828
+
+**@vzakharov (human)** — 2026-09-22T17:51:14Z
+
+я все равно не понимаю, о чём это. что этот буллет имеет целью сказать? на примере пжст
 
 ---
 
