@@ -60,12 +60,10 @@ is its own example and needs none.
 - **The smallest thing that still shows it.** A few lines, two rows, one call and
   what it returns — stripped of everything not carrying the point. Past that
   size the reader is decoding the example instead of the idea.
-- **Invented is fine, and often better.** Nothing requires it to come from the
-  codebase at hand: a made-up `f()` or a toy table shows the shape without the
-  local detail a real case drags along. Use the real one when the point is
-  about that real thing.
-- **It follows the claim, never replaces it.** The conclusion still comes first;
-  the example is what makes it land.
+- **Invented is fine, and often better.** A made-up `f()` or a toy table shows
+  the shape without the local detail a real case drags along. Use the real one
+  when the point is about that real thing.
+- **It follows the conclusion, never replaces it.**
 
 So "a cache keyed only by the URL serves one user's page to another" gets:
 Alice opens `/profile`, it is cached under `/profile`; Bob opens `/profile` and
