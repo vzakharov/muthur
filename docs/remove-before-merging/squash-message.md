@@ -5,11 +5,11 @@ feat: #90 tend-prose sweeps the rewritten prose for negators (pr #91)
 ```
 
 ```
-The negation lens had a search for only one of its two tells: removed
-nouns. A change that removes a property instead leaves that grep empty,
-and the lens also ran before durability, whose own fix turns narration
-into present-tense denials. Three bears got through to
-review on vzakharov/vovazakharov.com#78 that way.
+The negation lens had a search for only one of its two tells, removed
+nouns, so a negated predicate in present tense was left to reading
+attention. The lens also ran before durability, whose own fix turns
+narration into exactly such a denial, and nothing checked the rewritten
+prose afterwards.
 
 /tend-prose Step 3 now ends with a negator sweep that lens 4 owns. Once
 every fix is applied, it greps the resulting comment and Markdown lines

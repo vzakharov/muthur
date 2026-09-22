@@ -66,8 +66,8 @@ With no lens named, all four run.
 
 - After an autonomous run (several commits since the operator last engaged),
   before handing back — all four defects accumulate step-to-step.
-- When the scoped work **removed** a module, file, field or concept — or a
-  property of one — that prose described. That is the condition lens 4 exists for, and the only one that puts
+- When the scoped work **removed** a module, file, field or concept that prose
+  described. That is the condition lens 4 exists for, and the only one that puts
   a defect in prose nobody rewrote.
 - Any time you notice a comment reads like a diff note, or a docstring restates
   its own signature. If that is the whole complaint, name the lens.
@@ -219,12 +219,7 @@ denial, and every later reader pays for a thing that is not there. Tells:
   prose; grep says the tree no longer has it.
 - **A negated predicate in clean present tense** — "X is not a Y", "nothing
   generates X", "X is not a segment". No change verb, which is exactly why lens
-  2 waves it through. Step 3's negator sweep is its search, and it is the only
-  one that fires when a change takes away something a thing *was* rather than
-  the thing itself. A branch that stops committing `reports/*.pdf` and builds
-  them in CI instead deletes no file, script or name, so the removed-noun list
-  comes back empty — while "the PDFs are build artifacts, not committed files"
-  is a bear all the same.
+  2 waves it through. Step 3's negator sweep is its search.
 
 The test: **with the sentence gone, would its subject have crossed the reader's
 mind at all?** If the sentence is the only reason they are thinking about the
