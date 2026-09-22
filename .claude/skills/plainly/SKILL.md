@@ -4,7 +4,8 @@ description: >-
   an answer that did not land — a re-asked question, a "just tell me",
   punctuation doing the complaining — it re-explains that answer as a causal
   chain; invoked with a question, it answers that question under the house rule,
-  investigation included. Names six defects — symptom-as-finding, buried lede,
+  investigation included; where the point is abstract, it adds the smallest
+  example that shows it. Names six defects — symptom-as-finding, buried lede,
   untranslated nouns, broken chain, fog, receipt — so one word calls out a bad
   report.
 ---
@@ -41,11 +42,34 @@ Either way the output is an answer, not a plan to produce one.
    there rather than filling the gap with evidence.
 2. **Draft it somewhere you can re-read it, which here means thinking** —
    conclusion first, in the nouns of the person affected, then the chain that
-   leads to it with each link saying why the next followed, then the caveats if
-   and only if they change what the reader should do.
+   leads to it with each link saying why the next followed, then an example
+   where the point is abstract (§ "The example"), then the caveats if and only
+   if they change what the reader should do.
 3. **Run the six defects below over that draft, then write it out again.** Each
    has a tell you can see in your own text without knowing the subject — but only
    in text you actually put down first.
+
+## The example
+
+**When the point is a rule, a mechanism or a distinction, show one instance of
+it.** A reader who lost the general statement usually follows a case, and
+"give me a concrete example" is the question they would most often ask next.
+An answer that is already a particular — this test fails because of that line —
+is its own example and needs none.
+
+- **The smallest thing that still shows it.** A few lines, two rows, one call and
+  what it returns — stripped of everything not carrying the point. Past that
+  size the reader is decoding the example instead of the idea.
+- **Invented is fine, and often better.** Nothing requires it to come from the
+  codebase at hand: a made-up `f()` or a toy table shows the shape without the
+  local detail a real case drags along. Use the real one when the point is
+  about that real thing.
+- **It follows the claim, never replaces it.** The conclusion still comes first;
+  the example is what makes it land.
+
+So "a cache keyed only by the URL serves one user's page to another" gets:
+Alice opens `/profile`, it is cached under `/profile`; Bob opens `/profile` and
+sees Alice's.
 
 ## The six defects
 
