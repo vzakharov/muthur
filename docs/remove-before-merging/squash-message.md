@@ -11,7 +11,7 @@ So on a branch such files are edited through staged copies, and the
 real files change once, at /finalize.
 
 scripts/staged.sh owns the mechanics. `stage` copies a file
-byte-identical to docs/staged/<path>.staged, so the path is the whole
+byte-identical to .claude/staged/<path>.staged, so the path is the whole
 mapping, and the suffix keeps the copy from loading as a nested
 CLAUDE.md, rule or skill. `swap` puts each copy back, with a three-way
 merge against the file as it stood when staged, so a base merge's edit

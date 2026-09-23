@@ -15,7 +15,7 @@ import unittest
 from pathlib import Path
 
 SCRIPT = Path(__file__).resolve().parent / "staged.sh"
-DIR = "docs/staged"
+DIR = ".claude/staged"
 
 
 def copy(path: str) -> str:

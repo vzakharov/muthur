@@ -1,7 +1,7 @@
 #!/bin/bash
 # Stage edits to always-loaded files, and swap them back in at /finalize.
 #
-#   staged.sh stage <path>...   copy each file, unchanged, to docs/staged/<path>.staged
+#   staged.sh stage <path>...   copy each file, unchanged, to .claude/staged/<path>.staged
 #   staged.sh swap              put every staged copy back over its real file
 #   staged.sh check [--empty]   every staged copy stands for a tracked real file
 #   staged.sh resolve <path>    print the staged copy's path if <path> is staged
@@ -12,11 +12,13 @@
 # each time it is edited. So the edits go to a copy, and the real file changes
 # once, when `/finalize` runs `swap`.
 #
-# The copy of `<path>` is `docs/staged/<path>.staged`: the path is the whole
+# The copy of `<path>` is `.claude/staged/<path>.staged`: the path is the whole
 # mapping, and the suffix is what keeps the copy from loading. Claude Code picks
 # a nested `CLAUDE.md` or `SKILL.md` up by its exact name and a rule by its
 # `.md`, so a mirrored copy under either name would load as live instructions —
-# a skill's description in every listing — while it is still under review.
+# a skill's description in every listing — while it is still under review. The
+# directory is under `.claude/` because this infrastructure owns that tree, so
+# no project using the infrastructure has a `staged/` of its own there.
 #
 # `swap` merges rather than copies when the real file changed after staging — a
 # base merge brought an edit in, or someone edited it in place — because a copy
@@ -34,7 +36,7 @@ set -uo pipefail
 
 cd "$(dirname "$0")/.." || exit 1
 
-DIR="docs/staged"
+DIR=".claude/staged"
 SUFFIX=".staged"
 failures=0
 

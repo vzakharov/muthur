@@ -29,7 +29,7 @@
 #     Dropping it leaves nothing catching a proposal edited by hand or outgrown
 #     by a later base merge.
 #   staged.sh check — holds each staged copy of an always-loaded file under
-#     `docs/staged/` to a tracked file it stands for and to the `.staged` suffix
+#     `.claude/staged/` to a tracked file it stands for and to the `.staged` suffix
 #     that keeps it from loading, passing quietly when nothing is staged.
 #     Dropping it lets a copy of nothing ride to `/finalize`, or a live one load.
 #   check-muthur.sh — everything that tests only this repo's own machinery: the
