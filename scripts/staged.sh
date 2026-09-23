@@ -5,6 +5,7 @@
 #   staged.sh swap              put every staged copy back over its real file
 #   staged.sh check [--empty]   hold the manifest and the directory to each other
 #   staged.sh resolve <path>    print the staged copy's path if <path> is staged
+#   staged.sh list              print "<real path>\t<staged copy>" per staged file
 #
 # Why: a file rendered into the prefix of every request (`.claude/rules/staging.md`
 # defines the set) invalidates the prompt cache of every session on the branch
@@ -43,7 +44,7 @@ fail() {
 }
 
 usage() {
-  sed -n '4,7s/^# \{0,1\}//p' "$0" >&2
+  sed -n '4,8s/^# \{0,1\}//p' "$0" >&2
   exit 2
 }
 
@@ -205,6 +206,11 @@ cmd_resolve() {
   printf '%s\n' "$1"
 }
 
+cmd_list() {
+  [ $# -eq 0 ] || usage
+  rows | awk -F'\t' -v d="$DIR" '{ print $2 "\t" d "/" $1 }'
+}
+
 [ $# -gt 0 ] || usage
 sub=$1
 shift
@@ -213,6 +219,7 @@ case "$sub" in
   swap) cmd_swap "$@" ;;
   check) cmd_check "$@" ;;
   resolve) cmd_resolve "$@" ;;
+  list) cmd_list "$@" ;;
   *) usage ;;
 esac
 

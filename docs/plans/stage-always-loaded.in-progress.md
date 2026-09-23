@@ -20,6 +20,8 @@ One script, so the rule, `/finalize` and the vet run share one implementation. T
 - **`check`** — structural, offline, silent when there is no manifest: every row's staged file and real path exist, no real path is listed twice, and no `*.staged.*` sits in the directory without a row. Also reports (without failing) a row whose real file has moved since staging, so a mid-branch vet shows the merge the swap will have to do. **`check --empty`** additionally fails when anything is staged at all — the guard the sweep runs.
 - **`resolve <path>`** — prints the staged path when `<path>` is staged, else `<path>`. `check-skill-catalog.sh` assertion 6 reads a cited `CLAUDE.md` through it, so a skill citing a section that exists only in the staged copy does not fail a mid-branch vet (`/sync-branch` runs one), and one citing a section the staged copy removed does.
 
+- **`list`** — prints `<real path>\t<staged copy>` per row, for a reader that needs the pairs (`/polish`, below) without reading the manifest's columns.
+
 Tested by `scripts/test_staged.py` against throwaway git repos: stage/swap round-trip, the refusals, a swap after the real file moved (clean merge and conflict), each `check` failure, `resolve`. It joins `check-muthur.sh` by matching `scripts/test_*.py`.
 
 ## Where the rule lives
@@ -34,6 +36,10 @@ Tested by `scripts/test_staged.py` against throwaway git repos: stage/swap round
 - **A new first thing, before the quality passes:** `scripts/staged.sh swap` and commit (`chore: swap the staged always-loaded files into place`), resolving any merge it stops on. Before the passes because `/polish` should read the real files, and before the vet run because its checks read them. It carries no step number, like the quality passes, so citations of the numbered steps stay put. `no vet` does not skip it.
 - **The step-6 sweep of `docs/remove-before-merging/`** runs `scripts/staged.sh check --empty` first, and a failure means swap, never delete.
 - **Step 8's `and merge` predicate** counts the swap among the run's mechanical effects, like the sweep — unless it stopped on a conflict, which is a decision and stands the merge down.
+
+## `/polish`
+
+At `/go` a staged copy is a whole new file in `origin/<base>...HEAD`, so the passes would read all of `CLAUDE.md` as this branch's prose. `/polish` § "Scope" says a copy counts by `git diff --no-index <real> <copy>` over the pairs `staged.sh list` prints. At `/finalize` the swap has already run, so the range is ordinary.
 
 ## The vet run
 

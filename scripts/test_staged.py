@@ -215,5 +215,21 @@ class Resolve(StagedTestCase):
         self.assertEqual(result.stdout, ".claude/skills/go/SKILL.md\n")
 
 
+
+class List(StagedTestCase):
+    def test_each_staged_file_is_listed_with_its_copy(self) -> None:
+        self.stage("CLAUDE.md", ".claude/skills/go/SKILL.md")
+        result = self.repo.staged("list")
+        self.assertEqual(
+            result.stdout,
+            f"CLAUDE.md\t{DIR}/CLAUDE.staged.md\n"
+            f".claude/skills/go/SKILL.md\t{DIR}/claude-skills-go-SKILL.staged.md\n",
+        )
+
+    def test_nothing_staged_lists_nothing(self) -> None:
+        result = self.repo.staged("list")
+        self.assertEqual((result.returncode, result.stdout), (0, ""))
+
+
 if __name__ == "__main__":
     unittest.main()
