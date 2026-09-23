@@ -268,8 +268,8 @@ Either way the question does not come back.
 `adopted` entry such as `.claude/` already covers it. The catalog marks such a
 row `opt-in: ask`, as it does `.claude/costs/`, and a parent directory having
 been taken says nothing about whether the operator wants what it costs. Ask with
-the row's criteria, and record the answer as a `.claude/costs/` entry of its
-own in `adopted` or `declined`.
+the row's criteria, and record the answer as an entry of its own, under the
+row's path, in `adopted` or `declined`.
 
 ### Step 5 — Apply by intent, not by patch
 

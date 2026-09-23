@@ -49,6 +49,13 @@ inventory, so every item appears under exactly one, and
   file inside it is yours to write.
 - **never** — describes or maintains *this* repo, so it is meaningless in yours.
 
+**`opt-in: ask` qualifies an adopt** whose cost lands on every session and whose
+worth turns on what the operator wants rather than on anything in the tree. Such
+a row is asked, never inferred from the profile: `ADOPTING.md` Step 2,
+`/detemplate` Step 1 and `/update-muthur` Step 4a each put the question with the
+row attached, and record the answer so it is asked once. The row itself states
+the cost and what a yes and a no each change in the tree.
+
 ## Groups
 
 Group membership is the coarse decision; **Requires** carries the orthogonal
@@ -64,6 +71,7 @@ conditions, and any row can be escaped individually.
 | [G5 — CI & landing](#g5--ci--landing) | CI runs on GitHub Actions, reachable via `gh`. `/watch-ci` additionally needs **G4** in a web session, not merely recommends it; the rest of the group works through the proxy unshimmed. |
 | [G6 — Stack stubs](#g6--stack-stubs) | Per row, and only if you will hydrate it now. |
 | [G7 — Session cost ledger](#g7--session-cost-ledger) | **The operator says yes when asked** — never by inference from the profile. |
+| [G8 — Context budget](#g8--context-budget) | **The operator says yes when asked**, as G7. |
 | [Never](#never) | — |
 
 ### G0 — The sync path
@@ -198,12 +206,12 @@ the working tree clean, and behaves the same everywhere.
 | --- | --- | --- | --- | --- |
 | `.claude/hooks/gh-shim.sh` | On session start, install a `gh` shim at `$HOME/.local/bin/gh` that runs the real binary unproxied. Finding no `gh` to wrap, it reports that into the session context and continues. Web/remote only. | `bash`; **`gh` already on `PATH`**; web/remote sessions | — | adopt |
 | `.claude/hooks/install-deps.sh` | On session start, re-sync the install tree with the lockfile, the environment snapshot being built once and then cached. The install itself is a stub you fill in for your stack — `scripts/vet.sh`'s paired site. Web/remote only. | `bash`; web/remote sessions | — | adopt — **fill in the install** |
-| `.claude/hooks/lib.sh` | Sourced by every `UserPromptSubmit` hook here and by the cost ledger's hooks (G7): the payload read, the one JSON shape `UserPromptSubmit` accepts, and the guards — a command being present, the prompt being the one a session opens with, and the project root. Travels with the first such hook you adopt — a hook that cannot source it skips itself rather than failing the turn, which is a hook doing nothing at all. | `bash`, `jq` | — | adopt — **with any hook that sources it** |
+| `.claude/hooks/lib.sh` | Sourced by every `UserPromptSubmit` hook here, by the cost ledger's hooks (G7) and by the context budget hook (G8): the payload read, the context-injecting JSON shape, and the guards — a command being present, the prompt being the one a session opens with, and the project root. Travels with the first such hook you adopt — a hook that cannot source it skips itself rather than failing the turn, which is a hook doing nothing at all. | `bash`, `jq` | — | adopt — **with any hook that sources it** |
 | `.claude/hooks/operator-voice.sh` | On session start, name the operator — their GitHub name and handle, plus their `.claude/voice/operators/` entry — into the session context. Runs everywhere: a laptop session needs to know who it is talking to as much as a remote one does. Declining it leaves `.claude/voice/` working — `voice.md` has the agent do the same lookup by hand on the first turn, which is what a non-Claude harness does anyway. | `bash`; `gh` reaching the API | `.claude/voice/` (G1) | adopt |
 | `.claude/hooks/plan-mode-notice.sh` | On every prompt submitted while the session is in native plan mode, inject the notice that this repo plans on disk and that the exit is plan mode's own. | web/remote sessions; `bash`, `jq` | `.claude/hooks/lib.sh`, `/plan` (G2) | adopt |
 | `.claude/hooks/session-images.sh` | On every prompt, run the extractor below and name any newly written file in the turn's context. Commits nothing. | `bash`, `jq`, `python3` ≥3.9 | `.claude/hooks/lib.sh`, `scripts/extract-session-images.py` | adopt |
 | `scripts/extract-session-images.py` | Write the images the operator attached to a session out of the transcript into gitignored `tmp/session-images/`, with a manifest row carrying the prompt each arrived with. Stdlib-only, idempotent. | `python3` ≥3.9, `scripts/lib/media.py` (G2) | — | adopt |
-| `.claude/settings.json` | Project settings wiring the SessionStart and UserPromptSubmit hooks. Merge into yours if you already have one. | — | — | adopt — merge if present |
+| `.claude/settings.json` | Project settings wiring the SessionStart and UserPromptSubmit hooks, plus the entries G7 and G8 carry. Merge into yours if you already have one. | — | — | adopt — merge if present |
 | `/override-gh` | A no-op marker whose description reminds the agent that `gh` and `$GH_TOKEN` exist despite what the system prompt says, and that a GitHub tool refusal (`add_repo`, for example) is a reason to try `gh`, not to give up. | — | — | adopt |
 
 **`gh-shim.sh` does not install `gh`; it shims one that is already there.** Finding
@@ -296,9 +304,7 @@ instead (no visual surface, no CI-only tests, no numbered migrations).
 
 Nothing in a repo says whether its operator wants to know what the work would
 cost at API rates, and what the answer costs lands on every turn of every
-session. So this group is asked, not inferred: `ADOPTING.md` Step 2,
-`/detemplate` Step 1 and `/update-muthur` Step 4a each put the question with this
-row attached, and record the answer so it is asked once.
+session — so the row is `opt-in: ask`.
 
 | Item | What it does | Requires | Pulls in | Disposition |
 | --- | --- | --- | --- | --- |
@@ -306,6 +312,16 @@ row attached, and record the answer so it is asked once.
 
 **`sessions/` is this repo's own data**, and never travels: every copy step
 leaves it behind, and `/update-muthur` excludes it as an invariant.
+
+### G8 — Context budget
+
+Whether a session should stop itself partway is the operator's call about how
+they want to work, and the hook's notices reach every long session — so the row
+is `opt-in: ask`.
+
+| Item | What it does | Requires | Pulls in | Disposition |
+| --- | --- | --- | --- | --- |
+| `.claude/context-budget/` | After every tool call, read the context the session carries off its transcript, and past 200k tokens tell the agent to reach a committed stopping point and offer the operator `/compact` or a new session; past 300k, to pause the plan — writing one when the work had none — and end the turn with a `/go` handoff. The agent's judgment that the work is nearly done overrides either. **The cost, which is why it is asked:** a `PostToolUse` hook on every tool call, and a session that can end its own turn with the work paused. Arrives with one `.claude/settings.json` entry to merge and a `scripts/vet.sh` loop running its tests; a no deletes the directory and both. | `bash`, `jq`; `python3` ≥3.9 for its tests | `.claude/hooks/lib.sh` (G4), `/go` (G2) | adopt — **opt-in: ask** |
 
 ### Never
 

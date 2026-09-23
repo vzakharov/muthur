@@ -97,13 +97,12 @@ What the tree cannot answer, asked as numbered prose in the plan turn per
 `@.claude/skills/plan/SKILL.md` Part 2: whether sessions run on Claude Code
 web/remote (G4); whether the project will have a deploy path, a visual surface,
 deployed logs, a production datastore, or sequential numbered migrations — the
-five that decide the individual G6 rows; the language decision; and whether to
-run the session cost ledger (G7), asked with what
-`.claude/skills/update-muthur/catalog.md` § "G7 — Session cost ledger" says it
-costs. A fork carries the ledger wired on and full of this template's own rows,
-so both answers change the tree: a yes empties `.claude/costs/sessions/`, a no
-deletes `.claude/costs/`, its two `.claude/settings.json` entries and its
-`scripts/vet.sh` loop.
+five that decide the individual G6 rows; the language decision; and one
+question per catalog row marked `opt-in: ask`, each asked with the cost its row
+states. A fork carries every such row wired on, so a no deletes the row's path,
+its `.claude/settings.json` entries and its `scripts/vet.sh` loop. The ledger's
+yes changes the tree too: it arrives full of this template's own rows, so a yes
+empties `.claude/costs/sessions/`.
 
 **Language is the one question with evidence in hand**, so read it before asking:
 the language the brief is written in, the language the operator writes to the
