@@ -15,7 +15,8 @@ editing such a file goes through a staged copy (`staging.md`).
 
 The directory ships the loop's own three rules — `stack.md` (what
 `scripts/vet.sh` exits, and what a stack landing wires), `skills.md` (adding or
-renaming a skill) and `staging.md` (editing a file that loads on every turn). Everything else here is yours: rules are mostly project-specific, and the
+renaming a skill) and `staging.md` (editing a file that loads on every turn).
+Everything else here is yours: rules are mostly project-specific, and the
 reusable part is the mechanism. Add rule files as your conventions emerge.
 
 ## Format
