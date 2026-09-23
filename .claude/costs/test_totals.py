@@ -16,7 +16,7 @@ from datetime import date
 
 from lib.pricing import SessionCost, Tally, parse_session_cost
 from lib.shape import to_json
-from lib.totals import branch_label, iso_week, totals_of
+from lib.totals import branch_label, iso_week, operator_label, totals_of
 
 
 def tally(cost_usd: float) -> Tally:
@@ -31,6 +31,7 @@ ROW = SessionCost(
     opening_prompt=None,
     prs=[],
     url=None,
+    operator=None,
     first_response_at="2026-03-04T05:06:07.000Z",
     last_response_at="2026-03-04T06:06:07.000Z",
     prices_as_of="2026-01-01",
@@ -88,6 +89,16 @@ class HowABranchIsLabelled(unittest.TestCase):
         self.assertEqual(branch_label(replace(ROW, branch=None)), "(no branch)")
 
 
+class WhoseSessionItWas(unittest.TestCase):
+    def test_files_a_session_under_its_operator_s_handle(self) -> None:
+        totals = totals_of([replace(ROW, operator="vzakharov"), replace(ROW, total=tally(2))])
+        self.assertEqual(totals.by_operator["@vzakharov"].cost_usd, 1)
+        self.assertEqual(totals.by_operator["(unknown)"].cost_usd, 2)
+
+    def test_says_so_rather_than_dropping_a_row_whose_operator_went_unresolved(self) -> None:
+        self.assertEqual(operator_label(ROW), "(unknown)")
+
+
 class IsoWeeks(unittest.TestCase):
     def test_gives_a_late_december_day_the_next_year_s_week_by_its_thursday(self) -> None:
         # 2025-12-29 is a Monday whose Thursday falls on 2026-01-01.
@@ -104,7 +115,7 @@ class RowsReadBack(unittest.TestCase):
 
     def test_a_row_from_before_the_naming_fields_still_parses(self) -> None:
         row = to_json(ROW)
-        for key in ("name", "openingPrompt", "prs", "url", "claudeCodeTotalUsd"):
+        for key in ("name", "openingPrompt", "prs", "url", "operator", "claudeCodeTotalUsd"):
             del row[key]
         self.assertEqual(parse_session_cost(json.dumps(row)), ROW)
 

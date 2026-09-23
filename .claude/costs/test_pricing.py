@@ -110,6 +110,15 @@ def link(pr_number: int) -> str:
     return json.dumps({"type": "pr-link", "prNumber": pr_number})
 
 
+def session_start(content: str, event: str = "SessionStart") -> str:
+    return json.dumps(
+        {
+            "type": "attachment",
+            "attachment": {"type": "hook_success", "hookEvent": event, "content": content},
+        }
+    )
+
+
 def cost_state(total: float) -> str:
     return json.dumps({"type": "cost-state", "totalCostUSD": total})
 
@@ -297,6 +306,39 @@ class WhatNamesASession(unittest.TestCase):
             response(output=1),
         ]
         self.assertEqual(summarise(lines).url, "https://claude.ai/code/session_01REALone")
+
+    def test_takes_the_operator_from_the_session_start_hook_that_resolved_them(self) -> None:
+        lines = [
+            session_start("session-start: the operator is @someone-else — the GitHub token", "Stop"),
+            session_start(
+                "session-start: the operator is unresolved (`gh` is unavailable or could not"
+                " reach the API). Ask them for their GitHub handle, then read …"
+            ),
+            session_start(
+                "session-start: the operator is Vova Zakharov (@vzakharov) — the GitHub token"
+                " in this session is that user's own. They have no entry under …"
+            ),
+            session_start("session-start: the operator is @later — the GitHub token …"),
+            response(output=1),
+        ]
+        self.assertEqual(summarise(lines).operator, "vzakharov")
+
+    def test_takes_a_bare_handle_from_an_operator_with_no_name_set(self) -> None:
+        lines = [
+            session_start("session-start: the operator is @vzakharov — the GitHub token …"),
+            response(output=1),
+        ]
+        self.assertEqual(summarise(lines).operator, "vzakharov")
+
+    def test_names_no_operator_behind_a_bot_s_token(self) -> None:
+        lines = [
+            session_start(
+                "session-start: the GitHub token in this session belongs to claude[bot], a Bot"
+                " account — that is the agent's own identity, not the operator's. …"
+            ),
+            response(output=1),
+        ]
+        self.assertIsNone(summarise(lines).operator)
 
     def test_keeps_claude_code_s_own_last_word_on_what_the_session_cost(self) -> None:
         cost = summarise([cost_state(1.5), response(output=1), cost_state(2.25)])

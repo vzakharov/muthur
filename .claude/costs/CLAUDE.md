@@ -57,6 +57,12 @@ for one, and only the last is not read out of the file:
   set, and each rewrite carries the existing name forward, since re-reading the
   transcript could never produce one.
 
+**`operator`** is whose session it was: the GitHub handle
+`.claude/hooks/operator-voice.sh` resolved at startup, read off the record that
+hook leaves in the transcript. It is null wherever the hook named nobody — no
+`gh`, or a token that is a bot's — rather than guessed from the pusher, who is
+the token and so may be the agent's own account.
+
 ## Checking the arithmetic
 
 The table has no published source to check itself against, but the transcript
@@ -121,10 +127,11 @@ adjusting quietly is what would leave the rest of this section false.
 
 ## The report
 
-`python3 .claude/costs/report.py` sums the rows four ways every run — by month,
-week and day, and by the branch that spent it with the pull requests it touched
-named beside it; `--json` prints the lot. The spend is the branch's rather than
-each PR's, since a session that touched two would otherwise be counted twice.
+`python3 .claude/costs/report.py` sums the rows five ways every run — by month,
+week and day, by the branch that spent it with the pull requests it touched
+named beside it, and by operator; `--json` prints the lot. The spend is the
+branch's rather than each PR's, since a session that touched two would otherwise
+be counted twice.
 
 **Nothing is written to disk.** The totals are wholly derived from the rows, so a
 file of them committed beside its own sources would be a merge conflict on every

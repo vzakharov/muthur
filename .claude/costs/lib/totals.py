@@ -1,5 +1,5 @@
 """Sums the session rows for `report.py` — the same spend by month, by ISO week,
-by day, and by the branch that spent it.
+by day, by the branch that spent it, and by the operator whose session it was.
 
 Nothing here is written to disk: the totals are wholly derived from the rows,
 and a derived file committed beside its own sources is a merge conflict every
@@ -36,6 +36,7 @@ class Totals:
     by_week: Dict[str, Bucket] = field(default_factory=dict)
     by_day: Dict[str, Bucket] = field(default_factory=dict)
     by_branch: Dict[str, Bucket] = field(default_factory=dict)
+    by_operator: Dict[str, Bucket] = field(default_factory=dict)
 
 
 def iso_week(day: date) -> str:
@@ -55,6 +56,10 @@ def branch_label(row: SessionCost) -> str:
     return " ".join([row.branch or "(no branch)", *(f"#{pr}" for pr in row.prs)])
 
 
+def operator_label(row: SessionCost) -> str:
+    return f"@{row.operator}" if row.operator is not None else "(unknown)"
+
+
 # Rounded where it is written rather than where it is read: a sum of floats
 # carries digits no price has, and the output is read by people.
 def _rounded(buckets: Dict[str, Bucket]) -> Dict[str, Bucket]:
@@ -67,17 +72,19 @@ def _rounded(buckets: Dict[str, Bucket]) -> Dict[str, Bucket]:
 def totals_of(rows: Iterable[SessionCost]) -> Totals:
     """A session is filed under where it **started**, the rule that already picks
     its row's month, so one running past midnight stays whole. A row with no
-    priced response has no day to file under and lands in the grand total and
-    its branch alone."""
+    priced response has no day to file under and lands in the grand total, its
+    branch and its operator alone."""
     grand = Bucket()
     by_month: Dict[str, Bucket] = {}
     by_week: Dict[str, Bucket] = {}
     by_day: Dict[str, Bucket] = {}
     by_branch: Dict[str, Bucket] = {}
+    by_operator: Dict[str, Bucket] = {}
 
     for row in rows:
         grand.count(row)
         by_branch.setdefault(branch_label(row), Bucket()).count(row)
+        by_operator.setdefault(operator_label(row), Bucket()).count(row)
         started_at = row.first_response_at
         if started_at is None:
             continue
@@ -93,4 +100,5 @@ def totals_of(rows: Iterable[SessionCost]) -> Totals:
         by_week=_rounded(by_week),
         by_day=_rounded(by_day),
         by_branch=_rounded(by_branch),
+        by_operator=_rounded(by_operator),
     )

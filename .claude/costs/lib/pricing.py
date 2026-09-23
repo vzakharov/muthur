@@ -14,6 +14,7 @@ from typing import Any, Dict, List, Mapping, Optional, Sequence, Set
 from lib.identity import (
     cost_state_of,
     kind_of,
+    operator_of,
     pr_number_of,
     prompt_text_of,
     session_url_in,
@@ -145,6 +146,9 @@ class SessionCost:
     # The URL a person opens the session at — a different id from the
     # transcript's own, present only in a remote session.
     url: Optional[str]
+    # The operator's GitHub handle, lowercased and without the `@`; null when
+    # no person was resolved behind the session's token.
+    operator: Optional[str]
     first_response_at: Optional[str]
     last_response_at: Optional[str]
     prices_as_of: str
@@ -186,6 +190,7 @@ def parse_session_cost(text: str, where: str = "row") -> SessionCost:
         opening_prompt=read_string(row, "openingPrompt", where),
         prs=_list_of(row, "prs", where, int),
         url=read_string(row, "url", where),
+        operator=read_string(row, "operator", where),
         first_response_at=read_string(row, "firstResponseAt", where),
         last_response_at=read_string(row, "lastResponseAt", where),
         prices_as_of=required(read_string, row, "pricesAsOf", where),
@@ -326,13 +331,15 @@ def summarise_transcript(
     cwd: Optional[str] = None
     opening_prompt: Optional[str] = None
     url: Optional[str] = None
+    operator: Optional[str] = None
     claude_code_total_usd: Optional[float] = None
 
     # `delegated` forces the bucket for a subagent's own file. Its records carry
     # `isSidechain` too, but the file they are in is the fact that does not
     # depend on a flag having been set.
     def scan(jsonl: str, label: str, delegated: bool) -> None:
-        nonlocal session_id, branch, cwd, opening_prompt, url, claude_code_total_usd, last_own
+        nonlocal session_id, branch, cwd, opening_prompt, url, operator
+        nonlocal claude_code_total_usd, last_own
         for number, line in enumerate(jsonl.split("\n"), start=1):
             if line.strip() == "":
                 continue
@@ -363,6 +370,10 @@ def summarise_transcript(
                 if kind == "attachment":
                     if url is None:
                         url = session_url_in(record, line)
+                    # The first one any SessionStart resolved, since a resume
+                    # runs the hook again.
+                    if operator is None:
+                        operator = operator_of(record)
                     continue
 
             if not _is_response_record(record):
@@ -437,6 +448,7 @@ def summarise_transcript(
         opening_prompt=opening_prompt,
         prs=sorted(prs),
         url=url,
+        operator=operator,
         first_response_at=in_order[0] if in_order else None,
         last_response_at=in_order[-1] if in_order else None,
         prices_as_of=prices.as_of,
