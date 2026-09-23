@@ -7,9 +7,8 @@ feat: #100 stage edits to always-loaded files, swap at /finalize (pr #102)
 ```
 Editing CLAUDE.md, or anything else rendered into the prefix of every
 request, invalidates the prompt cache of every session on the branch.
-#98 avoided that by editing staged copies by hand, a procedure only its
-own plan knew about, which left the next edit uncached and the copies
-one careless sweep away from being deleted with their change.
+So on a branch such files are edited through staged copies, and the
+real files change once, at /finalize.
 
 scripts/staged.sh now owns the mechanics. `stage` copies a file
 byte-identical under docs/remove-before-merging/ and records the
@@ -24,6 +23,8 @@ defines the always-loaded set (the root CLAUDE.md and its imports,
 rules with no paths:, skill description:s) and arrives whenever one of
 those files is opened. /finalize swaps before its quality passes, and
 refuses to sweep docs/remove-before-merging/ while anything is staged.
+An operator's "swap it in" runs the swap early, trading the cache for a
+branch that runs on the new text.
 
 Closes #100
 
