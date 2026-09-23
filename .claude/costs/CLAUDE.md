@@ -5,23 +5,6 @@ Claude API rates. The subscription price hides that number, and the point of
 having it is to know the size of the bill before subscription pricing stops
 being a bargain.
 
-This file loads whenever a session reads anything under `.claude/costs/`, so it
-reaches whoever edits the pricer, the hooks or `prices.json` without their
-looking for it. Whether a repo runs the ledger at all is the operator's call,
-asked rather than inferred: `.claude/skills/update-muthur/catalog.md` § "G7 —
-Session cost ledger" carries what it costs.
-
-| Path | What it is |
-| --- | --- |
-| `prices.json` | The rate table, hand-kept |
-| `lib/pricing.py`, `lib/identity.py`, `lib/shape.py` | Reading a transcript into a row |
-| `lib/totals.py` | Summing rows by month, week, day and branch |
-| `session_cost.py` | Write one session's row |
-| `report.py` | Print the totals |
-| `hooks/stop-session-cost.sh` | `Stop`: price the session, commit its row |
-| `hooks/prompt-session-name.sh` | `UserPromptSubmit`: ask the agent to name the session |
-| `sessions/` | This repo's rows — its own data, which never travels to another repo |
-
 ## Reading a transcript
 
 Properties of `~/.claude/projects/<cwd-slug>/<session-id>.jsonl` that decide how
@@ -53,9 +36,6 @@ makes every total downstream a lie, and the failure is loud precisely because
 `prices.json` is hand-maintained: no machine-readable source of Anthropic's
 prices exists, so the table goes stale by sitting still. A new model is a new
 row there before its first session can be priced.
-
-Rows keep the camelCase keys of the TypeScript ledger this ports, at
-vovazakharov.com, so either writer's rows parse in the other's report.
 
 ## What names a session
 

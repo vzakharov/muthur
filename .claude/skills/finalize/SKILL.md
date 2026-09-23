@@ -104,7 +104,7 @@ Steps (stop on first unresolved failure):
    - **A no-op is a result, and it gets posted.** Never resolve `no vet` by staying silent. An operator coming back to the PR — days later, or from another machine — cannot distinguish "verification was skipped on purpose" from "nobody ever finalized this" unless one of them is written down, and the missing comment looks identical to the forgotten one. Say which it was.
    - **The SHAs go bare, not in code spans** — GitHub only auto-links an un-backticked hash, per CLAUDE.md § "GitHub comments".
    - End the body with the attribution footer the repo requires of every GitHub comment.
-   - **A head that moved only by `.claude/costs/sessions/` is still the head you verified.** Where the cost ledger runs, its `Stop` hook commits the turn's row after the turn ends, so the branch is always one `chore: session cost row` past the attested SHA. That commit touches no verified path; re-attest only for a commit that does.
+   - **A head that moved only by `.claude/costs/sessions/` is still the head you verified.** Where the cost ledger runs, its `Stop` hook commits the turn's row after the turn ends, so the branch usually sits one `chore: session cost row` past the attested SHA. That commit touches no verified path; re-attest only for a commit that does.
 
 8. **Merge — under `and merge` only, and only if the run was uneventful.** Without the flag, stop at step 7 and report.
 
