@@ -12,7 +12,7 @@
 
 **Agent: this file is yours to grow**, with the human, and the test above says where each addition goes: propose the pattern worth codifying, the trap worth warning about, the command worth documenting.
 
-**On a branch, this file — and anything else that loads on every turn — is edited only through a staged copy**, because an edit in place invalidates the prompt cache of every session on the branch: `scripts/staged.sh stage <path>` and commit, edit the copy it makes, and `/finalize` swaps it in. `@.claude/rules/staging.md` defines the set and the rest of the convention.
+**On a branch, this file — and anything else that loads on every turn — is edited only through a staged copy**, because an edit in place invalidates the prompt cache of every session on the branch: `scripts/staged.sh stage <path>` and commit, edit the copy it makes, and `/finalize` swaps it in. **An operator's ask to swap it in now** — "swap it in", "unstage", in any words or language — runs `scripts/staged.sh swap` on the spot and commits, trading the cache for a branch that runs on the new text. `@.claude/rules/staging.md` defines the set and the rest of the convention.
 
 ## Repository layout
 

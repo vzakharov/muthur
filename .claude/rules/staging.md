@@ -34,8 +34,11 @@ only the next session.
   original. Edit the copy under `docs/remove-before-merging/`, never the real
   file.
 - `/finalize` runs `swap` before its quality passes, merging in anything the
-  real file gained meanwhile; nothing else does, and nothing deletes a copy by
-  hand.
+  real file gained meanwhile, and nothing deletes a copy by hand.
+- The operator can ask for the swap mid-branch ("swap it in", "unstage"), when
+  the change has to be live on the branch to be tried out. Run `swap`, commit
+  (`chore: swap the staged always-loaded files in early`), and push; the cache
+  is paid once, and the next edit to the file stages it again.
 
 The PR's file view shows a staged copy as a new file; its diff against the
 original is the range from the staging commit to the head.
