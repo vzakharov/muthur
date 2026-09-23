@@ -1,34 +1,36 @@
 {
   "sessionId": "54af3a41-0ca2-501b-8c53-3ad0fc26ac05",
-  "branch": "claude/friendly-turing-x2sn2u",
+  "branch": "claude/cost-row-end-turn-x2sn2u",
   "cwd": "/home/user/muthur",
   "name": "transcript jsonl: end_turn vs tool_use",
   "openingPrompt": "в твоих сырых jsonl-ах по сессии (тех что используются для подсчёта костов) можно отличить \"ответ юзеру\" от промежуточного колла? (Для начала тебе придётся дать…",
-  "prs": [],
+  "prs": [
+    95
+  ],
   "url": "https://claude.ai/code/session_01A35Lcpa2AM7YYzgi2GaHcs",
   "firstResponseAt": "2026-09-23T10:25:45.181Z",
-  "lastResponseAt": "2026-09-23T10:44:34.554Z",
+  "lastResponseAt": "2026-09-23T11:12:04.590Z",
   "pricesAsOf": "2026-09-23",
-  "claudeCodeTotalUsd": 1.4089092000000003,
+  "claudeCodeTotalUsd": 2.1528062000000006,
   "total": {
-    "inputTokens": 80,
+    "inputTokens": 160,
     "cacheWrite5mTokens": 0,
-    "cacheWrite1hTokens": 95034,
-    "cacheReadTokens": 4061065,
-    "outputTokens": 22844,
-    "thinkingTokens": 8108,
-    "responses": 38,
-    "costUsd": 2.0296850000000006
+    "cacheWrite1hTokens": 188141,
+    "cacheReadTokens": 11733935,
+    "outputTokens": 46699,
+    "thinkingTokens": 15526,
+    "responses": 78,
+    "costUsd": 4.786535000000001
   },
   "ownTurns": {
-    "inputTokens": 80,
+    "inputTokens": 160,
     "cacheWrite5mTokens": 0,
-    "cacheWrite1hTokens": 95034,
-    "cacheReadTokens": 4061065,
-    "outputTokens": 22844,
-    "thinkingTokens": 8108,
-    "responses": 38,
-    "costUsd": 2.0296850000000006
+    "cacheWrite1hTokens": 188141,
+    "cacheReadTokens": 11733935,
+    "outputTokens": 46699,
+    "thinkingTokens": 15526,
+    "responses": 78,
+    "costUsd": 4.786535000000001
   },
   "subagents": {
     "inputTokens": 0,
@@ -42,14 +44,14 @@
   },
   "byRate": {
     "claude-opus-5-5/standard": {
-      "inputTokens": 80,
+      "inputTokens": 160,
       "cacheWrite5mTokens": 0,
-      "cacheWrite1hTokens": 95034,
-      "cacheReadTokens": 4061065,
-      "outputTokens": 22844,
-      "thinkingTokens": 8108,
-      "responses": 38,
-      "costUsd": 2.0296850000000006
+      "cacheWrite1hTokens": 188141,
+      "cacheReadTokens": 11733935,
+      "outputTokens": 46699,
+      "thinkingTokens": 15526,
+      "responses": 78,
+      "costUsd": 4.786535000000001
     }
   },
   "warnings": []
