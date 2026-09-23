@@ -227,7 +227,8 @@ headings_of() {
 }
 
 # GitHub's anchor for a heading: lowercase, punctuation dropped, spaces to
-# hyphens. ASCII-only, which every heading this checks is.
+# hyphens. ASCII-only, so a heading outside ASCII gets an anchor GitHub would
+# not produce.
 slug() {
   tr '[:upper:]' '[:lower:]' | sed -E 's/[^a-z0-9 _-]//g; s/ /-/g'
 }

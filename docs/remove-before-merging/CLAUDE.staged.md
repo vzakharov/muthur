@@ -166,7 +166,7 @@ optional — the rule itself governs every reply regardless.
 
 ## Working with skills
 
-Skills live under `.claude/skills/` and run as `/<name>`; each session's skill list carries every one with its description. The main loop, in the order work passes through it:
+Skills live under `.claude/skills/` and run as `/<name>`. The main loop, in the order work passes through it:
 
 - **`/task`** — makes the plan-or-not call, and runs what it picked.
 - **`/plan`** — writes the plan to `docs/plans/`, publishes it as a draft PR, and hands over a `/go <branch>` command.

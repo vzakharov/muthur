@@ -126,9 +126,7 @@ there is no condition under which it fails to apply.
 
 `CLAUDE.md` is a **donor, not a replacement** — overwriting it is the one way to
 make adoption a regression. `ADOPTING.md`'s shared tail owns the merge itself,
-and what follows it: holding the whole merged file, your own sections included,
-to the test its § "About this file" states, and deleting the rule that a loop
-change is `feat:` / `fix:`, which holds only here.
+and the test the whole merged file is held to afterwards.
 
 Its § "Language" is hydrated rather than merged: one line naming the language
 your team reads, the rest of the section holding whatever the project.
