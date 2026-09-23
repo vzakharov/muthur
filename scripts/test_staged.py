@@ -204,6 +204,11 @@ class Resolve(StagedTestCase):
         result = self.repo.staged("resolve", "CLAUDE.md")
         self.assertEqual(result.stdout, f"{DIR}/CLAUDE.staged.md\n")
 
+    def test_an_unnormalized_spelling_of_a_staged_path_resolves(self) -> None:
+        self.stage("CLAUDE.md")
+        result = self.repo.staged("resolve", ".claude/skills/../../CLAUDE.md")
+        self.assertEqual(result.stdout, f"{DIR}/CLAUDE.staged.md\n")
+
     def test_an_unstaged_path_resolves_to_itself(self) -> None:
         self.stage("CLAUDE.md")
         result = self.repo.staged("resolve", ".claude/skills/go/SKILL.md")

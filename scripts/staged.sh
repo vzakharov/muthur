@@ -191,15 +191,18 @@ cmd_check() {
   fi
 }
 
+# Compared with `-ef`, so `./CLAUDE.md` or a `../../CLAUDE.md` link target
+# matches the row naming `CLAUDE.md`.
 cmd_resolve() {
   [ $# -eq 1 ] || usage
-  local path=${1#./} name
-  name=$(rows | awk -F'\t' -v p="$path" '$2 == p { print $1; exit }')
-  if [ -n "$name" ]; then
-    printf '%s\n' "$DIR/$name"
-  else
-    printf '%s\n' "$path"
-  fi
+  local name path blob
+  while IFS=$'\t' read -r name path blob; do
+    if [ "$1" -ef "$path" ]; then
+      printf '%s\n' "$DIR/$name"
+      return
+    fi
+  done < <(rows)
+  printf '%s\n' "$1"
 }
 
 [ $# -gt 0 ] || usage
