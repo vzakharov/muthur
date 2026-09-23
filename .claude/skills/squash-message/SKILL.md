@@ -204,7 +204,8 @@ Four things a draft reaches for fail **existence**, however well written:
 - **A trap for whoever edits the area next.** The log answers what changed and
   why; nobody opens a squash message to learn which files a render step hashes.
   A constraint that has to be obeyed goes where the person about to break it is
-  already looking — a `.claude/rules/` file, or a docstring on the thing itself
+  already looking — the directory's `CLAUDE.md`, a `.claude/rules/` file, or a
+  docstring on the thing itself
   — unless the change *is* that the constraint now exists. A "things to know
   when editing here" paragraph is the tell. Cutting one is a **move, not a
   deletion**: name the home each item lands in as you cut it, checking rather

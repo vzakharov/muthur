@@ -255,8 +255,9 @@ merge them into yours, and keep your stack-specific content — it is a
 [donor, not a replacement](.claude/skills/update-muthur/catalog.md#g1--prose--principles).
 
 Replace the remaining stubs — repository layout, testing — as those conventions
-stabilize, and add `.claude/rules/` files as area-specific conventions emerge
-(the mechanism ships with a README and no rules).
+stabilize, and give a directory its own `CLAUDE.md` as area-specific conventions
+emerge — or a `.claude/rules/` file, when the area is a glob no single directory
+bounds (the mechanism ships with a README and no rules).
 
 ### Settle the language decision
 

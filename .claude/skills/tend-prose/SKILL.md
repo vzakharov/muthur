@@ -129,18 +129,19 @@ The homes, in order of preference — take the first that fits:
 | --- | ------------------------------------------------------------- | -------------------------------------------------------------------------------------------- |
 | 1   | **A comment at the call site**                                | A trap that lives at one line                                                                |
 | 2   | **A docstring at the topmost point of the code it describes** | How a flow works, when following it means holding more modules in your head than fit at once |
-| 3   | **`.claude/rules/<area>.md`** (frontmatter `paths:`)          | An obligation every edit in the matched files must respect                                   |
-| 4   | **A colocated `README.md`**                                   | The big picture, for when not having it is itself what blocks the edit                       |
-| 5   | **A runbook page** (`docs/runbook/*.md`, or the project's equivalent)       | A procedure a human executes                                                    |
+| 3   | **The directory's own `CLAUDE.md`**                           | An obligation every edit in that directory's files must respect                              |
+| 4   | **`.claude/rules/<area>.md`** (frontmatter `paths:`)          | The same, for files no single directory bounds — `'**/*.test.ts'`, several scattered paths   |
+| 5   | **A colocated `README.md`**                                   | The big picture, for when not having it is itself what blocks the edit                       |
+| 6   | **A runbook page** (`docs/runbook/*.md`, or the project's equivalent)       | A procedure a human executes                                                    |
 
-**The alternatives already live in the PR or issue thread, and any of the five
+**The alternatives already live in the PR or issue thread, and any of the six
 homes can cite it.** Add a `#1234` beside the line where a reader would otherwise
 stop and wonder "hmm, why this and not the obvious thing?"; leave it off where
 nobody would ask, because a citation on an unsurprising line is one more thing to
 chase.
 
-**Rule or README?** A rule is what every edit in the matched files must respect
-_whether or not the editor went looking_ — an obligation you can violate without
+**Rule or README?** A rule — homes 3 and 4 alike — is what every edit in the
+files it covers must respect _whether or not the editor went looking_ — an obligation you can violate without
 noticing. It loads automatically, so it must stay short and always-relevant. A
 README carries the part the code cannot: **why** the arrangement is this one,
 where reading the modules end to end still leaves the reason obscure. It is
@@ -331,9 +332,10 @@ The sweep belongs to lens 4 and runs wherever it does. It also runs after a
 - **CHANGELOG / release-notes files** — a dated record of changes is the point.
 - **Deliberately thorough reference prose** — length carrying rationale the
   reader can't get elsewhere is not bloat; length carrying nothing is. But that
-  describes a colocated `README.md`, opened on purpose, not a
-  `.claude/rules/*.md` file: **a rule's length is a budget**, because it loads in
-  full every time its glob matches. Paragraphs of rationale in a rule are a lens
+  describes a colocated `README.md`, opened on purpose, not a directory's
+  `CLAUDE.md` or a `.claude/rules/*.md` file: **a rule's length is a budget**,
+  because it loads in full every time a file it covers is read. Paragraphs of
+  rationale in a rule are a lens
   1 finding — the orientation belongs in a README the rule links to.
 
 ## Step 5: Commit
