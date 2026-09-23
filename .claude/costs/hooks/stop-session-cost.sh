@@ -100,7 +100,7 @@ run_ledger() {
   row="$(python3 "$root/.claude/costs/session_cost.py" \
     --transcript "$transcript" \
     --session-id "$(field session_id)" \
-    --row-path)" || { state=unpriced; return 0; }
+    --row-path --at-stop)" || { state=unpriced; return 0; }
 
   dirty "$row" || return 0
 

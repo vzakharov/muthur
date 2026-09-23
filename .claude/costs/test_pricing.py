@@ -13,7 +13,13 @@ import json
 import unittest
 from typing import Any, List, Optional, Sequence
 
-from lib.pricing import TranscriptSources, UnpricedError, parse_prices, summarise_transcript
+from lib.pricing import (
+    TranscriptSources,
+    UnpricedError,
+    is_unwritten_tail,
+    parse_prices,
+    summarise_transcript,
+)
 
 PRICES = parse_prices(
     json.dumps(
@@ -56,6 +62,7 @@ def response(
     write_5m: int = 0,
     write_1h: int = 0,
     written: Optional[int] = None,
+    stop: Optional[str] = None,
 ) -> str:
     usage = {
         "input_tokens": input,
@@ -79,16 +86,19 @@ def response(
             "gitBranch": branch,
             "timestamp": "2026-03-04T05:06:07.000Z",
             "isSidechain": sidechain,
-            "message": {"id": id, "model": model, "usage": usage},
+            "message": {"id": id, "model": model, "usage": usage, "stop_reason": stop},
         }
     )
 
 
-def summarise(lines: Sequence[str], subagents: Sequence[Sequence[str]] = ()):
+def summarise(
+    lines: Sequence[str], subagents: Sequence[Sequence[str]] = (), at_stop: bool = False
+):
     return summarise_transcript(
         TranscriptSources(main="\n".join(lines), subagents=["\n".join(s) for s in subagents]),
         PRICES,
         "fallback",
+        at_stop=at_stop,
     )
 
 
@@ -186,6 +196,39 @@ class WhatARowRecords(unittest.TestCase):
             ]
         )
         self.assertEqual(cost.total.responses, 1)
+
+
+class WhetherTheTurnWasWrittenInFull(unittest.TestCase):
+    def tail(self, lines: Sequence[str], **kwargs: Any) -> List[str]:
+        return [w for w in summarise(lines, **kwargs).warnings if is_unwritten_tail(w)]
+
+    def test_passes_a_transcript_ending_on_end_turn(self) -> None:
+        lines = [response(id="msg_1", stop="tool_use"), response(id="msg_2", stop="end_turn")]
+        self.assertEqual(self.tail(lines, at_stop=True), [])
+
+    def test_warns_when_the_turn_s_last_response_is_not_yet_written(self) -> None:
+        lines = [response(id="msg_1", stop="end_turn"), response(id="msg_2", stop="tool_use")]
+        [warning] = self.tail(lines, at_stop=True)
+        self.assertIn("msg_2", warning)
+        self.assertIn("`tool_use`", warning)
+
+    def test_says_nothing_outside_the_stop_hook(self) -> None:
+        self.assertEqual(self.tail([response(stop="tool_use")]), [])
+
+    def test_judges_the_session_s_own_responses_not_a_subagent_s(self) -> None:
+        lines = [
+            response(id="msg_1", stop="end_turn"),
+            response(id="msg_2", sidechain=True, stop="tool_use"),
+        ]
+        subagents = [[response(id="msg_3", stop="tool_use")]]
+        self.assertEqual(self.tail(lines, subagents=subagents, at_stop=True), [])
+
+    def test_passes_over_a_synthetic_record_after_the_end_turn(self) -> None:
+        lines = [
+            response(id="msg_1", stop="end_turn"),
+            response(id="msg_2", model="<synthetic>", stop="stop_sequence"),
+        ]
+        self.assertEqual(self.tail(lines, at_stop=True), [])
 
 
 class WhatItRefusesToGuess(unittest.TestCase):
