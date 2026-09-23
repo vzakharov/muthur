@@ -16,8 +16,9 @@ record. It stays null when the hook named nobody (no gh, or a bot's
 token) rather than being guessed from the pusher, who may be the
 agent's own account. The hook's comment marks its wording as parsed.
 
-report.py sums the rows by operator as well; rows written before the
-field existed parse unchanged and are filed under "(unknown)".
+report.py sums the rows by operator as well, filing a row without one
+under "(unknown)". The rows already in the ledger, whose transcripts
+are gone, are backfilled by hand as @vzakharov's.
 
 Co-authored-by: Claude <noreply@anthropic.com>
 ```
