@@ -15,10 +15,12 @@ conventions, and .claude/rules/ is kept for globs no directory bounds.
 
 The Read/Edit/Write principle gains a second reason: those tools are
 what load a directory's conventions, so an agent reads something in a
-directory before creating a file there. The rules README scopes itself
-to its own directory with paths:, since every .md under .claude/rules/
-is a rule and an unscoped one loads into every session. tend-prose's
-homes table and the other places stating the old convention follow.
+directory before creating a file there, until
+anthropics/claude-code#96361 makes Write load them too. The rules
+README scopes itself to its own directory with paths:, since every .md
+under .claude/rules/ is a rule and an unscoped one loads into every
+session. tend-prose's homes table and the other places stating the old
+convention follow.
 
 Co-authored-by: Claude <noreply@anthropic.com>
 ```
