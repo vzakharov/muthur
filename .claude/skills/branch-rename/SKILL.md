@@ -2,7 +2,9 @@
 description: Rename the current auto-generated session branch (e.g. `claude/<adjective>-<noun>-<hash>`) to a semantic name derived from the current PR or branch diff. Usually invoked with no args as `/branch-rename`; an optional argument overrides the derived slug, and `force` (`/branch-rename force [<slug>]`) re-slugs a branch that is already semantically named. Use when the user says "rename branch", "rename the branch", or "/branch-rename".
 ---
 
-Rename the current harness-assigned branch (e.g. `claude/relaxed-brown-EhDOB`) to a semantic name in the form `claude/<short-task-slug>-<hash>` — keep the original random suffix, swap the adjective-noun for a task slug. Background and rationale live in `CLAUDE.md` under "Rename auto-generated remote/web branches early".
+Rename the current harness-assigned branch (e.g. `claude/relaxed-brown-EhDOB`) to a semantic name in the form `claude/<short-task-slug>-<hash>` — keep the original random suffix, swap the adjective-noun for a task slug.
+
+**Why, and why early.** `claude/lucid-hamilton-MigdG` tells nobody anything in `git log`, PR lists or a later search; `claude/rename-autobranches-MigdG` does, and the kept suffix keeps parallel sessions unique. Rename as soon as the task's scope is clear and **before the first commit**, since `/plan` names the plan file after the branch slug — and always before a PR opens, because renaming a PR's head closes that PR (below).
 
 ## First: is the branch already semantic?
 
@@ -24,6 +26,6 @@ If a PR is already open on the branch being renamed, renaming it (whether via `g
 
 So, before renaming a branch that already has a PR, **check first**: `gh pr view --json number,url 2>/dev/null`. (In the web/remote environment `gh` may not reach GitHub — the remote can be a local proxy — so fall back to the GitHub MCP tools to look up and manage PRs.)
 
-- If a PR exists, prefer **renaming early — before any PR is opened** (the whole point of this skill per CLAUDE.md). If it's too late for that, after renaming **open a fresh PR on the new branch** (e.g. via `@.claude/skills/pr/SKILL.md`). The commits are already on the renamed branch, so this is a new PR over the same diff, not a cherry-pick. Do all of this automatically — no confirmation prompt.
+- If a PR exists, prefer **renaming early — before any PR is opened** (the whole point of this skill, per § "Why, and why early"). If it's too late for that, after renaming **open a fresh PR on the new branch** (e.g. via `@.claude/skills/pr/SKILL.md`). The commits are already on the renamed branch, so this is a new PR over the same diff, not a cherry-pick. Do all of this automatically — no confirmation prompt.
 - **Deleting the old remote ref may fail** (e.g. `git push origin --delete <old>` → HTTP 403 in the sandboxed proxy). In that case the old ref lingers and its PR stays open, so **explicitly close the old PR** (MCP `update_pull_request` `state: closed`, or `gh pr close`) with a comment linking the replacement.
 - Tell the user the old PR number was closed and link the replacement, so the thread history isn't silently orphaned.
