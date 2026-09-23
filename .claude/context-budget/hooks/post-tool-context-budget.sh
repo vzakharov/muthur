@@ -60,23 +60,24 @@ mkdir -p "$state_dir" && printf '%s\n' "$level" >"$state_file" || {
 }
 
 k() { echo "$(($1 / 1000))k"; }
-stopping='`@.claude/skills/go/SKILL.md` § "Stopping partway releases the plan"'
+past() { echo "Context budget: this session is carrying ~$(k "$reading") tokens of context, past the $(k "$1") $2 line."; }
+stopping='`@.claude/skills/go/SKILL.md` § "Stopping partway releases the plan" — which also covers work that has no plan yet'
 nearly_done="First judge whether the work is nearly done — a small step or a commit or two from finished. If it is, finish it, and say in your report that you did and why rather than stopping."
 
 case "$level" in
   warn)
-    notice="Context budget: this session is carrying ~$(k "$reading") tokens of context, past the $(k "$warn") warning line.
+    notice="$(past "$warn" warning)
 
 ${nearly_done}
 
-Otherwise get the work to a committed, pushed stopping point and tell the operator, offering two ways on: \`/compact\` in this session, or a new one. A new session resumes only from a paused plan, so offer to pause it per ${stopping} — which also covers work that has no plan yet. Do not pause unasked at this level: at $(k "$pause") this notice returns as the pause itself."
+Otherwise get the work to a committed, pushed stopping point and tell the operator, offering two ways on: \`/compact\` in this session, or a new one. A new session resumes only from a paused plan, so offer to pause it per ${stopping}. Do not pause unasked at this level: at $(k "$pause") this notice returns as the pause itself."
     ;;
   pause)
-    notice="Context budget: this session is carrying ~$(k "$reading") tokens of context, past the $(k "$pause") pause line.
+    notice="$(past "$pause" pause)
 
 ${nearly_done}
 
-Otherwise pause now, without asking: follow ${stopping} — which also covers work that has no plan yet — push, tell the operator the session was paused for its context budget, and end the turn with the \`/go <branch>\` handoff block."
+Otherwise pause now, without asking: follow ${stopping}. Push, tell the operator the session was paused for its context budget, and end the turn with the \`/go <branch>\` handoff block."
     ;;
 esac
 
