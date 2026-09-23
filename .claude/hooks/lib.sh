@@ -1,9 +1,9 @@
 #!/bin/bash
-# Sourced by the `UserPromptSubmit` hooks beside it, and by the two under
+# Sourced by the `UserPromptSubmit` hooks beside it, by the two under
 # `.claude/costs/hooks/` — one of those a `Stop` hook, which takes everything
-# here but `emit_context`: the payload read, the one JSON shape
-# `UserPromptSubmit` accepts, and the guards each hook needs before it can do
-# anything.
+# here but `emit_context` — and by the `PostToolUse` hook under
+# `.claude/context-budget/hooks/`: the payload read, the context-injecting JSON
+# shape, and the guards each hook needs before it can do anything.
 #
 # Every hook sources it as `. "$(dirname "${BASH_SOURCE[0]}")/lib.sh" || exit 0`,
 # so a tree holding a hook without this file skips that hook instead of failing
@@ -50,10 +50,12 @@ project_root() {
   return 0
 }
 
+# `hookSpecificOutput` must name the event that ran the hook, so the name is
+# read off the payload rather than assumed.
 emit_context() {
-  jq -n --arg ctx "$1" '{
+  jq -n --arg event "$(field hook_event_name)" --arg ctx "$1" '{
     hookSpecificOutput: {
-      hookEventName: "UserPromptSubmit",
+      hookEventName: $event,
       additionalContext: $ctx
     }
   }'

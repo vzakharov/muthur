@@ -121,11 +121,11 @@ Code web/remote (this decides G4), and whether the project has a deploy path, a
 visual surface, deployed logs, a production datastore, or sequential numbered
 migrations (these decide the individual G6 stubs).
 
-**One question is asked whatever the profile says: whether to run the session
-cost ledger** (G7). Nothing in a repo answers it, since what it turns on is
-whether the operator wants the number at the price of a commit per turn. Tell
-them what [its row](.claude/skills/update-muthur/catalog.md#g7--session-cost-ledger)
-says it costs, and take the answer as given.
+**Some questions are asked whatever the profile says: one per catalog row
+marked [`opt-in: ask`](.claude/skills/update-muthur/catalog.md#three-dispositions-not-two).**
+Nothing in a repo answers them, since each turns on whether the operator wants
+the item at the price its row states. Tell them that price, and take the answer
+as given.
 
 ### Step 3 — If this is a web/remote session, settle G4 before copying anything
 
@@ -217,10 +217,10 @@ don't, and lists the four counter-intuitive cases. Don't re-derive them.
 Copy the resolved set from the clone into your repo — but **not**
 [`.claude/skills/update-muthur/catalog.md`](.claude/skills/update-muthur/catalog.md#never),
 which taking `/update-muthur` otherwise brings along inside its directory.
-Nor this repo's own cost rows: on a yes to the ledger, copy `.claude/costs/`
-without the files under `sessions/`, and merge its two `.claude/settings.json`
-entries; on a no, put `.claude/costs/` in the watermark's `declined` so no sync
-asks again. Then continue to the shared tail.
+Each `opt-in: ask` row goes by its answer: on a yes, copy its path and merge the
+`.claude/settings.json` entries its row names — `.claude/costs/` without this
+repo's own cost rows under `sessions/`; on a no, put the path in the watermark's
+`declined` so no sync asks again. Then continue to the shared tail.
 
 ## Template fork
 

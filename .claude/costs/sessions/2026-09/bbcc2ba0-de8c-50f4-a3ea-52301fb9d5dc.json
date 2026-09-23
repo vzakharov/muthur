@@ -1,0 +1,58 @@
+{
+  "sessionId": "bbcc2ba0-de8c-50f4-a3ea-52301fb9d5dc",
+  "branch": "claude/context-budget-hook-tb5p5q",
+  "cwd": "/home/user/muthur",
+  "name": "answering review on the context budget hook",
+  "openingPrompt": "/handle claude/context-budget-hook-tb5p5q",
+  "prs": [
+    96
+  ],
+  "url": "https://claude.ai/code/session_01JYXQMbu7UL94uyiivzUY21",
+  "firstResponseAt": "2026-09-23T11:53:15.198Z",
+  "lastResponseAt": "2026-09-23T12:05:33.404Z",
+  "pricesAsOf": "2026-09-23",
+  "claudeCodeTotalUsd": null,
+  "total": {
+    "inputTokens": 106,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 144538,
+    "cacheReadTokens": 7456058,
+    "outputTokens": 24261,
+    "thinkingTokens": 7560,
+    "responses": 52,
+    "costUsd": 3.1331596
+  },
+  "ownTurns": {
+    "inputTokens": 106,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 144538,
+    "cacheReadTokens": 7456058,
+    "outputTokens": 24261,
+    "thinkingTokens": 7560,
+    "responses": 52,
+    "costUsd": 3.1331596
+  },
+  "subagents": {
+    "inputTokens": 0,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 0,
+    "cacheReadTokens": 0,
+    "outputTokens": 0,
+    "thinkingTokens": 0,
+    "responses": 0,
+    "costUsd": 0.0
+  },
+  "byRate": {
+    "claude-opus-5-5/standard": {
+      "inputTokens": 106,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 144538,
+      "cacheReadTokens": 7456058,
+      "outputTokens": 24261,
+      "thinkingTokens": 7560,
+      "responses": 52,
+      "costUsd": 3.1331596
+    }
+  },
+  "warnings": []
+}

@@ -52,10 +52,10 @@ for one, and only the last is not read out of the file:
   record is what is matched: a commit trailer quoted anywhere in a transcript
   carries a session URL too, usually another session's.
 - **`name`** — a few words from the agent whose session it is, which is the only
-  thing here that knows what the session turned out to be about. A row is written
-  with it null and `hooks/prompt-session-name.sh` asks for it on the next prompt
-  until it is set; each rewrite carries the existing name forward, since
-  re-reading the transcript could never produce one.
+  thing here that knows what the session turned out to be about.
+  `hooks/prompt-session-name.sh` asks for it from the first prompt until it is
+  set, and each rewrite carries the existing name forward, since re-reading the
+  transcript could never produce one.
 
 ## Checking the arithmetic
 
