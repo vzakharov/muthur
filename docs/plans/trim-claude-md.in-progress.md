@@ -1,8 +1,15 @@
-> ⛔ **DRAFT — DO NOT IMPLEMENT.** This plan is not approved. Do not edit source while this file is named `*.draft.do-not-implement.md` — prep and spikes go in `tmp/`. On an explicit operator go-ahead, `git mv` it to `*.in-progress.md` and delete this banner (quoting the go-ahead in the commit) *before* touching code.
-
 # Trim CLAUDE.md to what every turn needs (#97)
 
 `CLAUDE.md` is ~6,500 words, loaded in full on every turn. This plan writes the test for what may stay into the file, applies it section by section, moves what fails it to the home that loads at the moment it matters, and makes the section citations checkable so the moves can't leave dangling `§` references behind.
+
+## Staging (added at the go-ahead)
+
+Any edit to an always-loaded file invalidates the prompt cache of every session running on the branch, because that file sits at the top of the context. So the always-loaded files this plan changes are edited as staged copies, and the real files are touched once, at `/finalize`:
+
+- `CLAUDE.md` → `docs/remove-before-merging/CLAUDE.staged.md`
+- `.claude/rules/README.md` (no `paths:`, so it loads every turn too) → `docs/remove-before-merging/rules-README.staged.md`
+
+Each copy is committed unchanged first, so every later commit shows as a diff against the original. **At `/finalize`, before its quality passes, `git mv` each staged copy over its real file** and commit; only then can `./scripts/vet.sh` (whose citation check reads `CLAUDE.md`) pass. Until then, the check is run against a scratch tree with the swap applied. A staged name never ends in `CLAUDE.md`, since a nested `CLAUDE.md` would itself load on the first read of its directory.
 
 ## The test
 
