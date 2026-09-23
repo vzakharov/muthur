@@ -104,8 +104,8 @@ run_ledger() {
 
   dirty "$row" || return 0
 
-  # The subject carries the turn's spend, measured against the row as last
-  # committed — absent on a session's first row, so that one counts from zero.
+  # The turn's spend is measured from the row as last committed, not as last
+  # written: a hand run between turns rewrites the file too.
   local was now subject
   was="$(git -C "$(dirname "$row")" show "HEAD:./$(basename "$row")" 2>/dev/null |
     jq -r '.total.costUsd // 0' 2>/dev/null)"

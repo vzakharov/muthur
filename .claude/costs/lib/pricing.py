@@ -311,8 +311,8 @@ def summarise_transcript(
     the whole ledger a lie.
 
     `at_stop` says the turn is over, so the session's own last response should
-    be the `end_turn` that closed it; anything else is a tail the file had not
-    yet been given, and is warned about rather than assumed away."""
+    be the `end_turn` that closed it; anything else is warned about as a tail
+    the file had not yet been given."""
     warnings: List[str] = []
     last_own: Optional[Response] = None
     seen: Set[str] = set()

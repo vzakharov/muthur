@@ -7,8 +7,8 @@ Usage:
 
 The row is rewritten from the whole file each run rather than appended to, which
 is what lets a run pick up anything the previous one was too early to see.
-`--at-stop` says the turn is over, which is what makes a transcript not ending
-on `end_turn` worth a warning. Stdout is the interface: the row's path under
+`--at-stop` is the Stop hook's: the turn is over, so the transcript should end on
+its `end_turn`. Stdout is the interface: the row's path under
 `--row-path`, for `hooks/stop-session-cost.sh`; a one-line summary otherwise,
 for a person running it by hand.
 
@@ -51,10 +51,10 @@ def subagents_of(main: Path) -> List[str]:
 
 
 def previous(row: Path) -> Optional[SessionCost]:
-    """The name and an unwritten-tail warning are what no run can recompute —
-    the transcript has caught up by the next one — so a rewrite reads back what
-    the last one wrote. An unreadable row loses both rather than failing the
-    write — the rewrite is what repairs it — and says so."""
+    """The name and any unwritten-tail warning are what no run can recompute
+    from the transcript, so a rewrite reads them back from the last one. An
+    unreadable row loses both rather than failing the write — the rewrite is
+    what repairs it — and says so."""
     if not row.exists():
         return None
     try:
