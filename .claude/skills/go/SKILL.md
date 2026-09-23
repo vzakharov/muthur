@@ -74,7 +74,7 @@ Work through the plan on the current branch. Follow the plan as approved; if rea
 
 Commit/push discipline is already governed by CLAUDE.md — don't reinvent it here:
 
-- Commit and push proactively after each meaningful unit of work (CLAUDE.md "Git conventions" — feature branch in a remote/web env; the operator reviews from another machine and only sees pushed work).
+- Commit and push proactively after each meaningful unit of work (CLAUDE.md § "Git conventions" — feature branch in a remote/web env; the operator reviews from another machine and only sees pushed work).
 - **Never force-push.** The operator may be following the branch as you work and needs the sequence of changes to read cleanly; force-pushing rewrites that history out from under them. Only ever advance the branch with new commits.
 - Conventional-commit subjects; descriptive bodies.
 - **Do not** run `./scripts/vet.sh` per commit on a feature branch — that's `/finalize`'s job once the operator has reviewed.

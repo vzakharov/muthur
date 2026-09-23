@@ -130,6 +130,6 @@ Then commit and push the rewritten plan (this refresh is explicitly wanted, so i
 
 ## Scope
 
-This is a **web/remote-session** workaround, and it applies to **new** sessions — see CLAUDE.md ("Plan mode & questions in web sessions") for exactly when it's mandatory vs. optional. It is **not** for continued work: once a plan has been approved and you're implementing, handle the operator's follow-ups directly — answer their questions in chat **and implement any code changes they ask for** — without re-writing the plan file or reopening a plan cycle.
+This is a **web/remote-session** workaround, and it applies to **new** sessions — see CLAUDE.md § "Plan mode & questions in web sessions" for exactly when it's mandatory vs. optional. It is **not** for continued work: once a plan has been approved and you're implementing, handle the operator's follow-ups directly — answer their questions in chat **and implement any code changes they ask for** — without re-writing the plan file or reopening a plan cycle.
 
 A `/from-branch` or `/handle` launch counts as continued work, not a new session: both attach to an existing branch or PR to resume work started elsewhere, so **do not open a plan cycle for them** — even though it's the first message of the session. Follow the embedded follow-up (or wait for the operator's) directly. The only exception is if that follow-up explicitly asks you to plan a fresh, separable piece of work.

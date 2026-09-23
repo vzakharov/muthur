@@ -13,7 +13,7 @@ and reviewing it as a diff is what catches a bad call before anything is deleted
 So this skill's end state is `/plan`'s: a plan file published as a draft PR, and
 a copyable `/go <branch>` for the session that executes it.
 
-The brief is the argument. It fills `CLAUDE.md`'s "About this project" stub,
+The brief is the argument. It fills `CLAUDE.md` § "About this project"'s stub,
 drives the group decisions — a CLI tool keeps different groups than a deployed
 web app — and is filed as the project's first issue (Step 5.5), which is what
 keeps the operator's description of the product from dying with a run that
@@ -180,7 +180,7 @@ Ordering is load-bearing at exactly one point, and it is the first step:
    directory is `ADOPTING.md`'s only asset, so a literal row-by-row sweep strands
    it as an orphan.
 3. **Prune the groups**, applying the reverse-closure edits the plan recorded.
-4. **Fill `CLAUDE.md`'s "About this project" stub** from the brief — which
+4. **Fill `CLAUDE.md` § "About this project"'s stub** from the brief — which
    retires the standing notice in § "Recognizing an undetemplated fork" along
    with it — and delete § "Git conventions"'s loop-is-the-product rule, which
    holds only where the loop is the product. **§ "Language"'s stub is replaced in the same
@@ -285,7 +285,7 @@ a literal `owner/repo`, checkable against the working directory in the reader's
 own system prompt at no round-trip, and every other tree carrying the
 description is a fork to route.
 
-`CLAUDE.md`'s "About this project" stub is the second surface, catching a
+`CLAUDE.md` § "About this project"'s stub is the second surface, catching a
 session that never consults the skill list: while that stub is unfilled and the
 tree still has the catalog, the first task is `/detemplate` whatever was asked.
 Step 5.4 rewrites that stub, so the notice retires with the condition it
