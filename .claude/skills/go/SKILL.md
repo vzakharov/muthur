@@ -79,7 +79,11 @@ Commit/push discipline is already governed by CLAUDE.md — don't reinvent it he
 - Conventional-commit subjects; descriptive bodies.
 - **Do not** run `./scripts/vet.sh` per commit on a feature branch — that's `/finalize`'s job once the operator has reviewed.
 
-**Stopping partway releases the plan.** When the operator asks you to stop where you've reached, record in the plan file what is done and what is left, `git mv` it to `docs/plans/<slug>.paused.md`, and commit. No format is prescribed for that record — a next session only has to be able to tell finished work from remaining work. The rename is what makes the work resumable: left as `*.in-progress.md` it still reads as claimed, and Step 1 stops on it.
+**Stopping partway releases the plan.** Two things call for it: the operator asking you to stop where you've reached, and the context budget hook's pause notice (`.claude/context-budget/`), which also offers it at its warning. Record in the plan file what is done and what is left, `git mv` it to `docs/plans/<slug>.paused.md`, commit and push. No format is prescribed for that record — a next session only has to be able to tell finished work from remaining work. The rename is what makes the work resumable: left as `*.in-progress.md` it still reads as claimed, and Step 1 stops on it.
+
+**Work with no plan behind it gets one here**, written straight to `docs/plans/<slug>.paused.md`: the task as asked, what is done (with its commits), what is left, and the decisions a successor would otherwise re-litigate. There is no draft stage — the work is already under way on a go-ahead, and `*.paused.md` is the state Step 1 resumes from.
+
+A pause the operator did not ask for is reported, not just done: say that the budget notice triggered it, and end the turn with the `/go <branch>` handoff block `@.claude/skills/plan/SKILL.md` § "Handing off" formats.
 
 ## Step 3 — Mandatory quality passes
 
