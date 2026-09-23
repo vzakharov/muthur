@@ -104,10 +104,19 @@ run_ledger() {
 
   dirty "$row" || return 0
 
+  # The subject carries the turn's spend, measured against the row as last
+  # committed — absent on a session's first row, so that one counts from zero.
+  local was now subject
+  was="$(git -C "$(dirname "$row")" show "HEAD:./$(basename "$row")" 2>/dev/null |
+    jq -r '.total.costUsd // 0' 2>/dev/null)"
+  now="$(jq -r '.total.costUsd' "$row")"
+  subject="$(awk -v was="${was:-0}" -v now="$now" \
+    'BEGIN { printf "chore: session cost row +%.2f USD, total %.2f USD", now - was, now }')"
+
   # `commit -- <path>` stages nothing else, so work the agent has in flight
   # stays where it is.
   repo add -- "$row" &&
-    repo commit -q -m "chore: session cost row" -- "$row" ||
+    repo commit -q -m "$subject" -- "$row" ||
     { state=uncommitted; return 0; }
 
   state=committed
