@@ -28,9 +28,11 @@ description: Finalize (a.k.a. "prep merge") — land prep: verify there's a draf
 
 Either way, **step 7's attestation comment is the record.** A reviewer cannot see from the diff what was run; if it isn't written down it did not happen as far as anyone else is concerned.
 
-**First, the quality passes.** Before step 1, load and follow `@.claude/skills/polish/SKILL.md` over this branch. Land prep is the funnel every branch reaches whatever route its work took, so this is where a branch written without `/go` in front of it still gets the passes — and the last point at which changing the diff is cheap, since the vet run, the base merge, the squash message and the attestation's SHA are all statements about a diff that has stopped moving.
+**First, swap in the staged copies.** Run `scripts/staged.sh swap` — a no-op when nothing is staged — and commit what it `git add`ed (`chore: swap the staged always-loaded files into place`). A branch edits the files that load on every turn through copies under `docs/remove-before-merging/` (`@.claude/rules/staging.md`), and everything below reads the real ones: the passes review them, and the vet run checks them. Where the real file changed after it was staged, the swap merges; a conflict it stops on is left as markers in the real file, resolved before anything else runs. `no vet` does not skip this.
 
-It carries no step number because the numbers below are cited from other skills and stay put; it runs first regardless. **`no vet` does not skip it** — a docs-only diff is squarely what both passes are for: `/tend-prose` by construction, and `/dry` because a constraint stated in two places is a duplication like any other.
+**Then, the quality passes.** Before step 1, load and follow `@.claude/skills/polish/SKILL.md` over this branch. Land prep is the funnel every branch reaches whatever route its work took, so this is where a branch written without `/go` in front of it still gets the passes — and the last point at which changing the diff is cheap, since the vet run, the base merge, the squash message and the attestation's SHA are all statements about a diff that has stopped moving.
+
+It carries no step number because the numbers below are cited from other skills and stay put; it runs before step 1 regardless. **`no vet` does not skip it** — a docs-only diff is squarely what both passes are for: `/tend-prose` by construction, and `/dry` because a constraint stated in two places is a duplication like any other.
 
 Steps (stop on first unresolved failure):
 
@@ -60,7 +62,7 @@ Steps (stop on first unresolved failure):
        - **Demonstrably independent** → `git merge origin/<base>`, push, and run `/check-merge` again when you return to confirm `origin/<base>` hasn't moved since. Unrelated code changes qualify: e.g. the base reworks a frontend modal while this branch changes a background job's retry policy — both touch code, but they don't interact.
    - Do NOT merge the PR here — step 8 owns that, and only under `and merge` and the gate it states. Absent the flag the operator controls the final title/body and merge.
 
-   **Then, once the merge check is done, sweep `docs/remove-before-merging/`** — `git rm -r` the **entire** tree, not just the `squash-message.md` that `@.claude/skills/squash-message/SKILL.md` tracks there: the directory's name is a standing declaration that nothing inside it may land, so a screenshot or anything else an agent parked there goes with it. Paired with the earlier add, the deletion cancels out in the squash. Push it before step 7 so the SHA the attestation names is the branch's final head.
+   **Then, once the merge check is done, sweep `docs/remove-before-merging/`** — after `scripts/staged.sh check --empty` passes, since a staged copy still in the tree carries a change the sweep would delete; a failure means run the swap above, never delete the copy. Then `git rm -r` the **entire** tree, not just the `squash-message.md` that `@.claude/skills/squash-message/SKILL.md` tracks there: the directory's name is a standing declaration that nothing inside it may land, so a screenshot or anything else an agent parked there goes with it. Paired with the earlier add, the deletion cancels out in the squash. Push it before step 7 so the SHA the attestation names is the branch's final head.
 
    **Why this tree goes last, after everything else.** The squash proposal is a live doc for the whole time the PR is in flight: every edit to it — a review comment, what the base merge brought in, a fix pushed after a red dispatch, work `/check-merge` just pulled in from an advanced base — is a deliberation over the text that's already there. Sweeping it at step 3 would leave the single most important edit, the one that becomes the permanent `git log` record, as the only one made with the doc gone; sweeping it before `/check-merge` would do the same to whatever that check drags in.
 
@@ -108,12 +110,13 @@ Steps (stop on first unresolved failure):
 
 8. **Merge — under `and merge` only, and only if the run was uneventful.** Without the flag, stop at step 7 and report.
 
-   One predicate governs, and the list below only spells out how it fails: **merge only when the run's whole effect on the branch was step 3's sweep, the quality passes' own edits, and whatever a tool's own fixer rewrote, and every check it ran passed the first time it ran.** The gate is evaluated once, here, by walking the run back against the list — not decided step by step as the run goes.
+   One predicate governs, and the list below only spells out how it fails: **merge only when the run's whole effect on the branch was step 3's sweep, the staged swap, the quality passes' own edits, and whatever a tool's own fixer rewrote, and every check it ran passed the first time it ran.** The gate is evaluated once, here, by walking the run back against the list — not decided step by step as the run goes.
 
    **The quality passes are part of that predicate** because what they do by construction is rewrite prose and fold duplication, leaving what the code does alone — and a run of them that found something is the ordinary state of a branch that reached land prep without `/go`, so a gate that fired on it would fire on nearly every such branch. The boundary is behavior: a fold that turns out to change what the code does is no longer a polish edit, and stands the merge down like any other change you authored.
 
    **Stand down if any of this happened**, at whichever step it happened:
 
+   - **The staged swap** — it stopped on a conflict. Resolving one is deciding what the file says.
    - **Pre-check** — `HEAD` was detached, or there was no PR and you created one. A PR opened and merged inside one turn was never a reviewable object. (A PR you flipped back to draft is fine — that is the ordinary re-finalize.)
    - **Step 1** — the vet run needed a change **you authored** to go green. A tool's own fixer (`--fix`, a formatter rewriting its own output) that clears it does not count; that is the autofix this flag allows. The test is whether you had to read the failure and decide what to change.
    - **Step 2** — any conflict, however trivially resolved; or you applied a dedup/simplification the base merge opened, or surfaced one as ambiguous. A clean merge that **brought commits in** is survivable, but step 1 vetted a tree without them: re-run it, green first try, and stand down on any interaction of the kind that step already has you reading the incoming diff for.
