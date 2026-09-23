@@ -322,7 +322,7 @@ is `opt-in: ask`.
 
 | Item | What it does | Requires | Pulls in | Disposition |
 | --- | --- | --- | --- | --- |
-| `.claude/context-budget/` | After every tool call, read the context the session carries off its transcript, and past 200k tokens tell the agent to reach a committed stopping point and offer the operator `/compact` or a new session; past 300k, to pause the plan — writing one when the work had none — and end the turn with a `/go` handoff. The agent's judgment that the work is nearly done overrides either. **The cost, which is why it is asked:** a `PostToolUse` hook on every tool call, and a session that can end its own turn with the work paused. Arrives with one `.claude/settings.json` entry to merge and a `scripts/vet.sh` loop running its tests; a no deletes the directory and both. | `bash`, `jq`; `python3` ≥3.9 for its tests | `.claude/hooks/lib.sh` (G4), `/go` (G2) | adopt — **opt-in: ask** |
+| `.claude/context-budget/` | After every tool call, read the context the session carries off its transcript, and past 200k tokens tell the agent to reach a committed stopping point and offer the operator `/compact` or a new session; past 300k, to pause the plan — writing one when the work had none — and end the turn with a `/go` handoff. The agent's own estimate that finishing takes under 100k more tokens overrides either. **The cost, which is why it is asked:** a `PostToolUse` hook on every tool call, and a session that can end its own turn with the work paused. Arrives with one `.claude/settings.json` entry to merge and a `scripts/vet.sh` loop running its tests; a no deletes the directory and both. | `bash`, `jq`; `python3` ≥3.9 for its tests | `.claude/hooks/lib.sh` (G4), `/go` (G2) | adopt — **opt-in: ask** |
 
 ### Never
 
