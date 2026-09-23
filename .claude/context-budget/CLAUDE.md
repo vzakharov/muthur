@@ -4,7 +4,7 @@
 crosses 200k tokens (a warning) and 300k (the pause), so work is left resumable
 before a compact or a dead session takes the choice away. What the agent does on
 each notice is `@.claude/skills/go/SKILL.md` § "Stopping partway releases the
-plan"; this file holds only what the hook's reading rests on.
+plan".
 
 - **`PostToolUse`, not `UserPromptSubmit`.** The lines are crossed mid-turn, in
   the long autonomous stretches where no operator prompt arrives to fire on.
@@ -13,9 +13,8 @@ plan"; this file holds only what the hook's reading rests on.
 - **The reading is what the last request sent**: the last main-chain assistant
   record's `input_tokens + cache_read_input_tokens + cache_creation_input_tokens`.
   `output_tokens` is left out — the next request carries it, and the next
-  reading counts it then. A session's baseline (system prompt, tools, `CLAUDE.md`)
-  is around 100k before any work, so the warning line is roughly one
-  baseline of work away.
+  reading counts it then. A session starts at around 100k (system prompt, tools,
+  `CLAUDE.md`), so the warning line is about one baseline of work away.
 - **The main chain only.** A tool call carrying `agent_id` is a subagent's and
   is skipped, as are `isSidechain` records and the `<synthetic>` placeholder
   Claude Code writes for a turn no model served — whose zeroed usage would read

@@ -101,8 +101,8 @@ five that decide the individual G6 rows; the language decision; and one
 question per catalog row marked `opt-in: ask`, each asked with the cost its row
 states. A fork carries every such row wired on, so a no deletes the row's path,
 its `.claude/settings.json` entries and its `scripts/vet.sh` loop. The ledger's
-yes changes the tree too: it arrives full of this template's own rows, so a yes
-empties `.claude/costs/sessions/`.
+yes changes the tree too: it empties `.claude/costs/sessions/` of this template's
+own rows.
 
 **Language is the one question with evidence in hand**, so read it before asking:
 the language the brief is written in, the language the operator writes to the

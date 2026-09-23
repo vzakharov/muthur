@@ -32,11 +32,11 @@
 #     repo-identity check and every `scripts/test_*.py`. One line because an
 #     adopting repo drops them together; it keys on the catalog and exits 0
 #     downstream, so the line is harmless if a rewrite leaves it.
-#   the opt-in loop — the own tests of the session cost ledger
-#     (`.claude/costs/`) and the context budget hook (`.claude/context-budget/`),
-#     run by path for `check-muthur.sh`'s reason. Each is opt-in, so the loop
-#     keys on its directory: a repo that said yes keeps it through the rewrite,
-#     and one that said no has nothing for it to find.
+#   the opt-in loop — the tests of the session cost ledger (`.claude/costs/`)
+#     and of the context budget hook (`.claude/context-budget/`), run by path
+#     for `check-muthur.sh`'s reason. Each is opt-in, so the loop keys on its
+#     directory: a repo that said yes keeps it through the rewrite, and one that
+#     said no has nothing for it to find.
 #
 # See CLAUDE.md → Vetting for the contract.
 
