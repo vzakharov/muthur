@@ -1,5 +1,3 @@
-> ⛔ **DRAFT — DO NOT IMPLEMENT.** This plan is not approved. Do not edit source while this file is named `*.draft.do-not-implement.md` — prep and spikes go in `tmp/`. On an explicit operator go-ahead, `git mv` it to `*.in-progress.md` and delete this banner (quoting the go-ahead in the commit) *before* touching code.
-
 # Stage edits to always-loaded files, swap them in at `/finalize` (#100)
 
 #98 staged its `CLAUDE.md` edit by hand, and the procedure lived only in its plan and PR body. This makes it part of the loop: a rule that fires whenever an always-loaded file is about to be edited, a script that owns the mechanics, and a `/finalize` step that swaps the copies in before anything reads the tree.
