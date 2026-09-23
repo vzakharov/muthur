@@ -31,13 +31,11 @@ only the next session.
 
 - `scripts/staged.sh stage <path>…`, then commit that alone, before any edit:
   the copy is byte-identical, so every later commit reads as a diff against the
-  original. Edit the copy, `docs/staged/<path>`, never the real file.
-- `docs/staged/` mirrors the tree, so it holds a `CLAUDE.md` and a `.claude/`
-  that Claude Code would load as a nested project's the first time a file
-  there is read. `claudeMdExcludes` in `.claude/settings.json` keeps the
-  `CLAUDE.md` and the rules out; a staged `SKILL.md` has no such exclusion and
-  registers as `docs/staged:<name>`, the version under review, until the swap.
-- `diff -r docs/staged .` and `scripts/staged.sh list` show what is staged.
+  original. Edit the copy, `docs/staged/<path>.staged`, never the real file.
+- The `.staged` suffix is what keeps a copy inert: under its real name it
+  would load as a nested `CLAUDE.md`, rule or skill the first time a file
+  there is read. `vet` fails a file in `docs/staged/` without it.
+- `scripts/staged.sh list` shows what is staged, each real path beside its copy.
 - `/finalize` runs `swap` before its quality passes, merging in anything the
   real file gained meanwhile, and nothing deletes a copy by hand.
 - The operator can ask for the swap mid-branch ("swap it in", "unstage"), when

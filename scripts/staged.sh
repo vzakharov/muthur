@@ -1,7 +1,7 @@
 #!/bin/bash
 # Stage edits to always-loaded files, and swap them back in at /finalize.
 #
-#   staged.sh stage <path>...   copy each file, unchanged, to docs/staged/<path>
+#   staged.sh stage <path>...   copy each file, unchanged, to docs/staged/<path>.staged
 #   staged.sh swap              put every staged copy back over its real file
 #   staged.sh check [--empty]   every staged copy stands for a tracked real file
 #   staged.sh resolve <path>    print the staged copy's path if <path> is staged
@@ -12,12 +12,11 @@
 # each time it is edited. So the edits go to a copy, and the real file changes
 # once, when `/finalize` runs `swap`.
 #
-# `docs/staged/` mirrors the tree: the copy of `<path>` is `docs/staged/<path>`,
-# so the path is the whole mapping, and `diff -r docs/staged .` or a `cp -r`
-# reads it without this script. That puts a `CLAUDE.md` and `.claude/` inside
-# it, which Claude Code would load as a nested project's instructions on the
-# first read there — `claudeMdExcludes` in `.claude/settings.json` is what keeps
-# them out, and the rule says so.
+# The copy of `<path>` is `docs/staged/<path>.staged`: the path is the whole
+# mapping, and the suffix is what keeps the copy from loading. Claude Code picks
+# a nested `CLAUDE.md` or `SKILL.md` up by its exact name and a rule by its
+# `.md`, so a mirrored copy under either name would load as live instructions —
+# a skill's description in every listing — while it is still under review.
 #
 # `swap` merges rather than copies when the real file changed after staging — a
 # base merge brought an edit in, or someone edited it in place — because a copy
@@ -36,6 +35,7 @@ set -uo pipefail
 cd "$(dirname "$0")/.." || exit 1
 
 DIR="docs/staged"
+SUFFIX=".staged"
 failures=0
 
 fail() {
@@ -51,20 +51,25 @@ usage() {
 # Real paths with a staged copy, one per line.
 staged_paths() {
   [ -d "$DIR" ] || return 0
-  find "$DIR" -type f | sed "s#^$DIR/##" | sort
+  find "$DIR" -type f -name "*$SUFFIX" | sed -e "s#^$DIR/##" -e "s#$SUFFIX\$##" | sort
+}
+
+copy_of() {
+  printf '%s\n' "$DIR/$1$SUFFIX"
 }
 
 # The real file as it stood when its copy was staged: in the commit that last
-# added the copy, or HEAD while that commit is still to be written.
+# added the copy, or HEAD while that commit is still to be written. Renames are
+# off so a moved copy counts as added where it landed.
 base_of() {
   local added
-  added=$(git log -1 --diff-filter=A --format=%H -- "$DIR/$1")
+  added=$(git log -1 --no-renames --diff-filter=A --format=%H -- "$(copy_of "$1")")
   git rev-parse --verify --quiet "${added:-HEAD}:$1"
 }
 
 cmd_stage() {
   [ $# -gt 0 ] || usage
-  local path
+  local path staged
   for path in "$@"; do
     path=${path#./}
     if [[ "$path" == "$DIR"/* ]]; then
@@ -73,13 +78,14 @@ cmd_stage() {
       fail "$path — no such file"
     elif ! git ls-files --error-unmatch -- "$path" >/dev/null 2>&1; then
       fail "$path is not tracked — a staged copy is a diff against a committed file"
-    elif [ -e "$DIR/$path" ]; then
+    elif [ -e "$(copy_of "$path")" ]; then
       fail "$path is already staged"
     else
-      mkdir -p "$(dirname "$DIR/$path")"
-      cp -p -- "$path" "$DIR/$path"
-      git add -- "$DIR/$path"
-      printf 'staged: %s → %s\n' "$path" "$DIR/$path"
+      staged=$(copy_of "$path")
+      mkdir -p "$(dirname "$staged")"
+      cp -p -- "$path" "$staged"
+      git add -- "$staged"
+      printf 'staged: %s → %s\n' "$path" "$staged"
     fi
   done
 }
@@ -89,7 +95,7 @@ cmd_swap() {
   local conflicted=() path staged base scratch rc
   scratch=$(mktemp -d)
   while IFS= read -r path; do
-    staged="$DIR/$path"
+    staged=$(copy_of "$path")
     if [ ! -f "$path" ]; then
       fail "cannot swap $staged — $path does not exist"
       continue
@@ -136,12 +142,15 @@ cmd_check() {
     *) usage ;;
   esac
   while IFS= read -r path; do
+    fail "$path is in $DIR without the $SUFFIX suffix, so it loads as the real thing would — stage the real file instead"
+  done < <([ ! -d "$DIR" ] || find "$DIR" -type f ! -name "*$SUFFIX" | sort)
+  while IFS= read -r path; do
     if ! git ls-files --error-unmatch -- "$path" >/dev/null 2>&1; then
-      fail "$DIR/$path stands for $path, which is not a tracked file"
+      fail "$(copy_of "$path") stands for $path, which is not a tracked file"
     elif base=$(base_of "$path") && [ "$(git hash-object -- "$path")" != "$base" ]; then
       printf 'staged: note — %s changed since it was staged; swap will merge it\n' "$path" >&2
     fi
-    [ "$empty" -eq 0 ] || fail "$path is still staged as $DIR/$path — run scripts/staged.sh swap"
+    [ "$empty" -eq 0 ] || fail "$path is still staged as $(copy_of "$path") — run scripts/staged.sh swap"
   done < <(staged_paths)
 }
 
@@ -152,7 +161,7 @@ cmd_resolve() {
   local path
   while IFS= read -r path; do
     if [ "$1" -ef "$path" ]; then
-      printf '%s\n' "$DIR/$path"
+      copy_of "$path"
       return
     fi
   done < <(staged_paths)
@@ -161,7 +170,7 @@ cmd_resolve() {
 
 cmd_list() {
   [ $# -eq 0 ] || usage
-  staged_paths | awk -v d="$DIR" '{ print $0 "\t" d "/" $0 }'
+  staged_paths | awk -v d="$DIR" -v s="$SUFFIX" '{ print $0 "\t" d "/" $0 s }'
 }
 
 [ $# -gt 0 ] || usage

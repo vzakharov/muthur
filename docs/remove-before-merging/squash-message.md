@@ -11,12 +11,11 @@ So on a branch such files are edited through staged copies, and the
 real files change once, at /finalize.
 
 scripts/staged.sh owns the mechanics. `stage` copies a file
-byte-identical to the mirrored path under docs/staged/, so the path is
-the whole mapping and a plain diff -r shows what is staged. `swap` puts
-each copy back, with a three-way merge against the file as it stood
-when staged, so a base merge's edit is never overwritten. `check` runs
-in the vet run. claudeMdExcludes keeps the mirrored CLAUDE.md and
-rules from loading as a nested project's.
+byte-identical to docs/staged/<path>.staged, so the path is the whole
+mapping, and the suffix keeps the copy from loading as a nested
+CLAUDE.md, rule or skill. `swap` puts each copy back, with a three-way
+merge against the file as it stood when staged, so a base merge's edit
+is never overwritten. `check` runs in the vet run.
 
 CLAUDE.md states the rule. A path-scoped .claude/rules/staging.md
 defines the always-loaded set (the root CLAUDE.md and its imports,

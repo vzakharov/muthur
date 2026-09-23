@@ -1,7 +1,4 @@
 {
-  "claudeMdExcludes": [
-    "**/docs/staged/**"
-  ],
   "permissions": {
     "allow": []
   },
