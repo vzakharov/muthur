@@ -2,7 +2,7 @@
   "sessionId": "912b7b59-61ef-511e-9b0e-98ed328a3e79",
   "branch": "claude/context-budget-hook-tb5p5q",
   "cwd": "/home/user/muthur",
-  "name": null,
+  "name": "planning the context budget hook",
   "openingPrompt": "давай добавим хук который, при достижении 200к токенов даёт агенту ворнинг, мол, у тебя уже много контекста, посмотри, не стоит ли зафиксировать работу там, до …",
   "prs": [
     96
