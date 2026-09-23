@@ -32,10 +32,11 @@
 #     repo-identity check and every `scripts/test_*.py`. One line because an
 #     adopting repo drops them together; it keys on the catalog and exits 0
 #     downstream, so the line is harmless if a rewrite leaves it.
-#   the `.claude/costs/` loop — the session cost ledger's own tests, run by path
-#     for `check-muthur.sh`'s reason. The ledger is opt-in, so the loop keys on
-#     the directory: a repo that said yes keeps it through the rewrite, and one
-#     that said no has nothing for it to find.
+#   the opt-in loop — the own tests of the session cost ledger
+#     (`.claude/costs/`) and the context budget hook (`.claude/context-budget/`),
+#     run by path for `check-muthur.sh`'s reason. Each is opt-in, so the loop
+#     keys on its directory: a repo that said yes keeps it through the rewrite,
+#     and one that said no has nothing for it to find.
 #
 # See CLAUDE.md → Vetting for the contract.
 
@@ -44,7 +45,7 @@ set -euo pipefail
 "$(dirname "$0")/check-skill-catalog.sh"
 "$(dirname "$0")/check-squash-message.sh"
 "$(dirname "$0")/check-muthur.sh"
-for test in "$(dirname "$0")"/../.claude/costs/test_*.py; do
+for test in "$(dirname "$0")"/../.claude/{costs,context-budget}/test_*.py; do
   [ ! -f "$test" ] || python3 "$test"
 done
 
