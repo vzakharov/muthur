@@ -1,0 +1,58 @@
+{
+  "sessionId": "b1e2e7e8-277e-5def-aeb0-c1883add4b7a",
+  "branch": "claude/trim-claude-md-w8am6w",
+  "cwd": "/home/user/muthur",
+  "name": "finalize the CLAUDE.md trim (#98)",
+  "openingPrompt": "давай /handle и finalize claude/trim-claude-md-w8am6w",
+  "prs": [
+    98
+  ],
+  "url": "https://claude.ai/code/session_01XQSiueJZRojUbEo7BfMnA1",
+  "firstResponseAt": "2026-09-23T13:25:23.395Z",
+  "lastResponseAt": "2026-09-23T13:28:52.360Z",
+  "pricesAsOf": "2026-09-23",
+  "claudeCodeTotalUsd": null,
+  "total": {
+    "inputTokens": 54,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 98254,
+    "cacheReadTokens": 3011894,
+    "outputTokens": 10468,
+    "thinkingTokens": 2959,
+    "responses": 27,
+    "costUsd": 1.5979868000000002
+  },
+  "ownTurns": {
+    "inputTokens": 54,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 98254,
+    "cacheReadTokens": 3011894,
+    "outputTokens": 10468,
+    "thinkingTokens": 2959,
+    "responses": 27,
+    "costUsd": 1.5979868000000002
+  },
+  "subagents": {
+    "inputTokens": 0,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 0,
+    "cacheReadTokens": 0,
+    "outputTokens": 0,
+    "thinkingTokens": 0,
+    "responses": 0,
+    "costUsd": 0.0
+  },
+  "byRate": {
+    "claude-opus-5-5/standard": {
+      "inputTokens": 54,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 98254,
+      "cacheReadTokens": 3011894,
+      "outputTokens": 10468,
+      "thinkingTokens": 2959,
+      "responses": 27,
+      "costUsd": 1.5979868000000002
+    }
+  },
+  "warnings": []
+}
