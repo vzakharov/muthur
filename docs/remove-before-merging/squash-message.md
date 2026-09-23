@@ -1,7 +1,7 @@
 Proposed squash title/body:
 
 ```
-feat: per-turn spend in cost-row subjects, warn on unwritten tail (pr #95)
+feat: per-turn spend in cost commit subjects, warn on unwritten tail (pr #95)
 ```
 
 ```
@@ -19,9 +19,10 @@ each rewrite carries it forward as it carries the name, and a row ends
 up listing every turn the hook read short. The last-turn bullet and the
 transcript watcher it weighed leave .claude/costs/CLAUDE.md.
 
-The cost-row commit subject also says what the turn cost -- "chore:
-session cost row +0.10 USD, total 0.64 USD" -- measured from the row as
-last committed, so a hand run between turns does not eat into it.
+The cost commit subject also says what the turn cost -- "chore:
+session cost +0.10 USD, total 0.64 USD", no longer "chore: session cost
+row" -- measured from the row as last committed, so a hand run between
+turns does not eat into it.
 
 Co-authored-by: Claude <noreply@anthropic.com>
 ```
