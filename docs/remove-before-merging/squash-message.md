@@ -10,19 +10,19 @@ request, invalidates the prompt cache of every session on the branch.
 So on a branch such files are edited through staged copies, and the
 real files change once, at /finalize.
 
-scripts/staged.sh now owns the mechanics. `stage` copies a file
-byte-identical under docs/remove-before-merging/ and records the
-staged name, the real path and the file's blob in a manifest, so
-nothing is guessed from a file name. `swap` puts each copy back, with a
-three-way merge when the real file moved since staging, so a base
-merge's edit is never overwritten. `check` holds the manifest and the
-directory to each other, and runs in the vet run.
+scripts/staged.sh owns the mechanics. `stage` copies a file
+byte-identical to the mirrored path under docs/staged/, so the path is
+the whole mapping and a plain diff -r shows what is staged. `swap` puts
+each copy back, with a three-way merge against the file as it stood
+when staged, so a base merge's edit is never overwritten. `check` runs
+in the vet run. claudeMdExcludes keeps the mirrored CLAUDE.md and
+rules from loading as a nested project's.
 
 CLAUDE.md states the rule. A path-scoped .claude/rules/staging.md
 defines the always-loaded set (the root CLAUDE.md and its imports,
 rules with no paths:, skill description:s) and arrives whenever one of
 those files is opened. /finalize swaps before its quality passes, and
-refuses to sweep docs/remove-before-merging/ while anything is staged.
+refuses to land while anything is still staged.
 An operator's "swap it in" runs the swap early, trading the cache for a
 branch that runs on the new text.
 
