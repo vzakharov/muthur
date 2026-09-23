@@ -7,7 +7,7 @@
 - **Draft:** yes
 - **Merged:** _not merged_
 - **Created:** 2026-09-23T11:15:37Z
-- **Updated:** 2026-09-23T11:52:48Z
+- **Updated:** 2026-09-23T12:03:12Z
 - **Closed:** _not closed_
 - **Labels:** _none_
 
@@ -21,6 +21,8 @@
 - **Once per climb:** the level announced is kept in `tmp/context-budget/<session_id>`; a reading back under 200k (a compact) re-arms both. Subagent tool calls (`agent_id`, per the hooks reference), sidechain records and `<synthetic>` responses are skipped; anything unreadable is silence. `CONTEXT_BUDGET_WARN` / `CONTEXT_BUDGET_PAUSE` override the lines. `emit_context` in `lib.sh` now reads `hookEventName` off the payload, so the new hook reuses it with no caller changes.
 - **One pause procedure, two triggers:** `/go` § "Stopping partway releases the plan" takes the budget notice beside the operator's ask, writes `docs/plans/<slug>.paused.md` directly for planless work, and has an unasked pause reported and ended with the `/go <branch>` block.
 - **Opt-in:** the catalog gains G8 (`adopt — opt-in: ask`), and what `opt-in: ask` means is stated once beside the dispositions. `ADOPTING.md`, `/detemplate` and `/update-muthur` ask every such row instead of naming the cost ledger. Wired on here in `.claude/settings.json`; `scripts/vet.sh` runs its tests beside the ledger's.
+- **A one-turn session gets named too:** `.claude/costs/hooks/prompt-session-name.sh` asked for a name only once the session's cost row existed, and the row lands as a turn ends, so a session with a single turn — the `/plan` that opened this PR — was never asked. It now asks from the first prompt; the `--name` run writes the row itself.
+- **CLAUDE.md's plan-file bullet cut to its tripwires:** a draft name means no source edits, in-progress belongs to another session, paused is where to resume; the rest points at `/plan` § "Plan file lifecycle".
 
 ## QA Checklist
 
@@ -31,6 +33,7 @@
 - [ ] `rearm` — after `/compact`, climbing past 200k again fires the warning again.
 - [ ] `subagent` — a subagent's tool calls never produce the notice.
 - [ ] `opt-in` — `/detemplate` on a fork and `/update-muthur` on an adopter each ask about the hook before it is wired, and a no leaves no hook registered.
+- [ ] `name-first-turn` — a session that ends after one turn leaves its cost row with a `name` set.
 
 | Item | Automatable | Covered? | Notes |
 |------|-------------|----------|-------|
@@ -41,6 +44,7 @@
 | `rearm` | unit | ✅ `test_dropping_under_the_warn_line_rearms_both` | |
 | `subagent` | unit | ✅ `test_ignores_a_subagents_tool_call`, `test_skips_a_sidechain_response` | |
 | `opt-in` | manual-only | — | Skill procedure, read by an agent |
+| `name-first-turn` | manual-only | — | The hook's output was checked by hand for all three row states; the agent acting on it needs a live session |
 
 https://claude.ai/code/session_01NQLYa54isw3Ce5gq3NF5gh
 
@@ -69,22 +73,23 @@ cannot see its own context size, so nothing prompted it to leave a
 resumable state before that happened.
 
 A PostToolUse hook in .claude/context-budget/ reads the context the
-session carries off the transcript's last main-chain usage record and
-speaks twice. At 200k tokens it warns: reach a committed stopping
-point, tell the operator, offer /compact or a new session - the latter
-with the plan paused, or written retroactively when there was none. At
-300k it pauses outright, then ends the turn with a /go handoff. Either
-time, the agent's judgment that the work is nearly done overrides the
-stop, and is stated. Each notice fires once per climb; a compact
-re-arms it.
-
-The pause is one procedure with two triggers: /go's "Stopping partway"
-section now takes the budget notice beside an operator's ask, and
-writes a paused plan directly for work that had none.
+session carries off the transcript's last main-chain usage record. At
+200k tokens it warns: reach a committed stopping point, tell the
+operator, offer /compact or a new session. At 300k it pauses the plan
+outright - writing a paused one for work that had none - and ends the
+turn with a /go handoff. Either time, the agent's judgment that the
+work is nearly done overrides the stop, and is stated. Each notice
+fires once per climb; a compact re-arms it. The pause is /go's one
+"Stopping partway" procedure, which an operator's ask also runs.
 
 The hook is declinable and never wired on unasked: the catalog carries
 it as G8, opt-in: ask, and ADOPTING.md, /detemplate and /update-muthur
 now ask every opt-in row rather than the cost ledger by name.
+
+The cost ledger's naming hook now asks for a session's name from its
+first prompt. It used to wait for the session's cost row, which lands
+only as a turn ends, so a one-turn session - a /plan ending on its
+handoff block - was never asked.
 
 Co-authored-by: Claude <noreply@anthropic.com>
 ```
@@ -93,29 +98,11 @@ Co-authored-by: Claude <noreply@anthropic.com>
 
 ## Review threads
 
-- **T01** `.claude/costs/sessions/2026-09/912b7b59-61ef-511e-9b0e-98ed328a3e79.json`:5 — unresolved — last: @vzakharov (human) 2026-09-23T11:46:15Z — "ты пропустил просьбу дать сессии имя? интересно, почему?" → [↓](#t01)
-- **T02** `CLAUDE.md`:75 — unresolved — last: @vzakharov (human) 2026-09-23T11:52:40Z — "это было уже и так слишком долго, а стало вообще неприемлемо…" → [↓](#t02)
+_1 resolved thread omitted; re-run with `--include-resolved` to export it._
+
+- **T01** `CLAUDE.md`:75 — unresolved — last: @vzakharov (human) 2026-09-23T12:03:12Z — "давай заведём issue сделать такое со всеми другими частями C…" → [↓](#t01)
 
 <a id="t01"></a>
-
-### `.claude/costs/sessions/2026-09/912b7b59-61ef-511e-9b0e-98ed328a3e79.json`:5 — unresolved
-
-```diff
-@@ -0,0 +1,58 @@
-… 1 line elided …
-+  "sessionId": "912b7b59-61ef-511e-9b0e-98ed328a3e79",
-+  "branch": "claude/context-budget-hook-tb5p5q",
-+  "cwd": "/home/user/muthur",
-+  "name": null,
-```
-
-**@vzakharov (human)** — 2026-09-23T11:46:15Z
-
-ты пропустил просьбу дать сессии имя? интересно, почему?
-
----
-
-<a id="t02"></a>
 
 ### `CLAUDE.md`:75 — unresolved
 
@@ -131,6 +118,14 @@ Co-authored-by: Claude <noreply@anthropic.com>
 **@vzakharov (human)** — 2026-09-23T11:52:40Z
 
 это было уже и так слишком долго, а стало вообще неприемлемо. сократи пополам, оставив только то, что нужно знать ВСЕГДА, а не только когда собственно сталкиваешься с этим процессом
+
+**@vzakharov (agent)** — 2026-09-23T11:56:57Z
+
+Сократил втрое, а не вдвое. В пункте остались только три правила, которые нужны на каждом ходу: пока план называется `draft.do-not-implement`, код не трогаем; `in-progress` значит, что план держит другая сессия; продолжать надо с `paused`. Кто и когда переименовывает файлы, как `/finalize` их убирает и как устроен хендофф, теперь не расписано, вместо этого ссылка на `/plan` § "Plan file lifecycle": там всё это и так уже есть. fe2be2e
+
+**@vzakharov (human)** — 2026-09-23T12:03:12Z
+
+давай заведём issue сделать такое со всеми другими частями CLAUDE.md (и записать в сам файл такой подход) -- кажется, его неприлично раздуло.
 
 ---
 
