@@ -107,7 +107,7 @@ there is no condition under which it fails to apply.
 | Item | What it does | Requires | Pulls in | Disposition |
 | --- | --- | --- | --- | --- |
 | `CLAUDE.md` | The always-loaded conventions: key principles, docstring policy, derive-types-from-source-of-truth, doc-sync rules, commit conventions, the language decision. | — | — | adopt — **merge, don't overwrite** |
-| `.claude/rules/` | The path-scoped convention mechanism: a rule file loads only when a session touches the paths it declares. Ships with a README and no rules. | — | — | adopt |
+| `.claude/rules/` | The path-scoped convention mechanism: a rule file loads only when a session reads a file its `paths:` match. For globs no single directory bounds; one directory's conventions go in that directory's own `CLAUDE.md`. Ships with a README and no rules. | — | — | adopt |
 | `/dry` | Review the session's diff for DRY opportunities; apply the obvious wins, surface the ambiguous ones. | — | — | adopt |
 | `/tend-prose` | Cut prose that shouldn't exist, rewrite what narrates a change into present-tense contracts, trim what names and types already say, delete what survives only to deny a thing the change removed. The long version of CLAUDE.md § "Writing things down". | — | — | adopt |
 | `/polish` | Run `/dry` then `/tend-prose` over the branch's diff, committing what they change. `/go` runs it after implementing and `/finalize` before anything else it does; the operator runs it over work that reached neither. | — | `/dry`, `/tend-prose` (this group) | adopt |

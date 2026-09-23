@@ -1,12 +1,22 @@
+---
+paths:
+  - '.claude/rules/**'
+---
+
 # `.claude/rules/`
 
-Path-scoped convention files. Claude Code loads a rule file automatically when a
-session touches a file matching its `paths:` globs — so conventions reach the
-agent at the moment they're relevant, without being permanently resident in
-context the way `CLAUDE.md` is.
+Path-scoped convention files. Claude Code loads a rule file when a session reads
+a file matching its `paths:` globs — so conventions reach the agent at the moment
+they're relevant, without being permanently resident in context the way the root
+`CLAUDE.md` is.
 
-**This directory ships empty on purpose.** Rules are inherently project-specific;
-the reusable part is the mechanism. Add rule files as your conventions emerge.
+**Every `.md` under this directory is a rule, this README included.** One with no
+`paths:` loads into every session at launch, which is why this file scopes itself
+to the directory it describes.
+
+**This directory ships with no rules on purpose.** Rules are inherently
+project-specific; the reusable part is the mechanism. Add rule files as your
+conventions emerge.
 
 ## Format
 
@@ -16,13 +26,13 @@ Each rule is a Markdown file with YAML frontmatter:
 ---
 description: One line — what this rule governs, specific enough to be skimmable in a list
 paths:
-  - src/db/**
-  - migrations/**
+  - '**/*.test.ts'
+  - '**/*.test.tsx'
 ---
 
-# Database migrations
+# Unit tests
 
-- Migrations are append-only; never edit one that has run anywhere.
+- Mock at the HTTP boundary, never an internal module.
 - …
 ```
 
@@ -31,23 +41,28 @@ paths:
   `*` (`'**/*.test.ts'`) so the YAML parses. A single literal path is fine
   (`package.json`).
 
-## What belongs here vs. in `CLAUDE.md`
+## What belongs here vs. in a `CLAUDE.md`
 
 | | Goes in |
 |---|---|
-| Holds everywhere in the repo (commit style, error handling, general principles) | `CLAUDE.md` |
-| Holds only when touching a particular area (schema rules, styling, test layout, a directory with a trap in it) | a rule file |
+| Holds everywhere in the repo (commit style, error handling, general principles) | the root `CLAUDE.md` |
+| Holds in one directory's files (schema rules under `src/db/`, a directory with a trap in it) | that directory's own `CLAUDE.md` |
+| Holds in files no single directory bounds (`'**/*.test.ts'`, several scattered paths) | a rule file here |
 
-The test is scope, not importance. A load-bearing rule that only applies to one
-directory still belongs here — that's the point of the mechanism. Moving
-area-specific guidance out of `CLAUDE.md` keeps the always-loaded file short
-enough to actually be followed.
+The test is scope, not importance. A directory's `CLAUDE.md` loads exactly as a
+rule scoped to that directory would — on a read of a file beneath it — and it
+sits where the next person editing that directory will see it, so a rule file
+earns its place only when its globs could not be a directory. Both load on a
+`Read` only; CLAUDE.md § "Key principles" on the `Read`/`Edit`/`Write` tools says
+what that costs.
 
 ## Good candidates
 
-- A directory with a non-obvious contract (generated code, a public API barrel,
-  a scratch route that must stay auth-free).
-- Anything externally owned — schemas provisioned outside the repo, config that
-  must be mirrored in a Dockerfile or deploy manifest.
-- Traps that have already bitten someone once. If a code review comment would
-  apply again to the next person editing that path, it's a rule.
+- A kind of file rather than a place — tests, stories, generated code —
+  wherever it sits.
+- One contract spread over paths that share no parent short of the root: a schema
+  provisioned outside the repo and the Dockerfile or deploy manifest that must
+  mirror it.
+- Traps that have already bitten someone once, when the files they live in share
+  a pattern rather than a directory. If a code review comment would apply again
+  to the next person editing those files, it's a rule.
