@@ -111,7 +111,7 @@ run_ledger() {
     jq -r '.total.costUsd // 0' 2>/dev/null)"
   now="$(jq -r '.total.costUsd' "$row")"
   subject="$(awk -v was="${was:-0}" -v now="$now" \
-    'BEGIN { printf "chore: session cost row +%.2f USD, total %.2f USD", now - was, now }')"
+    'BEGIN { printf "chore: session cost +%.2f USD, total %.2f USD", now - was, now }')"
 
   # `commit -- <path>` stages nothing else, so work the agent has in flight
   # stays where it is.
