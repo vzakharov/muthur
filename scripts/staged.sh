@@ -112,12 +112,14 @@ cmd_stage() {
 cmd_swap() {
   [ $# -eq 0 ] || usage
   local remaining="" conflicted=() name path blob staged scratch rc
+  # A row that could not be swapped stays in the manifest.
+  keep() { remaining=$(printf '%s\n%s\t%s\t%s' "$remaining" "$name" "$path" "$blob"); }
   scratch=$(mktemp -d)
   while IFS=$'\t' read -r name path blob; do
     staged="$DIR/$name"
     if [ ! -f "$staged" ] || [ ! -f "$path" ]; then
       fail "cannot swap $staged over $path — one of them is missing (staged.sh check says which)"
-      remaining=$(printf '%s\n%s\t%s\t%s' "$remaining" "$name" "$path" "$blob")
+      keep
       continue
     fi
     if [ "$(git hash-object -- "$path")" = "$blob" ]; then
@@ -126,7 +128,7 @@ cmd_swap() {
     else
       if ! git cat-file blob "$blob" > "$scratch/base" 2>/dev/null; then
         fail "$path changed since it was staged, and its staged-from blob $blob is gone — merge $staged into it by hand"
-        remaining=$(printf '%s\n%s\t%s\t%s' "$remaining" "$name" "$path" "$blob")
+        keep
         continue
       fi
       cp -- "$staged" "$scratch/merged"
@@ -135,7 +137,7 @@ cmd_swap() {
       rc=$?
       if [ "$rc" -lt 0 ] || [ "$rc" -gt 127 ]; then
         fail "git merge-file failed on $path"
-        remaining=$(printf '%s\n%s\t%s\t%s' "$remaining" "$name" "$path" "$blob")
+        keep
         continue
       fi
       cp -- "$scratch/merged" "$path"
