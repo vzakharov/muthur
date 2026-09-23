@@ -11,6 +11,10 @@
 # The lowercased login is both what the message prints and what names the entry
 # file, so the one spelling an agent ever sees is the one the lookup uses. The
 # filename is the whole lookup: no parse, so nothing an entry can malform.
+#
+# The resolved-person line is also parsed: `.claude/costs/lib/identity.py` reads
+# the handle back out of the transcript for the cost row's `operator`, keyed on
+# "the operator is … @<handle> … — the GitHub token".
 
 set -euo pipefail
 

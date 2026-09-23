@@ -60,6 +60,33 @@ def session_url_in(record: Any, line: str) -> Optional[str]:
     return found.group(0) if found else None
 
 
+# `.claude/hooks/operator-voice.sh` prints `Name (@handle)` or a bare `@handle`,
+# already lowercased, and only this phrasing when it resolved a person: the
+# lines it prints for a bot's token or an unreachable `gh` do not match.
+OPERATOR_LINE = re.compile(
+    r"^session-start: the operator is (?:[^\n]* \()?@([a-z0-9-]+)\)? — the GitHub token"
+)
+
+
+def operator_of(record: Any) -> Optional[str]:
+    """The operator's GitHub handle, off the record the SessionStart hook that
+    resolved it left behind. No other record names the person: the branch's
+    pusher and the commit author are the session's token, which may be the
+    agent's own."""
+    if not isinstance(record, dict):
+        return None
+    attachment = record.get("attachment")
+    if not isinstance(attachment, dict):
+        return None
+    if attachment.get("hookEvent") != "SessionStart":
+        return None
+    content = attachment.get("content")
+    if not isinstance(content, str):
+        return None
+    found = OPERATOR_LINE.match(content)
+    return found.group(1) if found else None
+
+
 COMMAND_ENVELOPE = re.compile(
     r"<command-name>([^<]*)</command-name>(?:\s*<command-args>([^<]*)</command-args>)?"
 )

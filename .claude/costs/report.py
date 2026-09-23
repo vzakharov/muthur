@@ -90,6 +90,7 @@ def main() -> int:
         ("week", totals.by_week),
         ("day", totals.by_day),
         ("branch", totals.by_branch),
+        ("operator", totals.by_operator),
     ):
         if buckets:
             table(title, buckets)
