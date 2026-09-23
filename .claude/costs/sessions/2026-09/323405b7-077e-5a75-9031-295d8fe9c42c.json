@@ -1,0 +1,59 @@
+{
+  "sessionId": "323405b7-077e-5a75-9031-295d8fe9c42c",
+  "branch": "claude/cost-row-operator-eqi58a",
+  "cwd": "/home/user/muthur",
+  "name": "operator handle in the cost ledger",
+  "openingPrompt": "давай добавим github-хендл оператора в трекинг костов",
+  "prs": [
+    104
+  ],
+  "url": "https://claude.ai/code/session_01TqYuYnEqrZuAgwg4Q4ApLv",
+  "operator": "vzakharov",
+  "firstResponseAt": "2026-09-23T18:25:12.359Z",
+  "lastResponseAt": "2026-09-23T18:28:50.970Z",
+  "pricesAsOf": "2026-09-23",
+  "claudeCodeTotalUsd": null,
+  "total": {
+    "inputTokens": 56,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 117841,
+    "cacheReadTokens": 3284390,
+    "outputTokens": 16386,
+    "thinkingTokens": 4620,
+    "responses": 28,
+    "costUsd": 1.9275499999999999
+  },
+  "ownTurns": {
+    "inputTokens": 56,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 117841,
+    "cacheReadTokens": 3284390,
+    "outputTokens": 16386,
+    "thinkingTokens": 4620,
+    "responses": 28,
+    "costUsd": 1.9275499999999999
+  },
+  "subagents": {
+    "inputTokens": 0,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 0,
+    "cacheReadTokens": 0,
+    "outputTokens": 0,
+    "thinkingTokens": 0,
+    "responses": 0,
+    "costUsd": 0.0
+  },
+  "byRate": {
+    "claude-opus-5-5/standard": {
+      "inputTokens": 56,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 117841,
+      "cacheReadTokens": 3284390,
+      "outputTokens": 16386,
+      "thinkingTokens": 4620,
+      "responses": 28,
+      "costUsd": 1.9275499999999999
+    }
+  },
+  "warnings": []
+}
