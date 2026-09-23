@@ -3,9 +3,6 @@ writes one session's row and the report that sums many.
 
 `.claude/costs/CLAUDE.md` carries the transcript's shape and what the totals
 leave out.
-
-Rows use the camelCase keys of vovazakharov.com's TypeScript ledger, so either
-writer's rows parse in the other's report.
 """
 
 from __future__ import annotations
