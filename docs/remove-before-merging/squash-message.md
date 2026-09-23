@@ -15,8 +15,10 @@ pricer, a report summing rows by month, week, day and branch, a Stop
 hook that commits and pushes the session's row to the branch after
 every turn, and a prompt hook asking the agent to name the session
 once. Python rather than the original TypeScript keeps muthur free of
-a stack and adds nothing to what adopters already need. Muthur runs it
-on itself; the scripts' tests join the vet run.
+a stack, and rows keep the source's keys, so either ledger reads the
+other's. The rate table adds claude-opus-5-5. Muthur runs the ledger
+on itself; its tests join the vet run, and .claude/costs/CLAUDE.md
+carries its contract.
 
 The ledger costs a commit and a push per turn on every branch, so it
 is never taken by inference. The catalog carries it as one row in its
