@@ -50,6 +50,10 @@
           {
             "type": "command",
             "command": "$CLAUDE_PROJECT_DIR/.claude/costs/hooks/prompt-session-name.sh"
+          },
+          {
+            "type": "command",
+            "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/cache-guard-probe.py"
           }
         ]
       }
