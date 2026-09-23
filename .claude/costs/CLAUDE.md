@@ -134,19 +134,6 @@ one file per session id.
 
 ## What the totals do not cover
 
-- **The last turn of a session.** The transcript is written asynchronously and
-  lags the live conversation, so each run rewrites the row from the whole file
-  and picks up what the previous run was too early to see. The final turn has no
-  successor to correct it, and **no turn can close that**: a step in `/finalize`
-  runs in the same session and is followed by the turns that invoked it, so it
-  moves the blind spot rather than removing it. What closes it is a read that is
-  not a turn. A **later session** re-prices the file, which needs the transcript
-  to outlive this one — true locally, false in a remote container, discarded
-  with `~/.claude/projects/` inside it unless something committed a copy first.
-  A **watcher on the transcript** sees the trailing appends, the container
-  outliving them by a wide margin, and costs the serialisation § "Running beside
-  the harness's Stop check" is built on: it would write and commit with no turn
-  in progress.
 - **The turn that merges.** `/finalize and merge` merges within its turn and the
   row lands after, on a branch already merged — so that turn's spend reaches
   neither the trunk nor any later merge.

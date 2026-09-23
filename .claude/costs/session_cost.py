@@ -2,14 +2,15 @@
 """Price one session's transcript and write its row under `sessions/`.
 
 Usage:
-  python3 .claude/costs/session_cost.py --transcript <path> [--session-id <id>] [--row-path]
+  python3 .claude/costs/session_cost.py --transcript <path> [--session-id <id>] [--row-path] [--at-stop]
   python3 .claude/costs/session_cost.py --transcript <path> --name '<short label>'
 
 The row is rewritten from the whole file each run rather than appended to, which
-is what lets a run pick up what the previous one was too early to see — the
-transcript lags the live conversation. Stdout is the interface: the row's path
-under `--row-path`, for `hooks/stop-session-cost.sh`; a one-line summary
-otherwise, for a person running it by hand.
+is what lets a run pick up anything the previous one was too early to see.
+`--at-stop` is the Stop hook's: the turn is over, so the transcript should end on
+its `end_turn`. Stdout is the interface: the row's path under
+`--row-path`, for `hooks/stop-session-cost.sh`; a one-line summary otherwise,
+for a person running it by hand.
 
 Paths resolve from this file's own location, so it runs from any working
 directory. Stdlib only — Python 3.9+.
@@ -28,6 +29,7 @@ from typing import List, Optional
 from lib.pricing import (
     SessionCost,
     TranscriptSources,
+    is_unwritten_tail,
     parse_prices,
     parse_session_cost,
     summarise_transcript,
@@ -48,16 +50,20 @@ def subagents_of(main: Path) -> List[str]:
     return [path.read_text(encoding="utf-8") for path in sorted(directory.glob("*.jsonl"))]
 
 
-def name_on(row: Path) -> Optional[str]:
-    """The name is the one field no run can recompute, so a rewrite reads back
-    what the last one wrote. An unreadable row loses its name rather than
-    failing the write — the rewrite is what repairs it — and says so."""
+def previous(row: Path) -> Optional[SessionCost]:
+    """The name and any unwritten-tail warning are what no run can recompute
+    from the transcript, so a rewrite reads them back from the last one. An
+    unreadable row loses both rather than failing the write — the rewrite is
+    what repairs it — and says so."""
     if not row.exists():
         return None
     try:
-        return parse_session_cost(row.read_text(encoding="utf-8"), str(row)).name
+        return parse_session_cost(row.read_text(encoding="utf-8"), str(row))
     except (ShapeError, json.JSONDecodeError) as error:
-        print(f"session-cost: {error}; rewriting the row without its name", file=sys.stderr)
+        print(
+            f"session-cost: {error}; rewriting the row from the transcript alone",
+            file=sys.stderr,
+        )
         return None
 
 
@@ -86,6 +92,7 @@ def main() -> int:
     parser.add_argument("--session-id")
     parser.add_argument("--name")
     parser.add_argument("--row-path", action="store_true")
+    parser.add_argument("--at-stop", action="store_true")
     args = parser.parse_args()
 
     transcript: Path = args.transcript
@@ -97,10 +104,15 @@ def main() -> int:
         ),
         prices,
         args.session_id or transcript.stem,
+        at_stop=args.at_stop,
     )
 
     out = COSTS / "sessions" / month_of(cost) / f"{cost.session_id}.json"
-    cost.name = args.name if args.name is not None else name_on(out)
+    before = previous(out)
+    cost.name = args.name if args.name is not None else (before.name if before else None)
+    if before is not None:
+        carried = [w for w in before.warnings if is_unwritten_tail(w) and w not in cost.warnings]
+        cost.warnings = carried + cost.warnings
     write_atomic(out, json.dumps(to_json(cost), indent=2, ensure_ascii=False) + "\n")
 
     if args.row_path:

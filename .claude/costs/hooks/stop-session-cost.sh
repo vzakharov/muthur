@@ -100,14 +100,23 @@ run_ledger() {
   row="$(python3 "$root/.claude/costs/session_cost.py" \
     --transcript "$transcript" \
     --session-id "$(field session_id)" \
-    --row-path)" || { state=unpriced; return 0; }
+    --row-path --at-stop)" || { state=unpriced; return 0; }
 
   dirty "$row" || return 0
+
+  # The turn's spend is measured from the row as last committed, not as last
+  # written: a hand run between turns rewrites the file too.
+  local was now subject
+  was="$(git -C "$(dirname "$row")" show "HEAD:./$(basename "$row")" 2>/dev/null |
+    jq -r '.total.costUsd // 0' 2>/dev/null)"
+  now="$(jq -r '.total.costUsd' "$row")"
+  subject="$(awk -v was="${was:-0}" -v now="$now" \
+    'BEGIN { printf "chore: session cost +%.2f USD, total %.2f USD", now - was, now }')"
 
   # `commit -- <path>` stages nothing else, so work the agent has in flight
   # stays where it is.
   repo add -- "$row" &&
-    repo commit -q -m "chore: session cost row" -- "$row" ||
+    repo commit -q -m "$subject" -- "$row" ||
     { state=uncommitted; return 0; }
 
   state=committed

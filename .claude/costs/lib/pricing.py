@@ -219,6 +219,7 @@ class Response:
     cwd: Optional[str]
     timestamp: Optional[str]
     is_sidechain: bool
+    stop_reason: Optional[str]
     tokens: Tally
 
 
@@ -263,6 +264,7 @@ def _parse_response(record: Dict[str, Any], where: str, warnings: List[str]) -> 
         cwd=read_string(record, "cwd", where),
         timestamp=read_string(record, "timestamp", where),
         is_sidechain=sidechain is True,
+        stop_reason=read_string(message, "stop_reason", where),
         tokens=Tally(
             input_tokens=required(read_count, usage, "input_tokens", at),
             cache_write_5m_tokens=split_5m if trust_split else written,
@@ -288,14 +290,31 @@ class TranscriptSources:
     subagents: Sequence[str] = ()
 
 
+# Marks the warning `at_stop` raises, which is what lets a rewrite of the row
+# carry it forward: the next run reads a transcript that has caught up.
+UNWRITTEN_TAIL = "not yet written when the Stop hook read the transcript"
+
+
+def is_unwritten_tail(warning: str) -> bool:
+    return UNWRITTEN_TAIL in warning
+
+
 def summarise_transcript(
-    sources: TranscriptSources, prices: PriceTable, fallback_session_id: str
+    sources: TranscriptSources,
+    prices: PriceTable,
+    fallback_session_id: str,
+    at_stop: bool = False,
 ) -> SessionCost:
     """Raises `UnpricedError` when a transcript names a `(model, speed)` pair the
     table cannot price, and `ShapeError` when a response record does not parse:
     an unpriced response silently counted as free is the one failure that makes
-    the whole ledger a lie."""
+    the whole ledger a lie.
+
+    `at_stop` says the turn is over, so the session's own last response should
+    be the `end_turn` that closed it; anything else is warned about as a tail
+    the file had not yet been given."""
     warnings: List[str] = []
+    last_own: Optional[Response] = None
     seen: Set[str] = set()
     by_rate: Dict[str, Tally] = {}
     total, own_turns, subagents = Tally(), Tally(), Tally()
@@ -313,7 +332,7 @@ def summarise_transcript(
     # `isSidechain` too, but the file they are in is the fact that does not
     # depend on a flag having been set.
     def scan(jsonl: str, label: str, delegated: bool) -> None:
-        nonlocal session_id, branch, cwd, opening_prompt, url, claude_code_total_usd
+        nonlocal session_id, branch, cwd, opening_prompt, url, claude_code_total_usd, last_own
         for number, line in enumerate(jsonl.split("\n"), start=1):
             if line.strip() == "":
                 continue
@@ -349,6 +368,8 @@ def summarise_transcript(
             if not _is_response_record(record):
                 continue
             response = _parse_response(record, where, warnings)
+            if not (delegated or response.is_sidechain or response.model == SYNTHETIC_MODEL):
+                last_own = response
             # One API response is written as one record per content block, each
             # carrying the whole response's usage, so the id counts it once.
             if response.message_id in seen:
@@ -398,6 +419,13 @@ def summarise_transcript(
             f"No rates for {', '.join(sorted(unpriced))} in the price table (as of"
             f" {prices.as_of}). Add them to .claude/costs/prices.json — a response"
             " counted as free is worse than no ledger at all."
+        )
+
+    if at_stop and last_own is not None and last_own.stop_reason != "end_turn":
+        warnings.append(
+            f"{last_own.message_id}: the session's last response stopped on"
+            f" `{last_own.stop_reason}` rather than `end_turn` — the turn's tail was"
+            f" {UNWRITTEN_TAIL}"
         )
 
     in_order = sorted(timestamps)
