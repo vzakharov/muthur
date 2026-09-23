@@ -1,0 +1,103 @@
+{
+  "as_of": "2026-09-23",
+  "unit": "USD per million tokens",
+  "source": "Claude API pricing as carried by the bundled claude-api skill (model table cached 2026-06-24) and its prompt-caching reference for the cache multipliers.",
+  "derivation": "Cache rates are the input rate times 1.25 (5-minute TTL), 2 (1-hour TTL) and 0.1 (reads), except where a model documents its own read rate. They are written out rather than computed so a model that breaks the pattern is one number, not an exception in code.",
+  "rates": {
+    "claude-opus-5-5/standard": {
+      "input": 4.0,
+      "output": 20.0,
+      "cache_write_5m": 5.0,
+      "cache_write_1h": 8.0,
+      "cache_read": 0.2
+    },
+    "claude-opus-5-5/fast": {
+      "input": 8.0,
+      "output": 40.0,
+      "cache_write_5m": 10.0,
+      "cache_write_1h": 16.0,
+      "cache_read": 0.4,
+      "confidence": "As for claude-opus-5/fast, and the fast-mode rates themselves were stated ahead of the model's launch — confirm them against a bill."
+    },
+    "claude-opus-5/standard": {
+      "input": 5.0,
+      "output": 25.0,
+      "cache_write_5m": 6.25,
+      "cache_write_1h": 10.0,
+      "cache_read": 0.5
+    },
+    "claude-opus-5/fast": {
+      "input": 10.0,
+      "output": 50.0,
+      "cache_write_5m": 12.5,
+      "cache_write_1h": 20.0,
+      "cache_read": 1.0,
+      "confidence": "Input and output are the documented fast-mode rates. The cache rates carry the standard multipliers over them, which the pricing docs do not state explicitly — correct them if a bill ever disagrees."
+    },
+    "claude-opus-4-8/standard": {
+      "input": 5.0,
+      "output": 25.0,
+      "cache_write_5m": 6.25,
+      "cache_write_1h": 10.0,
+      "cache_read": 0.5
+    },
+    "claude-opus-4-8/fast": {
+      "input": 10.0,
+      "output": 50.0,
+      "cache_write_5m": 12.5,
+      "cache_write_1h": 20.0,
+      "cache_read": 1.0,
+      "confidence": "As for claude-opus-5/fast."
+    },
+    "claude-opus-4-7/standard": {
+      "input": 5.0,
+      "output": 25.0,
+      "cache_write_5m": 6.25,
+      "cache_write_1h": 10.0,
+      "cache_read": 0.5
+    },
+    "claude-opus-4-6/standard": {
+      "input": 5.0,
+      "output": 25.0,
+      "cache_write_5m": 6.25,
+      "cache_write_1h": 10.0,
+      "cache_read": 0.5
+    },
+    "claude-sonnet-5/standard": {
+      "input": 2.0,
+      "output": 10.0,
+      "cache_write_5m": 2.5,
+      "cache_write_1h": 4.0,
+      "cache_read": 0.2
+    },
+    "claude-sonnet-4-6/standard": {
+      "input": 3.0,
+      "output": 15.0,
+      "cache_write_5m": 3.75,
+      "cache_write_1h": 6.0,
+      "cache_read": 0.3
+    },
+    "claude-haiku-4-5/standard": {
+      "input": 1.0,
+      "output": 5.0,
+      "cache_write_5m": 1.25,
+      "cache_write_1h": 2.0,
+      "cache_read": 0.1
+    },
+    "claude-fable-5/standard": {
+      "input": 10.0,
+      "output": 50.0,
+      "cache_write_5m": 12.5,
+      "cache_write_1h": 20.0,
+      "cache_read": 1.0
+    },
+    "claude-fable-5-1/standard": {
+      "input": 10.0,
+      "output": 50.0,
+      "cache_write_5m": 12.5,
+      "cache_write_1h": 20.0,
+      "cache_read": 0.25,
+      "confidence": "Reads are 0.025x rather than 0.1x on this model, which is documented and deliberate."
+    }
+  }
+}

@@ -63,6 +63,7 @@ conditions, and any row can be escaped individually.
 | [G4 — Remote-session plumbing](#g4--remote-session-plumbing) | Sessions run on Claude Code web/remote. Inert locally — but a **prerequisite** of G2/G3/G5 on the web, not a nicety. Declinable at a stated cost. |
 | [G5 — CI & landing](#g5--ci--landing) | CI runs on GitHub Actions, reachable via `gh`. `/watch-ci` additionally needs **G4** in a web session, not merely recommends it; the rest of the group works through the proxy unshimmed. |
 | [G6 — Stack stubs](#g6--stack-stubs) | Per row, and only if you will hydrate it now. |
+| [G7 — Session cost ledger](#g7--session-cost-ledger) | **The operator says yes when asked** — never by inference from the profile. |
 | [Never](#never) | — |
 
 ### G0 — The sync path
@@ -197,7 +198,7 @@ the working tree clean, and behaves the same everywhere.
 | --- | --- | --- | --- | --- |
 | `.claude/hooks/gh-shim.sh` | On session start, install a `gh` shim at `$HOME/.local/bin/gh` that runs the real binary unproxied. Finding no `gh` to wrap, it reports that into the session context and continues. Web/remote only. | `bash`; **`gh` already on `PATH`**; web/remote sessions | — | adopt |
 | `.claude/hooks/install-deps.sh` | On session start, re-sync the install tree with the lockfile, the environment snapshot being built once and then cached. The install itself is a stub you fill in for your stack — `scripts/vet.sh`'s paired site. Web/remote only. | `bash`; web/remote sessions | — | adopt — **fill in the install** |
-| `.claude/hooks/lib.sh` | Sourced by every `UserPromptSubmit` hook here: the payload read, the one JSON shape the event accepts, and the guards — a command being present, the prompt being the one a session opens with, and the project root. Travels with the first such hook you adopt — a hook that cannot source it skips itself rather than failing the turn, which is a hook doing nothing at all. | `bash`, `jq` | — | adopt — **with any `UserPromptSubmit` hook** |
+| `.claude/hooks/lib.sh` | Sourced by every `UserPromptSubmit` hook here and by the cost ledger's hooks (G7): the payload read, the one JSON shape `UserPromptSubmit` accepts, and the guards — a command being present, the prompt being the one a session opens with, and the project root. Travels with the first such hook you adopt — a hook that cannot source it skips itself rather than failing the turn, which is a hook doing nothing at all. | `bash`, `jq` | — | adopt — **with any hook that sources it** |
 | `.claude/hooks/operator-voice.sh` | On session start, name the operator — their GitHub name and handle, plus their `.claude/voice/operators/` entry — into the session context. Runs everywhere: a laptop session needs to know who it is talking to as much as a remote one does. Declining it leaves `.claude/voice/` working — `voice.md` has the agent do the same lookup by hand on the first turn, which is what a non-Claude harness does anyway. | `bash`; `gh` reaching the API | `.claude/voice/` (G1) | adopt |
 | `.claude/hooks/plan-mode-notice.sh` | On every prompt submitted while the session is in native plan mode, inject the notice that this repo plans on disk and that the exit is plan mode's own. | web/remote sessions; `bash`, `jq` | `.claude/hooks/lib.sh`, `/plan` (G2) | adopt |
 | `.claude/hooks/session-images.sh` | On every prompt, run the extractor below and name any newly written file in the turn's context. Commits nothing. | `bash`, `jq`, `python3` ≥3.9 | `.claude/hooks/lib.sh`, `scripts/extract-session-images.py` | adopt |
@@ -290,6 +291,21 @@ instead (no visual surface, no CI-only tests, no numbered migrations).
 | `/readonly-probe` | Investigate against real deployed data under an enforced read-only connection. | a production datastore; hydration | — | adopt only if hydrating now |
 | `/renumber-migration` | Resolve a sequential migration-number collision after another branch landed first. | sequential numbered migrations; hydration | — | adopt only if hydrating now |
 | `/test-on-gh` | Dispatch the test buckets that can't run locally to CI on the branch, and block for the result. | G5, CI-only test buckets; hydration | — | adopt only if hydrating now |
+
+### G7 — Session cost ledger
+
+Nothing in a repo says whether its operator wants to know what the work would
+cost at API rates, and what the answer costs lands on every turn of every
+session. So this group is asked, not inferred: `ADOPTING.md` Step 2,
+`/detemplate` Step 1 and `/update-muthur` Step 4a each put the question with this
+row attached, and record the answer so it is asked once.
+
+| Item | What it does | Requires | Pulls in | Disposition |
+| --- | --- | --- | --- | --- |
+| `.claude/costs/` | Price each session at Claude API rates from its transcript and commit its row to the branch at the end of every turn, so the ledger reaches the trunk with the work; `report.py` sums the rows by month, week, day and branch. **The cost, which is why it is asked:** a commit and a push per turn on every branch, extra CI runs where CI runs on push, a hand-kept rate table that must gain a row before a new model's first session can be priced, and a `Stop` hook sharing the event with the harness's git check. Arrives with an empty `sessions/`, two `.claude/settings.json` entries to merge, and a `scripts/vet.sh` loop running its tests. | `bash`, `jq`, `git`, `python3` ≥3.9 | `.claude/hooks/lib.sh` (G4) | adopt — **opt-in: ask** |
+
+**`sessions/` is this repo's own data**, and never travels: every copy step
+leaves it behind, and `/update-muthur` excludes it as an invariant.
 
 ### Never
 
