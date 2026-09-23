@@ -42,7 +42,7 @@ git diff origin/<base>...HEAD                     # the branch's net change
 
 That range plus anything uncommitted is the scope, unless the floor below moves up.
 
-**A staged copy counts by its diff against the real file.** One under `docs/remove-before-merging/` (`@.claude/rules/staging.md`) shows in the range as a whole new file, so a pass reading it that way reviews all of `CLAUDE.md` as this branch's prose. Its change is `git diff --no-index <real path> <copy>`, for each pair `scripts/staged.sh list` prints, and the rest of the copy is context.
+**A staged copy counts by its diff against the real file.** One under `docs/staged/` (`@.claude/rules/staging.md`) shows in the range as a whole new file, so a pass reading it that way reviews all of `CLAUDE.md` as this branch's prose. Its change is `git diff --no-index <real path> <copy>`, for each pair `scripts/staged.sh list` prints, and the rest of the copy is context.
 
 ## The floor: the last polish commit
 

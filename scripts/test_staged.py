@@ -15,8 +15,7 @@ import unittest
 from pathlib import Path
 
 SCRIPT = Path(__file__).resolve().parent / "staged.sh"
-DIR = "docs/remove-before-merging"
-MANIFEST = f"{DIR}/staged.tsv"
+DIR = "docs/staged"
 
 
 class Repo:
@@ -57,6 +56,7 @@ class Repo:
 
 
 ORIGINAL = "one\ntwo\nthree\nfour\nfive\n"
+SKILL = ".claude/skills/go/SKILL.md"
 
 
 class StagedTestCase(unittest.TestCase):
@@ -64,7 +64,7 @@ class StagedTestCase(unittest.TestCase):
         self.tmp = tempfile.TemporaryDirectory()
         self.repo = Repo(Path(self.tmp.name))
         self.repo.write("CLAUDE.md", ORIGINAL)
-        self.repo.write(".claude/skills/go/SKILL.md", "skill\n")
+        self.repo.write(SKILL, "skill\n")
         self.repo.commit("base")
 
     def tearDown(self) -> None:
@@ -77,14 +77,10 @@ class StagedTestCase(unittest.TestCase):
 
 
 class Stage(StagedTestCase):
-    def test_the_copy_is_byte_identical_and_recorded(self) -> None:
-        self.stage("CLAUDE.md")
-        self.assertEqual(self.repo.read(f"{DIR}/CLAUDE.staged.md"), ORIGINAL)
-        self.assertIn("CLAUDE.staged.md\tCLAUDE.md\t", self.repo.read(MANIFEST))
-
-    def test_a_nested_path_flattens_and_loses_its_leading_dots(self) -> None:
-        self.stage(".claude/skills/go/SKILL.md")
-        self.assertTrue(self.repo.exists(f"{DIR}/claude-skills-go-SKILL.staged.md"))
+    def test_the_copy_is_byte_identical_at_the_mirrored_path(self) -> None:
+        self.stage("CLAUDE.md", SKILL)
+        self.assertEqual(self.repo.read(f"{DIR}/CLAUDE.md"), ORIGINAL)
+        self.assertEqual(self.repo.read(f"{DIR}/{SKILL}"), "skill\n")
 
     def test_staging_twice_is_refused(self) -> None:
         self.stage("CLAUDE.md")
@@ -97,7 +93,7 @@ class Stage(StagedTestCase):
         result = self.repo.staged("stage", "new.md")
         self.assertNotEqual(result.returncode, 0)
         self.assertIn("not tracked", result.stderr)
-        self.assertFalse(self.repo.exists(MANIFEST))
+        self.assertFalse(self.repo.exists(f"{DIR}/new.md"))
 
     def test_a_missing_file_is_refused(self) -> None:
         result = self.repo.staged("stage", "nope.md")
@@ -107,25 +103,38 @@ class Stage(StagedTestCase):
 
 class Swap(StagedTestCase):
     def test_an_edited_copy_replaces_the_unmoved_real_file(self) -> None:
-        self.stage("CLAUDE.md", ".claude/skills/go/SKILL.md")
-        self.repo.write(f"{DIR}/CLAUDE.staged.md", "edited\n")
+        self.stage("CLAUDE.md", SKILL)
+        self.repo.write(f"{DIR}/CLAUDE.md", "edited\n")
         self.repo.commit("edit")
         result = self.repo.staged("swap")
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertEqual(self.repo.read("CLAUDE.md"), "edited\n")
-        self.assertEqual(self.repo.read(".claude/skills/go/SKILL.md"), "skill\n")
-        self.assertFalse(self.repo.exists(f"{DIR}/CLAUDE.staged.md"))
-        self.assertFalse(self.repo.exists(MANIFEST))
+        self.assertEqual(self.repo.read(SKILL), "skill\n")
+        self.assertFalse(self.repo.exists(DIR))
         self.assertEqual(self.repo.git("diff", "--name-only"), "")
         self.assertEqual(
             sorted(self.repo.git("diff", "--cached", "--name-only").split()),
-            sorted(["CLAUDE.md", f"{DIR}/CLAUDE.staged.md",
-                    f"{DIR}/claude-skills-go-SKILL.staged.md", MANIFEST]),
+            sorted(["CLAUDE.md", f"{DIR}/CLAUDE.md", f"{DIR}/{SKILL}"]),
         )
+
+    def test_a_copy_edited_in_its_staging_commit_still_swaps_cleanly(self) -> None:
+        self.repo.staged("stage", "CLAUDE.md")
+        self.repo.write(f"{DIR}/CLAUDE.md", "edited\n")
+        self.repo.commit("stage and edit")
+        result = self.repo.staged("swap")
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(self.repo.read("CLAUDE.md"), "edited\n")
+
+    def test_an_uncommitted_copy_swaps_against_head(self) -> None:
+        self.repo.staged("stage", "CLAUDE.md")
+        self.repo.write(f"{DIR}/CLAUDE.md", "edited\n")
+        result = self.repo.staged("swap")
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(self.repo.read("CLAUDE.md"), "edited\n")
 
     def test_an_edit_the_real_file_got_since_staging_survives(self) -> None:
         self.stage("CLAUDE.md")
-        self.repo.write(f"{DIR}/CLAUDE.staged.md", ORIGINAL.replace("one", "ONE"))
+        self.repo.write(f"{DIR}/CLAUDE.md", ORIGINAL.replace("one", "ONE"))
         self.repo.write("CLAUDE.md", ORIGINAL.replace("five", "FIVE"))
         self.repo.commit("both sides")
         result = self.repo.staged("swap")
@@ -136,7 +145,7 @@ class Swap(StagedTestCase):
 
     def test_overlapping_edits_leave_markers_and_fail(self) -> None:
         self.stage("CLAUDE.md")
-        self.repo.write(f"{DIR}/CLAUDE.staged.md", ORIGINAL.replace("three", "staged"))
+        self.repo.write(f"{DIR}/CLAUDE.md", ORIGINAL.replace("three", "staged"))
         self.repo.write("CLAUDE.md", ORIGINAL.replace("three", "real"))
         self.repo.commit("conflict")
         result = self.repo.staged("swap")
@@ -144,9 +153,21 @@ class Swap(StagedTestCase):
         self.assertIn("conflicts left in CLAUDE.md", result.stderr)
         text = self.repo.read("CLAUDE.md")
         self.assertIn("<<<<<<< CLAUDE.md (staged)", text)
-        self.assertIn("staged", text)
         self.assertIn("real", text)
-        self.assertFalse(self.repo.exists(MANIFEST))
+        self.assertFalse(self.repo.exists(f"{DIR}/CLAUDE.md"))
+
+    def test_a_restage_after_an_early_swap_merges_against_the_new_copy(self) -> None:
+        self.stage("CLAUDE.md")
+        self.repo.write(f"{DIR}/CLAUDE.md", "first\n")
+        self.repo.commit("edit")
+        self.repo.staged("swap")
+        self.repo.commit("early swap")
+        self.stage("CLAUDE.md")
+        self.repo.write(f"{DIR}/CLAUDE.md", "second\n")
+        self.repo.commit("edit again")
+        result = self.repo.staged("swap")
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(self.repo.read("CLAUDE.md"), "second\n")
 
     def test_nothing_staged_is_a_no_op(self) -> None:
         result = self.repo.staged("swap")
@@ -155,11 +176,11 @@ class Swap(StagedTestCase):
 
 
 class Check(StagedTestCase):
-    def test_no_manifest_passes_silently(self) -> None:
+    def test_nothing_staged_passes_silently(self) -> None:
         result = self.repo.staged("check")
         self.assertEqual((result.returncode, result.stdout, result.stderr), (0, "", ""))
 
-    def test_a_consistent_manifest_passes(self) -> None:
+    def test_a_staged_copy_passes(self) -> None:
         self.stage("CLAUDE.md")
         result = self.repo.staged("check")
         self.assertEqual(result.returncode, 0, result.stderr)
@@ -170,25 +191,11 @@ class Check(StagedTestCase):
         self.assertNotEqual(result.returncode, 0)
         self.assertIn("still staged", result.stderr)
 
-    def test_a_copy_with_no_row_fails(self) -> None:
-        self.repo.write(f"{DIR}/rules-README.staged.md", "stray\n")
+    def test_a_copy_of_nothing_fails(self) -> None:
+        self.repo.write(f"{DIR}/.claude/rules/gone.md", "stray\n")
         result = self.repo.staged("check")
         self.assertNotEqual(result.returncode, 0)
-        self.assertIn("rules-README.staged.md is not in", result.stderr)
-
-    def test_a_missing_target_fails(self) -> None:
-        self.stage("CLAUDE.md")
-        self.repo.git("rm", "-q", "CLAUDE.md")
-        result = self.repo.staged("check")
-        self.assertNotEqual(result.returncode, 0)
-        self.assertIn("stands for CLAUDE.md, which does not exist", result.stderr)
-
-    def test_a_missing_copy_fails(self) -> None:
-        self.stage("CLAUDE.md")
-        self.repo.git("rm", "-q", f"{DIR}/CLAUDE.staged.md")
-        result = self.repo.staged("check")
-        self.assertNotEqual(result.returncode, 0)
-        self.assertIn("which does not exist", result.stderr)
+        self.assertIn("stands for .claude/rules/gone.md, which is not a tracked file", result.stderr)
 
     def test_a_moved_target_is_a_note_not_a_failure(self) -> None:
         self.stage("CLAUDE.md")
@@ -202,28 +209,25 @@ class Resolve(StagedTestCase):
     def test_a_staged_path_resolves_to_its_copy(self) -> None:
         self.stage("CLAUDE.md")
         result = self.repo.staged("resolve", "CLAUDE.md")
-        self.assertEqual(result.stdout, f"{DIR}/CLAUDE.staged.md\n")
+        self.assertEqual(result.stdout, f"{DIR}/CLAUDE.md\n")
 
     def test_an_unnormalized_spelling_of_a_staged_path_resolves(self) -> None:
         self.stage("CLAUDE.md")
         result = self.repo.staged("resolve", ".claude/skills/../../CLAUDE.md")
-        self.assertEqual(result.stdout, f"{DIR}/CLAUDE.staged.md\n")
+        self.assertEqual(result.stdout, f"{DIR}/CLAUDE.md\n")
 
     def test_an_unstaged_path_resolves_to_itself(self) -> None:
         self.stage("CLAUDE.md")
-        result = self.repo.staged("resolve", ".claude/skills/go/SKILL.md")
-        self.assertEqual(result.stdout, ".claude/skills/go/SKILL.md\n")
-
+        result = self.repo.staged("resolve", SKILL)
+        self.assertEqual(result.stdout, f"{SKILL}\n")
 
 
 class List(StagedTestCase):
     def test_each_staged_file_is_listed_with_its_copy(self) -> None:
-        self.stage("CLAUDE.md", ".claude/skills/go/SKILL.md")
+        self.stage("CLAUDE.md", SKILL)
         result = self.repo.staged("list")
         self.assertEqual(
-            result.stdout,
-            f"CLAUDE.md\t{DIR}/CLAUDE.staged.md\n"
-            f".claude/skills/go/SKILL.md\t{DIR}/claude-skills-go-SKILL.staged.md\n",
+            result.stdout, f"{SKILL}\t{DIR}/{SKILL}\nCLAUDE.md\t{DIR}/CLAUDE.md\n"
         )
 
     def test_nothing_staged_lists_nothing(self) -> None:

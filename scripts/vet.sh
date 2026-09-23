@@ -28,9 +28,9 @@
 #     `/squash-message` states, passing quietly when a branch has no proposal.
 #     Dropping it leaves nothing catching a proposal edited by hand or outgrown
 #     by a later base merge.
-#   staged.sh check — holds the staged copies of always-loaded files to their
-#     manifest, passing quietly when nothing is staged. Dropping it leaves a copy
-#     nobody listed to be swept at `/finalize` with the change it carries.
+#   staged.sh check — holds each staged copy of an always-loaded file under
+#     `docs/staged/` to a tracked file it stands for, passing quietly when
+#     nothing is staged. Dropping it lets a copy of nothing ride to `/finalize`.
 #   check-muthur.sh — everything that tests only this repo's own machinery: the
 #     repo-identity check and every `scripts/test_*.py`. One line because an
 #     adopting repo drops them together; it keys on the catalog and exits 0

@@ -4,7 +4,7 @@ paths:
   - CLAUDE.md
   - .claude/voice/voice.md
   - .claude/rules/**
-  - docs/remove-before-merging/**
+  - docs/staged/**
 ---
 
 # Staging always-loaded files
@@ -31,8 +31,13 @@ only the next session.
 
 - `scripts/staged.sh stage <path>…`, then commit that alone, before any edit:
   the copy is byte-identical, so every later commit reads as a diff against the
-  original. Edit the copy under `docs/remove-before-merging/`, never the real
-  file.
+  original. Edit the copy, `docs/staged/<path>`, never the real file.
+- `docs/staged/` mirrors the tree, so it holds a `CLAUDE.md` and a `.claude/`
+  that Claude Code would load as a nested project's the first time a file
+  there is read. `claudeMdExcludes` in `.claude/settings.json` keeps the
+  `CLAUDE.md` and the rules out; a staged `SKILL.md` has no such exclusion and
+  registers as `docs/staged:<name>`, the version under review, until the swap.
+- `diff -r docs/staged .` and `scripts/staged.sh list` show what is staged.
 - `/finalize` runs `swap` before its quality passes, merging in anything the
   real file gained meanwhile, and nothing deletes a copy by hand.
 - The operator can ask for the swap mid-branch ("swap it in", "unstage"), when
