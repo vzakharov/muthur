@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-"""UserPromptSubmit probe: block the first prompt of each session, let every
-later one through, and log each event to tmp/cache-guard/ so what the client
-sent is inspectable afterwards. Blocking every prompt would lock the session."""
+"""Probe: log every event it is wired to (UserPromptSubmit, SessionStart) to
+tmp/cache-guard/ so what the client sent is inspectable afterwards, and block
+the first prompt of each session. Blocking every prompt would lock the session."""
 
 import json
 import sys
@@ -14,6 +14,9 @@ STATE.mkdir(parents=True, exist_ok=True)
 event = json.load(sys.stdin)
 with (STATE / "probe-events.jsonl").open("a", encoding="utf-8") as log:
     log.write(json.dumps({"at": datetime.now(timezone.utc).isoformat(), **event}, ensure_ascii=False) + "\n")
+
+if event.get("hook_event_name") != "UserPromptSubmit":
+    sys.exit(0)
 
 STOP_WORD = "!pass"
 
