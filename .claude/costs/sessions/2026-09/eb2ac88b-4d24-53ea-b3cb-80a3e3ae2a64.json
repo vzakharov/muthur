@@ -1,0 +1,58 @@
+{
+  "sessionId": "eb2ac88b-4d24-53ea-b3cb-80a3e3ae2a64",
+  "branch": "claude/context-budget-finish-estimate-2q93vz",
+  "cwd": "/home/user/muthur",
+  "name": "context budget 100k finish estimate",
+  "openingPrompt": "давай в контексте context budget hook подправим немного вординг: не \"если осталось немного\", а \"если осталось <100к\" (по собственным оценкам), т.е. агент, отраб…",
+  "prs": [
+    101
+  ],
+  "url": "https://claude.ai/code/session_01FXLpiCcXFuQCqNrjFDTXxB",
+  "firstResponseAt": "2026-09-23T13:38:16.152Z",
+  "lastResponseAt": "2026-09-23T13:41:09.233Z",
+  "pricesAsOf": "2026-09-23",
+  "claudeCodeTotalUsd": null,
+  "total": {
+    "inputTokens": 62,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 78125,
+    "cacheReadTokens": 2886648,
+    "outputTokens": 10789,
+    "thinkingTokens": 3597,
+    "responses": 30,
+    "costUsd": 1.4183576
+  },
+  "ownTurns": {
+    "inputTokens": 62,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 78125,
+    "cacheReadTokens": 2886648,
+    "outputTokens": 10789,
+    "thinkingTokens": 3597,
+    "responses": 30,
+    "costUsd": 1.4183576
+  },
+  "subagents": {
+    "inputTokens": 0,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 0,
+    "cacheReadTokens": 0,
+    "outputTokens": 0,
+    "thinkingTokens": 0,
+    "responses": 0,
+    "costUsd": 0.0
+  },
+  "byRate": {
+    "claude-opus-5-5/standard": {
+      "inputTokens": 62,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 78125,
+      "cacheReadTokens": 2886648,
+      "outputTokens": 10789,
+      "thinkingTokens": 3597,
+      "responses": 30,
+      "costUsd": 1.4183576
+    }
+  },
+  "warnings": []
+}

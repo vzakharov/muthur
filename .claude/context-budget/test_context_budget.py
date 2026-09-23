@@ -137,6 +137,21 @@ class WhenTheNoticesFire(BudgetTestCase):
         assert notice is not None
         self.assertIn("50k warning line", notice)
 
+    def test_nearly_done_is_an_estimate_under_100k_with_the_gauge_at_the_warning(
+        self,
+    ) -> None:
+        # The half-of-the-session gauge matches 100k only at the warning line;
+        # at the pause line it would read 150k, so that notice carries none.
+        self.session.append(assistant(WARN + 1))
+        warning = self.session.notice()
+        self.session.append(assistant(PAUSE + 1))
+        pause = self.session.notice()
+        assert warning is not None and pause is not None
+        self.assertIn("under ~100k more tokens", warning)
+        self.assertIn("less than half", warning)
+        self.assertIn("under ~100k more tokens", pause)
+        self.assertNotIn("less than half", pause)
+
 
 class WhichRecordsAreTheReading(BudgetTestCase):
     def test_reads_the_last_main_chain_response(self) -> None:
