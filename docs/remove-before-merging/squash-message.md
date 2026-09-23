@@ -13,10 +13,11 @@ reliably than one that loads when it applies.
 The file now states its own test in § "About this file": a line stays
 only when it must hold on turns where the process it concerns is not
 running, and when nothing narrower loads at the moment it matters.
-Every section was held to it. The vetting exit rule and the
-skill-authoring rules moved to path-scoped `.claude/rules/` files,
-other procedure moved into the skills that run it, and text a hook or
-skill already carried was cut.
+Every section was held to it, leaving ~3,550 words. The vetting exit
+rule and the skill-authoring rules moved to path-scoped
+`.claude/rules/` files, other procedure moved into the skills that run
+it, and text a hook or skill already carried was cut. The rules
+README, which also loaded every turn, is now path-scoped too.
 
 Section citations into CLAUDE.md are normalised and checked by
 `check-skill-catalog.sh`, so a moved or renamed section fails the vet
