@@ -140,8 +140,8 @@ stop and wonder "hmm, why this and not the obvious thing?"; leave it off where
 nobody would ask, because a citation on an unsurprising line is one more thing to
 chase.
 
-**Rule or README?** A rule — homes 3 and 4 alike — is what every edit in the matched files must respect
-_whether or not the editor went looking_ — an obligation you can violate without
+**Rule or README?** A rule — homes 3 and 4 alike — is what every edit in the
+files it covers must respect _whether or not the editor went looking_ — an obligation you can violate without
 noticing. It loads automatically, so it must stay short and always-relevant. A
 README carries the part the code cannot: **why** the arrangement is this one,
 where reading the modules end to end still leaves the reason obscure. It is
@@ -334,7 +334,8 @@ The sweep belongs to lens 4 and runs wherever it does. It also runs after a
   reader can't get elsewhere is not bloat; length carrying nothing is. But that
   describes a colocated `README.md`, opened on purpose, not a directory's
   `CLAUDE.md` or a `.claude/rules/*.md` file: **a rule's length is a budget**,
-  because it loads in full every time a file it covers is read. Paragraphs of rationale in a rule are a lens
+  because it loads in full every time a file it covers is read. Paragraphs of
+  rationale in a rule are a lens
   1 finding — the orientation belongs in a README the rule links to.
 
 ## Step 5: Commit

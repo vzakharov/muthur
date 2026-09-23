@@ -49,10 +49,10 @@ paths:
 | Holds in one directory's files (schema rules under `src/db/`, a directory with a trap in it) | that directory's own `CLAUDE.md` |
 | Holds in files no single directory bounds (`'**/*.test.ts'`, several scattered paths) | a rule file here |
 
-The test is scope, not importance. A directory's `CLAUDE.md` loads exactly as a
-rule scoped to that directory would — on a read of a file beneath it — and it
-sits where the next person editing that directory will see it, so a rule file
-earns its place only when its globs could not be a directory. Both load on a
+The test is scope, not importance. A directory's `CLAUDE.md` loads when a rule
+scoped to that directory would — on a read of a file beneath it — and sits where
+the next person editing that directory will see it, so a rule file earns its
+place only when its globs could not be a directory. Both load on a
 `Read` only; CLAUDE.md § "Key principles" on the `Read`/`Edit`/`Write` tools says
 what that costs.
 
