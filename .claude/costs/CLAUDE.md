@@ -54,9 +54,8 @@ for one, and only the last is not read out of the file:
 - **`name`** — a few words from the agent whose session it is, which is the only
   thing here that knows what the session turned out to be about.
   `hooks/prompt-session-name.sh` asks for it from the first prompt until it is
-  set — not from the first row, which lands only as a turn ends and would skip
-  every one-turn session. Each rewrite carries the existing name forward, since
-  re-reading the transcript could never produce one.
+  set, and each rewrite carries the existing name forward, since re-reading the
+  transcript could never produce one.
 
 ## Checking the arithmetic
 
