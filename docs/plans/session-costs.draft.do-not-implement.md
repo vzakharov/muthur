@@ -61,7 +61,7 @@ dataclasses so the report reads them back through the same parse.
 
 ```
 .claude/costs/
-  README.md                 # the contract — what .claude/rules/costs.md is at the source
+  CLAUDE.md                 # the contract — what .claude/rules/costs.md is at the source
   prices.json               # copied verbatim
   sessions/<YYYY-MM>/<id>.json   # this repo's rows; never travels (§ 5)
   session_cost.py           # CLI: price one transcript, write its row  (session-cost.ts)
@@ -75,12 +75,14 @@ dataclasses so the report reads them back through the same parse.
   hooks/prompt-session-name.sh
 ```
 
-- **The contract doc is `.claude/costs/README.md`, not a rule file.**
-  `.claude/rules/` ships empty on purpose, per its own README, and a file there
-  would be a second path the catalog row has to name. Each script and hook's
-  header points at the README, the way the source's point at the rule. The cost
-  is the path-scoped auto-load; the pointers cover it, since nobody edits these
-  files without opening one of them.
+- **The contract doc is `.claude/costs/CLAUDE.md`, not a rule file.** Claude
+  Code loads a nested `CLAUDE.md` the moment a session reads any file beneath
+  it — checked in this repo, under `.claude/` specifically — so it keeps the
+  rule's one advantage, reaching whoever edits the pricer or `prices.json`
+  without their looking for it, while staying inside the directory. A rule would
+  be a second path for the catalog row to name, and `.claude/rules/` ships empty
+  on purpose, per its own README. Script and hook headers point at it, as the
+  source's point at the rule.
 - **Hooks sit under `.claude/costs/hooks/` and source `.claude/hooks/lib.sh`**
   (`read_payload`, `field`, `say`, `need_command`, `project_root`,
   `emit_context`). `lib.sh`'s header, which names only `UserPromptSubmit`
@@ -93,7 +95,7 @@ dataclasses so the report reads them back through the same parse.
   caller.
 - The source's `TEMPORARY` wait log (appends to `tmp/harness-check-wait.log`
   whether the look ever caught the harness's check running) is **dropped**: muthur
-  does not ship a temporary diagnostic. The README says instead that whether the
+  does not ship a temporary diagnostic. The contract doc says instead that whether the
   wait ever fires is unmeasured here.
 
 ### 3. Wire it on in muthur itself
@@ -155,7 +157,7 @@ adopter's totals.
   touching only `.claude/costs/sessions/` does not move the verified diff.
 - **The last turn's row is lost on a merged PR** (`/finalize and merge` merges
   within the turn, the row lands after). That is the source's "last turn of a
-  session" gap in a sharper form, and the README's § "What the totals do not
+  session" gap in a sharper form, and the contract doc's § "What the totals do not
   cover" says so.
 
 ### 7. A consequence at the source, noted not handled
@@ -173,7 +175,7 @@ that sync; nothing here changes it.
    `cost-state` total it records.
 3. Port both hooks to `.claude/costs/hooks/`, calling `python3`; widen `lib.sh`'s
    header; wire `.claude/settings.json`.
-4. Write `.claude/costs/README.md` from the source's rule, rewritten for the
+4. Write `.claude/costs/CLAUDE.md` from the source's rule, rewritten for the
    Python paths and the dropped wait log.
 5. Add the vet line and its header paragraph.
 6. Catalog: G7 group and row, plus the groups table entry.
@@ -200,17 +202,14 @@ that sync; nothing here changes it.
 
 ## Open questions
 
-Each has its recommendation already written into the plan above.
+Each has its recommendation already written into the plan above. The port's
+language (stdlib Python, not TS) and muthur running the ledger itself are
+settled.
 
-1. **Language of the port.**
-   a. stdlib Python ≥3.9 *(recommended — no stack for muthur, no new requirement for adopters)*;
-   b. TS as at the source (muthur gains `package.json`, Node pin, `zod`, and the vet exit rule's stack clause).
 2. **Home of the contract doc.**
-   a. `.claude/costs/README.md` *(recommended — keeps the directory whole and `.claude/rules/` empty as shipped)*;
-   b. `.claude/rules/costs.md`, path-scoped as at the source, named in the row's "Pulls in".
-3. **Muthur itself runs the ledger.**
-   a. yes, wired on here *(recommended)*;
-   b. ship it unwired, the wiring only in the adopters' yes path.
+   a. `.claude/rules/costs.md`, path-scoped as at the source, named in the row's "Pulls in";
+   b. `.claude/costs/README.md`, reached only through the file headers' pointers;
+   c. `.claude/costs/CLAUDE.md` *(recommended — auto-loads like the rule, stays inside the directory)*.
 4. **The source's `TEMPORARY` wait log.**
    a. drop it *(recommended)*;
    b. port it as is, and remove later.
