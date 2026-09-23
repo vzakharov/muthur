@@ -11,22 +11,23 @@ cannot see its own context size, so nothing prompted it to leave a
 resumable state before that happened.
 
 A PostToolUse hook in .claude/context-budget/ reads the context the
-session carries off the transcript's last main-chain usage record and
-speaks twice. At 200k tokens it warns: reach a committed stopping
-point, tell the operator, offer /compact or a new session - the latter
-with the plan paused, or written retroactively when there was none. At
-300k it pauses outright, then ends the turn with a /go handoff. Either
-time, the agent's judgment that the work is nearly done overrides the
-stop, and is stated. Each notice fires once per climb; a compact
-re-arms it.
-
-The pause is one procedure with two triggers: /go's "Stopping partway"
-section now takes the budget notice beside an operator's ask, and
-writes a paused plan directly for work that had none.
+session carries off the transcript's last main-chain usage record. At
+200k tokens it warns: reach a committed stopping point, tell the
+operator, offer /compact or a new session. At 300k it pauses the plan
+outright - writing a paused one for work that had none - and ends the
+turn with a /go handoff. Either time, the agent's judgment that the
+work is nearly done overrides the stop, and is stated. Each notice
+fires once per climb; a compact re-arms it. The pause is /go's one
+"Stopping partway" procedure, which an operator's ask also runs.
 
 The hook is declinable and never wired on unasked: the catalog carries
 it as G8, opt-in: ask, and ADOPTING.md, /detemplate and /update-muthur
 now ask every opt-in row rather than the cost ledger by name.
+
+The cost ledger's naming hook now asks for a session's name from its
+first prompt. It used to wait for the session's cost row, which lands
+only as a turn ends, so a one-turn session - a /plan ending on its
+handoff block - was never asked.
 
 Co-authored-by: Claude <noreply@anthropic.com>
 ```
