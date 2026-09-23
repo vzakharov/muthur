@@ -306,7 +306,7 @@ Three consequences, each stated by a check rather than by taste:
   point.
 - **`main`'s `vet.sh` is the stub, and the stub exits `0`** — `main` has no stack
   yet, so the loop's own checks are the whole run and they genuinely pass. That
-  is `CLAUDE.md` § "Vetting"'s no-stack-yet clause, and the assertion worth
+  is `.claude/rules/stack.md`'s no-stack-yet clause, and the assertion worth
   making is the pair: the script passes **and** it names no stack-specific
   checks. A non-zero exit here would be a `main` whose `/finalize` cannot pass
   for a reason the contract calls legitimate.

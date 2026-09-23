@@ -89,7 +89,7 @@ declines the group at plan review, a decision they state rather than one this
 step infers behind them.
 
 **The stack, including "no stack yet."** That is the normal state of a fork taken
-to start a project, and the state `CLAUDE.md` § "Vetting"'s no-stack-yet clause
+to start a project, and the state `.claude/rules/stack.md`'s no-stack-yet clause
 exists for. Read it off the tree rather than asking: a fork whose only commit is
 the template's has no manifest, no lockfile and no source.
 
@@ -182,8 +182,8 @@ Ordering is load-bearing at exactly one point, and it is the first step:
 3. **Prune the groups**, applying the reverse-closure edits the plan recorded.
 4. **Fill `CLAUDE.md`'s "About this project" stub** from the brief — which
    retires the standing notice in § "Recognizing an undetemplated fork" along
-   with it — and delete § "Git conventions"'s adopter-inverts rule, which
-   instructs adopters to delete it. **§ "Language"'s stub is replaced in the same
+   with it — and delete § "Git conventions"'s loop-is-the-product rule, which
+   holds only where the loop is the product. **§ "Language"'s stub is replaced in the same
    pass** with the Step 1 answer, one line; the rest of that section holds as
    shipped. **Delete `.claude/voice/operators/`'s shipped entry** and
    write one for whoever ran the detemplate, at `<their handle>.md`, if they
@@ -203,7 +203,7 @@ Ordering is load-bearing at exactly one point, and it is the first step:
 7. **`scripts/vet.sh`**: leave the exit alone, which is the normal case — a fork
    taken to start a project has no stack for the script to check. Wire the real
    checks only where the operator pushed a stack before realising they should
-   have detemplated first. CLAUDE.md § "Vetting" owns that contract, and names
+   have detemplated first. `.claude/rules/stack.md` owns that contract, and names
    `.claude/hooks/install-deps.sh` as the paired site.
 8. **Delete this skill.** Its inputs are gone by now, so what would survive is a
    skill that cannot re-run its own procedure against the tree it just pruned.

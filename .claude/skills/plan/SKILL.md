@@ -61,7 +61,7 @@ Deciding **not** to carve is not a gate and never becomes one: say so in a line 
 
 Once the plan file is committed, invoke `@.claude/skills/pr/SKILL.md` with no args — load and follow it; do **not** inline-copy its steps. Its plan-open mode is what a branch carrying one plan commit and no PR reaches. `/pr` owns the `gh` mechanics; `/plan` owns only the decision to publish.
 
-The trigger lives here rather than in `/pr` because this is where a plan becomes pushed, so **every** entry into planning gets a PR. CLAUDE.md § "Plan mode & questions in web sessions" names a bare `/plan` as the default entry for a new web session — more common than a prompt naming an issue — and hanging PR-creation off `/pr` would leave exactly that entry on a PR-less branch.
+The trigger lives here rather than in `/pr` because this is where a plan becomes pushed, so **every** entry into planning gets a PR. CLAUDE.md § "Plan mode & questions in web sessions" routes a new session's change-asking prompt through `/task`, which reaches this skill without anyone typing `/pr`, and hanging PR-creation off `/pr` would leave exactly that entry on a PR-less branch.
 
 ### Handing off — end the plan turn with a copyable `/go` block
 
