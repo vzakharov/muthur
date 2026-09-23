@@ -1,7 +1,9 @@
 #!/bin/bash
-# Sourced by the `UserPromptSubmit` hooks beside it: the payload read, the one
-# JSON shape the event accepts, and the guards each of them needs before it can
-# do anything.
+# Sourced by the `UserPromptSubmit` hooks beside it, and by the two under
+# `.claude/costs/hooks/` — one of those a `Stop` hook, which takes everything
+# here but `emit_context`: the payload read, the one JSON shape
+# `UserPromptSubmit` accepts, and the guards each hook needs before it can do
+# anything.
 #
 # Every hook sources it as `. "$(dirname "${BASH_SOURCE[0]}")/lib.sh" || exit 0`,
 # so a tree holding a hook without this file skips that hook instead of failing
