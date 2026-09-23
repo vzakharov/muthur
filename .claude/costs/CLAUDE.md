@@ -61,8 +61,7 @@ for one, and only the last is not read out of the file:
 `.claude/hooks/operator-voice.sh` resolved at startup, read off the record that
 hook leaves in the transcript. It is null wherever the hook named nobody — no
 `gh`, or a token that is a bot's — rather than guessed from the pusher, who is
-the token and so may be the agent's own account. The parse keys on the hook's
-wording, so rephrasing that line empties the field on every later row.
+the token and so may be the agent's own account.
 
 ## Checking the arithmetic
 
@@ -130,8 +129,9 @@ adjusting quietly is what would leave the rest of this section false.
 
 `python3 .claude/costs/report.py` sums the rows five ways every run — by month,
 week and day, by the branch that spent it with the pull requests it touched
-named beside it, and by operator; `--json` prints the lot. The spend is the branch's rather than
-each PR's, since a session that touched two would otherwise be counted twice.
+named beside it, and by operator; `--json` prints the lot. The spend is the
+branch's rather than each PR's, since a session that touched two would otherwise
+be counted twice.
 
 **Nothing is written to disk.** The totals are wholly derived from the rows, so a
 file of them committed beside its own sources would be a merge conflict on every

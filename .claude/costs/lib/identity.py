@@ -72,10 +72,6 @@ OPERATOR_LINE = re.compile(
 
 
 def operator_of(record: Any) -> Optional[str]:
-    """The operator's GitHub handle, off the record the SessionStart hook that
-    resolved it left behind. No other record names the person: the branch's
-    pusher and the commit author are the session's token, which may be the
-    agent's own."""
     attachment = _attachment_of(record)
     if attachment is None or attachment.get("hookEvent") != "SessionStart":
         return None

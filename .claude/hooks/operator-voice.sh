@@ -12,9 +12,8 @@
 # file, so the one spelling an agent ever sees is the one the lookup uses. The
 # filename is the whole lookup: no parse, so nothing an entry can malform.
 #
-# The resolved-person line is also parsed: `.claude/costs/lib/identity.py` reads
-# the handle back out of the transcript for the cost row's `operator`, keyed on
-# "the operator is … @<handle> … — the GitHub token".
+# `.claude/costs/lib/identity.py` parses the resolved-person line back out of the
+# transcript for the cost row's `operator`, so rewording it empties that field.
 
 set -euo pipefail
 

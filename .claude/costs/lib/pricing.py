@@ -147,7 +147,7 @@ class SessionCost:
     # transcript's own, present only in a remote session.
     url: Optional[str]
     # The operator's GitHub handle, lowercased and without the `@`; null when
-    # the session never resolved a person behind its token.
+    # no person was resolved behind the session's token.
     operator: Optional[str]
     first_response_at: Optional[str]
     last_response_at: Optional[str]
