@@ -1,34 +1,34 @@
 {
   "sessionId": "55a18962-e3e4-578c-b0aa-c2652cfd2cf0",
   "branch": "claude/gracious-ritchie-ytr7vo",
-  "cwd": "/home/user/muthur/tmp/cache-guard",
+  "cwd": "/home/user/muthur",
   "name": "Prompt-cache expiry vs /compact",
   "openingPrompt": "есть ли у оператора какая-то возможность узнать, протух ли кеш. проблема: когда я прихожу в лежавшиую какое-то время сессию, я не знаю, лучше ли мне /compact ил…",
   "prs": [],
   "url": "https://claude.ai/code/session_01VqVxAdcHGVyiRMDwz3pA2i",
   "firstResponseAt": "2026-09-23T13:29:44.544Z",
-  "lastResponseAt": "2026-09-23T13:33:17.560Z",
+  "lastResponseAt": "2026-09-23T13:39:53.228Z",
   "pricesAsOf": "2026-09-23",
-  "claudeCodeTotalUsd": null,
+  "claudeCodeTotalUsd": 0.8099146,
   "total": {
-    "inputTokens": 24,
+    "inputTokens": 32,
     "cacheWrite5mTokens": 0,
-    "cacheWrite1hTokens": 52146,
-    "cacheReadTokens": 919632,
-    "outputTokens": 7886,
-    "thinkingTokens": 3361,
-    "responses": 11,
-    "costUsd": 0.7589104
+    "cacheWrite1hTokens": 64370,
+    "cacheReadTokens": 1326950,
+    "outputTokens": 10936,
+    "thinkingTokens": 4781,
+    "responses": 15,
+    "costUsd": 0.9991979999999999
   },
   "ownTurns": {
-    "inputTokens": 24,
+    "inputTokens": 32,
     "cacheWrite5mTokens": 0,
-    "cacheWrite1hTokens": 52146,
-    "cacheReadTokens": 919632,
-    "outputTokens": 7886,
-    "thinkingTokens": 3361,
-    "responses": 11,
-    "costUsd": 0.7589104
+    "cacheWrite1hTokens": 64370,
+    "cacheReadTokens": 1326950,
+    "outputTokens": 10936,
+    "thinkingTokens": 4781,
+    "responses": 15,
+    "costUsd": 0.9991979999999999
   },
   "subagents": {
     "inputTokens": 0,
@@ -42,14 +42,14 @@
   },
   "byRate": {
     "claude-opus-5-5/standard": {
-      "inputTokens": 24,
+      "inputTokens": 32,
       "cacheWrite5mTokens": 0,
-      "cacheWrite1hTokens": 52146,
-      "cacheReadTokens": 919632,
-      "outputTokens": 7886,
-      "thinkingTokens": 3361,
-      "responses": 11,
-      "costUsd": 0.7589104
+      "cacheWrite1hTokens": 64370,
+      "cacheReadTokens": 1326950,
+      "outputTokens": 10936,
+      "thinkingTokens": 4781,
+      "responses": 15,
+      "costUsd": 0.9991979999999999
     }
   },
   "warnings": []
