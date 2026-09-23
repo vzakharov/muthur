@@ -15,9 +15,7 @@ from __future__ import annotations
 import re
 from typing import Any, Optional
 
-
-def _is_number(value: Any) -> bool:
-    return isinstance(value, (int, float)) and not isinstance(value, bool)
+from lib.shape import is_number
 
 
 def kind_of(record: Any) -> Optional[str]:
@@ -29,7 +27,7 @@ def kind_of(record: Any) -> Optional[str]:
 def cost_state_of(record: Any) -> Optional[float]:
     """Claude Code's own running cost for the session, rewritten as the session
     goes: the last one in the file is its final word on it."""
-    if isinstance(record, dict) and _is_number(record.get("totalCostUSD")):
+    if isinstance(record, dict) and is_number(record.get("totalCostUSD")):
         return record["totalCostUSD"]
     return None
 
@@ -37,7 +35,7 @@ def cost_state_of(record: Any) -> Optional[float]:
 def pr_number_of(record: Any) -> Optional[int]:
     """Claude Code records every PR it opens or refreshes, which is what groups
     the several sessions one PR takes."""
-    if isinstance(record, dict) and _is_number(record.get("prNumber")):
+    if isinstance(record, dict) and is_number(record.get("prNumber")):
         return int(record["prNumber"])
     return None
 

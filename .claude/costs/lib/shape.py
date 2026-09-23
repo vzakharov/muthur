@@ -24,9 +24,14 @@ def mistyped(where: str, key: str, value: Any, wanted: str) -> ShapeError:
     return ShapeError(f"{where}: `{key}` is {type(value).__name__}, not {wanted}")
 
 
+def is_number(value: Any) -> bool:
+    """JSON's numbers, less `bool`, which Python counts as an `int`."""
+    return isinstance(value, (int, float)) and not isinstance(value, bool)
+
+
 def read_number(obj: Mapping[str, Any], key: str, where: str) -> Optional[float]:
     value = obj.get(key)
-    if value is not None and (isinstance(value, bool) or not isinstance(value, (int, float))):
+    if value is not None and not is_number(value):
         raise mistyped(where, key, value, "a number")
     return value
 
@@ -35,7 +40,7 @@ def read_count(obj: Mapping[str, Any], key: str, where: str) -> Optional[int]:
     value = obj.get(key)
     if isinstance(value, float) and value.is_integer():
         return int(value)
-    if value is not None and (isinstance(value, bool) or not isinstance(value, int)):
+    if value is not None and not (is_number(value) and isinstance(value, int)):
         raise mistyped(where, key, value, "a whole number")
     return value
 
