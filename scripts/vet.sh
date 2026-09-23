@@ -1,7 +1,7 @@
 #!/bin/bash
 # Vet: the fast checks the agent runs before pushing review-ready work.
 #
-# ADOPTERS: what this file must exit is CLAUDE.md → Vetting's contract. Read it
+# ADOPTERS: what this file must exit is `.claude/rules/stack.md`'s contract. Read it
 # there rather than inferring it from what this stub does — the exit turns on
 # whether your repo has a stack yet, which is not a thing this file can see.
 #
@@ -38,7 +38,7 @@
 #     directory: a repo that said yes keeps it through the rewrite, and one that
 #     said no has nothing for it to find.
 #
-# See CLAUDE.md → Vetting for the contract.
+# See `.claude/rules/stack.md` for the contract.
 
 set -euo pipefail
 
@@ -51,5 +51,5 @@ done
 
 echo "vet: no stack-specific checks are configured; the checks above are the run." >&2
 echo "vet: a repo whose stack is present and unchecked exits 1 here instead" >&2
-echo "     (see CLAUDE.md → Vetting for the contract)." >&2
+echo "     (see .claude/rules/stack.md for the contract)." >&2
 exit 0

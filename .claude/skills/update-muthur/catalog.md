@@ -43,7 +43,7 @@ inventory, so every item appears under exactly one, and
 - **adopt** — copy as-is.
 - **rewrite** — copy the shape, replace the contents for your repo. One row
   carries it: `scripts/vet.sh`, whose exit turns on whether your repo has a stack
-  yet, with [`CLAUDE.md` § "Vetting"](../CLAUDE.md#vetting) the contract's home.
+  yet, with [`.claude/rules/stack.md`](../../rules/stack.md) the contract's home.
   Elsewhere the word qualifies an **adopt** — `/update-muthur`'s watermark,
   `.claude/voice/`'s `operators/` entries — where the item travels whole and one
   file inside it is yours to write.
@@ -114,8 +114,8 @@ there is no condition under which it fails to apply.
 
 | Item | What it does | Requires | Pulls in | Disposition |
 | --- | --- | --- | --- | --- |
-| `CLAUDE.md` | The always-loaded conventions: key principles, docstring policy, derive-types-from-source-of-truth, doc-sync rules, commit conventions, the language decision. | — | — | adopt — **merge, don't overwrite** |
-| `.claude/rules/` | The path-scoped convention mechanism: a rule file loads only when a session touches the paths it declares. Ships with a README and no rules. | — | — | adopt |
+| `CLAUDE.md` | The always-loaded conventions: the test for what may stay in it, key principles, docstring policy, derive-types-from-source-of-truth, doc-sync rules, commit conventions, the language decision. | — | — | adopt — **merge, don't overwrite** |
+| `.claude/rules/` | The path-scoped convention mechanism: a rule file loads only when a session touches the paths it declares. Ships with a README and the loop's own two rules: `stack.md` (what `vet.sh` exits, what a stack landing wires) and `skills.md` (adding or renaming a skill). | — | — | adopt |
 | `/dry` | Review the session's diff for DRY opportunities; apply the obvious wins, surface the ambiguous ones. | — | — | adopt |
 | `/tend-prose` | Cut prose that shouldn't exist, rewrite what narrates a change into present-tense contracts, trim what names and types already say, delete what survives only to deny a thing the change removed. The long version of CLAUDE.md § "Writing things down". | — | — | adopt |
 | `/polish` | Run `/dry` then `/tend-prose` over the branch's diff, committing what they change. `/go` runs it after implementing and `/finalize` before anything else it does; the operator runs it over work that reached neither. | — | `/dry`, `/tend-prose` (this group) | adopt |
@@ -125,7 +125,8 @@ there is no condition under which it fails to apply.
 | `.gitignore` | Take the `tmp/` entry and keep the rest of yours. `CLAUDE.md`'s "dev artifacts go under `tmp/`" principle depends on that path being ignored. | — | — | adopt — merge one line |
 
 `CLAUDE.md` is a **donor, not a replacement** — overwriting it is the one way to
-make adoption a regression. `ADOPTING.md`'s shared tail owns the merge itself.
+make adoption a regression. `ADOPTING.md`'s shared tail owns the merge itself,
+and the test the whole merged file is held to afterwards.
 
 Its § "Language" is hydrated rather than merged: one line naming the language
 your team reads, the rest of the section holding whatever the project.
@@ -462,9 +463,7 @@ silently, in prose, forever.
   `/watch-ci`, `/qa-checklist`, `/pr`, `/finalize` (twice) and `/from-branch`.
   "`/test-on-gh`, if the project has hydrated it" reads correctly when the answer
   is "it hasn't", and editing it makes every future `/update-muthur` diff
-  noisier for no behavioral gain. `CLAUDE.md`'s stub list names it too, and that
-  one *is* rewritten — not for closure, but because the list stops being true
-  when the stubs go.
+  noisier for no behavioral gain.
 - **Dropping G5** costs **two** `@`-references, both in `/finalize` and both to
   `@.claude/skills/watch-ci/SKILL.md`, plus **two dead bare names** in
   `/override-gh` — `/watch-ci` and `scripts/ci-watch-tick.sh` — which unlike the

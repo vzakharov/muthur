@@ -254,9 +254,22 @@ Your repo already has conventions, or will. Take the template's sections,
 merge them into yours, and keep your stack-specific content — it is a
 [donor, not a replacement](.claude/skills/update-muthur/catalog.md#g1--prose--principles).
 
+**Then hold the merged file to its own test, your sections included.**
+[`CLAUDE.md` § "About this file"](CLAUDE.md#about-this-file) states what may stay
+in a file every turn loads: a line that only matters while a skill, hook or
+directory is in play moves to that skill, to a `.claude/rules/` file or to a
+colocated `CLAUDE.md`, leaving at most a pointer. Apply it to the whole file
+when you take it, and again whenever you pull a change to it forward; between
+those, `/tend-prose`'s existence lens — which every `/polish` runs — holds each
+new line to it as it is written.
+
+**Delete § "Git conventions"'s rule that a change to the loop is `feat:` /
+`fix:`.** It holds where the loop is the product; in your repo these files are
+infrastructure, so a skill edit is `docs:` or `chore:` under your own convention.
+
 Replace the remaining stubs — repository layout, testing — as those conventions
 stabilize, and add `.claude/rules/` files as area-specific conventions emerge
-(the mechanism ships with a README and no rules).
+(the mechanism ships with a README and the loop's own two rules).
 
 ### Settle the language decision
 
@@ -297,8 +310,8 @@ only for the checks that failed:
 exec scripts/run-parallel.sh lint='pnpm lint' typecheck='pnpm typecheck' test='pnpm test:unit'
 ```
 
-**What it must exit is [`CLAUDE.md` § "Vetting"](CLAUDE.md#vetting)'s contract,
-and that section is its home** — read it there, because the exit turns on a
+**What it must exit is [`.claude/rules/stack.md`](.claude/rules/stack.md)'s contract,
+and that file is its home** — read it there, because the exit turns on a
 condition the shipped stub cannot show you. What is at stake at this step: an
 exit-0 stub over a real stack makes `/finalize` pass step 1 and attest to a vet
 run that checked nothing, and a false green is harder to notice than a loud

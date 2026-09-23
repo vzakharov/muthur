@@ -19,7 +19,7 @@
 #
 # Until that line exists this hook no-ops cleanly, which is the correct state for
 # a repo with no stack yet. It is the paired site of `scripts/vet.sh`: a stack
-# that lands wires both, per CLAUDE.md § "Vetting".
+# that lands wires both, per `.claude/rules/stack.md`.
 
 set -euo pipefail
 

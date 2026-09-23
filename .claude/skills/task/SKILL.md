@@ -13,6 +13,8 @@ The decision this skill makes, before any other: **does this task get a plan, an
 
 `/task <what to do>` is the invocation, and it is also where a launch-time directive lands: CLAUDE.md § "Plan mode & questions in web sessions" routes any opening prompt that asks for a change to this codebase here, so most tasks arrive without anyone typing the name. A `#<N>` in that prompt means the thread is exported and committed before anything else happens — `/take-issue` does that and hands the number back. Both mentions stay bare rather than `@`-references: this skill ships to adopters who track no issues at all, and nothing here needs those files read.
 
+**What that routing costs, plainly:** the agent makes the plan-or-not call on every new session that asks for a change, without the operator opting into it. The gate survives that — Step 3 routes gate-worthy work back to `/plan` — but it fires when Step 3's questions say so rather than on every task.
+
 **Anything a caller passes beyond the task — an `<issue>`, an export path — rides through unchanged to whichever outcome runs, and is never read here:** this skill knows what a task is and nothing else, and what the extras mean belongs to the skills at either end of them.
 
 ## Step 1 — Does this task get a plan?

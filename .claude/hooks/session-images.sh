@@ -7,8 +7,8 @@
 # because the agent forgetting is the failure it exists to remove.
 #
 # The images land in gitignored `tmp/`, and nothing here commits: an image worth
-# keeping is moved into the repo deliberately, which is the decision CLAUDE.md
-# § "Writing things down" states. A hook that committed on its own would commit
+# keeping is moved into the repo deliberately, which is the decision the context
+# message below puts to the agent as each image arrives. A hook that committed on its own would commit
 # to whatever branch HEAD happened to be on; one that wrote into the tree
 # `/finalize` sweeps would restore that tree right after the sweep, since the
 # manifest it dedupes against is inside it and a sweep then looks like a first

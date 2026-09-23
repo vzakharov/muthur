@@ -16,6 +16,11 @@
 #   5. Every `.md` beside a `SKILL.md` is reachable — something other than the
 #      page itself names its path. The reverse of 1: that one catches a pointer
 #      to nothing, this one a page nothing points at.
+#   6. Every section citation into a `CLAUDE.md` names a heading that file has.
+#      Assertion 1 for the text a skill points at rather than the file it
+#      loads: a section that moves or is renamed leaves its citations naming
+#      nothing, and the agent following one reads the surviving file without
+#      the rule it was sent for.
 #
 # Assertions 2-3 skip when the catalog is absent — the normal downstream
 # case, since the catalog describes the source repo and is never vendored. So the
@@ -47,7 +52,7 @@ fail() {
 mapfile -t sources < <(
   {
     [ -d .claude ] && find .claude -type f \
-      \( -name '*.md' -o -name '*.sh' -o -name '*.json' \) -print
+      \( -name '*.md' -o -name '*.sh' -o -name '*.json' -o -name '*.py' \) -print
     for f in CLAUDE.md README.md ADOPTING.md; do
       [ -f "$f" ] && printf '%s\n' "$f"
     done
@@ -203,6 +208,66 @@ for page in .claude/skills/*/*.md; do
     fail "$page is referenced by nothing — no session can reach it"
   fi
 done
+
+# --- Assertion 6: section citations into CLAUDE.md resolve ----------------
+#
+# Two forms are checked, and a citation written in any other is invisible here,
+# so these are the forms to cite in: the section sign followed by the heading in
+# double quotes, after the file's repo-relative path (optionally in a code span,
+# as in shell comments or escaped in a shell string); and a Markdown link to the
+# file with a GitHub heading anchor, its path relative to the linking file. A
+# citation of a nested CLAUDE.md carries that file's path, so it is checked
+# against that file.
+
+echo "6. Section citations into CLAUDE.md name headings that exist"
+
+# The file's headings, one per line, without their leading hashes.
+headings_of() {
+  sed -nE 's/^#{1,6} +(.*[^ ]) *$/\1/p' "$1"
+}
+
+# GitHub's anchor for a heading: lowercase, punctuation dropped, spaces to
+# hyphens. ASCII-only, so a heading outside ASCII gets an anchor GitHub would
+# not produce.
+slug() {
+  tr '[:upper:]' '[:lower:]' | sed -E 's/[^a-z0-9 _-]//g; s/ /-/g'
+}
+
+while IFS= read -r hit; do
+  [ -n "$hit" ] || continue
+  src=${hit%%:*}
+  cite=${hit#*:}
+  target=${cite%%CLAUDE.md*}CLAUDE.md
+  heading=${cite#*§ }
+  heading=${heading#\\}
+  heading=${heading#\"}
+  if [ ! -f "$target" ]; then
+    fail "$src cites a section of $target — no such file"
+  elif ! headings_of "$target" | grep -qxF -- "$heading"; then
+    fail "$src cites $target § \"$heading\" — no such heading"
+  fi
+done < <(
+  grep -oHE '([A-Za-z0-9_.-]+/)*CLAUDE\.md\\?`? § \\?"[^"\\]+' "${sources[@]}" 2>/dev/null |
+    sort -u
+)
+
+while IFS= read -r hit; do
+  [ -n "$hit" ] || continue
+  src=${hit%%:*}
+  link=${hit#*:}
+  link=${link#](}
+  link=${link%)}
+  anchor=${link#*#}
+  target=$(dirname "$src")/${link%%#*}
+  if [ ! -f "$target" ]; then
+    fail "$src links ${link%%#*} — no such file"
+  elif ! headings_of "$target" | slug | grep -qxF -- "$anchor"; then
+    fail "$src links ${link} — no heading has that anchor"
+  fi
+done < <(
+  grep -oHE '\]\(([A-Za-z0-9_./-]+/)?CLAUDE\.md#[a-z0-9_-]+\)' "${sources[@]}" 2>/dev/null |
+    sort -u
+)
 
 # --- Report ---------------------------------------------------------------
 
