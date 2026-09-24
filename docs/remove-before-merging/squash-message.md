@@ -1,14 +1,15 @@
 Proposed squash title/body:
 
 ```
-feat: #107 route the first change-asking turn, wherever it falls (pr #108)
+fix: #107 route the first change-asking turn, wherever it falls (pr #108)
 ```
 
 ```
-The routing ladder fired only on a session's opening prompt, and
-continued work began once a plan was being implemented. A session that
-opened as a question and then turned into changes was neither: it was
-never routed, so /task's plan-or-not call, /polish and /pr never ran,
+The routing ladder is meant to route every change, but its text named
+only a session's opening prompt, and continued work began once a plan
+was being implemented. A session that opened as a question and then
+turned into changes was neither, so an agent reading the rule literally
+never routed it: /task's plan-or-not call, /polish and /pr never ran,
 and the operator found commits with no PR behind them.
 
 The first turn that asks for a change is now a routing point wherever
@@ -23,7 +24,7 @@ follow-up from a question takes reading the conversation, so that call
 is the agent's; a notice on every later prompt would cost a Q&A session
 context on every turn.
 
-Closes #107
+Fixes #107
 
 Co-authored-by: Claude <noreply@anthropic.com>
 ```
