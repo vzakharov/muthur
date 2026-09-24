@@ -21,7 +21,7 @@ from typing import Any, Dict, Optional
 ROOT = Path(__file__).resolve().parents[3]
 sys.path.insert(0, str(ROOT / ".claude" / "costs"))
 
-from lib.pricing import parse_prices
+from lib.pricing import PriceTable, parse_prices
 from lib.restart import (
     History,
     Option,
@@ -118,8 +118,7 @@ def reason(idle: float, context: int, priced: Optional[Dict[str, Option]], claud
     return " ".join(lines)
 
 
-def price(history: History, context: int) -> Optional[Dict[str, Option]]:
-    prices = parse_prices(PRICES.read_text(encoding="utf-8"))
+def price(history: History, prices: PriceTable, context: int) -> Optional[Dict[str, Option]]:
     rates = rates_of(history, prices)
     if rates is None:
         return None
@@ -132,7 +131,8 @@ def on_prompt(event: Dict[str, Any], state: State, min_usd: float) -> Optional[s
     transcript = Path(event.get("transcript_path") or "")
     if prompt.lstrip().startswith("/") or STOP_WORD in prompt or not transcript.is_file():
         return None
-    history = read_history(transcript, parse_prices(PRICES.read_text(encoding="utf-8")))
+    prices = parse_prices(PRICES.read_text(encoding="utf-8"))
+    history = read_history(transcript, prices)
     if history is None:
         return None
     last_at = epoch(history.last.timestamp)
@@ -150,7 +150,7 @@ def on_prompt(event: Dict[str, Any], state: State, min_usd: float) -> Optional[s
     else:
         return None
 
-    priced = price(history, context)
+    priced = price(history, prices, context)
     claude_code_usd = flag.get("estimated_cache_write_usd") if flag else None
     cost = priced["carry on"].once if priced else claude_code_usd
     if cost is not None and cost < min_usd:
