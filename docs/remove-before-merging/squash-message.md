@@ -1,29 +1,26 @@
 Proposed squash title/body:
 
 ```
-fix: #105 keep the tree clean while the cost row is written (pr #106)
+fix: #105 drop the session name from the cost ledger (pr #106)
 ```
 
 ```
-The harness's Stop check kept refusing turn ends over the session's
-cost row. Pricing was never the window: the row is priced off the tree
-and renamed in. The naming prompt was, because it had the agent rewrite
-the tracked row in place and leave it for the Stop hook, so the check
-saw it dirty every time; the add, signed commit and push were a smaller
-window behind it.
+The cost ledger no longer records a session name. It was the one field
+the agent wrote itself, mid-turn, into a tracked row that the Stop hook
+committed only at turn end, so on every turn that named a session the
+harness's Stop check found the tree dirty and refused to end the turn.
 
-The row's `name` field is gone, along with `--name` and the prompt that
-asked for it: `branch` and `prs` already group the rows. report.py
-rewrites any row still carrying a key the shape no longer writes, so
-the first report in each repository clears the old names. The hook now
-commits the row by plumbing in a throwaway index, pushes the commit,
-and only then moves the branch and puts the file in place, so the tree
-differs from HEAD for two sub-millisecond steps and is never ahead of
-origin.
+Losing it costs little: `branch` and `prs` already group a session's
+rows, and report.py rewrites any row still carrying a key the shape no
+longer writes, so the first report in each repository clears the old
+names. `--name` and the prompt hook that asked for it go with it.
 
-When a hand run did leave the row dirty, the hook's verdict says the
-check was counting it and that it is now pushed, riding the check's own
-exit 2 rather than adding a turn.
+The Stop hook's own commit was a smaller window behind that one. It now
+commits the row by plumbing in a throwaway index, pushes, and only then
+moves the branch and puts the file in place, so the tree differs from
+HEAD for two sub-millisecond steps and is never ahead of origin. When a
+hand run did leave the row dirty, the verdict says the check was
+counting it and that it is pushed now, riding the check's own exit 2.
 
 Fixes #105
 
