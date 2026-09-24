@@ -23,8 +23,8 @@ plan".
   the break-even counts and the agent weighs them against the plan. The line is
   cached in `tmp/context-budget/<session_id>.line`, since a Python start-up on
   every tool call is the cost this bash hook exists to avoid; it is recomputed
-  only while the warm-up is still an estimate. Without the ledger's lib, on an
-  unpriced model, or with `CONTEXT_BUDGET_WARN` set, the line is a fixed 200k.
+  only while the warm-up is still an estimate. `CONTEXT_BUDGET_WARN` set by hand
+  fixes the line; without the ledger's lib or on an unpriced model it is 200k.
   The pause stays fixed: it guards a context-quality cliff no price captures.
 - **The main chain only.** A tool call carrying `agent_id` is a subagent's and
   is skipped, as are `isSidechain` records and the `<synthetic>` placeholder
@@ -38,5 +38,5 @@ plan".
   warning, a hook failing on every tool call costs the session.
 
 `CONTEXT_BUDGET_WARN` and `CONTEXT_BUDGET_PAUSE` fix the two lines, in tokens,
-and `CONTEXT_BUDGET_REQUESTS` moves the priced one — set them in `.claude/settings.local.json`'s `env` to tune without
-editing a tracked file.
+and `CONTEXT_BUDGET_REQUESTS` moves the priced one — set them in
+`.claude/settings.local.json`'s `env` to tune without editing a tracked file.
