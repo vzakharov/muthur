@@ -2,10 +2,10 @@
 # `Stop` hook: price the session and commit its cost row to the branch.
 #
 # It shares the event with the harness's own `Stop` check, which refuses to end a
-# turn on an unclean or unpushed tree. `.claude/costs/CLAUDE.md` § "Running
-# beside the harness's Stop check" carries how the row is committed without the
-# tree ever looking unfinished, and what the closing verdict covers when the tree
-# was unclean before this ran.
+# turn on an unclean or unpushed tree.
+# `.claude/costs/CLAUDE.md` § "Running beside the harness's Stop check" carries
+# how the row is committed without the tree ever looking unfinished, and what the
+# closing verdict covers when the tree was unclean before this ran.
 
 . "$(dirname "${BASH_SOURCE[0]}")/../../hooks/lib.sh" || exit 0
 read_payload

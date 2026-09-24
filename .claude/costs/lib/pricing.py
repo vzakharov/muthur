@@ -136,11 +136,6 @@ class SessionCost:
     session_id: str
     branch: Optional[str]
     cwd: Optional[str]
-    # `name` is the agent's own short label, and the one field here the
-    # transcript cannot supply: it stays null until a turn fills it in, which is
-    # what `hooks/prompt-session-name.sh` asks for. Writing a row therefore
-    # carries the existing name forward rather than recomputing it.
-    name: Optional[str]
     opening_prompt: Optional[str]
     prs: List[int]
     # The URL a person opens the session at — a different id from the
@@ -186,7 +181,6 @@ def parse_session_cost(text: str, where: str = "row") -> SessionCost:
         session_id=required(read_string, row, "sessionId", where),
         branch=read_string(row, "branch", where),
         cwd=read_string(row, "cwd", where),
-        name=read_string(row, "name", where),
         opening_prompt=read_string(row, "openingPrompt", where),
         prs=_list_of(row, "prs", where, int),
         url=read_string(row, "url", where),
@@ -444,7 +438,6 @@ def summarise_transcript(
         session_id=session_id if session_id is not None else fallback_session_id,
         branch=branch,
         cwd=cwd,
-        name=None,
         opening_prompt=opening_prompt,
         prs=sorted(prs),
         url=url,

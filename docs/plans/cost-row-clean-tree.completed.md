@@ -25,11 +25,10 @@ often that happens is not measured anywhere.
 
 ## Changes
 
-1. **`--name` stops touching the tracked tree.** It writes the name to
-   `tmp/costs/names/<session-id>` and nothing else. The row's name comes from
-   `--name`, then that file, then the previous row. `prompt-session-name.sh` goes
-   quiet once either the row or that file holds a name, and its prompt says the
-   `Stop` hook folds the name into this turn's row.
+1. **The `name` field goes, with `--name` and `prompt-session-name.sh`.** A
+   label the agent writes mid-turn is a write to the tree the check reads, and
+   `branch` plus `prs` already group the rows. Rows written before keep their
+   `name` key; the parser ignores it.
 2. **The `Stop` hook commits the row without dirtying the tree.**
    `session_cost.py` gains `--out <path>`, writing the row there instead of into
    place. The hook then:
@@ -74,8 +73,9 @@ often that happens is not measured anywhere.
    - work the agent has staged stays staged and stays out of the commit;
    - a row left dirty with the check registered exits 2 with the new line, and
      stays silent with the check unregistered or under `stop_hook_active`;
-   - an unreachable `origin` reports "committed but not pushed";
-   - `--name` leaves the tree clean, and the next `Stop` puts the name in the row.
+   - an unreachable `origin` reports "committed but not pushed".
+
+   `test_totals.py` gains a case: a row still carrying `name` parses.
 
    `scripts/vet.sh`'s loop already runs every `.claude/costs/test_*.py`.
 
@@ -84,10 +84,6 @@ often that happens is not measured anywhere.
 - **The commit sequence has one home, the `Stop` hook.** Only the hook commits
   rows; a hand run (without `--out`) keeps `write_atomic` and leaves committing to
   the person.
-- **The name file's path appears twice**, in `session_cost.py` and in
-  `prompt-session-name.sh`, one in Python and one in shell. Having the shell hook
-  call Python just to learn a path would cost a Python start on every prompt, so
-  each copy carries a comment naming the other.
 - **The test reuses `test_pricing.py`'s record builders** where they fit rather
   than writing new ones. Where importing them would drag in that module's
   fixtures, it writes the two records it needs.

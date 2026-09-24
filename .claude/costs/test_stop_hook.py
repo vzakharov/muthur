@@ -235,14 +235,6 @@ class StopHookTest(unittest.TestCase):
         self.assertEqual(self.clone.status(), "")
         self.assertEqual(self.clone.git("rev-list", "--count", "origin/feature..HEAD"), "1")
 
-    def test_naming_leaves_the_tree_clean_and_lands_in_the_next_row(self) -> None:
-        self.clone.stop()
-        self.clone.cost("--name", "a test session")
-        self.assertEqual(self.clone.status(), "")
-        self.clone.stop()
-        self.assertEqual(json.loads(self.clone.row().read_text())["name"], "a test session")
-        self.assertLevelWithOrigin()
-
 
 if __name__ == "__main__":
     unittest.main()

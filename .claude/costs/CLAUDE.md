@@ -39,8 +39,8 @@ row there before its first session can be priced.
 
 ## What names a session
 
-Nothing in the transcript is the title Claude Code shows. Four fields stand in
-for one, and only the last is not read out of the file:
+Nothing in the transcript is the title Claude Code shows. Three fields stand in
+for one, all read out of the file:
 
 - **`openingPrompt`** — the session's first prompt, unwrapped from the envelope a
   slash command arrives in, so it reads `/handle <branch>`.
@@ -51,14 +51,6 @@ for one, and only the last is not read out of the file:
   attribution reminder the harness re-sends on a remote session change. That one
   record is what is matched: a commit trailer quoted anywhere in a transcript
   carries a session URL too, usually another session's.
-- **`name`** — a few words from the agent whose session it is, which is the only
-  thing here that knows what the session turned out to be about.
-  `hooks/prompt-session-name.sh` asks for it from the first prompt until it is
-  set, and each rewrite carries the existing name forward, since re-reading the
-  transcript could never produce one. `--name` writes it to
-  `tmp/costs/names/<session-id>` rather than into the row, for the `Stop` hook
-  to fold in: a row rewritten in place mid-turn is a dirty tree the harness's
-  check refuses at turn end, every time.
 
 **`operator`** is whose session it was: the GitHub handle
 `.claude/hooks/operator-voice.sh` resolved at startup, read off the record that

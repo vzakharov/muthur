@@ -12,11 +12,12 @@ the tracked row in place and leave it for the Stop hook, so the check
 saw it dirty every time; the add, signed commit and push were a smaller
 window behind it.
 
-`session_cost.py --name` now records the name under gitignored `tmp/`,
-and the Stop hook folds it into that turn's row. The hook commits the
-row by plumbing in a throwaway index, pushes the commit, and only then
-moves the branch and puts the file in place, so the tree differs from
-HEAD for two sub-millisecond steps and is never ahead of origin.
+The row's `name` field is gone, along with `--name` and the prompt that
+asked for it: `branch` and `prs` already group the rows. The hook now
+commits the row by plumbing in a throwaway index, pushes the commit,
+and only then moves the branch and puts the file in place, so the tree
+differs from HEAD for two sub-millisecond steps and is never ahead of
+origin.
 
 When a hand run did leave the row dirty, the hook's verdict says the
 check was counting it and that it is now pushed, riding the check's own

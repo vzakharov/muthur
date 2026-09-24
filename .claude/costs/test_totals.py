@@ -27,7 +27,6 @@ ROW = SessionCost(
     session_id="sess",
     branch="a-branch",
     cwd=None,
-    name=None,
     opening_prompt=None,
     prs=[],
     url=None,
@@ -115,8 +114,13 @@ class RowsReadBack(unittest.TestCase):
 
     def test_a_row_from_before_the_naming_fields_still_parses(self) -> None:
         row = to_json(ROW)
-        for key in ("name", "openingPrompt", "prs", "url", "operator", "claudeCodeTotalUsd"):
+        for key in ("openingPrompt", "prs", "url", "operator", "claudeCodeTotalUsd"):
             del row[key]
+        self.assertEqual(parse_session_cost(json.dumps(row)), ROW)
+
+    def test_a_row_still_carrying_a_name_parses(self) -> None:
+        # Rows written while the ledger took a name from the agent keep one.
+        row = {**to_json(ROW), "name": "a named session"}
         self.assertEqual(parse_session_cost(json.dumps(row)), ROW)
 
 
