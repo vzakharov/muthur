@@ -7,10 +7,10 @@ Usage:
 
 The totals are never written: they are derived from the rows, so the report is
 run when a number is wanted rather than kept on disk going stale. A row still
-carrying a retired field is rewritten without it, and the report says which. `--json` prints the
-whole breakdown for whoever wants to keep one anyway. Rows reach the trunk by
-merge, so a month read there is a month of *merged* work: `CLAUDE.md` beside
-this file carries what that leaves out.
+carrying a retired field is rewritten without it, and the report says which.
+`--json` prints the whole breakdown for whoever wants to keep one anyway. Rows
+reach the trunk by merge, so a month read there is a month of *merged* work:
+`CLAUDE.md` beside this file carries what that leaves out.
 
 Stdlib only — Python 3.9+.
 """
