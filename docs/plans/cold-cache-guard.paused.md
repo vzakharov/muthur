@@ -104,6 +104,61 @@ Mirrors `.claude/context-budget/`:
 5. Write `.claude/cold-cache/CLAUDE.md`.
 6. Run `./scripts/vet.sh`.
 
+## Priced context budget
+
+The operator asked for this too: `.claude/context-budget/` warns at a fixed 200k
+and pauses at 300k. It should warn at the point where carrying on starts costing
+more than starting over, computed from the session's own numbers, using the same
+cost model as the guard.
+
+- **Starting over is costed from this session's own warm-up**, since a new
+  session on the same task reads roughly what this one read before it started
+  working. Warm-up = the context at the first write-shaped tool call (`Edit`,
+  `Write`, `NotebookEdit`, or a Bash `git commit`), minus the starting context.
+  This is a heuristic: the operator flagged the warm-up/work boundary as the
+  open part, and the first write is the cheapest honest reading of "stopped
+  looking, started producing". Fall back to `RAMP_UP` when no write has happened.
+- **The hook cannot know how much work is left; the agent can.** So the notice
+  gives the break-even count rather than a verdict: "a new session pays for
+  itself after N more requests, /compact after M". The agent compares that with
+  what the plan says is left, and states both numbers when it offers the choice.
+  With a warm cache: new session once ≈ start write + warm-up write + warm-up
+  reads; per request, `(start + warm-up) × read` against `context × read`.
+  `/compact` once ≈ `context × read + summary × output + (start + kept) × write`.
+- **When it fires:** once N drops below `CONTEXT_BUDGET_REQUESTS` (default 100
+  — about two heavy operator messages' worth of work). The fixed pause at 300k
+  stays as the backstop against a context-quality cliff that no price captures.
+- **Shared code:** the cost model moves out of `cold_cache.py` into
+  `.claude/costs/lib/` (e.g. `restart.py`), imported by both hooks. The
+  context-budget hook becomes Python for its reading, or calls a Python helper
+  from its bash; decide by which keeps the per-tool-call cost lowest — a Python
+  start-up on every tool call is ~30 ms.
+
+## Progress
+
+Paused at ~282k context, on the operator's call: the remaining work is over 40
+requests, which is past where a new session pays for itself.
+
+Done:
+- Plan published as draft PR #109; squash proposal posted and tracked in
+  `docs/remove-before-merging/squash-message.md`.
+- Step 1: `is_response_record` / `parse_response` public in
+  `.claude/costs/lib/pricing.py`; ledger tests pass.
+- Step 2 and most of step 3 in code: `.claude/cold-cache/hooks/cold_cache.py`
+  (cost model, both event handlers, block text). Checked by hand against the
+  calculator's defaults: $1.07 / $1.15 / $1.17, pay-back ~5 requests. Not run
+  as a hook yet, not wired, no tests.
+
+Left:
+- Step 3's tests (`.claude/cold-cache/test_cold_cache.py`), including the
+  pure-model pins above.
+- Step 4: wire `settings.json` (replace the probe's two entries), add
+  `cold-cache` to `scripts/vet.sh`'s test glob, catalog G9 group + row, delete
+  `.claude/hooks/cache-guard-probe.py`.
+- Step 5: `.claude/cold-cache/CLAUDE.md`.
+- § "Priced context budget" above.
+- Step 6 vet, then `/go` Step 3's `/polish`, `/pr` refresh.
+
 ## Open questions
 
 1. **On by default in this repo?** Recommendation: yes — here the loop is the
