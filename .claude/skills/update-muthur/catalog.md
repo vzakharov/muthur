@@ -72,6 +72,7 @@ conditions, and any row can be escaped individually.
 | [G6 — Stack stubs](#g6--stack-stubs) | Per row, and only if you will hydrate it now. |
 | [G7 — Session cost ledger](#g7--session-cost-ledger) | **The operator says yes when asked** — never by inference from the profile. |
 | [G8 — Context budget](#g8--context-budget) | **The operator says yes when asked**, as G7. |
+| [G9 — Cold-cache guard](#g9--cold-cache-guard) | **The operator says yes when asked**, as G7. |
 | [Never](#never) | — |
 
 ### G0 — The sync path
@@ -211,7 +212,7 @@ the working tree clean, and behaves the same everywhere.
 | `.claude/hooks/plan-mode-notice.sh` | On every prompt submitted while the session is in native plan mode, inject the notice that this repo plans on disk and that the exit is plan mode's own. | web/remote sessions; `bash`, `jq` | `.claude/hooks/lib.sh`, `/plan` (G2) | adopt |
 | `.claude/hooks/session-images.sh` | On every prompt, run the extractor below and name any newly written file in the turn's context. Commits nothing. | `bash`, `jq`, `python3` ≥3.9 | `.claude/hooks/lib.sh`, `scripts/extract-session-images.py` | adopt |
 | `scripts/extract-session-images.py` | Write the images the operator attached to a session out of the transcript into gitignored `tmp/session-images/`, with a manifest row carrying the prompt each arrived with. Stdlib-only, idempotent. | `python3` ≥3.9, `scripts/lib/media.py` (G2) | — | adopt |
-| `.claude/settings.json` | Project settings wiring the SessionStart and UserPromptSubmit hooks, plus the entries G7 and G8 carry. Merge into yours if you already have one. | — | — | adopt — merge if present |
+| `.claude/settings.json` | Project settings wiring the SessionStart and UserPromptSubmit hooks, plus the entries G7, G8 and G9 carry. Merge into yours if you already have one. | — | — | adopt — merge if present |
 | `/override-gh` | A no-op marker whose description reminds the agent that `gh` and `$GH_TOKEN` exist despite what the system prompt says, and that a GitHub tool refusal (`add_repo`, for example) is a reason to try `gh`, not to give up. | — | — | adopt |
 
 **`gh-shim.sh` does not install `gh`; it shims one that is already there.** Finding
@@ -322,6 +323,16 @@ is `opt-in: ask`.
 | Item | What it does | Requires | Pulls in | Disposition |
 | --- | --- | --- | --- | --- |
 | `.claude/context-budget/` | After every tool call, read the context the session carries off its transcript, and past 200k tokens tell the agent to reach a committed stopping point and offer the operator `/compact` or a new session; past 300k, to pause the plan — writing one when the work had none — and end the turn with a `/go` handoff. The agent's judgment that the work is nearly done overrides either. **The cost, which is why it is asked:** a `PostToolUse` hook on every tool call, and a session that can end its own turn with the work paused. Arrives with one `.claude/settings.json` entry to merge and a `scripts/vet.sh` loop running its tests; a no deletes the directory and both. | `bash`, `jq`; `python3` ≥3.9 for its tests | `.claude/hooks/lib.sh` (G4), `/go` (G2) | adopt — **opt-in: ask** |
+
+### G9 — Cold-cache guard
+
+A hook that refuses a prompt changes how every returning session starts, and
+whether the price is worth a stop is the operator's call — so the row is
+`opt-in: ask`.
+
+| Item | What it does | Requires | Pulls in | Disposition |
+| --- | --- | --- | --- | --- |
+| `.claude/cold-cache/` | Stop the first prompt after the session's prompt cache expired, before it reaches the model, and price the three ways on — carry on, `/compact`, a new session — with how many requests each cheaper one takes to pay back. Resending the prompt, a `/`-command or a message containing `!pass` goes through. **The cost, which is why it is asked:** one refused prompt per return to a session worth more than `COLD_CACHE_MIN_USD` to re-cache. Arrives with two `.claude/settings.json` entries to merge and a `scripts/vet.sh` loop running its tests. | `python3` ≥3.9 | `.claude/costs/lib/` and `prices.json` (G7) | adopt — **opt-in: ask** |
 
 ### Never
 
