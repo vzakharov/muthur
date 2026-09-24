@@ -1,31 +1,28 @@
 Proposed squash title/body:
 
 ```
-feat: #100 stage edits to always-loaded files, swap at /finalize (pr #102)
+fix: #105 keep the tree clean while the cost row is written (pr #106)
 ```
 
 ```
-Editing CLAUDE.md, or anything else rendered into the prefix of every
-request, invalidates the prompt cache of every session on the branch.
-So on a branch such files are edited through staged copies, and the
-real files change once, at /finalize.
+The harness's Stop check kept refusing turn ends over the session's
+cost row. Pricing was never the window: the row is priced off the tree
+and renamed in. The naming prompt was, because it had the agent rewrite
+the tracked row in place and leave it for the Stop hook, so the check
+saw it dirty every time; the add, signed commit and push were a smaller
+window behind it.
 
-scripts/staged.sh owns the mechanics. `stage` copies a file
-byte-identical to .claude/staged/<path>.staged, so the path is the whole
-mapping, and the suffix keeps the copy from loading as a nested
-CLAUDE.md, rule or skill. `swap` puts each copy back, with a three-way
-merge against the file as it stood when staged, so a base merge's edit
-is never overwritten. `check` runs in the vet run.
+`session_cost.py --name` now records the name under gitignored `tmp/`,
+and the Stop hook folds it into that turn's row. The hook commits the
+row by plumbing in a throwaway index, pushes the commit, and only then
+moves the branch and puts the file in place, so the tree differs from
+HEAD for two sub-millisecond steps and is never ahead of origin.
 
-CLAUDE.md states the rule. A path-scoped .claude/rules/staging.md
-defines the always-loaded set (the root CLAUDE.md and its imports,
-rules with no paths:, skill description:s) and arrives whenever one of
-those files is opened. /finalize swaps before its quality passes, and
-refuses to land while anything is still staged.
-An operator's "swap it in" runs the swap early, trading the cache for a
-branch that runs on the new text.
+When a hand run did leave the row dirty, the hook's verdict says the
+check was counting it and that it is now pushed, riding the check's own
+exit 2 rather than adding a turn.
 
-Closes #100
+Fixes #105
 
 Co-authored-by: Claude <noreply@anthropic.com>
 ```
