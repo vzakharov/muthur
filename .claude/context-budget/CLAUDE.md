@@ -14,18 +14,15 @@ plan".
   record's `input_tokens + cache_read_input_tokens + cache_creation_input_tokens`.
   `output_tokens` is left out — the next request carries it, and the next
   reading counts it then.
-- **The warning line is priced**: the context past which a new session pays for
-  itself within `CONTEXT_BUDGET_REQUESTS` (default 100) requests, against
-  carrying on — computed by `hooks/priced_line.py` with the cold-cache guard's
-  model (`.claude/costs/lib/restart.py`, whose home document is
-  `.claude/cold-cache/CLAUDE.md`), a new session being costed from this one's
-  own warm-up. The hook cannot know how much work is left, so the notice gives
-  the break-even counts and the agent weighs them against the plan. The line is
-  cached in `tmp/context-budget/<session_id>.line`, since a Python start-up on
-  every tool call is the cost this bash hook exists to avoid; it is recomputed
-  only while the warm-up is still an estimate. `CONTEXT_BUDGET_WARN` set by hand
-  fixes the line; without the ledger's lib or on an unpriced model it is 200k.
-  The pause stays fixed: it guards a context-quality cliff no price captures.
+- **The warning line is priced**: the context past which a new session, costed
+  from this one's warm-up, pays for itself within `CONTEXT_BUDGET_REQUESTS`
+  (default 100) requests — the cold-cache guard's model, via
+  `hooks/priced_line.py`. The hook cannot know how much work is left, so the
+  notice gives the break-even counts and the agent weighs them. The line is
+  cached in `tmp/context-budget/<session_id>.line`, since a Python start-up per
+  tool call is what this bash hook avoids. A hand-set `CONTEXT_BUDGET_WARN`
+  fixes it; without the ledger's lib or on an unpriced model it is 200k. The
+  pause stays fixed: it guards a context-quality cliff no price captures.
 - **The main chain only.** A tool call carrying `agent_id` is a subagent's and
   is skipped, as are `isSidechain` records and the `<synthetic>` placeholder
   Claude Code writes for a turn no model served — whose zeroed usage would read

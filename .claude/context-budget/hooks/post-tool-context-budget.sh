@@ -42,10 +42,8 @@ reading="$(tac "$transcript" | grep -F '"type":"assistant"' | jq -rn '
 state_dir="$root/tmp/context-budget"
 state_file="$state_dir/$session"
 
-# The warn line is priced where the ledger's lib is here to price it and no fixed
-# line was set. It is cached in `<session>.line` as `<line> <kind> <reading>`, and
-# recomputed only while the warm-up it is costed from is still an estimate, once
-# the reading has moved 10k from the one it was computed at.
+# Priced where the ledger's lib can price it and no fixed line was set. Cached as
+# `<line> <kind> <reading>`; recomputed while the warm-up is an estimate, per 10k.
 hooks="$(dirname "${BASH_SOURCE[0]}")"
 priced=
 if [ -z "${CONTEXT_BUDGET_WARN:-}" ] && [ -f "$hooks/../../costs/lib/restart.py" ] && command -v python3 >/dev/null; then

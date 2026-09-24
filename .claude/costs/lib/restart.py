@@ -103,8 +103,6 @@ def after_expiry(s: Session, r: Rates, write: float) -> Dict[str, Option]:
 
 
 def while_warm(s: Session, r: Rates, write: float) -> Dict[str, Option]:
-    """The three options with the cache still warm, where carrying on costs
-    nothing up front and the others trade a one-off for a smaller context."""
     shared = min(s.shared, s.start)
     after_compact = s.start + KEPT_AFTER_COMPACT
     return {

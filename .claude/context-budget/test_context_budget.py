@@ -159,8 +159,8 @@ class WhenTheNoticesFire(BudgetTestCase):
 
 
 class ThePricedWarnLine(BudgetTestCase):
-    # Opening at 43k and editing at 90k prices the warm-up at ~$0.07, so a new
-    # session pays for itself within 100 requests past ~90k + $0.07 / 100 reads.
+    # Opening at 43k and editing at 90k prices the warm-up at ~$0.07: past ~93k,
+    # a new session pays for itself within 100 requests.
     def setUp(self) -> None:
         super().setUp()
         self.session.append(priced("open", 43_000), priced("edit", 90_000, tool="Edit"))
