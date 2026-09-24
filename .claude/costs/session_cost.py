@@ -93,10 +93,10 @@ def recorded_name(session_id: str) -> Optional[str]:
 
 
 def write_atomic(out: Path, contents: str) -> None:
-    """The harness's `Stop` check runs in parallel with the hook and counts a
-    half-written file and a stray staging file alike, so a write is staged and
-    renamed into place — under the repo's own gitignored `tmp/`, rename being
-    atomic only within one filesystem."""
+    """A write cut off halfway leaves the old file rather than half a new one,
+    so it is staged and renamed into place — under the repo's own gitignored
+    `tmp/`, where a stray staging file is invisible to git and the rename is
+    on the same filesystem."""
     staged = ROOT / "tmp" / f"{out.name}.staged"
     staged.parent.mkdir(parents=True, exist_ok=True)
     out.parent.mkdir(parents=True, exist_ok=True)

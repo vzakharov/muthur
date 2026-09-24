@@ -139,8 +139,8 @@ commit_row() {
   local pushed=false
   repo push -q origin "$commit:refs/heads/$branch" 2>/dev/null && pushed=true
 
-  # `place_row` split around the ref move, so only that move stands between
-  # HEAD changing and the file following it.
+  # `place_row`, split so the directory is made first and the ref move and the
+  # rename run back to back.
   mkdir -p -- "$(dirname "$row")" &&
     repo update-ref -m "$subject" "refs/heads/$branch" "$commit" "$head" &&
     mv -f -- "$staged" "$row" &&

@@ -38,4 +38,4 @@ emit_context "This session has no name in the cost ledger (\`.claude/costs/sessi
 
   python3 .claude/costs/session_cost.py --transcript '$transcript' --session-id '$session' --name '<a few words>'
 
-A short label a person would recognise the session by in a list, in the repo's own terms rather than the prompt's wording. It is written once and touches no tracked file: the \`Stop\` hook puts it in this turn's row and commits that, so there is nothing to commit for it yourself. This asks on each prompt until the field is set and then goes quiet; it does not deserve a turn of its own, so fold it into whatever you were going to run anyway."
+A short label a person would recognise the session by in a list, in the repo's own terms rather than the prompt's wording. It is written once, outside the tracked tree; the \`Stop\` hook puts it in this turn's row, so there is nothing to commit. This asks on each prompt until the field is set and then goes quiet; it does not deserve a turn of its own, so fold it into whatever you were going to run anyway."
