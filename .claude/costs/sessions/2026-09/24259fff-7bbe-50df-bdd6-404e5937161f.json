@@ -1,0 +1,57 @@
+{
+  "sessionId": "24259fff-7bbe-50df-bdd6-404e5937161f",
+  "branch": "claude/cost-row-clean-tree-5fcj6n",
+  "cwd": "/home/user/muthur",
+  "name": "Cost row off the tree while the git check reads it (#105)",
+  "openingPrompt": "Cost ledger's Stop hook still races the harness git check #105",
+  "prs": [],
+  "url": "https://claude.ai/code/session_018Uy7EfiYGHHdXHNX84dMvB",
+  "operator": "vzakharov",
+  "firstResponseAt": "2026-09-24T02:06:11.166Z",
+  "lastResponseAt": "2026-09-24T02:10:12.788Z",
+  "pricesAsOf": "2026-09-23",
+  "claudeCodeTotalUsd": null,
+  "total": {
+    "inputTokens": 34,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 83258,
+    "cacheReadTokens": 1623545,
+    "outputTokens": 20886,
+    "thinkingTokens": 17823,
+    "responses": 17,
+    "costUsd": 1.4086289999999997
+  },
+  "ownTurns": {
+    "inputTokens": 34,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 83258,
+    "cacheReadTokens": 1623545,
+    "outputTokens": 20886,
+    "thinkingTokens": 17823,
+    "responses": 17,
+    "costUsd": 1.4086289999999997
+  },
+  "subagents": {
+    "inputTokens": 0,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 0,
+    "cacheReadTokens": 0,
+    "outputTokens": 0,
+    "thinkingTokens": 0,
+    "responses": 0,
+    "costUsd": 0.0
+  },
+  "byRate": {
+    "claude-opus-5-5/standard": {
+      "inputTokens": 34,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 83258,
+      "cacheReadTokens": 1623545,
+      "outputTokens": 20886,
+      "thinkingTokens": 17823,
+      "responses": 17,
+      "costUsd": 1.4086289999999997
+    }
+  },
+  "warnings": []
+}
