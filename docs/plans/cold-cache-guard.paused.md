@@ -113,11 +113,14 @@ cost model as the guard.
 
 - **Starting over is costed from this session's own warm-up**, since a new
   session on the same task reads roughly what this one read before it started
-  working. Warm-up = the context at the first write-shaped tool call (`Edit`,
-  `Write`, `NotebookEdit`, or a Bash `git commit`), minus the starting context.
-  This is a heuristic: the operator flagged the warm-up/work boundary as the
-  open part, and the first write is the cheapest honest reading of "stopped
-  looking, started producing". Fall back to `RAMP_UP` when no write has happened.
+  working. Warm-up = the context at whichever comes first — the first
+  write-shaped tool call (`Edit`, `Write`, `NotebookEdit`, or a Bash
+  `git commit`), or the first reply that ends a turn (`stop_reason: end_turn`),
+  for a session whose warm-up led to an answer rather than a change — minus the
+  starting context. This is a heuristic: the operator flagged the warm-up/work
+  boundary as the open part, and either event is the cheapest honest reading of
+  "stopped looking, started producing". Fall back to `RAMP_UP` when neither has
+  happened.
 - **The hook cannot know how much work is left; the agent can.** So the notice
   gives the break-even count rather than a verdict: "a new session pays for
   itself after N more requests, /compact after M". The agent compares that with
