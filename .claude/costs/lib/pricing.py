@@ -223,7 +223,7 @@ class Response:
     tokens: Tally
 
 
-def _is_response_record(record: Any) -> bool:
+def is_response_record(record: Any) -> bool:
     # Prompts, attachments and tool results share the file and carry no usage,
     # so only a record that looks like a billed response is held to the shape.
     if not isinstance(record, dict):
@@ -232,7 +232,7 @@ def _is_response_record(record: Any) -> bool:
     return isinstance(message, dict) and "usage" in message
 
 
-def _parse_response(record: Dict[str, Any], where: str, warnings: List[str]) -> Response:
+def parse_response(record: Dict[str, Any], where: str, warnings: List[str]) -> Response:
     message = required(read_object, record, "message", where)
     message_id = required(read_string, message, "id", where)
     usage = required(read_object, message, "usage", where)
@@ -365,9 +365,9 @@ def summarise_transcript(
                         url = session_url_in(record, line)
                     continue
 
-            if not _is_response_record(record):
+            if not is_response_record(record):
                 continue
-            response = _parse_response(record, where, warnings)
+            response = parse_response(record, where, warnings)
             if not (delegated or response.is_sidechain or response.model == SYNTHETIC_MODEL):
                 last_own = response
             # One API response is written as one record per content block, each
