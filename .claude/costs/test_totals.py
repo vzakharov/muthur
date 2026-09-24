@@ -10,11 +10,14 @@ does, which puts this directory on `sys.path` for `lib`.
 from __future__ import annotations
 
 import json
+import tempfile
 import unittest
 from dataclasses import replace
 from datetime import date
+from pathlib import Path
 
 from lib.pricing import SessionCost, Tally, parse_session_cost
+from lib.rows import ROOT, read_row, row_text
 from lib.shape import to_json
 from lib.totals import branch_label, iso_week, operator_label, totals_of
 
@@ -118,10 +121,26 @@ class RowsReadBack(unittest.TestCase):
             del row[key]
         self.assertEqual(parse_session_cost(json.dumps(row)), ROW)
 
-    def test_a_row_still_carrying_a_name_parses(self) -> None:
-        # Rows written while the ledger took a name from the agent keep one.
-        row = {**to_json(ROW), "name": "a named session"}
-        self.assertEqual(parse_session_cost(json.dumps(row)), ROW)
+
+class RetiredFields(unittest.TestCase):
+    def setUp(self) -> None:
+        # Under the repo's `tmp/`, where `write_atomic` stages: a rename out of
+        # the system temp directory may cross filesystems.
+        (ROOT / "tmp").mkdir(exist_ok=True)
+        base = tempfile.TemporaryDirectory(dir=ROOT / "tmp")
+        self.addCleanup(base.cleanup)
+        self.path = Path(base.name) / "sess.json"
+
+    def test_a_row_carrying_a_retired_key_is_rewritten_without_it(self) -> None:
+        self.path.write_text(json.dumps({**to_json(ROW), "name": "a named session"}))
+        self.assertEqual(read_row(self.path), (ROW, ["name"]))
+        self.assertEqual(self.path.read_text(), row_text(ROW))
+
+    def test_a_row_in_the_current_shape_is_left_untouched(self) -> None:
+        self.path.write_text(row_text(ROW))
+        before = self.path.stat().st_mtime_ns
+        self.assertEqual(read_row(self.path), (ROW, []))
+        self.assertEqual(self.path.stat().st_mtime_ns, before)
 
 
 if __name__ == "__main__":

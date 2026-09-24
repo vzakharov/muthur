@@ -2,7 +2,6 @@
   "sessionId": "54af3a41-0ca2-501b-8c53-3ad0fc26ac05",
   "branch": "claude/cost-row-end-turn-x2sn2u",
   "cwd": "/home/user/muthur",
-  "name": "transcript jsonl: end_turn vs tool_use",
   "openingPrompt": "в твоих сырых jsonl-ах по сессии (тех что используются для подсчёта костов) можно отличить \"ответ юзеру\" от промежуточного колла? (Для начала тебе придётся дать…",
   "prs": [
     95

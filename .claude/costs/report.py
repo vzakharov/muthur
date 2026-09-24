@@ -5,8 +5,9 @@ have cost at Claude API rates.
 Usage:
   python3 .claude/costs/report.py [--month YYYY-MM] [--json]
 
-Nothing is written: the totals are derived from the rows, so the report is run
-when a number is wanted rather than kept on disk going stale. `--json` prints the
+The totals are never written: they are derived from the rows, so the report is
+run when a number is wanted rather than kept on disk going stale. A row still
+carrying a retired field is rewritten without it, and the report says which. `--json` prints the
 whole breakdown for whoever wants to keep one anyway. Rows reach the trunk by
 merge, so a month read there is a month of *merged* work: `CLAUDE.md` beside
 this file carries what that leaves out.
@@ -23,7 +24,8 @@ from datetime import date, datetime, timezone
 from pathlib import Path
 from typing import Dict, List
 
-from lib.pricing import SessionCost, parse_prices, parse_session_cost
+from lib.pricing import SessionCost, parse_prices
+from lib.rows import read_row
 from lib.shape import to_json
 from lib.totals import Bucket, totals_of
 
@@ -39,10 +41,15 @@ SHORTFALL = 0.02
 
 
 def rows_in(month: Path) -> List[SessionCost]:
-    return [
-        parse_session_cost(path.read_text(encoding="utf-8"), str(path))
-        for path in sorted(month.glob("*.json"))
-    ]
+    rows = []
+    for path in sorted(month.glob("*.json")):
+        row, dropped = read_row(path)
+        rows.append(row)
+        # Stderr, so `--json` stays parseable. A rewritten row is a change to
+        # commit, which is why it is named rather than done quietly.
+        if dropped:
+            print(f"costs: dropped {', '.join(dropped)} from {path}", file=sys.stderr)
+    return rows
 
 
 def usd(amount: float) -> str:

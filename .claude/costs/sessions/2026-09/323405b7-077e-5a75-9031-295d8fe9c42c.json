@@ -2,7 +2,6 @@
   "sessionId": "323405b7-077e-5a75-9031-295d8fe9c42c",
   "branch": "claude/cost-row-operator-eqi58a",
   "cwd": "/home/user/muthur",
-  "name": "operator handle in the cost ledger",
   "openingPrompt": "давай добавим github-хендл оператора в трекинг костов",
   "prs": [
     104

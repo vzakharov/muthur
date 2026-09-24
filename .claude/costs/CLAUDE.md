@@ -136,11 +136,17 @@ named beside it, and by operator; `--json` prints the lot. The spend is the
 branch's rather than each PR's, since a session that touched two would otherwise
 be counted twice.
 
-**Nothing is written to disk.** The totals are wholly derived from the rows, so a
-file of them committed beside its own sources would be a merge conflict on every
-branch that ran a session — and settling one by summing the two sides
+**The totals are never written to disk.** They are wholly derived from the rows,
+so a file of them committed beside its own sources would be a merge conflict on
+every branch that ran a session — and settling one by summing the two sides
 double-counts every session both of them saw. The rows themselves never collide:
 one file per session id.
+
+**The rows can be.** A row carrying a key the current shape no longer writes is
+rewritten without it as the report reads it, and the report names each one on
+stderr. Retiring a field is therefore a change to the shape alone: the first
+report in each repository clears it, and those rewrites are ordinary changes to
+commit.
 
 ## What the totals do not cover
 

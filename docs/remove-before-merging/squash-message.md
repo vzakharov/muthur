@@ -13,7 +13,9 @@ saw it dirty every time; the add, signed commit and push were a smaller
 window behind it.
 
 The row's `name` field is gone, along with `--name` and the prompt that
-asked for it: `branch` and `prs` already group the rows. The hook now
+asked for it: `branch` and `prs` already group the rows. report.py
+rewrites any row still carrying a key the shape no longer writes, so
+the first report in each repository clears the old names. The hook now
 commits the row by plumbing in a throwaway index, pushes the commit,
 and only then moves the branch and puts the file in place, so the tree
 differs from HEAD for two sub-millisecond steps and is never ahead of

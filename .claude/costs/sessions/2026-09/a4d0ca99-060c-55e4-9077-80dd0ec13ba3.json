@@ -2,7 +2,6 @@
   "sessionId": "a4d0ca99-060c-55e4-9077-80dd0ec13ba3",
   "branch": "claude/cost-row-end-turn-x2sn2u",
   "cwd": "/home/user/muthur",
-  "name": null,
   "openingPrompt": "/handle and finalize claude/cost-row-end-turn-x2sn2u",
   "prs": [
     95

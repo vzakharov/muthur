@@ -2,7 +2,6 @@
   "sessionId": "bbcc2ba0-de8c-50f4-a3ea-52301fb9d5dc",
   "branch": "claude/context-budget-hook-tb5p5q",
   "cwd": "/home/user/muthur",
-  "name": "answering review on the context budget hook",
   "openingPrompt": "/handle claude/context-budget-hook-tb5p5q",
   "prs": [
     96

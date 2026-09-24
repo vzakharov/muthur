@@ -27,8 +27,10 @@ often that happens is not measured anywhere.
 
 1. **The `name` field goes, with `--name` and `prompt-session-name.sh`.** A
    label the agent writes mid-turn is a write to the tree the check reads, and
-   `branch` plus `prs` already group the rows. Rows written before keep their
-   `name` key; the parser ignores it.
+   `branch` plus `prs` already group the rows. `report.py` rewrites any row
+   still carrying a key the current shape does not write (`lib/rows.py`
+   `read_row`), naming each on stderr, so the first report in each repository
+   clears the old names.
 2. **The `Stop` hook commits the row without dirtying the tree.**
    `session_cost.py` gains `--out <path>`, writing the row there instead of into
    place. The hook then:
@@ -75,12 +77,15 @@ often that happens is not measured anywhere.
      stays silent with the check unregistered or under `stop_hook_active`;
    - an unreachable `origin` reports "committed but not pushed".
 
-   `test_totals.py` gains a case: a row still carrying `name` parses.
+   `test_totals.py` gains two: a row carrying a retired key is rewritten
+   without it, and a current row is left untouched.
 
    `scripts/vet.sh`'s loop already runs every `.claude/costs/test_*.py`.
 
 ## DRY notes
 
+- **`write_atomic` and the row's serialisation move to `lib/rows.py`**, shared
+  by `session_cost.py` and the report's rewrite.
 - **The commit sequence has one home, the `Stop` hook.** Only the hook commits
   rows; a hand run (without `--out`) keeps `write_atomic` and leaves committing to
   the person.

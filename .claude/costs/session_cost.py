@@ -20,7 +20,6 @@ from __future__ import annotations
 
 import argparse
 import json
-import os
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
@@ -34,10 +33,10 @@ from lib.pricing import (
     parse_session_cost,
     summarise_transcript,
 )
-from lib.shape import ShapeError, to_json
+from lib.rows import row_text, write_atomic
+from lib.shape import ShapeError
 
 COSTS = Path(__file__).resolve().parent
-ROOT = COSTS.parent.parent
 
 
 def subagents_of(main: Path) -> List[str]:
@@ -74,18 +73,6 @@ def month_of(cost: SessionCost) -> str:
     return started[:7]
 
 
-def write_atomic(out: Path, contents: str) -> None:
-    """A write cut off halfway leaves the old file rather than half a new one,
-    so it is staged and renamed into place — under the repo's own gitignored
-    `tmp/`, where a stray staging file is invisible to git and the rename is
-    on the same filesystem."""
-    staged = ROOT / "tmp" / f"{out.name}.staged"
-    staged.parent.mkdir(parents=True, exist_ok=True)
-    out.parent.mkdir(parents=True, exist_ok=True)
-    staged.write_text(contents, encoding="utf-8")
-    os.replace(staged, out)
-
-
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
     parser.add_argument("--transcript", required=True, type=Path)
@@ -112,7 +99,7 @@ def main() -> int:
     if before is not None:
         carried = [w for w in before.warnings if is_unwritten_tail(w) and w not in cost.warnings]
         cost.warnings = carried + cost.warnings
-    row = json.dumps(to_json(cost), indent=2, ensure_ascii=False) + "\n"
+    row = row_text(cost)
     if args.out is not None:
         args.out.write_text(row, encoding="utf-8")
     else:

@@ -2,7 +2,6 @@
   "sessionId": "558da7b4-728b-5f77-986c-d44d878fd966",
   "branch": "claude/trim-claude-md-w8am6w",
   "cwd": "/home/user/muthur",
-  "name": null,
   "openingPrompt": "Trim CLAUDE.md to what every turn needs, and write that test into it #97",
   "prs": [
     98
