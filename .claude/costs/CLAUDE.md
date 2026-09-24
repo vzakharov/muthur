@@ -55,7 +55,10 @@ for one, and only the last is not read out of the file:
   thing here that knows what the session turned out to be about.
   `hooks/prompt-session-name.sh` asks for it from the first prompt until it is
   set, and each rewrite carries the existing name forward, since re-reading the
-  transcript could never produce one.
+  transcript could never produce one. `--name` writes it to
+  `tmp/costs/names/<session-id>` rather than into the row, for the `Stop` hook
+  to fold in: a row rewritten in place mid-turn is a dirty tree the harness's
+  check refuses at turn end, every time.
 
 **`operator`** is whose session it was: the GitHub handle
 `.claude/hooks/operator-voice.sh` resolved at startup, read off the record that
@@ -100,23 +103,31 @@ unclean, holds untracked files, or is ahead of its remote. **Hooks for one event
 run in parallel**, so writing and committing the row is work done while that
 check may be reading the tree.
 
-**The hook waits the check out.** That check leaves nothing on disk — it reads
-the tree and writes to stderr — so its process is the only thing there is to
-wait on, and the hook polls for it by name at the last moment before anything it
-does can touch the tree. A match that is an **ancestor** of the hook is not the
-check: the check is a sibling, and an ancestor carrying the name is a shell that
-merely mentions it, so waiting on one would outlast the turn. Whether the look
-ever lands while the check is running is unmeasured here.
+**The row never makes the tree look unfinished.** It is priced into `tmp/`,
+committed in a throwaway index, and pushed before the branch moves; only then do
+the branch, the index entry and the file follow. So the tree differs from `HEAD`
+only between the ref move and the rename, and is never ahead of `origin` while a
+push is in flight. `commit-tree` runs no commit hooks, which suits a file no
+formatter should rewrite, and signs only when asked, so the hook passes `-S`
+where `commit.gpgsign` is on.
 
-Every way the wait can fail — no `pgrep`, a renamed check, a look that lands
-before the process exists, a check still running after five seconds — falls back
-to racing, and so does a failed push, which leaves a commit the check will refuse
-on the _next_ turn, attributed to nobody. So the hook re-reads the same two
-conditions after its own work and, when they hold, exits 2 with one line naming
-the row — the only channel a `Stop` hook has to the agent, spent solely where a
-block is already happening. It bails on a re-fired `Stop` (`stop_hook_active`)
-exactly as the harness's check does: two hooks that can both block and neither
-bail would hold the turn open forever.
+**The hook also waits the check out**, which leaves it only those two steps to guard.
+That check leaves nothing on disk — it reads the tree and writes to stderr — so
+its process is the only thing there is to wait on, and the hook polls for it by
+name at the last moment before anything it does can touch the tree. A match that
+is an **ancestor** of the hook is not the check: the check is a sibling, and an
+ancestor carrying the name is a shell that merely mentions it, so waiting on one
+would outlast the turn.
+
+**What neither covers is a tree that was unclean before the hook started.** A
+hand run of `session_cost.py` rewrites the row in place, and a failed push
+leaves a commit the check will refuse on the _next_ turn, attributed to nobody.
+So the hook reads the tree after its own work and, where the row was part of what
+the check saw, exits 2 with one line naming it — the only channel a `Stop` hook
+has to the agent, spent solely where the check's own exit 2 is already
+continuing the turn. It bails on a re-fired `Stop` (`stop_hook_active`) exactly
+as the harness's check does: two hooks that can both block and neither bail
+would hold the turn open forever.
 
 **The arrangement is read from the launcher's config, not assumed.** All of the
 above holds only while `~/.claude/launcher-settings.json` registers that check;
