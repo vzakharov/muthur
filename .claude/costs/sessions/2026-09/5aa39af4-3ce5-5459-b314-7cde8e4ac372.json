@@ -2,12 +2,12 @@
   "sessionId": "5aa39af4-3ce5-5459-b314-7cde8e4ac372",
   "branch": "claude/stage-always-loaded-b0surt",
   "cwd": "/home/user/muthur",
-  "name": "Staging always-loaded files (#100)",
   "openingPrompt": "Stage edits to always-loaded files and swap them in at /finalize (тут говорим по-русски) #100",
   "prs": [
     102
   ],
   "url": "https://claude.ai/code/session_012CNM7NfUyxaw7a7w9F5uZV",
+  "operator": null,
   "firstResponseAt": "2026-09-23T13:36:59.427Z",
   "lastResponseAt": "2026-09-23T22:53:39.426Z",
   "pricesAsOf": "2026-09-23",

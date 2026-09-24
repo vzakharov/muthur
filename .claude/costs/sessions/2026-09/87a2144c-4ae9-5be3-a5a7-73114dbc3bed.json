@@ -2,7 +2,6 @@
   "sessionId": "87a2144c-4ae9-5be3-a5a7-73114dbc3bed",
   "branch": "claude/session-costs-sekrye",
   "cwd": "/home/user/muthur",
-  "name": null,
   "openingPrompt": "/handle & finalize claude/session-costs-sekrye",
   "prs": [
     94

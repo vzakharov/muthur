@@ -21,29 +21,28 @@ from lib.pricing import (
     summarise_transcript,
 )
 
-PRICES = parse_prices(
-    json.dumps(
-        {
-            "as_of": "2026-01-01",
-            "rates": {
-                "test-model/standard": {
-                    "input": 1,
-                    "output": 10,
-                    "cache_write_5m": 2,
-                    "cache_write_1h": 4,
-                    "cache_read": 0.5,
-                },
-                "test-model/fast": {
-                    "input": 2,
-                    "output": 20,
-                    "cache_write_5m": 4,
-                    "cache_write_1h": 8,
-                    "cache_read": 1,
-                },
-            },
-        }
-    )
-)
+# `test_stop_hook.py` writes this table to disk, for the records `response()`
+# builds to be priced by the real script.
+PRICE_TABLE = {
+    "as_of": "2026-01-01",
+    "rates": {
+        "test-model/standard": {
+            "input": 1,
+            "output": 10,
+            "cache_write_5m": 2,
+            "cache_write_1h": 4,
+            "cache_read": 0.5,
+        },
+        "test-model/fast": {
+            "input": 2,
+            "output": 20,
+            "cache_write_5m": 4,
+            "cache_write_1h": 8,
+            "cache_read": 1,
+        },
+    },
+}
+PRICES = parse_prices(json.dumps(PRICE_TABLE))
 
 ABSENT = object()
 

@@ -2,7 +2,6 @@
   "sessionId": "eb2ac88b-4d24-53ea-b3cb-80a3e3ae2a64",
   "branch": "claude/context-budget-finish-estimate-2q93vz",
   "cwd": "/home/user/muthur",
-  "name": "context budget 100k finish estimate",
   "openingPrompt": "давай в контексте context budget hook подправим немного вординг: не \"если осталось немного\", а \"если осталось <100к\" (по собственным оценкам), т.е. агент, отраб…",
   "prs": [
     101

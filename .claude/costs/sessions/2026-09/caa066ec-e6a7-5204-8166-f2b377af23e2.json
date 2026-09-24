@@ -2,7 +2,6 @@
   "sessionId": "caa066ec-e6a7-5204-8166-f2b377af23e2",
   "branch": "claude/session-costs-sekrye",
   "cwd": "/home/user/muthur",
-  "name": "porting the cost ledger into muthur",
   "openingPrompt": "/go claude/session-costs-sekrye",
   "prs": [
     94

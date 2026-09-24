@@ -2,12 +2,12 @@
   "sessionId": "9a8695d5-e2eb-5d47-a3e6-02ad76a637cc",
   "branch": "claude/stage-always-loaded-b0surt",
   "cwd": "/home/user/muthur",
-  "name": "move staged copies to .claude/staged",
   "openingPrompt": "/from-branch claude/stage-always-loaded-b0surt что-то я финализнул, а потом подумал, что docs/staged не лучшее место -- оно может легитно использоваться адоптер…",
   "prs": [
     102
   ],
   "url": "https://claude.ai/code/session_01Mig4vjAgDhvTMKiVivEz4G",
+  "operator": null,
   "firstResponseAt": "2026-09-23T23:03:15.503Z",
   "lastResponseAt": "2026-09-23T23:06:14.504Z",
   "pricesAsOf": "2026-09-23",
