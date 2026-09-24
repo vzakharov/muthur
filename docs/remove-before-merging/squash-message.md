@@ -1,7 +1,7 @@
 Proposed squash title/body:
 
 ```
-feat: cold-cache guard hook (pr #109)
+feat: cold-cache guard, and a context budget priced off the warm-up (pr #109)
 ```
 
 ```
@@ -18,7 +18,17 @@ prompt_cache_likely_expired and context_tokens, and the transcript's
 last response time, since the cache also expires while the process
 never restarts. Rates come from .claude/costs/prices.json, and the
 transcript's first response gives the warm prefix every session shares,
-which the expiry leaves cached.
+which the expiry leaves cached. A new session is costed from this
+session's own warm-up: every response up to its first edit, commit or
+finished answer, priced as billed.
+
+The same model, in .claude/costs/lib/restart.py, moves the context
+budget's warning line off its fixed 200k to where a new session starts
+paying for itself within CONTEXT_BUDGET_REQUESTS (default 100)
+requests, and the notice gives the break-even counts for a new session
+and for /compact so the agent can weigh them against the work left.
+The line is cached per session, so the bash hook starts Python only
+while the warm-up is still an estimate; the 300k pause stays fixed.
 
 Co-authored-by: Claude <noreply@anthropic.com>
 ```
