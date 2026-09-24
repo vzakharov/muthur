@@ -10,28 +10,28 @@
   "url": "https://claude.ai/code/session_018Uy7EfiYGHHdXHNX84dMvB",
   "operator": "vzakharov",
   "firstResponseAt": "2026-09-24T02:06:11.166Z",
-  "lastResponseAt": "2026-09-24T02:16:28.093Z",
+  "lastResponseAt": "2026-09-24T02:16:48.712Z",
   "pricesAsOf": "2026-09-23",
   "claudeCodeTotalUsd": null,
   "total": {
-    "inputTokens": 98,
+    "inputTokens": 100,
     "cacheWrite5mTokens": 0,
-    "cacheWrite1hTokens": 151617,
-    "cacheReadTokens": 6830971,
-    "outputTokens": 51782,
-    "thinkingTokens": 26728,
-    "responses": 49,
-    "costUsd": 3.6151622
+    "cacheWrite1hTokens": 152487,
+    "cacheReadTokens": 7022924,
+    "outputTokens": 52860,
+    "thinkingTokens": 27212,
+    "responses": 50,
+    "costUsd": 3.6820808
   },
   "ownTurns": {
-    "inputTokens": 98,
+    "inputTokens": 100,
     "cacheWrite5mTokens": 0,
-    "cacheWrite1hTokens": 151617,
-    "cacheReadTokens": 6830971,
-    "outputTokens": 51782,
-    "thinkingTokens": 26728,
-    "responses": 49,
-    "costUsd": 3.6151622
+    "cacheWrite1hTokens": 152487,
+    "cacheReadTokens": 7022924,
+    "outputTokens": 52860,
+    "thinkingTokens": 27212,
+    "responses": 50,
+    "costUsd": 3.6820808
   },
   "subagents": {
     "inputTokens": 0,
@@ -45,18 +45,19 @@
   },
   "byRate": {
     "claude-opus-5-5/standard": {
-      "inputTokens": 98,
+      "inputTokens": 100,
       "cacheWrite5mTokens": 0,
-      "cacheWrite1hTokens": 151617,
-      "cacheReadTokens": 6830971,
-      "outputTokens": 51782,
-      "thinkingTokens": 26728,
-      "responses": 49,
-      "costUsd": 3.6151622
+      "cacheWrite1hTokens": 152487,
+      "cacheReadTokens": 7022924,
+      "outputTokens": 52860,
+      "thinkingTokens": 27212,
+      "responses": 50,
+      "costUsd": 3.6820808
     }
   },
   "warnings": [
     "msg_011CfMTcTYdnEXS8N3yv4vnx: the session's last response stopped on `tool_use` rather than `end_turn` — the turn's tail was not yet written when the Stop hook read the transcript",
-    "msg_011CfMTd8CpMGLYg36fXcRuv: the session's last response stopped on `tool_use` rather than `end_turn` — the turn's tail was not yet written when the Stop hook read the transcript"
+    "msg_011CfMTd8CpMGLYg36fXcRuv: the session's last response stopped on `tool_use` rather than `end_turn` — the turn's tail was not yet written when the Stop hook read the transcript",
+    "msg_011CfMTeLUXjNKPhtYLaYPWM: the session's last response stopped on `tool_use` rather than `end_turn` — the turn's tail was not yet written when the Stop hook read the transcript"
   ]
 }
