@@ -1,0 +1,58 @@
+{
+  "sessionId": "3e14f385-5560-59b1-95ec-dca810bb9879",
+  "branch": "claude/mid-session-routing-jgtiin",
+  "cwd": "/home/user/muthur",
+  "openingPrompt": "Routing ladder misses a session that starts as a question and turns into changes (говорим по-русски) #107",
+  "prs": [
+    108
+  ],
+  "url": "https://claude.ai/code/session_01SN32yczKiC7b77wj7Ve9eK",
+  "operator": "vzakharov",
+  "firstResponseAt": "2026-09-24T17:46:55.767Z",
+  "lastResponseAt": "2026-09-24T17:50:15.150Z",
+  "pricesAsOf": "2026-09-23",
+  "claudeCodeTotalUsd": null,
+  "total": {
+    "inputTokens": 44,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 95147,
+    "cacheReadTokens": 2233040,
+    "outputTokens": 14648,
+    "thinkingTokens": 6298,
+    "responses": 22,
+    "costUsd": 1.5009200000000003
+  },
+  "ownTurns": {
+    "inputTokens": 44,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 95147,
+    "cacheReadTokens": 2233040,
+    "outputTokens": 14648,
+    "thinkingTokens": 6298,
+    "responses": 22,
+    "costUsd": 1.5009200000000003
+  },
+  "subagents": {
+    "inputTokens": 0,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 0,
+    "cacheReadTokens": 0,
+    "outputTokens": 0,
+    "thinkingTokens": 0,
+    "responses": 0,
+    "costUsd": 0.0
+  },
+  "byRate": {
+    "claude-opus-5-5/standard": {
+      "inputTokens": 44,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 95147,
+      "cacheReadTokens": 2233040,
+      "outputTokens": 14648,
+      "thinkingTokens": 6298,
+      "responses": 22,
+      "costUsd": 1.5009200000000003
+    }
+  },
+  "warnings": []
+}
