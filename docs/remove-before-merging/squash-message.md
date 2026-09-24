@@ -22,6 +22,9 @@ HEAD for two sub-millisecond steps and is never ahead of origin. When a
 hand run did leave the row dirty, the verdict says the check was
 counting it and that it is pushed now, riding the check's own exit 2.
 
+Also swaps into CLAUDE.md the staging rule that #102 left staged on
+main.
+
 Fixes #105
 
 Co-authored-by: Claude <noreply@anthropic.com>
