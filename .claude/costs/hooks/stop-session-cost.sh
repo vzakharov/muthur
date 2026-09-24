@@ -94,6 +94,8 @@ state=none
 # counting the row.
 row_left=false
 
+place_row() { mkdir -p -- "$(dirname "$2")" && mv -f -- "$1" "$2"; }
+
 # The row reaches origin, then the branch, then the tree. The commit is built in
 # a throwaway index, so work the agent has staged stays out of it, and pushed
 # before the branch moves, so the branch is never ahead of origin while a push is
@@ -106,12 +108,11 @@ commit_row() {
   top="$(repo rev-parse --show-toplevel)" &&
     path="${row#"$top"/}" &&
     head="$(repo rev-parse -q --verify HEAD)" &&
-    blob="$(git -C "$top" hash-object -w --path "$path" -- "$staged")" &&
-    mkdir -p -- "$(dirname "$row")" ||
+    blob="$(git -C "$top" hash-object -w --path "$path" -- "$staged")" ||
     return 1
 
   if [ "$blob" = "$(repo rev-parse -q --verify "HEAD:$path")" ]; then
-    mv -f -- "$staged" "$row"
+    place_row "$staged" "$row"
     return 0
   fi
 
@@ -138,7 +139,10 @@ commit_row() {
   local pushed=false
   repo push -q origin "$commit:refs/heads/$branch" 2>/dev/null && pushed=true
 
-  repo update-ref -m "$subject" "refs/heads/$branch" "$commit" "$head" &&
+  # `place_row` split around the ref move, so only that move stands between
+  # HEAD changing and the file following it.
+  mkdir -p -- "$(dirname "$row")" &&
+    repo update-ref -m "$subject" "refs/heads/$branch" "$commit" "$head" &&
     mv -f -- "$staged" "$row" &&
     git -C "$top" update-index --add -- "$path" ||
     return 1
@@ -172,7 +176,7 @@ run_ledger() {
 
   # A row that could not be committed still goes in place, for the verdict to
   # name rather than for the turn to lose.
-  [ ! -f "$staged" ] || { mkdir -p -- "$(dirname "$row")" && mv -f -- "$staged" "$row"; }
+  [ ! -f "$staged" ] || place_row "$staged" "$row"
   state=uncommitted
 }
 

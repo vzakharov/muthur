@@ -19,26 +19,12 @@ import unittest
 from pathlib import Path
 from typing import List
 
-from test_pricing import response
+from test_pricing import PRICE_TABLE, response
 
 COSTS = Path(__file__).resolve().parent
 LIB = COSTS.parent / "hooks" / "lib.sh"
 HOOK = ".claude/costs/hooks/stop-session-cost.sh"
 SESSION = "sess"
-
-PRICES = {
-    "as_of": "2026-01-01",
-    "rates": {
-        "test-model/standard": {
-            "input": 1,
-            "output": 10,
-            "cache_write_5m": 2,
-            "cache_write_1h": 4,
-            "cache_read": 0.5,
-        }
-    },
-}
-
 
 class Clone:
     """A branch pushed to a bare `origin`, carrying the ledger's code and nothing
@@ -69,7 +55,7 @@ class Clone:
             costs,
             ignore=shutil.ignore_patterns("sessions", "__pycache__", "test_*.py"),
         )
-        (costs / "prices.json").write_text(json.dumps(PRICES))
+        (costs / "prices.json").write_text(json.dumps(PRICE_TABLE))
         (self.root / ".claude" / "hooks").mkdir()
         shutil.copy(LIB, self.root / ".claude" / "hooks" / "lib.sh")
         (self.root / ".gitignore").write_text("tmp/\n__pycache__/\n")
