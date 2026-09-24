@@ -42,6 +42,8 @@ git diff origin/<base>...HEAD                     # the branch's net change
 
 That range plus anything uncommitted is the scope, unless the floor below moves up.
 
+**A staged copy counts by its diff against the real file.** One under `.claude/staged/` (`@.claude/rules/staging.md`) shows in the range as a whole new file, so a pass reading it that way reviews all of `CLAUDE.md` as this branch's prose. Its change is `git diff --no-index <real path> <copy>`, for each pair `scripts/staged.sh list` prints, and the rest of the copy is context.
+
 ## The floor: the last polish commit
 
 A branch is polished more than once — at `/go`, again at `/finalize` — and the second run has no business re-reading what the first one cleared. The passes commit their own edits, so the run is already in the history; what makes it findable is the subject line every commit either pass makes here carries:

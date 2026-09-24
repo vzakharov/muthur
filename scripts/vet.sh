@@ -28,6 +28,10 @@
 #     `/squash-message` states, passing quietly when a branch has no proposal.
 #     Dropping it leaves nothing catching a proposal edited by hand or outgrown
 #     by a later base merge.
+#   staged.sh check — holds each staged copy of an always-loaded file under
+#     `.claude/staged/` to a tracked file it stands for and to the `.staged` suffix
+#     that keeps it from loading, passing quietly when nothing is staged.
+#     Dropping it lets a copy of nothing ride to `/finalize`, or a live one load.
 #   check-muthur.sh — everything that tests only this repo's own machinery: the
 #     repo-identity check and every `scripts/test_*.py`. One line because an
 #     adopting repo drops them together; it keys on the catalog and exits 0
@@ -44,6 +48,7 @@ set -euo pipefail
 
 "$(dirname "$0")/check-skill-catalog.sh"
 "$(dirname "$0")/check-squash-message.sh"
+"$(dirname "$0")/staged.sh" check
 "$(dirname "$0")/check-muthur.sh"
 for test in "$(dirname "$0")"/../.claude/{costs,context-budget}/test_*.py; do
   [ ! -f "$test" ] || python3 "$test"

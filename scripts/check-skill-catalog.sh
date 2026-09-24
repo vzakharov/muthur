@@ -217,9 +217,20 @@ done
 # as in shell comments or escaped in a shell string); and a Markdown link to the
 # file with a GitHub heading anchor, its path relative to the linking file. A
 # citation of a nested CLAUDE.md carries that file's path, so it is checked
-# against that file.
+# against that file. A staged `CLAUDE.md` is checked through its staged copy,
+# since that is the text the branch will land.
 
 echo "6. Section citations into CLAUDE.md name headings that exist"
+
+# The text a citation is checked against: the staged copy where the file is
+# staged, else the file. Optional, so the check runs in a tree without staging.
+staged_view() {
+  if [ -x scripts/staged.sh ]; then
+    scripts/staged.sh resolve "$1"
+  else
+    printf '%s\n' "$1"
+  fi
+}
 
 # The file's headings, one per line, without their leading hashes.
 headings_of() {
@@ -241,6 +252,7 @@ while IFS= read -r hit; do
   heading=${cite#*§ }
   heading=${heading#\\}
   heading=${heading#\"}
+  target=$(staged_view "$target")
   if [ ! -f "$target" ]; then
     fail "$src cites a section of $target — no such file"
   elif ! headings_of "$target" | grep -qxF -- "$heading"; then
@@ -258,7 +270,7 @@ while IFS= read -r hit; do
   link=${link#](}
   link=${link%)}
   anchor=${link#*#}
-  target=$(dirname "$src")/${link%%#*}
+  target=$(staged_view "$(dirname "$src")/${link%%#*}")
   if [ ! -f "$target" ]; then
     fail "$src links ${link%%#*} — no such file"
   elif ! headings_of "$target" | slug | grep -qxF -- "$anchor"; then

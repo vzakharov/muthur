@@ -10,11 +10,13 @@ Path-scoped convention files. Claude Code loads a rule file automatically when a
 session touches a file matching its `paths:` globs — so conventions reach the
 agent at the moment they're relevant, without being permanently resident in
 context the way `CLAUDE.md` is. **A file with no `paths:` loads on every turn**,
-exactly as `CLAUDE.md` does, which is why this README carries one.
+exactly as `CLAUDE.md` does, which is why this README carries one — and why
+editing such a file goes through a staged copy (`staging.md`).
 
-The directory ships the loop's own two rules — `stack.md` (what `scripts/vet.sh`
-exits, and what a stack landing wires) and `skills.md` (adding or renaming a
-skill). Everything else here is yours: rules are mostly project-specific, and the
+The directory ships the loop's own three rules — `stack.md` (what
+`scripts/vet.sh` exits, and what a stack landing wires), `skills.md` (adding or
+renaming a skill) and `staging.md` (editing a file that loads on every turn).
+Everything else here is yours: rules are mostly project-specific, and the
 reusable part is the mechanism. Add rule files as your conventions emerge.
 
 ## Format
