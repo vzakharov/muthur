@@ -1,7 +1,7 @@
 # The context budget hook
 
 `hooks/post-tool-context-budget.sh` tells the agent when its session's context
-crosses 200k tokens (a warning) and 300k (the pause), so work is left resumable
+crosses the warning line and 300k tokens (the pause), so work is left resumable
 before a compact or a dead session takes the choice away. What the agent does on
 each notice is `@.claude/skills/go/SKILL.md` § "Stopping partway releases the
 plan".
@@ -13,8 +13,19 @@ plan".
 - **The reading is what the last request sent**: the last main-chain assistant
   record's `input_tokens + cache_read_input_tokens + cache_creation_input_tokens`.
   `output_tokens` is left out — the next request carries it, and the next
-  reading counts it then. A session starts at around 100k (system prompt, tools,
-  `CLAUDE.md`), so the warning line is about one baseline of work away.
+  reading counts it then.
+- **The warning line is priced**: the context past which a new session pays for
+  itself within `CONTEXT_BUDGET_REQUESTS` (default 100) requests, against
+  carrying on — computed by `hooks/priced_line.py` with the cold-cache guard's
+  model (`.claude/costs/lib/restart.py`, whose home document is
+  `.claude/cold-cache/CLAUDE.md`), a new session being costed from this one's
+  own warm-up. The hook cannot know how much work is left, so the notice gives
+  the break-even counts and the agent weighs them against the plan. The line is
+  cached in `tmp/context-budget/<session_id>.line`, since a Python start-up on
+  every tool call is the cost this bash hook exists to avoid; it is recomputed
+  only while the warm-up is still an estimate. Without the ledger's lib, on an
+  unpriced model, or with `CONTEXT_BUDGET_WARN` set, the line is a fixed 200k.
+  The pause stays fixed: it guards a context-quality cliff no price captures.
 - **The main chain only.** A tool call carrying `agent_id` is a subagent's and
   is skipped, as are `isSidechain` records and the `<synthetic>` placeholder
   Claude Code writes for a turn no model served — whose zeroed usage would read
@@ -26,6 +37,6 @@ plan".
 - **Anything unreadable is silence**, never an error: a missing notice costs a
   warning, a hook failing on every tool call costs the session.
 
-`CONTEXT_BUDGET_WARN` and `CONTEXT_BUDGET_PAUSE` override the two lines, in
-tokens — set them in `.claude/settings.local.json`'s `env` to tune without
+`CONTEXT_BUDGET_WARN` and `CONTEXT_BUDGET_PAUSE` fix the two lines, in tokens,
+and `CONTEXT_BUDGET_REQUESTS` moves the priced one — set them in `.claude/settings.local.json`'s `env` to tune without
 editing a tracked file.

@@ -37,6 +37,26 @@ def assistant(context: int, *, sidechain: bool = False, model: str = "claude-x")
     }
 
 
+def priced(message_id: str, context: int, *, tool: str | None = None) -> dict:
+    # A response the price table covers, which the priced warn line reads.
+    return {
+        "type": "assistant",
+        "isSidechain": False,
+        "message": {
+            "id": message_id,
+            "model": "claude-opus-5-5",
+            "stop_reason": "tool_use",
+            "content": [{"type": "tool_use", "name": tool, "input": {}}] if tool else [],
+            "usage": {
+                "input_tokens": 0,
+                "cache_read_input_tokens": context - 2_000,
+                "cache_creation_input_tokens": 2_000,
+                "output_tokens": 500,
+            },
+        },
+    }
+
+
 def tool_result() -> dict:
     return {"type": "user", "isSidechain": False, "message": {"content": "ok"}}
 
@@ -136,6 +156,38 @@ class WhenTheNoticesFire(BudgetTestCase):
         )
         assert notice is not None
         self.assertIn("50k warning line", notice)
+
+
+class ThePricedWarnLine(BudgetTestCase):
+    # Opening at 43k and editing at 90k prices the warm-up at ~$0.07, so a new
+    # session pays for itself within 100 requests past ~90k + $0.07 / 100 reads.
+    def setUp(self) -> None:
+        super().setUp()
+        self.session.append(priced("open", 43_000), priced("edit", 90_000, tool="Edit"))
+
+    def test_warns_where_a_new_session_starts_paying_for_itself(self) -> None:
+        self.session.append(priced("under", 91_000))
+        self.assertIsNone(self.session.notice())
+        self.session.append(priced("past", 150_000))
+        notice = self.session.notice()
+        assert notice is not None
+        self.assertIn("warning line", notice)
+        self.assertIn("a new session pays for itself after ~", notice)
+        self.assertIn("/compact", notice)
+
+    def test_a_smaller_request_budget_moves_the_line_out(self) -> None:
+        self.session.append(priced("past", 150_000))
+        self.assertIsNone(self.session.notice({"CONTEXT_BUDGET_REQUESTS": "5"}))
+
+    def test_a_fixed_warn_line_set_by_hand_wins(self) -> None:
+        self.session.append(priced("past", 150_000))
+        self.assertIsNone(self.session.notice({"CONTEXT_BUDGET_WARN": "200000"}))
+
+    def test_the_pause_line_stays_fixed(self) -> None:
+        self.session.append(priced("past", PAUSE + 1))
+        notice = self.session.notice()
+        assert notice is not None
+        self.assertIn("300k pause line", notice)
 
 
 class WhichRecordsAreTheReading(BudgetTestCase):

@@ -119,6 +119,12 @@ def while_warm(s: Session, r: Rates, write: float) -> Dict[str, Option]:
     }
 
 
+def break_even_context(s: Session, r: Rates, requests: float) -> int:
+    """The context at which a new session pays for itself within `requests`,
+    against carrying on while warm: `payback` of the two, solved for context."""
+    return s.warm_up.context + round(s.warm_up.cost_usd / usd(requests, r.cache_read))
+
+
 def payback(option: Option, baseline: Option) -> Optional[float]:
     """Requests until `option` has cost less in total than `baseline`: 0 when it
     is cheaper from the start, None when it never catches up."""

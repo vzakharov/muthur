@@ -14,8 +14,9 @@ need_command jq "no context-budget reading this tool call."
 
 warn="${CONTEXT_BUDGET_WARN:-200000}"
 pause="${CONTEXT_BUDGET_PAUSE:-300000}"
-[[ "$warn" =~ ^[0-9]+$ && "$pause" =~ ^[0-9]+$ ]] || {
-  say "CONTEXT_BUDGET_WARN / CONTEXT_BUDGET_PAUSE must be whole token counts; no reading taken."
+requests="${CONTEXT_BUDGET_REQUESTS:-100}"
+[[ "$warn" =~ ^[0-9]+$ && "$pause" =~ ^[0-9]+$ && "$requests" =~ ^[1-9][0-9]*$ ]] || {
+  say "CONTEXT_BUDGET_WARN / CONTEXT_BUDGET_PAUSE / CONTEXT_BUDGET_REQUESTS must be whole counts; no reading taken."
   exit 0
 }
 
@@ -40,6 +41,26 @@ reading="$(tac "$transcript" | grep -F '"type":"assistant"' | jq -rn '
 
 state_dir="$root/tmp/context-budget"
 state_file="$state_dir/$session"
+
+# The warn line is priced where the ledger's lib is here to price it and no fixed
+# line was set. It is cached in `<session>.line` as `<line> <kind> <reading>`, and
+# recomputed only while the warm-up it is costed from is still an estimate, once
+# the reading has moved 10k from the one it was computed at.
+hooks="$(dirname "${BASH_SOURCE[0]}")"
+priced=
+if [ -z "${CONTEXT_BUDGET_WARN:-}" ] && [ -f "$hooks/../../costs/lib/restart.py" ] && command -v python3 >/dev/null; then
+  line_file="$state_dir/$session.line"
+  line= kind= at=
+  [ ! -f "$line_file" ] || read -r line kind at <"$line_file"
+  if [ "$kind" != observed ] && ! [[ "$at" =~ ^[0-9]+$ && "$reading" -ge "$at" && "$reading" -lt $((at + 10000)) ]]; then
+    read -r line kind < <(CONTEXT_BUDGET_REQUESTS="$requests" python3 "$hooks/priced_line.py" line "$transcript")
+    mkdir -p "$state_dir" && printf '%s %s %s\n' "${line:--}" "${kind:-unpriced}" "$reading" >"$line_file"
+  fi
+  if [[ "$line" =~ ^[0-9]+$ ]]; then
+    warn="$line"
+    priced=1
+  fi
+fi
 
 # Under the warn line again means a compact landed, which re-arms both notices.
 if [ "$reading" -lt "$warn" ]; then
@@ -66,7 +87,9 @@ nearly_done="First judge whether the work is nearly done — a small step or a c
 
 case "$level" in
   warn)
-    notice="$(past "$warn" warning)
+    breakeven=
+    [ -z "$priced" ] || breakeven="$(python3 "$hooks/priced_line.py" notice "$transcript" "$reading")"
+    notice="$(past "$warn" warning)${breakeven:+ $breakeven Compare that with the requests the work has left, and give both numbers when you offer the choice.}
 
 ${nearly_done}
 
