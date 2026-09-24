@@ -8,9 +8,11 @@
 # It points at the ladder rather than restating it: CLAUDE.md is resident, so
 # the rows are in context already and a copy here would only drift from them.
 #
-# Only the first prompt. Everything after it is continued work, which CLAUDE.md
-# § "Plan mode & questions in web sessions" has the session handle directly —
-# re-routing mid-session would open a plan cycle over a follow-up. A prompt that
+# Only the first prompt. A later turn is a routing point only when it is the
+# first to ask for a change in a session still unrouted (CLAUDE.md § "Plan mode &
+# questions in web sessions"), and telling that apart takes reading the prompt
+# and the conversation, so it is the agent's call — a notice on every later
+# prompt would cost a Q&A session context each turn to say nothing. A prompt that
 # opens with `/` is already routed: the operator named the skill themselves.
 #
 # Never fails the turn: no `jq`, no transcript, no payload — each path is
