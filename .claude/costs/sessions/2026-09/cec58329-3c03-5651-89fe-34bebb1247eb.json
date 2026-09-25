@@ -1,0 +1,58 @@
+{
+  "sessionId": "cec58329-3c03-5651-89fe-34bebb1247eb",
+  "branch": "claude/orientation-cost-phs3oc",
+  "cwd": "/home/user/muthur",
+  "openingPrompt": "давай замерять в наших session-логах сколько было потрачено токенов и денег до первого Edit, Write или ответа юзеру. Цель: понять сколько в среднем тратится аге…",
+  "prs": [
+    112
+  ],
+  "url": "https://claude.ai/code/session_01GzP5MvWCb57dKoUqT9Qbiq",
+  "operator": "vzakharov",
+  "firstResponseAt": "2026-09-25T22:50:27.057Z",
+  "lastResponseAt": "2026-09-25T22:53:29.427Z",
+  "pricesAsOf": "2026-09-23",
+  "claudeCodeTotalUsd": null,
+  "total": {
+    "inputTokens": 36,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 95109,
+    "cacheReadTokens": 1955511,
+    "outputTokens": 14703,
+    "thinkingTokens": 5768,
+    "responses": 18,
+    "costUsd": 1.4461782000000003
+  },
+  "ownTurns": {
+    "inputTokens": 36,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 95109,
+    "cacheReadTokens": 1955511,
+    "outputTokens": 14703,
+    "thinkingTokens": 5768,
+    "responses": 18,
+    "costUsd": 1.4461782000000003
+  },
+  "subagents": {
+    "inputTokens": 0,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 0,
+    "cacheReadTokens": 0,
+    "outputTokens": 0,
+    "thinkingTokens": 0,
+    "responses": 0,
+    "costUsd": 0.0
+  },
+  "byRate": {
+    "claude-opus-5-5/standard": {
+      "inputTokens": 36,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 95109,
+      "cacheReadTokens": 1955511,
+      "outputTokens": 14703,
+      "thinkingTokens": 5768,
+      "responses": 18,
+      "costUsd": 1.4461782000000003
+    }
+  },
+  "warnings": []
+}
