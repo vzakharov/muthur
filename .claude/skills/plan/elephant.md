@@ -7,36 +7,37 @@ principle both shapes share. The plan is written here and kept by
 
 ## The plan's shape
 
-Two sections, both saying what is left:
+Two sections, and neither looks back:
 
-- **`## Rest of the elephant`** — the job still to eat, coarse, as a list. A
-  step leaves it when a bite takes it. This section is what marks a plan as an
-  elephant for `/go`.
-- **`## Rest of the bite`** — what the open bite still has to build, detailed
-  to what it needs: a line when it is plain, a page with its own DRY notes when
-  it has a reuse call or a shape to settle. It exists while a bite is open —
-  written when a session takes the bite, shrunk by a stop mid-bite, deleted
-  when the bite is done. The plan may write the first one, so the operator
-  reviews it at the approval gate.
+- **`## Rest of the elephant`** — the job still to eat, coarse, in whatever
+  form reads best for it. What a bite takes leaves it. This section is what
+  marks a plan as an elephant for `/go`.
+- **`## This bite`** — what the open bite builds, detailed to what it needs: a
+  line when it is plain, a page with its own DRY notes when it has a reuse call
+  or a shape to settle. It exists while a bite is open — written when a session
+  takes the bite, deleted when the bite is done. A stop mid-bite strikes what
+  is built and renames it `## Rest of the bite`, which is what the next session
+  finds. The plan may write the first one, so the operator reviews it at the
+  approval gate.
 
 **The plan is the current contract at every moment.** Each pause rewrites it
-to what is true now: the rest of the bite shrunk or gone, elephant steps
-reworded where the work found them wrong or learned what they need. It carries
+to what is true now: the bite gone or cut to its rest, the rest of the elephant
+reworded where the work found it wrong or learned what it needs. It carries
 no progress diary and no log of where the work departed from it — each resume
 pays for every line the plan holds, and how the plan got to its current text
 is what git history and the PR's review are for.
 
 ## Taking a bite
 
-The session that claims the plan writes `## Rest of the bite` before building:
+The session that claims the plan writes `## This bite` before building:
 
-1. **A rest of the bite left by a stop mid-bite goes first, as written.** Its
-   detail was paid for by the session that wrote it; only the operator's review
-   during the pause changes it.
+1. **A bite already in the plan goes first, as written** — the rest a stop
+   mid-bite left, or the first bite the plan wrote. Its detail was paid for by
+   the session that wrote it; only the operator's review changes it.
 2. **On top of it, take from the elephant as much as fits**, detailed the same
-   way, moving those steps out of `## Rest of the elephant`. In doubt, take
+   way, moving what it takes out of `## Rest of the elephant`. In doubt, take
    less: a bite cut too small costs one more pause, which is one more review,
-   and one cut too big costs a stop mid-bite whose rest survives in the section.
+   and one cut too big costs a stop mid-bite whose rest survives in the plan.
 
 ## A bite
 

@@ -66,7 +66,7 @@ The plan file's name encodes its lifecycle state (see `@.claude/skills/plan/SKIL
 - `*.paused.md` — released partway through by an earlier session → yours to continue. `git mv` it to `*.in-progress.md` as your first action (it is claimed now), then read the record of what is done and what is left and continue from there, rather than re-running finished work.
 - `*.completed.md` — implementation already finished → don't silently re-run; report and ask.
 
-**A plan with a `## Rest of the elephant` section is an elephant** (`@.claude/skills/plan/elephant.md`), and this session eats one bite of it. Right after the flip, write and commit `## Rest of the bite` per `@.claude/skills/plan/elephant.md` § "Taking a bite", then build that and nothing past it. Writing it asks the bite `@.claude/skills/task/SKILL.md`'s two questions: the section's detail answers whether it needs a plan, and the pause already gave the operator their look, so the one answer that stops you is a fork with no recommendation — write the question into `## Rest of the bite`, pause per Step 2 with nothing built, and ask it, rather than picking one and building on the guess.
+**A plan with a `## Rest of the elephant` section is an elephant** (`@.claude/skills/plan/elephant.md`), and this session eats one bite of it. Right after the flip, write and commit `## This bite` per `@.claude/skills/plan/elephant.md` § "Taking a bite", then build that and nothing past it. Writing it asks the bite `@.claude/skills/task/SKILL.md`'s two questions: the section's detail answers whether it needs a plan, and the pause already gave the operator their look, so the one answer that stops you is a fork with no recommendation — write the question into `## This bite`, pause per Step 2 with nothing built, and ask it, rather than picking one and building on the guess.
 
 **A plan that proposes issues files them here, right after the flip.** A carve names a parent and children and creates none of them; the go-ahead that flipped the file is what approves that list. Load `@.claude/skills/plan/carving.md` § "What `/go` files on the go-ahead" and follow it — `/propose-issue` Step 3 once per slice, parent first, then each child, the children linked natively, and any `Closes #<tbd>` the branch carries filled in. File before implementing: the first slice's PR closes a child that has to exist, and a session that dies mid-implementation should leave the carve on the tracker rather than only in a plan file `/finalize` sweeps.
 
@@ -85,8 +85,8 @@ Commit/push discipline is already governed by CLAUDE.md — don't reinvent it he
 
 **An elephant pauses at every bite's end, and the record is the plan's own two sections** (`@.claude/skills/plan/elephant.md` § "The plan's shape"). Two ways to get there:
 
-- **The bite is done** — delete `## Rest of the bite` and reword the elephant steps the work found wrong or whose needs it learned, while this session still holds that context; then run Step 3 and Step 4, which leave the plan `*.paused.md`. Stop there, budget left or not — the operator reviews between bites — and end the turn with the handoff block below.
-- **A stop mid-bite** — the budget notice or the operator: strike from `## Rest of the bite` what is built and leave the rest as written, then the `git mv`, commit and push above. Skip Step 3: `/polish` scopes itself from the last `polish:` commit, so the next bite's end covers this half too.
+- **The bite is done** — delete `## This bite`, since what it built is on record in the branch's commits and in the PR body Step 4 refreshes, and reword whatever of `## Rest of the elephant` the work found wrong or learned the needs of, while this session still holds that context; then run Step 3 and Step 4, which leave the plan `*.paused.md`. Stop there, budget left or not — the operator reviews between bites — and end the turn with the handoff block below.
+- **A stop mid-bite** — the budget notice or the operator: rename `## This bite` to `## Rest of the bite`, strike what is built and leave the rest as written, then the `git mv`, commit and push above. Skip Step 3: `/polish` scopes itself from the last `polish:` commit, so the next bite's end covers this half too.
 
 **Work with no plan behind it gets one here**, written straight to `docs/plans/<slug>.paused.md`: the task as asked, what is done (with its commits), what is left, and the decisions a successor would otherwise re-litigate. There is no draft stage — the work is already under way on a go-ahead, and `*.paused.md` is the state Step 1 resumes from.
 
@@ -98,7 +98,7 @@ Load and follow `@.claude/skills/polish/SKILL.md`. It owns which passes run, in 
 
 Implementation is where they earn the most: a plan is written before the code exists, so the duplication it didn't foresee and the prose that narrates the work rather than the result both surface only now.
 
-Then **`git mv` the plan to `docs/plans/<slug>.completed.md`** and commit — implementation and its quality passes are done. An elephant with steps left goes to `*.paused.md` instead: this step runs at each of its bites' ends, and only the last one completes it. (`/finalize` sweeps the whole `docs/plans/` tree at squash regardless, so this flip is just the honest end-state marker for an operator watching the branch.)
+Then **`git mv` the plan to `docs/plans/<slug>.completed.md`** and commit — implementation and its quality passes are done. An elephant with any of it left goes to `*.paused.md` instead: this step runs at each of its bites' ends, and only the last one completes it. (`/finalize` sweeps the whole `docs/plans/` tree at squash regardless, so this flip is just the honest end-state marker for an operator watching the branch.)
 
 ## Step 4 — Fill in the PR
 
