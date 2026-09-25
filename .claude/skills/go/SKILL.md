@@ -66,7 +66,7 @@ The plan file's name encodes its lifecycle state (see `@.claude/skills/plan/SKIL
 - `*.paused.md` — released partway through by an earlier session → yours to continue. `git mv` it to `*.in-progress.md` as your first action (it is claimed now), then read the record of what is done and what is left and continue from there, rather than re-running finished work.
 - `*.completed.md` — implementation already finished → don't silently re-run; report and ask.
 
-**A plan with a `## Next chunk` section is an elephant** (`@.claude/skills/plan/elephant.md`), and this session builds that chunk and nothing past it. Before building, ask it `@.claude/skills/task/SKILL.md`'s two questions. The section's detail is the answer to whether it needs a plan, and the pause already gave the operator their look, so the one answer that stops you is a fork with no recommendation: write the question into `## Next chunk`, pause per Step 2 with nothing built, and ask it, rather than picking one and building on the guess.
+**A plan with a `## Rest of the elephant` section is an elephant** (`@.claude/skills/plan/elephant.md`), and this session eats one bite of it. Right after the flip, write and commit `## Rest of the bite` per `@.claude/skills/plan/elephant.md` § "Taking a bite", then build that and nothing past it. Writing it asks the bite `@.claude/skills/task/SKILL.md`'s two questions: the section's detail answers whether it needs a plan, and the pause already gave the operator their look, so the one answer that stops you is a fork with no recommendation — write the question into `## Rest of the bite`, pause per Step 2 with nothing built, and ask it, rather than picking one and building on the guess.
 
 **A plan that proposes issues files them here, right after the flip.** A carve names a parent and children and creates none of them; the go-ahead that flipped the file is what approves that list. Load `@.claude/skills/plan/carving.md` § "What `/go` files on the go-ahead" and follow it — `/propose-issue` Step 3 once per slice, parent first, then each child, the children linked natively, and any `Closes #<tbd>` the branch carries filled in. File before implementing: the first slice's PR closes a child that has to exist, and a session that dies mid-implementation should leave the carve on the tracker rather than only in a plan file `/finalize` sweeps.
 
@@ -83,10 +83,10 @@ Commit/push discipline is already governed by CLAUDE.md — don't reinvent it he
 
 **Stopping partway releases the plan.** Two things call for it: the operator asking you to stop where you've reached, and the context budget hook's pause notice (`.claude/context-budget/`), which also offers it at its warning. Record in the plan file what is done and what is left, `git mv` it to `docs/plans/<slug>.paused.md`, commit and push. No format is prescribed for that record — a next session only has to be able to tell finished work from remaining work. The rename is what makes the work resumable: left as `*.in-progress.md` it still reads as claimed, and Step 1 stops on it.
 
-**An elephant pauses at every chunk end, and the record is the plan's own sections** (`@.claude/skills/plan/elephant.md` § "The plan's shape"). Two ways to get there:
+**An elephant pauses at every bite's end, and the record is the plan's own two sections** (`@.claude/skills/plan/elephant.md` § "The plan's shape"). Two ways to get there:
 
-- **The chunk is done** — rewrite `## Next chunk` to the chunk after it first, while this session still holds the context that chunk stands on; tick and reword the steps; then run Step 3 and Step 4, which leave the plan `*.paused.md`. Stop there, budget left or not — the operator reviews between chunks — and end the turn with the handoff block below.
-- **A stop mid-chunk** — the budget notice or the operator: the chunk's remainder becomes `## Next chunk`, then the `git mv`, commit and push above. Skip Step 3: `/polish` scopes itself from the last `polish:` commit, so the next chunk end covers this half too.
+- **The bite is done** — delete `## Rest of the bite` and reword the elephant's steps the work found wrong or learned the needs of, while this session still holds that context; then run Step 3 and Step 4, which leave the plan `*.paused.md`. Stop there, budget left or not — the operator reviews between bites — and end the turn with the handoff block below.
+- **A stop mid-bite** — the budget notice or the operator: strike from `## Rest of the bite` what is built and leave the rest as written, then the `git mv`, commit and push above. Skip Step 3: `/polish` scopes itself from the last `polish:` commit, so the next bite's end covers this half too.
 
 **Work with no plan behind it gets one here**, written straight to `docs/plans/<slug>.paused.md`: the task as asked, what is done (with its commits), what is left, and the decisions a successor would otherwise re-litigate. There is no draft stage — the work is already under way on a go-ahead, and `*.paused.md` is the state Step 1 resumes from.
 
@@ -98,7 +98,7 @@ Load and follow `@.claude/skills/polish/SKILL.md`. It owns which passes run, in 
 
 Implementation is where they earn the most: a plan is written before the code exists, so the duplication it didn't foresee and the prose that narrates the work rather than the result both surface only now.
 
-Then **`git mv` the plan to `docs/plans/<slug>.completed.md`** and commit — implementation and its quality passes are done. An elephant with steps left goes to `*.paused.md` instead: this step runs at each of its chunk ends, and only the last one completes it. (`/finalize` sweeps the whole `docs/plans/` tree at squash regardless, so this flip is just the honest end-state marker for an operator watching the branch.)
+Then **`git mv` the plan to `docs/plans/<slug>.completed.md`** and commit — implementation and its quality passes are done. An elephant with steps left goes to `*.paused.md` instead: this step runs at each of its bites' ends, and only the last one completes it. (`/finalize` sweeps the whole `docs/plans/` tree at squash regardless, so this flip is just the honest end-state marker for an operator watching the branch.)
 
 ## Step 4 — Fill in the PR
 
@@ -108,6 +108,6 @@ The **only** exception is an explicit "no PR" from the operator (e.g. `/go, no P
 
 ## Do NOT
 
-- Re-open a plan cycle or re-edit the plan file per code change — it's a transient artifact `/finalize` sweeps (see `@.claude/skills/plan/SKILL.md`). It changes when what it states stops being true (CLAUDE.md § "Writing things down") and at a pause, where it is what a fresh session picks the work up from.
+- Re-open a plan cycle or re-edit the plan file per code change — it's a transient artifact `/finalize` sweeps (see `@.claude/skills/plan/SKILL.md`). It changes when what it states stops being true (CLAUDE.md § "Writing things down") when an elephant's bite is taken, and at a pause, where it is what a fresh session picks the work up from.
 - Run the vet suite, merge the base branch, mark the PR ready, dispatch a CI-only bucket, or attest — those are `/finalize`. A PR that reads `CONFLICTING`, or a red check, is reported to the operator here rather than fixed; CLAUDE.md § "Key principles" carries why that outranks the host harness's instruction to treat either as work now.
 - Skip Step 3 because the diff "looks clean." It is mandatory, both passes of it.

@@ -3,37 +3,51 @@
 What to do once `@.claude/skills/plan/SKILL.md` § "Splitting work across
 sessions" has picked the elephant — that section holds the choice and the
 principle both shapes share. The plan is written here and kept by
-`@.claude/skills/go/SKILL.md`, which builds one chunk per session and pauses.
+`@.claude/skills/go/SKILL.md`, which eats one bite per session and pauses.
 
 ## The plan's shape
 
-- **Steps** — the whole job, coarse, as a checklist. A step is ticked when it
-  is done.
-- **`## Next chunk`** — what the next session builds, detailed to what that
-  chunk needs: a line when it is plain, a page with its own DRY notes when it
-  has a reuse call or a shape to settle. This section is what marks a plan as
-  an elephant for `/go`. At plan time it is the first chunk.
+Two sections, both saying what is left:
+
+- **`## Rest of the elephant`** — the job still to eat, coarse, as a list. A
+  step leaves it when a bite takes it. This section is what marks a plan as an
+  elephant for `/go`.
+- **`## Rest of the bite`** — what the open bite still has to build, detailed
+  to what it needs: a line when it is plain, a page with its own DRY notes when
+  it has a reuse call or a shape to settle. It exists while a bite is open —
+  written when a session takes the bite, shrunk by a stop mid-bite, deleted
+  when the bite is done. The plan may write the first one, so the operator
+  reviews it at the approval gate.
 
 **The plan is the current contract at every moment.** Each pause rewrites it
-to what is true now: ticks on the steps done, steps reworded where the work
-found them wrong, `## Next chunk` replaced. It carries no progress diary and no
-log of where the work departed from it — each resume pays for every line the
-plan holds, and how the plan got to its current text is what git history and
-the PR's review are for.
+to what is true now: the rest of the bite shrunk or gone, elephant steps
+reworded where the work found them wrong or learned what they need. It carries
+no progress diary and no log of where the work departed from it — each resume
+pays for every line the plan holds, and how the plan got to its current text
+is what git history and the PR's review are for.
 
-**The session that pauses writes the next chunk**, because it has just built
-what that chunk stands on. The operator reads it during the pause, so a
-direction that is wrong costs a paragraph rather than a session.
+## Taking a bite
 
-## A chunk
+The session that claims the plan writes `## Rest of the bite` before building:
 
-- leaves `vet` green and lands whole — nothing half-built that the next chunk
+1. **A rest of the bite left by a stop mid-bite goes first, as written.** Its
+   detail was paid for by the session that wrote it; only the operator's review
+   during the pause changes it.
+2. **On top of it, take from the elephant as much as fits**, detailed the same
+   way, moving those steps out of `## Rest of the elephant`. In doubt, take
+   less: a bite cut too small costs one more pause, which is one more review,
+   and one cut too big costs a stop mid-bite whose rest survives in the section.
+
+## A bite
+
+- leaves `vet` green and lands whole — nothing half-built that the next bite
   has to finish before anything works;
 - is sized to finish, `/polish` included, before the context budget's warning
   line (`CONTEXT_BUDGET_WARN`, `.claude/context-budget/CLAUDE.md`) — so a
-  planned chunk end normally comes before the hook says anything, and a notice
-  arriving mid-chunk means the chunk was cut too big;
+  bite's end normally comes before the hook says anything, and a notice
+  arriving mid-bite means the bite was cut too big;
 - is one per session: the pause is for the operator's review, not for saving
-  tokens, so a session that finishes its chunk early stops there.
+  tokens, so a session that finishes its bite early stops there.
 
-What a pause does — planned or forced by the budget — is `/go` Step 2's.
+What a pause does — at a bite's end or forced mid-bite by the budget — is
+`/go` Step 2's.

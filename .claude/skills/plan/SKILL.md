@@ -45,7 +45,7 @@ Do **exactly what you would do in plan mode** — same research, same rigor, sam
 
 Some work does not fit one session, and the plan is where that gets decided — it is the first moment anyone has read the code. Work that fits is taken whole. Work that doesn't is split in one of two shapes, and the plan names which, with a recommendation, so the choice is the operator's at review:
 
-- **Elephant** — eaten a chunk per session, in one PR. The plan is coarse steps plus one detailed next chunk; each session builds that chunk, rewrites the plan and pauses, and the operator reviews before the next `/go`. The default.
+- **Elephant** — eaten a bite per session, in one PR. The plan is the rest of the elephant in coarse steps, plus the open bite in detail; each session takes a bite, builds it, rewrites the plan and pauses, and the operator reviews before the next `/go`. The default.
 - **Pizza** — carved into slices that each ship as their own PR, tracked as issues the plan proposes. It takes a reason, and any one of these is enough:
   - the slices are self-contained enough to land on the trunk separately;
   - there is a boundary worth locking in — what is built so far merged before a riskier stretch starts;
@@ -57,11 +57,11 @@ Some work does not fit one session, and the plan is where that gets decided — 
 - you can imagine a "phase 1 / phase 2" framing (most things admit one)
 - decomposition feels tidy
 
-**Either way, only the next slice is spelled out in full.** Give the rest a **coarse** view — smaller than the whole, but not fully decomposed: placeholders and ordering hints, not mini-specs. Nobody owes an implementation DAG or per-slice plans up front, because the slices ahead are planned by the session that has just built the one before them.
+**Either way, only the next slice is spelled out in full.** Give the rest a **coarse** view — smaller than the whole, but not fully decomposed: placeholders and ordering hints, not mini-specs. Nobody owes an implementation DAG or per-slice plans up front, because each slice ahead is planned when it is taken, with what the ones before it built already in the tree.
 
 Deciding **not** to split is not a gate and never becomes one: say so in a line and write the plan. Do not ask whether the task looks big enough, and do not offer a split you don't think is warranted — the operator disagrees in the plan review, which costs them a sentence, whereas a question here costs a round trip on every task.
 
-**Then load the shape's procedure:** `@.claude/skills/plan/elephant.md` for an elephant — the megaplan's sections, what a chunk is, and how the plan is kept — or `@.claude/skills/plan/carving.md` for a pizza — what the plan file names and what `/go` files from that list. Both sit beside this file rather than inside it because most plans take their task whole, and those should not carry a procedure in context to decide they don't need it.
+**Then load the shape's procedure:** `@.claude/skills/plan/elephant.md` for an elephant — the megaplan's sections, how a bite is taken and sized, and how the plan is kept — or `@.claude/skills/plan/carving.md` for a pizza — what the plan file names and what `/go` files from that list. Both sit beside this file rather than inside it because most plans take their task whole, and those should not carry a procedure in context to decide they don't need it.
 
 ### Publishing the plan
 
