@@ -12,13 +12,14 @@ two shapes, which the plan names with a recommendation and the
 operator picks at review.
 
 An elephant, the default, is eaten a bite per session in one PR. Its
-plan is kept as the current contract with no progress diary: the rest
-of the elephant, coarse and in whatever form suits it, and the open
-bite in detail. The session claiming the plan takes the bite: any bite
-already in the plan first and as written, then as much of the elephant
-as fits. It pauses at the bite's end with /polish and /pr, or mid-bite
-on the context budget notice, which leaves the bite's rest for the next
-session and whose nearly-done judgment now reads the open bite.
+plan is kept as the current contract: what is eaten so far and the
+rest of the elephant, both coarse, and the open bite in detail. The
+session claiming the plan takes the bite: any bite already in the plan
+first and as written, then as much of the elephant as fits. It pauses
+at the bite's end, folding the bite into what is eaten, with /polish
+and /pr, or mid-bite on the context budget notice, which leaves the
+bite's rest for the next session and whose nearly-done judgment now
+reads the open bite.
 
 A pizza is the carve into issues, and now takes a reason: slices that
 can land on the trunk separately, a gain worth locking in before a
