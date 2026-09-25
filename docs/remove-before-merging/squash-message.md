@@ -7,21 +7,20 @@ feat: /relay, hand the session to a fresh one with a summary (pr #113)
 ```
 /compact is a black box: it swaps the context for a summary nobody
 sees written, at a cost the transcript does not itemize. /relay does
-the same move in the open: the agent writes the summary as an ordinary
-turn, priced and readable, and starts a new session on the same branch
-whose opening prompt is /from-branch plus that summary.
+the same move in the open: the agent writes the summary once, as a
+committed file, and starts a new session on the same branch with the
+one-line prompt `/from-branch <branch> /relay take`.
 
-The summary carries only what the branch cannot: the operator's
-messages verbatim, decisions with the alternatives they beat, dead
-ends, current state and the next step. Plan, commits and files are
-pointed at by path and re-read fresh. An in-progress plan is paused
-first so the successor can take it, and a relayed plan resumes via
-/go. On the web the successor starts through create_session; locally
-the prompt is left in tmp/relay/ with a paste-or-launch recipe.
+The summary follows /compact's own sections and rules, the operator's
+messages verbatim among them, but points at files by path instead of
+quoting code, since the successor re-reads the pushed branch. An
+in-progress plan is paused first, and `/relay take` dispatches on the
+summary's next step: /go for a plan, a planless /go for other work, or
+a stop. On the web the successor starts through create_session; locally
+the report gives the line to type.
 
-/from-branch reads a keyword followed by a Relayed context block as
-that keyword, the context budget hook's warning offers /relay beside
-/compact, and the catalog lists it under the PR loop.
+The context budget hook's warning offers /relay beside /compact, and
+the catalog lists it under the PR loop.
 
 Co-authored-by: Claude <noreply@anthropic.com>
 ```
