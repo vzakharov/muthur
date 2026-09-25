@@ -11,12 +11,14 @@ plan with no procedure for crossing sessions. It now splits in one of
 two shapes, which the plan names with a recommendation and the
 operator picks at review.
 
-An elephant, the default, is eaten a chunk per session in one PR. Its
-plan is coarse steps plus a detailed "Next chunk", kept as the current
-contract: every pause rewrites it, with no progress diary. /go builds
-one chunk per session, asks /task's two questions of it first, and
-pauses at its end with /polish and /pr, or mid-chunk on the context
-budget notice, whose nearly-done judgment now reads the current chunk.
+An elephant, the default, is eaten a bite per session in one PR. Its
+plan says only what is left, kept as the current contract with no
+progress diary: the rest of the elephant in coarse steps, and the rest
+of the open bite in detail. The session claiming the plan takes the
+bite: a rest left by a stop mid-bite first and as written, then as much
+of the elephant as fits. It pauses at the bite's end with /polish and
+/pr, or mid-bite on the context budget notice, whose nearly-done
+judgment now reads the open bite.
 
 A pizza is the carve into issues, and now takes a reason: slices that
 can land on the trunk separately, a gain worth locking in before a
