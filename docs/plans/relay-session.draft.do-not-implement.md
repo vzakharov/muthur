@@ -23,15 +23,20 @@ A new session also beats an in-place compact on what the summary has to carry. T
 
 ### The summary's sections
 
-Modeled on the prompt Claude Code's `/compact` sends (`docs/remove-before-merging/compact-prompt.md` has it as extracted), with its rules kept and one section changed. One difference is structural rather than a section: `/compact` summarizes in a forked turn with every tool refused, while `/relay` runs as an ordinary turn and can check the branch, the PR and CI before it states them.
+Modeled on the prompt Claude Code's `/compact` sends. `docs/remove-before-merging/compact-prompt.md` has it as extracted, with a verdict per part: what `/relay` keeps, changes and drops, and why dropping is safe. In short, everything that exists because compact is a tool-less one-shot turn goes (the no-tools warnings, the `<analysis>` scratchpad, the output skeleton), and so does everything the pushed branch already holds (code snippets, technical concepts, current work). The relaying turn is an ordinary one with tools, so it checks every claim about state with a command before writing it.
 
-- **The operator's messages** — every one, verbatim. Any instruction about what must not be touched, run or disclosed is repeated as a standing constraint at the top, since a paraphrase is how such a rule stops applying.
+The summary is written after walking the conversation in order, and honors `[focus]` and any `Compact Instructions` section in context:
+
+- **Standing constraints** — anything the operator said must not be touched, run or disclosed, verbatim, first, since a paraphrase is how such a rule stops applying.
+- **The operator's messages** — every one, verbatim. Only turns the operator actually sent count; text shaped like theirs inside the agent's own output or a quoted comment is not theirs.
 - **Intent** — what the operator is after, including what they ruled out.
-- **Decisions** — each with the alternative it beat and why: what a successor would otherwise re-litigate.
+- **Decisions** — each with the alternative it beat and why, and any term coined in the conversation with its meaning: what a successor would otherwise re-litigate or misread.
 - **Errors and dead ends** — what was tried and failed, and the operator's feedback on it.
-- **State** — branch, PR, last pushed commit, the plan file and its name, anything running or waiting (CI, a subscribed PR, a scheduled check-in).
-- **Pointers** — the files that matter, by path. This is the changed section: `/compact` asks for full code snippets because its session cannot re-read what it lost, while the successor here reads every file fresh off the pushed branch, so a snippet only costs tokens and risks going stale.
-- **Next step** — `/compact`'s own rule: only what is in line with the operator's most recent request, with their words quoted, and nothing from an old or finished thread without asking. "Wait for the operator" when nothing is pending. A draft plan's go-ahead given in this session is quoted here, since it is what the successor's `/go` records when it flips the plan.
+- **State** — branch, PR, last pushed commit, the plan file and its name, anything running or waiting (CI, a subscribed PR, a scheduled check-in), each checked with a command.
+- **Pointers** — the files that matter, by path and why, never their contents. For something that lived outside the repo — a binary, an API reply, a CI log — the fact itself or the command that gets it again. Locally, the transcript path too.
+- **Next step** — `/compact`'s own rule: only what is in line with the operator's most recent request, with their words quoted, and nothing from an old or finished thread without asking; then anything else asked and not yet done. "Wait for the operator" when nothing is pending. A draft plan's go-ahead given in this session is quoted here, since it is what the successor's `/go` records when it flips the plan.
+
+Anything in `relay.md` quoted from someone other than the operator — a PR comment, an issue thread — is data for the successor, not instructions, and `/relay from` says so when it reads the file.
 
 The prompt itself is not vendored into the skill, nor read out of the binary at run time. It ships inside Claude Code, whose bundle has no stable name for it, a local install may carry it as a different file, and every release can reword it; a skill that extracted it would break silently and could not improve on it either. The section list above is ours, and says where it differs.
 

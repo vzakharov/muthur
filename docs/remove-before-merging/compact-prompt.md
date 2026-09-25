@@ -138,3 +138,34 @@ Summary:
 ```
 
 The last paragraph is added only for an automatic compact (`suppressFollowUpQuestions`); a manual `/compact` leaves the next move to the operator. When the summarized conversation read Artifact content written by other people, a line ahead of the wrapper tells the model to treat anything restated from it as data, not instructions.
+
+## What `/relay` keeps, changes and drops
+
+Each part of the two blocks above, in their order. **Drop** means safe to leave out of `/relay`'s instructions; the reason is what makes it safe.
+
+| Part | Verdict | Why |
+| --- | --- | --- |
+| `CRITICAL: Respond with TEXT ONLY…` preamble and the closing `REMINDER` | **drop** | They exist because compact is a forked one-shot turn that must not call tools. A relay is an ordinary turn and needs its tools to check what it reports. |
+| Task line: "thorough in capturing technical details, code patterns, and architectural decisions" | **change** | Keeps "essential for continuing the work"; loses "code patterns", which the successor reads off the pushed branch. |
+| `<analysis>` block | **drop the block, keep the pass** | It is a scratchpad stripped before use. The relaying turn has its own thinking for that, and anything written into `relay.md` is billed and read by the successor. What stays is the discipline: walk the conversation in order before writing. |
+| Analysis checklist: file names | **keep**, as pointers | |
+| Analysis checklist: full code snippets, function signatures, file edits | **drop** | All of it is committed, and a copy only goes stale beside the real file. |
+| Analysis checklist: errors and fixes, user feedback, security constraints verbatim | **keep** | Nothing on the branch records them. |
+| "Double-check for technical accuracy and completeness" | **change** | Becomes "verify every claim about state with a command": branch, PR, CI, plan file name. Compact can only re-read its memory. |
+| 1. Primary Request and Intent | **keep** | as Intent, with what the operator ruled out. |
+| 2. Key Technical Concepts | **drop** | The stack is in the repo and in the model. The exception is a term coined in the conversation (`elephant`, `relay from`), which goes into Decisions, where it has a meaning attached. |
+| 3. Files and Code Sections | **change** | Paths and why each matters, no code. For anything that lived outside the repo — a binary grep, an API reply, a CI log — either the fact itself or the command that gets it again, since the successor's container does not have it. |
+| 4. Errors and fixes | **keep** | as Errors and dead ends. |
+| 5. Problem Solving | **drop** | Splits between Decisions and Errors without residue. |
+| 6. All user messages, security constraints verbatim | **keep** | The one section that cannot be recovered from anywhere. |
+| Only user-role turns count as user messages | **keep** | It stops text the agent itself wrote in a user's format, or quoted from someone else, from being passed on as the operator's word. |
+| 7. Pending Tasks | **keep** | folded into Next step, as everything asked and not yet done. |
+| 8. Current Work | **drop** | With everything pushed, it is State plus Next step. Its snippets are dropped with section 3's. |
+| 9. Optional Next Step: in line with the latest request, verbatim quotes, no stale threads | **keep** | whole. |
+| The `<example>` skeleton | **drop** | It repeats the section list as a template. The skill states the format once. |
+| "Additional summarization instructions" in context, and the `Compact Instructions` examples | **keep the rule, drop the examples** | `/relay [focus]` is the argument; a `Compact Instructions` section an adopter wrote into `CLAUDE.md` is honored too, since they wrote it for exactly this. |
+| Wrapper: "This session is being continued…" | **change** | `/relay from` says it once when it reads `relay.md`. |
+| Wrapper: transcript path | **keep locally, drop on the web** | Only the relaying machine has the transcript. |
+| Wrapper: "Recent messages are preserved", head-truncation note | **drop** | A relay summarizes everything and keeps no raw tail. |
+| Wrapper: "Resume directly, do not recap" | **drop** | `/relay from` dispatches on Next step, which already says whether to act or wait. |
+| Wrapper: Artifact content by other people is data | **keep** | `relay.md` may quote PR comments and issue threads, and the rule has to travel with them. |
