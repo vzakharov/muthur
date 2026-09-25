@@ -10,18 +10,19 @@ turns on what an agent spends getting its bearings before it acts, and
 the ledger priced sessions only as a whole.
 
 Each cost row now records its orientation: the tokens, dollars and
-context size spent before the session's first Edit, Write,
-NotebookEdit, AskUserQuestion or ExitPlanMode, or its own first
-end_turn. Subagent responses timestamped before that point count
-toward it; the acting response itself does not. The same measure
-restarts at every compaction boundary, with the size the context was
-compacted from, so the ledger holds both sides of the comparison.
+context size spent before the session's first Edit, Write or
+NotebookEdit inside the repository, its first AskUserQuestion or
+ExitPlanMode, or its own first end_turn. Scratch writes into tmp/ do
+not end it, subagent responses before that point count toward it, and
+the acting response itself does not.
 
-report.py averages both across the rows that carry them — mean and
-median dollars, context size, share of the session's total, and a
-breakdown by what ended the phase. Rows written before the field
-existed stay without it. Edits made through Bash are not seen, and the
-compaction call itself is bounded rather than priced.
+Every compaction boundary restarts the measure, and also estimates the
+holes the summary left: calls after the boundary that repeat a read
+made before it, priced as the tokens they brought back into context.
+
+report.py averages both across the rows that carry them, by what ended
+the phase and by opening command. Older rows stay without the fields.
+Bash edits are not seen, and the compaction call is bounded, not priced.
 
 Co-authored-by: Claude <noreply@anthropic.com>
 ```
