@@ -51,7 +51,9 @@ Some work does not fit one session, and the plan is where that gets decided — 
   - there is a boundary worth locking in — what is built so far merged before a riskier stretch starts;
   - part of the task is needed by other, unrelated work — existing (found read-only with `/propose-issue` Steps 1–2) or likely (named in the plan for the operator to weigh).
 
-**Those reasons have to be real.** None of these is one:
+**Why an elephant, why a pizza.** An elephant is one animal: no bite of it is a meal on its own, so the bites share one PR, and the plan is what keeps them one job. A pizza is cut before anyone eats, into slices that are each whole — crust, cheese and topping — so a slice is eaten without waiting for the others, and slices go to different hands: an issue, a PR, a session apiece. That is the question to put to the work: is a piece of it only part of something, or whole enough to hand to someone?
+
+**A pizza's reasons have to be real.** None of these is one:
 
 - the task touches several files (most do)
 - you can imagine a "phase 1 / phase 2" framing (most things admit one)
