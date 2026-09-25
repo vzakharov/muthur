@@ -1,0 +1,58 @@
+{
+  "sessionId": "a8e32565-1e60-5cbb-b918-6a504e2b01cf",
+  "branch": "claude/elephant-and-pizza-04z3ht",
+  "cwd": "/home/user/muthur",
+  "openingPrompt": "/handle claude/elephant-and-pizza-04z3ht",
+  "prs": [
+    110
+  ],
+  "url": "https://claude.ai/code/session_01Wf1WdGmZYhtuv1TDaQFZDB",
+  "operator": "vzakharov",
+  "firstResponseAt": "2026-09-25T22:22:57.125Z",
+  "lastResponseAt": "2026-09-25T22:26:34.076Z",
+  "pricesAsOf": "2026-09-23",
+  "claudeCodeTotalUsd": null,
+  "total": {
+    "inputTokens": 56,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 111169,
+    "cacheReadTokens": 3175957,
+    "outputTokens": 15599,
+    "thinkingTokens": 6121,
+    "responses": 28,
+    "costUsd": 1.8367474000000001
+  },
+  "ownTurns": {
+    "inputTokens": 56,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 111169,
+    "cacheReadTokens": 3175957,
+    "outputTokens": 15599,
+    "thinkingTokens": 6121,
+    "responses": 28,
+    "costUsd": 1.8367474000000001
+  },
+  "subagents": {
+    "inputTokens": 0,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 0,
+    "cacheReadTokens": 0,
+    "outputTokens": 0,
+    "thinkingTokens": 0,
+    "responses": 0,
+    "costUsd": 0.0
+  },
+  "byRate": {
+    "claude-opus-5-5/standard": {
+      "inputTokens": 56,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 111169,
+      "cacheReadTokens": 3175957,
+      "outputTokens": 15599,
+      "thinkingTokens": 6121,
+      "responses": 28,
+      "costUsd": 1.8367474000000001
+    }
+  },
+  "warnings": []
+}
