@@ -152,6 +152,15 @@ class WhenTheNoticesFire(BudgetTestCase):
         self.assertIn("under ~100k more tokens", pause)
         self.assertNotIn("less than half", pause)
 
+    def test_nearly_done_judges_an_elephants_current_chunk(self) -> None:
+        self.session.append(assistant(WARN + 1))
+        warning = self.session.notice()
+        self.session.append(assistant(PAUSE + 1))
+        pause = self.session.notice()
+        assert warning is not None and pause is not None
+        self.assertIn("the current chunk", warning)
+        self.assertIn("the current chunk", pause)
+
 
 class WhichRecordsAreTheReading(BudgetTestCase):
     def test_reads_the_last_main_chain_response(self) -> None:
