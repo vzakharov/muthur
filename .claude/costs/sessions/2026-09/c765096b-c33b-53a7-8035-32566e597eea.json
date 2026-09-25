@@ -1,34 +1,36 @@
 {
   "sessionId": "c765096b-c33b-53a7-8035-32566e597eea",
-  "branch": "claude/jolly-tesla-04z3ht",
+  "branch": "claude/elephant-and-pizza-04z3ht",
   "cwd": "/home/user/muthur",
   "openingPrompt": "хочу придумать новую систему выполнения мегапланов, отличную от разбиения на issues. для твоего понимания можешь взять пулл #1 из vzakharov/goodspeed-knowledge-…",
-  "prs": [],
+  "prs": [
+    110
+  ],
   "url": "https://claude.ai/code/session_01U7MeUVPqtRDgMQ4kjiHQcb",
   "operator": "vzakharov",
   "firstResponseAt": "2026-09-24T18:57:27.533Z",
-  "lastResponseAt": "2026-09-25T07:44:22.142Z",
+  "lastResponseAt": "2026-09-25T07:50:50.024Z",
   "pricesAsOf": "2026-09-23",
   "claudeCodeTotalUsd": 2.1761924,
   "total": {
-    "inputTokens": 30,
+    "inputTokens": 102,
     "cacheWrite5mTokens": 0,
-    "cacheWrite1hTokens": 188620,
-    "cacheReadTokens": 1706039,
-    "outputTokens": 19691,
-    "thinkingTokens": 9117,
-    "responses": 15,
-    "costUsd": 2.2441078
+    "cacheWrite1hTokens": 252448,
+    "cacheReadTokens": 8926246,
+    "outputTokens": 45073,
+    "thinkingTokens": 14864,
+    "responses": 51,
+    "costUsd": 4.7067011999999995
   },
   "ownTurns": {
-    "inputTokens": 30,
+    "inputTokens": 102,
     "cacheWrite5mTokens": 0,
-    "cacheWrite1hTokens": 188620,
-    "cacheReadTokens": 1706039,
-    "outputTokens": 19691,
-    "thinkingTokens": 9117,
-    "responses": 15,
-    "costUsd": 2.2441078
+    "cacheWrite1hTokens": 252448,
+    "cacheReadTokens": 8926246,
+    "outputTokens": 45073,
+    "thinkingTokens": 14864,
+    "responses": 51,
+    "costUsd": 4.7067011999999995
   },
   "subagents": {
     "inputTokens": 0,
@@ -42,14 +44,14 @@
   },
   "byRate": {
     "claude-opus-5-5/standard": {
-      "inputTokens": 30,
+      "inputTokens": 102,
       "cacheWrite5mTokens": 0,
-      "cacheWrite1hTokens": 188620,
-      "cacheReadTokens": 1706039,
-      "outputTokens": 19691,
-      "thinkingTokens": 9117,
-      "responses": 15,
-      "costUsd": 2.2441078
+      "cacheWrite1hTokens": 252448,
+      "cacheReadTokens": 8926246,
+      "outputTokens": 45073,
+      "thinkingTokens": 14864,
+      "responses": 51,
+      "costUsd": 4.7067011999999995
     }
   },
   "warnings": []
