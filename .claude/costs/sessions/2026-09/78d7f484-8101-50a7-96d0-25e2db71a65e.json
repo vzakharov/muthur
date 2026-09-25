@@ -1,0 +1,56 @@
+{
+  "sessionId": "78d7f484-8101-50a7-96d0-25e2db71a65e",
+  "branch": "claude/zen-babbage-2k6owx",
+  "cwd": "/home/user/muthur",
+  "openingPrompt": "может ли агент сам себе послать комманду каким-нибудь образом? (типа там, выполнил большое задание, видишь что потратил дофига токенов, сам себе шлёшь /compact.…",
+  "prs": [],
+  "url": "https://claude.ai/code/session_01Ptpid618npfZnXQ1Yhbwh2",
+  "operator": null,
+  "firstResponseAt": "2026-09-25T22:23:43.114Z",
+  "lastResponseAt": "2026-09-25T22:23:43.114Z",
+  "pricesAsOf": "2026-09-23",
+  "claudeCodeTotalUsd": null,
+  "total": {
+    "inputTokens": 2,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 34060,
+    "cacheReadTokens": 41369,
+    "outputTokens": 2198,
+    "thinkingTokens": 1435,
+    "responses": 1,
+    "costUsd": 0.3247218
+  },
+  "ownTurns": {
+    "inputTokens": 2,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 34060,
+    "cacheReadTokens": 41369,
+    "outputTokens": 2198,
+    "thinkingTokens": 1435,
+    "responses": 1,
+    "costUsd": 0.3247218
+  },
+  "subagents": {
+    "inputTokens": 0,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 0,
+    "cacheReadTokens": 0,
+    "outputTokens": 0,
+    "thinkingTokens": 0,
+    "responses": 0,
+    "costUsd": 0.0
+  },
+  "byRate": {
+    "claude-opus-5-5/standard": {
+      "inputTokens": 2,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 34060,
+      "cacheReadTokens": 41369,
+      "outputTokens": 2198,
+      "thinkingTokens": 1435,
+      "responses": 1,
+      "costUsd": 0.3247218
+    }
+  },
+  "warnings": []
+}
