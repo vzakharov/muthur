@@ -7,25 +7,31 @@ principle both shapes share. The plan is written here and kept by
 
 ## The plan's shape
 
-Two sections, and neither looks back:
+Three sections:
 
+- **`## Eaten so far`** — what the bites before this one built, coarse, at
+  the altitude of the rest of the elephant: what now exists and what the next
+  bite can build on, never how it got built. The session taking a bite starts
+  from it, so it has to stand on its own without the PR or the history. Each
+  bite folds itself in at its end; the section appears with the first one.
 - **`## Rest of the elephant`** — the job still to eat, coarse, in whatever
   form reads best for it. What a bite takes leaves it. This section is what
   marks a plan as an elephant for `/go`.
 - **`## This bite`** — what the open bite builds, detailed to what it needs: a
   line when it is plain, a page with its own DRY notes when it has a reuse call
   or a shape to settle. It exists while a bite is open — written when a session
-  takes the bite, deleted when the bite is done. A stop mid-bite strikes what
-  is built and renames it `## Rest of the bite`, which is what the next session
-  finds. The plan may write the first one, so the operator reviews it at the
-  approval gate.
+  takes the bite, folded into `## Eaten so far` when the bite is done. A stop
+  mid-bite folds in what is built and renames the rest `## Rest of the bite`,
+  which is what the next session finds. The plan may write the first one, so
+  the operator reviews it at the approval gate.
 
 **The plan is the current contract at every moment.** Each pause rewrites it
-to what is true now: the bite gone or cut to its rest, the rest of the elephant
-reworded where the work found it wrong or learned what it needs. It carries
-no progress diary and no log of where the work departed from it — each resume
-pays for every line the plan holds, and how the plan got to its current text
-is what git history and the PR's review are for.
+to what is true now: the bite folded into what is eaten or cut to its rest,
+the rest of the elephant reworded where the work found it wrong or learned what
+it needs. What is eaten is kept as what exists, not as a diary of sessions, and
+the plan logs no departures from itself — each resume pays for every line the
+plan holds, and how the plan got to its current text is what git history and
+the PR's review are for.
 
 ## Taking a bite
 
