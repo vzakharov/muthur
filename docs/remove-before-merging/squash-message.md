@@ -1,18 +1,21 @@
 Proposed squash title/body:
 
 ```
-feat: relay reports the successor's session URL as a link (pr #119)
+feat: relay links the old and new sessions to each other (pr #119)
 ```
 
 ```
 /relay's report step asked for "the successor's link" without saying
 what that is, while create_session hands back a session id rather than
 a URL - so the report could leave the operator a bare id to turn into
-a URL by hand.
+a URL by hand. Nor did anything lead back from the new session to the
+old one, which on the web is the only place the full transcript lives.
 
-The step now names the URL, https://claude.ai/code/<session_id> built
-from the returned id, and has it written bare so the chat renders it as
-a link the operator clicks straight through to the new session.
+The handoff report now names the URL, https://claude.ai/code/<session_id>
+built from the returned id, written bare so the chat renders it as a
+link. The summary's Pointers record the relaying session's own URL
+(from get_session with no id), and the pickup's first reply names that
+session as a bare link, so the operator can click either way.
 
 Co-authored-by: Claude <noreply@anthropic.com>
 ```
