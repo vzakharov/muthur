@@ -222,6 +222,9 @@ class WhenTheHookStartsTheReceiver(unittest.TestCase):
         self.assertIn("listens for: OTEL_EXPORTER_OTLP_ENDPOINT.", notice)
         for name, value in EXPORT.items():
             self.assertIn(f"    {name}={value}\n", notice)
+        self.assert_nothing_started()
+
+    def assert_nothing_started(self) -> None:
         time.sleep(0.2)
         self.assertFalse(self.started.exists())
 
@@ -244,8 +247,7 @@ class WhenTheHookStartsTheReceiver(unittest.TestCase):
 
     def test_says_nothing_after_a_tool_call_when_the_variables_are_unset(self) -> None:
         self.assertEqual(self.run_hook("PostToolUse"), "")
-        time.sleep(0.2)
-        self.assertFalse(self.started.exists())
+        self.assert_nothing_started()
 
 
 if __name__ == "__main__":
