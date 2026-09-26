@@ -1,12 +1,12 @@
 Proposed squash title/body:
 
 ```
-feat: adopters update muthur themselves (pr #114)
+feat: offer adopters muthur updates at session start (pr #114)
 ```
 
 ```
 A sync twenty or thirty commits behind is miserable to run in one go,
-so an adopter's sessions now keep the lag small without being asked.
+so an adopter's sessions offer the update as soon as there is one.
 
 A SessionStart nudge compares the trunk's watermark with the source's
 HEAD. When it has moved, the nudge prints the commit titles, the changed
@@ -15,14 +15,16 @@ the agent to offer an update at a natural moment: carried along with the
 task at hand for a commit or two, as a new session for more. The agent
 investigates nothing until the operator says yes.
 
-The claim is a muthur-sync-lock-<lastSyncedSha> branch on the adopter's
+The lock is a muthur-sync-lock-<lastSyncedSha> branch on the adopter's
 origin, pushed with an empty-expect lease so exactly one of two racing
-sessions wins. It is silent under a day old and names its holder and
-session after that. Keyed on the trunk's watermark, it is freed by the
-sync landing, with nothing to delete.
+sessions wins. The agent claims it just before offering, so a sync
+another session holds is never offered, and releases it on a no. A lock
+over a day old is reported with its holder and session. Keyed on the
+trunk's watermark, it is freed by the sync landing.
 
 /update-muthur claims that lock and hands its candidate set to /task,
-which can split a long lag across sessions. Each slice bumps the
+which can split a long lag across sessions; run as `ride-along` inside
+another task, it stays part of that task instead. Each slice bumps the
 watermark to its own boundary in the source rather than always to HEAD.
 
 Co-authored-by: Claude <noreply@anthropic.com>
