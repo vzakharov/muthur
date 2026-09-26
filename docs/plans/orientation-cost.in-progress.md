@@ -48,21 +48,22 @@ session is the one that runs with it on and can check it.
 The telemetry side, coarse. The first bite leaves events landing on disk; what
 is left is reading them.
 
-- **Check the capture works.** Whether the `env` block in `.claude/settings.json`
-  reaches Claude Code's telemetry at all decides the operator-facing half below:
-  events in `tmp/telemetry/` at this session's start say it does. If it does
-  not, the variables move to the environment's own settings and the block goes.
-  An environment whose `NO_PROXY` lacks `127.0.0.1` sends the export through
-  its proxy; `tmp/telemetry/receiver.log` staying empty with no events beside
-  it is that case.
+- **Check the capture works**, in the first session started with the variables
+  set: events in `tmp/telemetry/` after its first turn. An environment whose
+  `NO_PROXY` lacks `127.0.0.1` sends the export through its proxy;
+  `tmp/telemetry/receiver.log` staying empty with no events beside it is that
+  case. The join below is built against that session's real event file, not
+  the documented shape alone.
 - **The events become the row's total.** Read the session's event file, keep the
   numbers, and join each event to its transcript response by `request_id` against
   the record's `requestId`. A matched response is priced from its event, so the
   phases above sum billed dollars rather than estimates; an unmatched event is a
   call the transcript never saw, and lands in a bucket of its own split by
-  `query_source`. The compaction's own call is the `compact` entry there, so each
-  compaction in the row gains its billed cost, where today the ledger can only
-  record its size.
+  `query_source`. That field takes only `main`, `subagent` and `auxiliary`, so
+  the compaction's own call is found by position — an unmatched call between
+  the boundary and the last response before it, the one that wrote the most —
+  and each compaction in the row gains its billed cost, where today the ledger
+  can only record its size. The real file settles whether that rule holds.
 - **`prices.json` stays**, as the fallback for a session with no events and as
   the cross-check on the ones it has — the events' `cost_usd` is Claude Code's
   own estimate at list price, not an invoice. A row says which source priced it.
@@ -71,14 +72,34 @@ is left is reading them.
   Haiku; this session measured about 8% of spend in Opus calls that read the
   whole context and write almost nothing. § "What the totals do not cover" loses
   "Each compact" once the events price it.
-- **The operator is told what to add, and where.** No agent can set an
-  environment's settings. If the `env` block does not carry, `ADOPTING.md` gains
-  a section beside § "Hand the operator a setup script" — the variables, and the
-  same gear-icon route to the environment's settings — and `/detemplate` Step 6,
-  `/spinoff`'s report and the catalog's `.claude/costs/` row point at it. Either
-  way, a session whose ledger runs without events says so once at start, the way
-  `.claude/hooks/gh-shim.sh` reports a missing `gh`, so a missing setting finds
-  itself instead of waiting for someone to read a doc.
+
+## This bite
+
+**The capture moves to the environment's settings.** Claude Code ignores
+OpenTelemetry exporter variables in a repository's `.claude/settings.json`
+(code.claude.com/docs/en/env-vars § "Variables Claude Code ignores in env"), so
+the first bite's `env` block can never turn the export on: it is honored only in
+user settings, managed settings and the process environment, and a cloud
+environment's variables are the last.
+
+- **The `env` block goes** from `.claude/settings.json`.
+- **`start-telemetry-receiver.sh` reads the variables it is started beside.**
+  Set to the receiver's endpoint → start it, as now. Unset or pointing elsewhere
+  → start nothing and print a notice to stdout, which `SessionStart` folds into
+  the context the way `.claude/hooks/gh-shim.sh` reports a missing `gh`: that
+  the ledger is priced from the transcript alone, the variables to add, and
+  where — the environment's settings, as variables, picked up by the next
+  session. A session whose telemetry is off on purpose
+  (`CLAUDE_CODE_ENABLE_TELEMETRY` unset and nothing else of it set) gets the
+  same notice, since nothing tells the two apart.
+- **`ADOPTING.md` gains the variables** beside § "Hand the operator a setup
+  script", with the same route to the environment's settings; the catalog's
+  `.claude/costs/` row, `/detemplate`'s and `/spinoff`'s reports point at it
+  where they mention the ledger.
+- **`.claude/costs/CLAUDE.md` § "Telemetry"** says where the variables live and
+  why not in the repository.
+- **Tests:** the hook's two paths, over a stub `python3` on `PATH` rather than a
+  real listener.
 
 ## What the events are still to cover
 
