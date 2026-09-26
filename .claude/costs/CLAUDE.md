@@ -64,7 +64,7 @@ A row's `orientation` is what the session spent before it first **acted**, and
 each of its `compactions` carries the same measure from that boundary on, plus
 the re-reads the summary forced. They feed the call on whether a fresh session
 or a compact is the cheaper way to shed context. `lib/orientation.py` holds
-the definitions; what follows is what the code cannot say for itself.
+the definitions.
 
 - **Acting is a write into the repository or a handover to the operator** — an
   `Edit`, `Write` or `NotebookEdit` under the directory the session started in
@@ -79,7 +79,6 @@ the definitions; what follows is what the code cannot say for itself.
   spend sits in another file and its clock is what places it against the main
   file's.
 - **Each phase stops at the next boundary**, so no response is counted in two.
-  A phase that never acted records its spend with the `ended*` fields null.
 - **A re-read is an exact repeat of a call made before the latest boundary** —
   a `Read` of the same path and range with no write to it since, or a `Grep`,
   `Glob` or `Bash` with the same input bar its `description` — counted once per

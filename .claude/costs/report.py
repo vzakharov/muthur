@@ -91,8 +91,6 @@ def phase_table(title: str, groups: Dict[str, PhaseStats]) -> None:
 
 
 def orientation(summary: OrientationSummary) -> None:
-    """What sessions spent before they acted, the input to whether a fresh
-    session or a compact is the cheaper way to shed context."""
     print(f"\norientation, measured on {summary.measured} of {count(summary.rows, 'row')}")
     if summary.orientation is None:
         return
