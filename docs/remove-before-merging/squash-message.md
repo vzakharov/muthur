@@ -33,7 +33,8 @@ the start hook reads them from the claude process, listing what is
 unset.
 
 report.py averages orientation and compactions across the rows that
-carry them, by what ended the phase and by opening command. Older rows
+carry them, by what ended the phase and by opening command, and gives
+each unseen source's share of the spend priced with events. Older rows
 stay without the fields. Bash edits are not seen. A session's first cost
 commit reads "session cost (new)", telling new sessions from continued
 ones in the log.
