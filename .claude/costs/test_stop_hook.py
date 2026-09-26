@@ -149,8 +149,22 @@ class StopHookTest(unittest.TestCase):
         result = self.clone.stop()
         self.assertEqual((result.returncode, result.stderr), (0, ""))
         self.assertLevelWithOrigin()
-        self.assertEqual(self.clone.git("log", "-1", "--format=%s"), "chore: session cost (new) 0.01 USD")
+        self.assertEqual(
+            self.clone.git("log", "-1", "--format=%s"),
+            "chore: session cost (new) 0.01 USD, incl. 0.00 USD orientation",
+        )
         self.assertEqual(self.clone.files_in("HEAD"), [".claude/costs/sessions/2026-03/sess.json"])
+
+    def test_a_new_session_s_subject_names_what_it_spent_before_acting(self) -> None:
+        # A response that neither edits nor ends the turn, ahead of the one that
+        # does, so the orientation has a spend of its own.
+        before = response(id="msg_0", output=2_000, stop="tool_use", at="2026-03-04T05:06:06.000Z")
+        self.clone.transcript.write_text(before + "\n" + self.clone.transcript.read_text())
+        self.clone.stop()
+        self.assertEqual(
+            self.clone.git("log", "-1", "--format=%s"),
+            "chore: session cost (new) 0.03 USD, incl. 0.02 USD orientation",
+        )
 
     def test_a_continued_session_s_row_is_committed_as_the_turn_s_spend(self) -> None:
         self.clone.stop()
