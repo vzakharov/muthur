@@ -59,18 +59,17 @@ nobody asked for.
 - **`report.py` shows the unseen calls** (`TelemetrySummary` on `Totals`): how
   many rows were priced with events and their spend, then the unseen calls by
   `query_source` as `Bucket`s, each with its share of that spend.
-
-## Rest of the elephant
-
-- **The position fallback for an untagged compaction**, if the first real
-  compaction in an event file arrives without `compact`.
+- **The receiver survives a mid-session checkout.** The hook also runs at
+  `PostToolUse`, silent there, and starts a receiver that is missing: a session
+  that checks out a branch carrying it registers the hook with `SessionStart`
+  already past. `ADOPTING.md` says why an adopting session captures nothing and
+  how to start the receiver by hand.
+- **A compaction is priced live.** A manual compact of a 185k-token context
+  arrived tagged `compact`, 6 ms before its boundary, and the row gave it
+  `billedUsd` 0.168 — so no position fallback for an untagged one is built.
 
 ## What the events are still to cover
 
-- **A compaction seen live.** `billedUsd` rests on Claude Code's code tagging
-  the call `compact`; no event file has held one yet. The one compaction
-  measured, of a 230k-token context with a warm cache, cost about $0.22 by
-  Claude Code's own counter, most of it output.
 - **Events emitted after the last `Stop`.** The row is written at `Stop`, and
   the exporter flushes once a second, so the tail of a session's last turn can
   miss its row.
