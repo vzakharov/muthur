@@ -18,8 +18,8 @@ moves to docs/adopting/web-remote.md, together with its screenshot.
 Watermark hydration moves to docs/adopting/sync.md and is read only by
 adopters taking /update-muthur; a one-time snapshot deletes the skill
 instead. The fork-watermark recipe is dropped, since /detemplate
-already carries it. Verify stays whole in the core,
-its conditional items pointing to their chapters.
+already carries it. Verify stays whole in the core, its conditional
+items pointing to their chapters.
 
 The catalog's never rows, /detemplate's sweep and citations, the
 README and the check-skill-catalog and check-repo-identity scans all
