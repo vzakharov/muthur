@@ -19,8 +19,7 @@ Two changes to the ledger under `.claude/costs/`, in one PR:
 Split as an **elephant**: the two share the row, the phases and one PR, and
 neither is whole alone — orientation priced from estimates is the thing the
 events exist to correct, and the events without the phases are a better total
-nobody asked for. The first bite also ships the telemetry capture, so the next
-session is the one that runs with it on and can check it.
+nobody asked for.
 
 ## Eaten so far
 
@@ -35,21 +34,23 @@ session is the one that runs with it on and can check it.
   (`OrientationSummary` on `Totals`).
 - **Each priced response keeps its `requestId`** on `Response`, the key the
   events join on, and `lib/tally.py` now holds `Rates` and `Tally`.
-- **The capture is on.** `.claude/costs/hooks/start-telemetry-receiver.sh`
-  starts `telemetry_receiver.py` on `127.0.0.1:4318` at `SessionStart`, and
-  `.claude/settings.json`'s `env` points the log export at it. Events land in
-  `tmp/telemetry/<session-id>.jsonl`, stripped to numbers and the named fields;
-  `.claude/costs/CLAUDE.md` § "Telemetry" says nothing reads them yet.
-  `NO_PROXY` is not in the block: a settings value replaces the environment's
-  list, which here already exempts `127.0.0.1`.
+- **The capture waits on the environment.**
+  `.claude/costs/hooks/start-telemetry-receiver.sh` starts
+  `telemetry_receiver.py` on `127.0.0.1:4318` at `SessionStart` when the
+  exporter variables point there, and otherwise prints a notice listing them
+  and where they go. Claude Code ignores them in a repository's
+  `.claude/settings.json`, so the environment's own settings carry them;
+  `ADOPTING.md`, `/detemplate` Step 6, `/spinoff` and the catalog row point at
+  the hook's list. Events land in `tmp/telemetry/<session-id>.jsonl`, stripped
+  to numbers and the named fields; nothing reads them yet.
 
 ## Rest of the elephant
 
-The telemetry side, coarse. The first bite leaves events landing on disk; what
-is left is reading them.
+The telemetry side, coarse. The capture is ready for the environment to switch
+on; what is left is checking it and reading the events.
 
-- **Check the capture works**, in the first session started with the variables
-  set: events in `tmp/telemetry/` after its first turn. An environment whose
+- **Check the capture works**, in the first session started after the operator
+  sets the variables the hook's notice lists: events in `tmp/telemetry/` after its first turn. An environment whose
   `NO_PROXY` lacks `127.0.0.1` sends the export through its proxy;
   `tmp/telemetry/receiver.log` staying empty with no events beside it is that
   case. The join below is built against that session's real event file, not
@@ -72,34 +73,6 @@ is left is reading them.
   Haiku; this session measured about 8% of spend in Opus calls that read the
   whole context and write almost nothing. § "What the totals do not cover" loses
   "Each compact" once the events price it.
-
-## This bite
-
-**The capture moves to the environment's settings.** Claude Code ignores
-OpenTelemetry exporter variables in a repository's `.claude/settings.json`
-(code.claude.com/docs/en/env-vars § "Variables Claude Code ignores in env"), so
-the first bite's `env` block can never turn the export on: it is honored only in
-user settings, managed settings and the process environment, and a cloud
-environment's variables are the last.
-
-- **The `env` block goes** from `.claude/settings.json`.
-- **`start-telemetry-receiver.sh` reads the variables it is started beside.**
-  Set to the receiver's endpoint → start it, as now. Unset or pointing elsewhere
-  → start nothing and print a notice to stdout, which `SessionStart` folds into
-  the context the way `.claude/hooks/gh-shim.sh` reports a missing `gh`: that
-  the ledger is priced from the transcript alone, the variables to add, and
-  where — the environment's settings, as variables, picked up by the next
-  session. A session whose telemetry is off on purpose
-  (`CLAUDE_CODE_ENABLE_TELEMETRY` unset and nothing else of it set) gets the
-  same notice, since nothing tells the two apart.
-- **`ADOPTING.md` gains the variables** beside § "Hand the operator a setup
-  script", with the same route to the environment's settings; the catalog's
-  `.claude/costs/` row, `/detemplate`'s and `/spinoff`'s reports point at it
-  where they mention the ledger.
-- **`.claude/costs/CLAUDE.md` § "Telemetry"** says where the variables live and
-  why not in the repository.
-- **Tests:** the hook's two paths, over a stub `python3` on `PATH` rather than a
-  real listener.
 
 ## What the events are still to cover
 
