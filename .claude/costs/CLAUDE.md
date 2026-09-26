@@ -202,7 +202,9 @@ adjusting quietly is what would leave the rest of this section false.
 
 `python3 .claude/costs/report.py` sums the rows five ways every run — by month,
 week and day, by the branch that spent it with the pull requests it touched
-named beside it, and by operator; `--json` prints the lot. The spend is the
+named beside it, and by operator — then orientation's averages, and the calls
+only the events saw, by `query_source`, as a share of the spend of the rows
+priced with events; `--json` prints the lot. The spend is the
 branch's rather than each PR's, since a session that touched two would otherwise
 be counted twice.
 

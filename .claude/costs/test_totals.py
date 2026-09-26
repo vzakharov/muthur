@@ -16,11 +16,12 @@ from dataclasses import replace
 from datetime import date
 from pathlib import Path
 
+from lib.billed import Telemetry
 from lib.orientation import Compaction, Phase, Rereads
 from lib.rows import ROOT, SessionCost, parse_session_cost, read_row, row_text
 from lib.shape import to_json
 from lib.tally import Tally
-from lib.totals import branch_label, iso_week, opening_command, operator_label, totals_of
+from lib.totals import Bucket, branch_label, iso_week, opening_command, operator_label, totals_of
 
 
 def tally(cost_usd: float) -> Tally:
@@ -190,6 +191,42 @@ class WhatOrientationAverages(unittest.TestCase):
     def test_reads_the_opening_command_off_the_opening_prompt(self) -> None:
         self.assertEqual(opening_command(MEASURED), "/handle")
         self.assertEqual(opening_command(ROW), "(none)")
+
+
+def events(**unseen: float) -> Telemetry:
+    return Telemetry(
+        events=10,
+        matched=8,
+        matched_table_usd=3,
+        matched_event_usd=3,
+        unseen={source: tally(cost_usd) for source, cost_usd in unseen.items()},
+    )
+
+
+class WhatTheEventsAddUp(unittest.TestCase):
+    def test_takes_the_share_of_the_rows_priced_with_events_alone(self) -> None:
+        priced = replace(ROW, total=tally(4), telemetry=events(prompt_suggestion=0.2, compact=0.3))
+        summary = totals_of([ROW, priced]).telemetry
+        assert summary is not None
+        self.assertEqual((summary.priced, summary.rows, summary.priced_usd), (1, 2, 4))
+        self.assertEqual(summary.unseen["compact"].cost_usd, 0.3)
+
+    def test_sums_a_source_across_the_rows_it_appeared_in(self) -> None:
+        summary = totals_of(
+            [
+                replace(ROW, telemetry=events(prompt_suggestion=0.2)),
+                replace(ROW, telemetry=events(prompt_suggestion=0.1, compact=0.3)),
+            ]
+        ).telemetry
+        assert summary is not None
+        self.assertEqual(sorted(summary.unseen), ["compact", "prompt_suggestion"])
+        self.assertEqual(summary.unseen["prompt_suggestion"], Bucket(2, 2, 0.3))
+        self.assertEqual(summary.unseen["compact"].sessions, 1)
+
+    def test_has_no_unseen_calls_over_rows_without_events(self) -> None:
+        summary = totals_of([ROW]).telemetry
+        assert summary is not None
+        self.assertEqual((summary.priced, summary.priced_usd, summary.unseen), (0, 0, {}))
 
 
 class RetiredFields(unittest.TestCase):

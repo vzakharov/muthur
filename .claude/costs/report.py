@@ -27,7 +27,7 @@ from typing import Dict, List, Optional
 from lib.pricing import parse_prices
 from lib.rows import SessionCost, read_row
 from lib.shape import to_json
-from lib.totals import Bucket, OrientationSummary, PhaseStats, Spread, totals_of
+from lib.totals import Bucket, OrientationSummary, PhaseStats, Spread, TelemetrySummary, totals_of
 
 COSTS = Path(__file__).resolve().parent
 SESSIONS = COSTS / "sessions"
@@ -112,6 +112,23 @@ def orientation(summary: OrientationSummary) -> None:
     )
 
 
+def telemetry(summary: TelemetrySummary) -> None:
+    print(
+        f"\npriced with events: {summary.priced} of {count(summary.rows, 'row')},"
+        f" {usd(summary.priced_usd)} of spend"
+    )
+    if not summary.unseen:
+        return
+    print("calls only the events saw")
+    width = max(len(source) for source in summary.unseen)
+    for source, bucket in summary.unseen.items():
+        share = bucket.cost_usd / summary.priced_usd if summary.priced_usd > 0 else 0.0
+        print(
+            f"  {source.ljust(width)}  {usd(bucket.cost_usd):>10}  {share:>5.1%} of it"
+            f"  {count(bucket.sessions, 'session'):>12}  {count(bucket.responses, 'call'):>10}"
+        )
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
     parser.add_argument("--month", help="YYYY-MM")
@@ -148,6 +165,8 @@ def main() -> int:
     print(f"\ntotal {usd(totals.cost_usd)} over {count(totals.sessions, 'session')}{delegated}")
     if totals.orientation is not None:
         orientation(totals.orientation)
+    if totals.telemetry is not None:
+        telemetry(totals.telemetry)
 
     # The hand-kept rate table has no published source to check itself against,
     # so the report states its age, and checks the arithmetic against the only

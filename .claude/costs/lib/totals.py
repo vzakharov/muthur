@@ -1,6 +1,7 @@
 """Sums the session rows for `report.py` — the same spend by month, by ISO week,
 by day, by the branch that spent it, and by the operator whose session it was —
-and averages what the rows measured of orientation.
+averages what the rows measured of orientation, and sums the calls only the
+events saw.
 
 Nothing here is written to disk: the totals are wholly derived from the rows,
 and a derived file committed beside its own sources is a merge conflict every
@@ -41,6 +42,7 @@ class Totals:
     by_branch: Dict[str, Bucket] = field(default_factory=dict)
     by_operator: Dict[str, Bucket] = field(default_factory=dict)
     orientation: Optional[OrientationSummary] = None
+    telemetry: Optional[TelemetrySummary] = None
 
 
 @dataclass
@@ -79,6 +81,19 @@ class OrientationSummary:
     by_ended_by: Dict[str, PhaseStats]
     by_opening_command: Dict[str, PhaseStats]
     compactions: Optional[CompactionStats]
+
+
+@dataclass
+class TelemetrySummary:
+    """The calls only the events saw. Their share is of `pricedUsd`, the spend
+    of the rows priced with events: a row without them has no unseen calls to
+    count, so its spend would only dilute the share."""
+
+    priced: int
+    rows: int
+    priced_usd: float
+    # By `query_source`; a bucket's `sessions` are the rows the source appeared in.
+    unseen: Dict[str, Bucket]
 
 
 def iso_week(day: date) -> str:
@@ -187,6 +202,23 @@ def orientation_of(rows: Sequence[SessionCost]) -> OrientationSummary:
     )
 
 
+def telemetry_of(rows: Sequence[SessionCost]) -> TelemetrySummary:
+    priced = [(row.telemetry, row) for row in rows if row.telemetry is not None]
+    unseen: Dict[str, Bucket] = {}
+    for telemetry, _ in priced:
+        for source, calls in telemetry.unseen.items():
+            bucket = unseen.setdefault(source, Bucket())
+            bucket.sessions += 1
+            bucket.responses += calls.responses
+            bucket.cost_usd += calls.cost_usd
+    return TelemetrySummary(
+        priced=len(priced),
+        rows=len(rows),
+        priced_usd=round(sum(row.total.cost_usd for _, row in priced), 4),
+        unseen=_rounded(unseen),
+    )
+
+
 def totals_of(rows: Iterable[SessionCost]) -> Totals:
     """A session is filed under where it **started**, the rule that already picks
     its row's month, so one running past midnight stays whole. A row with no
@@ -221,4 +253,5 @@ def totals_of(rows: Iterable[SessionCost]) -> Totals:
         by_branch=_rounded(by_branch),
         by_operator=_rounded(by_operator),
         orientation=orientation_of(rows),
+        telemetry=telemetry_of(rows),
     )
