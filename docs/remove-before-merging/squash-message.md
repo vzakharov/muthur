@@ -38,9 +38,6 @@ stay without the fields. Bash edits are not seen. A session's first cost
 commit reads "session cost (new)", telling new sessions from continued
 ones in the log.
 
-The operator's voice entry also asks for Russian replies to messages
-that carry no language of their own.
-
 Co-authored-by: Claude <noreply@anthropic.com>
 ```
 
