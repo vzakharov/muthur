@@ -56,19 +56,9 @@ nobody asked for.
   `telemetry.unseen` by `query_source`, and a compaction's `billedUsd` is the
   `compact` call nearest its boundary. No event file leaves `telemetry` null.
   The row's shape moved into `lib/rows.py`.
-
-## This bite
-
-- **`report.py` shows the unseen calls.** `totals_of` gains a
-  `TelemetrySummary` beside `OrientationSummary`: how many rows were priced
-  with events, those rows' total, and the unseen calls summed by
-  `query_source` into `Bucket`s (sessions it appeared in, calls, dollars). The
-  report prints it after orientation — each source's dollars and share of the
-  spend of the rows priced with events — and `--json` carries it. Tested in
-  `test_totals.py`; `.claude/costs/CLAUDE.md` § "The report" names it.
-- DRY: `Bucket` and `table()`'s column shape are reused as they stand; the
-  share is the one number `Bucket` has no room for, so it is computed in the
-  report from the summary's denominator rather than stored per bucket.
+- **`report.py` shows the unseen calls** (`TelemetrySummary` on `Totals`): how
+  many rows were priced with events and their spend, then the unseen calls by
+  `query_source` as `Bucket`s, each with its share of that spend.
 
 ## Rest of the elephant
 
