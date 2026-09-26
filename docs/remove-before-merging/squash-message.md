@@ -20,17 +20,24 @@ the measure and estimates the holes the summary left: calls after the
 boundary that repeat one made before it.
 
 Claude Code's OpenTelemetry api_request events, captured by a local
-receiver that keeps only their numbers and request ids, now price the
-row. Each is joined to its transcript response by request id; the calls
-the transcript never saw, the compaction's own among them, get a bucket
-of their own. prices.json remains the fallback and the cross-check.
-Claude Code ignores its exporter variables in a repository's
-settings.json, so the environment's settings carry them, and a session
-started without them says so, listing what to set.
+receiver that keeps only their numbers and request ids, are joined to
+the transcript's responses by request id. Where both exist they agree
+with prices.json, so a response keeps its table price and the row warns
+if the two drift. The calls the transcript never recorded, prompt
+suggestions and compactions among them, join the total at the event's
+price, bucketed by source, and each compaction gets its billed cost. A
+session without events is priced as before. Claude Code ignores its
+exporter variables in a repository's settings.json and strips them from
+the processes it spawns, so the environment's settings carry them and
+the start hook reads them from the claude process, listing what is
+unset.
 
 report.py averages orientation and compactions across the rows that
 carry them, by what ended the phase and by opening command. Older rows
 stay without the fields. Bash edits are not seen.
+
+The operator's voice entry also asks for Russian replies to messages
+that carry no language of their own.
 
 Co-authored-by: Claude <noreply@anthropic.com>
 ```
