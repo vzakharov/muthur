@@ -16,10 +16,11 @@ from dataclasses import replace
 from datetime import date
 from pathlib import Path
 
+from lib.orientation import Compaction, Phase, Rereads
 from lib.pricing import SessionCost, Tally, parse_session_cost
 from lib.rows import ROOT, read_row, row_text
 from lib.shape import to_json
-from lib.totals import branch_label, iso_week, operator_label, totals_of
+from lib.totals import branch_label, iso_week, opening_command, operator_label, totals_of
 
 
 def tally(cost_usd: float) -> Tally:
@@ -115,11 +116,80 @@ class RowsReadBack(unittest.TestCase):
     def test_a_written_row_parses_back_to_itself(self) -> None:
         self.assertEqual(parse_session_cost(json.dumps(to_json(ROW))), ROW)
 
-    def test_a_row_from_before_the_naming_fields_still_parses(self) -> None:
+    def test_a_row_from_before_the_naming_and_orientation_fields_still_parses(self) -> None:
         row = to_json(ROW)
-        for key in ("openingPrompt", "prs", "url", "operator", "claudeCodeTotalUsd"):
+        for key in (
+            "openingPrompt",
+            "prs",
+            "url",
+            "operator",
+            "claudeCodeTotalUsd",
+            "orientation",
+            "compactions",
+        ):
             del row[key]
         self.assertEqual(parse_session_cost(json.dumps(row)), ROW)
+
+    def test_a_measured_row_parses_back_to_itself(self) -> None:
+        self.assertEqual(parse_session_cost(json.dumps(to_json(MEASURED))), MEASURED)
+
+
+def phase(cost_usd: float, ended_by: str = "Edit", context: int = 50_000) -> Phase:
+    return Phase(ended_by, "lib/a.py", "2026-03-04T05:10:00.000Z", context, tally(cost_usd))
+
+
+MEASURED = replace(
+    ROW,
+    total=tally(4),
+    opening_prompt="/handle claude/a-branch",
+    orientation=phase(1),
+    compactions=[
+        Compaction(
+            at="2026-03-04T05:30:00.000Z",
+            trigger="manual",
+            compacted_from=200_000,
+            summary_chars=15_000,
+            reorientation=phase(0.5, "end_turn", 30_000),
+            rereads=Rereads(3, {"Read": 2, "Bash": 1}, 9_000, 0.2),
+        )
+    ],
+)
+
+
+class WhatOrientationAverages(unittest.TestCase):
+    def test_skips_a_row_written_before_orientation_was_measured(self) -> None:
+        summary = totals_of([ROW, MEASURED]).orientation
+        assert summary is not None and summary.orientation is not None
+        self.assertEqual((summary.measured, summary.rows), (1, 2))
+        self.assertEqual(summary.orientation.phases, 1)
+        self.assertEqual(summary.orientation.share_of_session.mean, 0.25)
+
+    def test_has_nothing_to_average_over_unmeasured_rows(self) -> None:
+        summary = totals_of([ROW]).orientation
+        assert summary is not None
+        self.assertIsNone(summary.orientation)
+        self.assertIsNone(summary.compactions)
+
+    def test_groups_by_what_ended_it_and_by_the_opening_command(self) -> None:
+        other = replace(MEASURED, opening_prompt="fix the thing", orientation=phase(3, "end_turn"))
+        summary = totals_of([MEASURED, other]).orientation
+        assert summary is not None and summary.orientation is not None
+        self.assertEqual(summary.orientation.usd.mean, 2)
+        self.assertEqual(sorted(summary.by_ended_by), ["Edit", "end_turn"])
+        self.assertEqual(summary.by_opening_command["/handle"].usd.mean, 1)
+        self.assertEqual(summary.by_opening_command["(none)"].usd.mean, 3)
+
+    def test_averages_the_compactions_and_sums_the_re_reads_by_tool(self) -> None:
+        summary = totals_of([MEASURED, MEASURED]).orientation
+        assert summary is not None and summary.compactions is not None
+        self.assertEqual(summary.compactions.compactions, 2)
+        self.assertEqual(summary.compactions.reorientation.usd.median, 0.5)
+        self.assertEqual(summary.compactions.reread_calls.mean, 3)
+        self.assertEqual(summary.compactions.rereads_by_tool, {"Bash": 2, "Read": 4})
+
+    def test_reads_the_opening_command_off_the_opening_prompt(self) -> None:
+        self.assertEqual(opening_command(MEASURED), "/handle")
+        self.assertEqual(opening_command(ROW), "(none)")
 
 
 class RetiredFields(unittest.TestCase):

@@ -8,8 +8,8 @@ leave out.
 from __future__ import annotations
 
 import json
-from dataclasses import dataclass, fields
-from typing import Any, Dict, List, Mapping, Optional, Sequence, Set
+from dataclasses import dataclass, field, fields
+from typing import Any, Dict, List, Mapping, Optional, Sequence, Set, Tuple
 
 from lib.identity import (
     cost_state_of,
@@ -19,9 +19,23 @@ from lib.identity import (
     prompt_text_of,
     session_url_in,
 )
+from lib.orientation import (
+    Compaction,
+    Phase,
+    Priced,
+    ToolCall,
+    Trail,
+    boundary_of,
+    calls_in,
+    is_boundary,
+    measure,
+    note_results,
+    parse_compaction,
+    parse_phase,
+    summary_chars_of,
+)
 from lib.shape import (
     ShapeError,
-    camel,
     mistyped,
     read_count,
     read_number,
@@ -29,6 +43,7 @@ from lib.shape import (
     read_string,
     required,
 )
+from lib.tally import Rates, Tally, billable_tokens, cost_of, parse_tally
 
 
 class UnpricedError(ValueError):
@@ -36,17 +51,6 @@ class UnpricedError(ValueError):
 
 
 # --- The rate table -----------------------------------------------------------
-
-
-@dataclass(frozen=True)
-class Rates:
-    """USD per million tokens."""
-
-    input: float
-    output: float
-    cache_write_5m: float
-    cache_write_1h: float
-    cache_read: float
 
 
 @dataclass(frozen=True)
@@ -74,58 +78,6 @@ def parse_prices(text: str) -> PriceTable:
 def rate_key(model: str, speed: Optional[str]) -> str:
     """`<model>/<speed>`, the pair a response is billed under."""
     return f"{model}/{speed if speed is not None else 'standard'}"
-
-
-# --- Tallies ------------------------------------------------------------------
-
-
-@dataclass
-class Tally:
-    input_tokens: int = 0
-    cache_write_5m_tokens: int = 0
-    cache_write_1h_tokens: int = 0
-    cache_read_tokens: int = 0
-    output_tokens: int = 0
-    thinking_tokens: int = 0
-    responses: int = 0
-    cost_usd: float = 0.0
-
-    def add(self, other: Tally) -> None:
-        for f in fields(self):
-            setattr(self, f.name, getattr(self, f.name) + getattr(other, f.name))
-
-
-# Thinking tokens are absent: they sit inside `output_tokens` already, so a line
-# of their own would charge every turn that thought twice.
-BILLED_AT = {
-    "input_tokens": "input",
-    "cache_write_5m_tokens": "cache_write_5m",
-    "cache_write_1h_tokens": "cache_write_1h",
-    "cache_read_tokens": "cache_read",
-    "output_tokens": "output",
-}
-
-
-def billable_tokens(tally: Tally) -> int:
-    return sum(getattr(tally, name) for name in BILLED_AT)
-
-
-def cost_of(tally: Tally, rates: Rates) -> float:
-    usd = 0.0
-    for tokens, rate in BILLED_AT.items():
-        usd += getattr(tally, tokens) * getattr(rates, rate) / 1e6
-    return usd
-
-
-def _parse_tally(obj: Any, where: str) -> Tally:
-    if not isinstance(obj, dict):
-        raise ShapeError(f"{where}: not an object")
-    return Tally(
-        **{
-            f.name: required(read_number if f.name == "cost_usd" else read_count, obj, camel(f.name), where)
-            for f in fields(Tally)
-        }
-    )
 
 
 # --- A session's row ----------------------------------------------------------
@@ -157,6 +109,10 @@ class SessionCost:
     subagents: Tally
     by_rate: Dict[str, Tally]
     warnings: List[str]
+    # Null on a row written before orientation was measured, and on a session
+    # with no priced response to measure it over.
+    orientation: Optional[Phase] = None
+    compactions: List[Compaction] = field(default_factory=list)
 
 
 def _list_of(obj: Mapping[str, Any], key: str, where: str, kind: type) -> List[Any]:
@@ -172,8 +128,8 @@ def _list_of(obj: Mapping[str, Any], key: str, where: str, kind: type) -> List[A
 
 def parse_session_cost(text: str, where: str = "row") -> SessionCost:
     """Rows are read back in a later process, so they are parsed rather than
-    trusted. The naming fields default when absent, so a row written before they
-    existed still parses."""
+    trusted. The naming and orientation fields default when absent, so a row
+    written before they existed still parses."""
     row = json.loads(text)
     if not isinstance(row, dict):
         raise ShapeError(f"{where}: not an object")
@@ -189,14 +145,23 @@ def parse_session_cost(text: str, where: str = "row") -> SessionCost:
         last_response_at=read_string(row, "lastResponseAt", where),
         prices_as_of=required(read_string, row, "pricesAsOf", where),
         claude_code_total_usd=read_number(row, "claudeCodeTotalUsd", where),
-        total=_parse_tally(row.get("total"), f"{where} total"),
-        own_turns=_parse_tally(row.get("ownTurns"), f"{where} ownTurns"),
-        subagents=_parse_tally(row.get("subagents"), f"{where} subagents"),
+        total=parse_tally(row.get("total"), f"{where} total"),
+        own_turns=parse_tally(row.get("ownTurns"), f"{where} ownTurns"),
+        subagents=parse_tally(row.get("subagents"), f"{where} subagents"),
         by_rate={
-            key: _parse_tally(tally, f"{where} byRate[{key!r}]")
+            key: parse_tally(tally, f"{where} byRate[{key!r}]")
             for key, tally in required(read_object, row, "byRate", where).items()
         },
         warnings=_list_of(row, "warnings", where, str),
+        orientation=(
+            None
+            if row.get("orientation") is None
+            else parse_phase(row["orientation"], f"{where} orientation")
+        ),
+        compactions=[
+            parse_compaction(item, f"{where} compactions[{index}]")
+            for index, item in enumerate(_list_of(row, "compactions", where, dict))
+        ],
     )
 
 
@@ -219,6 +184,8 @@ class Response:
     timestamp: Optional[str]
     is_sidechain: bool
     stop_reason: Optional[str]
+    request_id: Optional[str]
+    calls: Tuple[ToolCall, ...]
     tokens: Tally
 
 
@@ -264,6 +231,8 @@ def _parse_response(record: Dict[str, Any], where: str, warnings: List[str]) -> 
         timestamp=read_string(record, "timestamp", where),
         is_sidechain=sidechain is True,
         stop_reason=read_string(message, "stop_reason", where),
+        request_id=read_string(record, "requestId", where),
+        calls=calls_in(message, where),
         tokens=Tally(
             input_tokens=required(read_count, usage, "input_tokens", at),
             cache_write_5m_tokens=split_5m if trust_split else written,
@@ -327,6 +296,9 @@ def summarise_transcript(
     url: Optional[str] = None
     operator: Optional[str] = None
     claude_code_total_usd: Optional[float] = None
+    trail = Trail()
+    # The priced responses by id, which a later record of one adds its calls to.
+    held: Dict[str, Priced] = {}
 
     # `delegated` forces the bucket for a subagent's own file. Its records carry
     # `isSidechain` too, but the file they are in is the fact that does not
@@ -351,7 +323,14 @@ def summarise_transcript(
                     if pr is not None:
                         prs.add(pr)
                     continue
+                if is_boundary(record):
+                    trail.boundaries.append(boundary_of(record, where))
+                    continue
                 if kind == "user":
+                    note_results(record, trail.result_chars)
+                    summary = summary_chars_of(record)
+                    if summary is not None and trail.boundaries:
+                        trail.boundaries[-1].summary_chars = summary
                     if opening_prompt is None:
                         opening_prompt = prompt_text_of(record)
                     continue
@@ -378,6 +357,10 @@ def summarise_transcript(
             # One API response is written as one record per content block, each
             # carrying the whole response's usage, so the id counts it once.
             if response.message_id in seen:
+                earlier = held.get(response.message_id)
+                if earlier is not None:
+                    earlier.calls.extend(response.calls)
+                    earlier.ended_turn |= response.stop_reason == "end_turn"
                 continue
             seen.add(response.message_id)
 
@@ -413,7 +396,22 @@ def summarise_transcript(
             tokens.cost_usd = cost_of(tokens, rates)
             by_rate.setdefault(key, Tally()).add(tokens)
             total.add(tokens)
-            (subagents if delegated or response.is_sidechain else own_turns).add(tokens)
+            own = not (delegated or response.is_sidechain)
+            (own_turns if own else subagents).add(tokens)
+            # A response with no timestamp has no place among the phases.
+            if response.timestamp is not None:
+                held[response.message_id] = Priced(
+                    message_id=response.message_id,
+                    at=response.timestamp,
+                    seq=len(trail.responses),
+                    own=own,
+                    ended_turn=response.stop_reason == "end_turn",
+                    cwd=response.cwd,
+                    tokens=tokens,
+                    rates=rates,
+                    calls=list(response.calls),
+                )
+                trail.responses.append(held[response.message_id])
 
     scan(sources.main, "transcript", False)
     for index, delegated in enumerate(sources.subagents, start=1):
@@ -434,6 +432,7 @@ def summarise_transcript(
         )
 
     in_order = sorted(timestamps)
+    orientation, compactions = measure(trail)
     return SessionCost(
         session_id=session_id if session_id is not None else fallback_session_id,
         branch=branch,
@@ -451,4 +450,6 @@ def summarise_transcript(
         subagents=subagents,
         by_rate=by_rate,
         warnings=warnings,
+        orientation=orientation,
+        compactions=compactions,
     )

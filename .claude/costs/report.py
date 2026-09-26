@@ -22,12 +22,12 @@ import json
 import sys
 from datetime import date, datetime, timezone
 from pathlib import Path
-from typing import Dict, List
+from typing import Dict, List, Optional
 
 from lib.pricing import SessionCost, parse_prices
 from lib.rows import read_row
 from lib.shape import to_json
-from lib.totals import Bucket, totals_of
+from lib.totals import Bucket, OrientationSummary, PhaseStats, Spread, totals_of
 
 COSTS = Path(__file__).resolve().parent
 SESSIONS = COSTS / "sessions"
@@ -71,6 +71,49 @@ def table(title: str, buckets: Dict[str, Bucket]) -> None:
         )
 
 
+def tokens(spread: Optional[Spread]) -> str:
+    return "—" if spread is None else f"{spread.mean / 1000:.0f}k mean, {spread.median / 1000:.0f}k median"
+
+
+def phase_line(label: str, width: int, stats: PhaseStats) -> str:
+    return (
+        f"  {label.ljust(width)}  {usd(stats.usd.mean):>7} mean  {usd(stats.usd.median):>7} median"
+        f"  {stats.share_of_session.mean:>4.0%} of the session"
+        f"  context {tokens(stats.context_tokens)}  ({count(stats.phases, 'phase')})"
+    )
+
+
+def phase_table(title: str, groups: Dict[str, PhaseStats]) -> None:
+    width = max(len(key) for key in groups)
+    print(f"\n{title}")
+    for key, stats in groups.items():
+        print(phase_line(key, width, stats))
+
+
+def orientation(summary: OrientationSummary) -> None:
+    """What sessions spent before they acted, the input to whether a fresh
+    session or a compact is the cheaper way to shed context."""
+    print(f"\norientation, measured on {summary.measured} of {count(summary.rows, 'row')}")
+    if summary.orientation is None:
+        return
+    print(phase_line("before acting", 13, summary.orientation))
+    phase_table("orientation by what ended it", summary.by_ended_by)
+    phase_table("orientation by opening command", summary.by_opening_command)
+    compactions = summary.compactions
+    if compactions is None:
+        return
+    print(f"\n{count(compactions.compactions, 'compaction')}")
+    print(phase_line("re-orientation", 14, compactions.reorientation))
+    print(f"  compacted from {tokens(compactions.compacted_from)}")
+    by_tool = ", ".join(f"{tool} {calls}" for tool, calls in compactions.rereads_by_tool.items())
+    print(
+        f"  re-reads {compactions.reread_calls.mean:.1f} mean, {compactions.reread_calls.median:.1f}"
+        f" median, est. {usd(compactions.reread_estimated_usd.mean)} mean"
+        f" {usd(compactions.reread_estimated_usd.median)} median"
+        f"{f' — {by_tool}' if by_tool else ''}"
+    )
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
     parser.add_argument("--month", help="YYYY-MM")
@@ -105,6 +148,8 @@ def main() -> int:
     subagents = sum(row.subagents.cost_usd for row in rows)
     delegated = f", {usd(subagents)} of it subagents" if subagents > 0 else ""
     print(f"\ntotal {usd(totals.cost_usd)} over {count(totals.sessions, 'session')}{delegated}")
+    if totals.orientation is not None:
+        orientation(totals.orientation)
 
     # The hand-kept rate table has no published source to check itself against,
     # so the report states its age, and checks the arithmetic against the only
