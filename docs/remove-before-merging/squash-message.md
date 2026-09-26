@@ -1,24 +1,26 @@
 Proposed squash title/body:
 
 ```
-feat: turn away the first Bash read or edit of a file (pr #118)
+feat: turn away the first Bash edit of a file (pr #118)
 ```
 
 ```
-Agents kept reading and editing files through sed, cat, head and
-heredocs despite CLAUDE.md asking for Read/Edit/Write, not least
-because the harness's auto-mode prompt invites shell edits on every
-turn, where the CLAUDE.md line is one bullet among many.
+Agents kept editing files through sed -i and heredocs despite
+CLAUDE.md asking for Edit/Write, not least because the harness's
+auto-mode prompt invites shell edits on every turn, where the
+CLAUDE.md line is one bullet among many.
 
 A PreToolUse hook on Bash now denies the first command it sees that
-reads a file, edits one in place or writes one, naming the tool to use
-instead. The identical command run again in the same session goes
-through, so the accidental habit is caught while a deliberate mass
-substitution costs one retry.
+edits a file in place or writes one, naming the tool to use instead.
+The identical command run again in the same session goes through, so
+the accidental habit is caught while a deliberate mass substitution
+costs one retry. The command is tokenised with shlex rather than
+matched as a string, and the hook fails open on anything it cannot
+parse or record.
 
-The command is tokenised with shlex rather than matched as a string,
-so a pipeline reading stdin is left alone, and the hook fails open on
-anything it cannot parse or record.
+The CLAUDE.md principle narrows to changing files: a shell read
+leaves no effect for the operator to reconstruct, and the harness
+already refuses an Edit on a file that never went through Read.
 
 Co-authored-by: Claude <noreply@anthropic.com>
 ```
