@@ -23,9 +23,10 @@ Claude Code's OpenTelemetry api_request events, captured by a local
 receiver that keeps only their numbers and request ids, now price the
 row. Each is joined to its transcript response by request id; the calls
 the transcript never saw, the compaction's own among them, get a bucket
-of their own. prices.json remains the fallback and the cross-check, and
-a session running without the events says so at start, pointing the
-operator at the settings to add.
+of their own. prices.json remains the fallback and the cross-check.
+Claude Code ignores its exporter variables in a repository's
+settings.json, so the environment's settings carry them, and a session
+started without them says so, listing what to set.
 
 report.py averages orientation and compactions across the rows that
 carry them, by what ended the phase and by opening command. Older rows
