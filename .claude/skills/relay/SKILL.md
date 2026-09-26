@@ -54,7 +54,7 @@ Its prompt is one line, `/relay take <branch>`. The summary is not passed in the
 
 ### Step 4 — Report and stop
 
-The successor's link (or the local recipe), and the summary's size in characters with a rough token count at four characters a token — the context the successor starts with on top of its baseline. Leave this session open: archiving it is the operator's call (§ "What a relay loses").
+The successor's link — on the web `https://claude.ai/code/<session_id>` from the id `create_session` returned, written bare so the operator clicks through to it — or the local recipe, and the summary's size in characters with a rough token count at four characters a token — the context the successor starts with on top of its baseline. Leave this session open: archiving it is the operator's call (§ "What a relay loses").
 
 ## What a relay loses
 
