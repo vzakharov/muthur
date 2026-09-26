@@ -143,6 +143,7 @@ fetch_lock() {
 lock_age() { echo $(($(date +%s) - $(git log -1 --format=%ct "$1"))); }
 
 describe_lock() {
+  fetch_lock "$1"
   echo "  Claimed-By: $(git log -1 --format='%(trailers:key=Claimed-By,valueonly)' "$1")"
   echo "  Session: $(git log -1 --format='%(trailers:key=Session,valueonly)' "$1")"
   echo "  Claimed: $(($(lock_age "$1") / 3600))h ago, as $LOCK on origin"
@@ -283,7 +284,6 @@ claim() {
   local held expect=""
   held="$(lock_sha)"
   if [ -n "$held" ]; then
-    fetch_lock "$held"
     if [ -z "$takeover" ]; then
       echo "muthur-sync: the sync from ${LAST_SHA:0:12} is already claimed:" >&2
       describe_lock "$held" >&2
@@ -310,7 +310,6 @@ EOF
     held="$(lock_sha)"
     [ -n "$held" ] || die "could not push $LOCK to origin."
     if [ "$held" != "$commit" ]; then
-      fetch_lock "$held"
       echo "muthur-sync: lost the race for the sync from ${LAST_SHA:0:12}:" >&2
       describe_lock "$held" >&2
       exit 3
