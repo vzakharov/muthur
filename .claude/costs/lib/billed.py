@@ -8,12 +8,11 @@ carries what the events add and what they cannot.
 
 from __future__ import annotations
 
-import json
 from dataclasses import dataclass, field
 from datetime import datetime
 from typing import Any, Dict, List, Optional, Sequence
 
-from lib.shape import ShapeError, read_count, read_number, read_string, required
+from lib.shape import ShapeError, json_lines, read_count, read_number, read_string, required
 from lib.tally import Tally, parse_tally
 
 # The compaction's own request, as Claude Code tags it.
@@ -41,14 +40,7 @@ def parse_events(text: str, where: str) -> Dict[str, Event]:
     """By request id. The exporter may send a batch twice when a delivery is
     retried, so a repeated id is one call, kept once."""
     events: Dict[str, Event] = {}
-    for number, line in enumerate(text.split("\n"), start=1):
-        if line.strip() == "":
-            continue
-        at = f"{where} line {number}"
-        try:
-            record = json.loads(line)
-        except json.JSONDecodeError as error:
-            raise ShapeError(f"{at}: not JSON ({error})") from error
+    for at, _, record in json_lines(text, where):
         if not isinstance(record, dict):
             raise ShapeError(f"{at}: not an object")
         request_id = required(read_string, record, "request_id", at)

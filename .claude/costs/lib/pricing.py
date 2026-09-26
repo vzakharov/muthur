@@ -34,6 +34,7 @@ from lib.orientation import (
 from lib.rows import SessionCost
 from lib.shape import (
     ShapeError,
+    json_lines,
     mistyped,
     read_count,
     read_number,
@@ -228,15 +229,7 @@ def summarise_transcript(
     def scan(jsonl: str, label: str, delegated: bool) -> None:
         nonlocal session_id, branch, cwd, opening_prompt, url, operator
         nonlocal claude_code_total_usd, last_own, matched_event_usd, matched_table_usd
-        for number, line in enumerate(jsonl.split("\n"), start=1):
-            if line.strip() == "":
-                continue
-            where = f"{label} line {number}"
-            try:
-                record = json.loads(line)
-            except json.JSONDecodeError as error:
-                raise ShapeError(f"{where}: not JSON ({error})") from error
-
+        for where, line, record in json_lines(jsonl, label):
             kind = kind_of(record)
             # The session's own identity, which only its own file describes.
             if not delegated:

@@ -9,13 +9,12 @@ import sys
 import tempfile
 import unittest
 from pathlib import Path
-from typing import Any, Dict, Optional, Sequence
+from typing import Any, Dict
 
 from lib.billed import parse_events
-from lib.pricing import TranscriptSources, summarise_transcript
 from lib.rows import parse_session_cost, row_text
 from lib.shape import ShapeError
-from test_pricing import PRICES, boundary, response, step, t
+from test_pricing import boundary, response, step, summarise, t
 
 
 def event(
@@ -46,20 +45,11 @@ def event(
     )
 
 
-def summarise(lines: Sequence[str], events: Optional[Sequence[str]]):
-    return summarise_transcript(
-        TranscriptSources(main="\n".join(lines)),
-        PRICES,
-        "fallback",
-        events=None if events is None else parse_events("\n".join(events), "events"),
-    )
-
-
 class WhatTheEventsAdd(unittest.TestCase):
     def test_adds_a_call_the_transcript_never_recorded_to_the_total_by_source(self) -> None:
         row = summarise(
             [step(1, request="req_1")],
-            [event("req_1"), event("req_hidden", source="prompt_suggestion", cost=2.5)],
+            events=[event("req_1"), event("req_hidden", source="prompt_suggestion", cost=2.5)],
         )
         self.assertEqual(row.own_turns.cost_usd, 10.0)
         self.assertEqual(row.total.cost_usd, 12.5)
@@ -71,30 +61,30 @@ class WhatTheEventsAdd(unittest.TestCase):
         self.assertEqual(row.telemetry.unseen["prompt_suggestion"].cost_usd, 2.5)
 
     def test_files_an_unseen_call_under_the_table_s_name_for_its_speed(self) -> None:
-        row = summarise([], [event("req_hidden", cost=1.0, written=7)])
+        row = summarise([], events=[event("req_hidden", cost=1.0, written=7)])
         tally = row.by_rate["test-model/standard"]
         self.assertEqual((tally.cost_usd, tally.cache_write_5m_tokens), (1.0, 7))
 
     def test_keeps_the_table_s_price_on_a_matched_response(self) -> None:
-        row = summarise([step(1, request="req_1")], [event("req_1", cost=10.0)])
+        row = summarise([step(1, request="req_1")], events=[event("req_1", cost=10.0)])
         assert row.telemetry is not None
         self.assertEqual(row.total.cost_usd, 10.0)
         self.assertEqual(row.telemetry.matched_table_usd, row.telemetry.matched_event_usd)
         self.assertEqual(row.warnings, [])
 
     def test_warns_when_the_table_and_the_events_disagree(self) -> None:
-        row = summarise([step(1, request="req_1")], [event("req_1", cost=12.0)])
+        row = summarise([step(1, request="req_1")], events=[event("req_1", cost=12.0)])
         self.assertEqual(len(row.warnings), 1)
         self.assertIn("prices.json priced the 1 responses", row.warnings[0])
 
     def test_counts_an_event_the_exporter_sent_twice_once(self) -> None:
-        row = summarise([], [event("req_hidden", cost=1.0), event("req_hidden", cost=1.0)])
+        row = summarise([], events=[event("req_hidden", cost=1.0), event("req_hidden", cost=1.0)])
         self.assertEqual(row.total.cost_usd, 1.0)
 
     def test_prices_each_compaction_from_the_compact_call_nearest_it(self) -> None:
         row = summarise(
             [step(1), boundary(100), step(101), boundary(200), step(201)],
-            [
+            events=[
                 event("req_c1", source="compact", second=98, cost=0.2),
                 event("req_c2", source="compact", second=199, cost=0.3),
                 event("req_s", source="prompt_suggestion", second=150, cost=1.0),
@@ -103,18 +93,18 @@ class WhatTheEventsAdd(unittest.TestCase):
         self.assertEqual([c.billed_usd for c in row.compactions], [0.2, 0.3])
 
     def test_leaves_a_compaction_unpriced_when_no_call_is_tagged_for_it(self) -> None:
-        row = summarise([step(1), boundary(100), step(101)], [event("req_s", second=99)])
+        row = summarise([step(1), boundary(100), step(101)], events=[event("req_s", second=99)])
         self.assertIsNone(row.compactions[0].billed_usd)
 
 
 class WithoutEvents(unittest.TestCase):
     def test_prices_from_the_transcript_alone_and_says_so(self) -> None:
-        row = summarise([step(1, request="req_1")], None)
+        row = summarise([step(1, request="req_1")], events=None)
         self.assertIsNone(row.telemetry)
         self.assertEqual(row.total.cost_usd, 10.0)
 
     def test_round_trips_a_row_with_telemetry_and_parses_one_without(self) -> None:
-        row = summarise([step(1, request="req_1")], [event("req_1"), event("req_2")])
+        row = summarise([step(1, request="req_1")], events=[event("req_1"), event("req_2")])
         self.assertEqual(parse_session_cost(row_text(row)), row)
         before: Dict[str, Any] = json.loads(row_text(row))
         del before["telemetry"]

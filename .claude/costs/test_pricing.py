@@ -13,6 +13,7 @@ import json
 import unittest
 from typing import Any, Dict, List, Optional, Sequence
 
+from lib.billed import parse_events
 from lib.pricing import (
     TranscriptSources,
     UnpricedError,
@@ -103,13 +104,17 @@ def response(
 
 
 def summarise(
-    lines: Sequence[str], subagents: Sequence[Sequence[str]] = (), at_stop: bool = False
+    lines: Sequence[str],
+    subagents: Sequence[Sequence[str]] = (),
+    at_stop: bool = False,
+    events: Optional[Sequence[str]] = None,
 ):
     return summarise_transcript(
         TranscriptSources(main="\n".join(lines), subagents=["\n".join(s) for s in subagents]),
         PRICES,
         "fallback",
         at_stop=at_stop,
+        events=None if events is None else parse_events("\n".join(events), "events"),
     )
 
 
