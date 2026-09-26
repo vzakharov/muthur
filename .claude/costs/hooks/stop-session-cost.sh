@@ -117,11 +117,17 @@ commit_row() {
   fi
 
   # The turn's spend is measured from the row as last committed, not as last
-  # written: a hand run between turns rewrites the file too.
-  was="$(repo show "HEAD:$path" 2>/dev/null | jq -r '.total.costUsd // 0' 2>/dev/null)"
+  # written: a hand run between turns rewrites the file too. A row HEAD lacks
+  # is a session's first, and its subject says so, telling new sessions from
+  # continued ones in the log.
   now="$(jq -r '.total.costUsd' "$staged")"
-  subject="$(awk -v was="${was:-0}" -v now="$now" \
-    'BEGIN { printf "chore: session cost +%.2f USD, total %.2f USD", now - was, now }')"
+  if committed="$(repo show "HEAD:$path" 2>/dev/null)"; then
+    was="$(jq -r '.total.costUsd // 0' <<<"$committed" 2>/dev/null)"
+    subject="$(awk -v was="${was:-0}" -v now="$now" \
+      'BEGIN { printf "chore: session cost +%.2f USD, total %.2f USD", now - was, now }')"
+  else
+    subject="$(awk -v now="$now" 'BEGIN { printf "chore: session cost (new) %.2f USD", now }')"
+  fi
 
   # `commit-tree` signs only when told to, where `commit` reads the config.
   [ "$(repo config --type=bool commit.gpgsign 2>/dev/null)" = true ] && sign=(-S)
