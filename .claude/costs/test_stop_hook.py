@@ -149,8 +149,17 @@ class StopHookTest(unittest.TestCase):
         result = self.clone.stop()
         self.assertEqual((result.returncode, result.stderr), (0, ""))
         self.assertLevelWithOrigin()
-        self.assertTrue(self.clone.git("log", "-1", "--format=%s").startswith("chore: session cost +"))
+        self.assertEqual(self.clone.git("log", "-1", "--format=%s"), "chore: session cost (new) 0.01 USD")
         self.assertEqual(self.clone.files_in("HEAD"), [".claude/costs/sessions/2026-03/sess.json"])
+
+    def test_a_continued_session_s_row_is_committed_as_the_turn_s_spend(self) -> None:
+        self.clone.stop()
+        self.clone.respond()
+        self.clone.stop()
+        self.assertEqual(
+            self.clone.git("log", "-1", "--format=%s"),
+            "chore: session cost +0.01 USD, total 0.02 USD",
+        )
 
     def test_the_tree_is_clean_and_level_while_the_push_is_in_flight(self) -> None:
         # `origin` runs this before it takes the push, which is the stretch the
