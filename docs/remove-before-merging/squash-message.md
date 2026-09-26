@@ -16,8 +16,9 @@ The web/remote chapter (the gh shim and what declining it costs, the
 environment setup script with its worked example, and the known gaps)
 moves to docs/adopting/web-remote.md, together with its screenshot.
 Watermark hydration moves to docs/adopting/sync.md and is read only by
-adopters taking /update-muthur. The fork-watermark recipe is dropped,
-since /detemplate already carries it. Verify stays whole in the core,
+adopters taking /update-muthur; a one-time snapshot deletes the skill
+instead. The fork-watermark recipe is dropped, since /detemplate
+already carries it. Verify stays whole in the core,
 its conditional items pointing to their chapters.
 
 The catalog's never rows, /detemplate's sweep and citations, the
