@@ -17,6 +17,7 @@ from typing import Callable, Dict, Iterable, List, Optional, Sequence, Tuple
 
 from lib.orientation import Phase
 from lib.rows import SessionCost
+from lib.tally import Tally
 
 
 @dataclass
@@ -25,10 +26,11 @@ class Bucket:
     responses: int = 0
     cost_usd: float = 0.0
 
-    def count(self, row: SessionCost) -> None:
+    def count(self, spend: Tally) -> None:
+        """One session's spend, the whole of it or one source's share."""
         self.sessions += 1
-        self.responses += row.total.responses
-        self.cost_usd += row.total.cost_usd
+        self.responses += spend.responses
+        self.cost_usd += spend.cost_usd
 
 
 @dataclass
@@ -207,10 +209,7 @@ def telemetry_of(rows: Sequence[SessionCost]) -> TelemetrySummary:
     unseen: Dict[str, Bucket] = {}
     for telemetry, _ in priced:
         for source, calls in telemetry.unseen.items():
-            bucket = unseen.setdefault(source, Bucket())
-            bucket.sessions += 1
-            bucket.responses += calls.responses
-            bucket.cost_usd += calls.cost_usd
+            unseen.setdefault(source, Bucket()).count(calls)
     return TelemetrySummary(
         priced=len(priced),
         rows=len(rows),
@@ -233,15 +232,15 @@ def totals_of(rows: Iterable[SessionCost]) -> Totals:
     rows = list(rows)
 
     for row in rows:
-        grand.count(row)
-        by_branch.setdefault(branch_label(row), Bucket()).count(row)
-        by_operator.setdefault(operator_label(row), Bucket()).count(row)
+        grand.count(row.total)
+        by_branch.setdefault(branch_label(row), Bucket()).count(row.total)
+        by_operator.setdefault(operator_label(row), Bucket()).count(row.total)
         started_at = row.first_response_at
         if started_at is None:
             continue
-        by_month.setdefault(started_at[:7], Bucket()).count(row)
-        by_week.setdefault(iso_week(date.fromisoformat(started_at[:10])), Bucket()).count(row)
-        by_day.setdefault(started_at[:10], Bucket()).count(row)
+        by_month.setdefault(started_at[:7], Bucket()).count(row.total)
+        by_week.setdefault(iso_week(date.fromisoformat(started_at[:10])), Bucket()).count(row.total)
+        by_day.setdefault(started_at[:10], Bucket()).count(row.total)
 
     return Totals(
         sessions=grand.sessions,
