@@ -200,8 +200,7 @@ The body changes; the `description:` does not, so there is nothing to stage.
   source's, and refuses a directory cloned from anything else.
 - `claimed` and `ride-along` are defined in `/update-muthur` § "Arguments";
   a ride-along runs `/update-muthur ride-along`, which skips Step 3a.
-- The claim comes just before the offer rather than after the yes, and a no
-  runs `muthur-sync.sh release`. A claim this session already holds succeeds
-  again.
+- A ride-along's claim is its own Step 1's, rather than a `claim` run before
+  `/update-muthur`; only the new-session shape claims ahead.
 - `scripts/muthur-sync.sh` has no catalog row of its own; the `/update-muthur`
   row carries it (#116 applies the same rule catalog-wide).

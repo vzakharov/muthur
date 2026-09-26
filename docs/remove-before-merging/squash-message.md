@@ -17,10 +17,10 @@ investigates nothing until the operator says yes.
 
 The lock is a muthur-sync-lock-<lastSyncedSha> branch on the adopter's
 origin, pushed with an empty-expect lease so exactly one of two racing
-sessions wins. The agent claims it just before offering, so a sync
-another session holds is never offered, and releases it on a no. A lock
-over a day old is reported with its holder and session. Keyed on the
-trunk's watermark, it is freed by the sync landing.
+sessions wins. It is claimed only after the yes, so an unanswered offer
+holds nothing; a claim that loses says who holds the sync. A lock over a
+day old is reported with its holder and session. Keyed on the trunk's
+watermark, it is freed by the sync landing.
 
 /update-muthur claims that lock and hands its candidate set to /task,
 which can split a long lag across sessions; run as `ride-along` inside
