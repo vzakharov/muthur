@@ -58,6 +58,56 @@ hook leaves in the transcript. It is null wherever the hook named nobody — no
 `gh`, or a token that is a bot's — rather than guessed from the pusher, who is
 the token and so may be the agent's own account.
 
+## Orientation
+
+A row's `orientation` is what the session spent before it first **acted**, and
+each of its `compactions` carries the same measure from that boundary on, plus
+the re-reads the summary forced. They feed the call on whether a fresh session
+or a compact is the cheaper way to shed context. `lib/orientation.py` holds
+the definitions; what follows is what the code cannot say for itself.
+
+- **Acting is a write into the repository or a handover to the operator** — an
+  `Edit`, `Write` or `NotebookEdit` under the directory the session started in
+  and outside its `tmp/`, an `AskUserQuestion` or `ExitPlanMode`, or the
+  session's own `end_turn`. A scratch write is how an agent finds its bearings,
+  not what it does with them. A subagent's `end_turn` only hands its result
+  back to whoever spawned it, but a subagent's edit counts: delegated work is
+  still the session starting work.
+- **The acting response is left out of the spend**, since its output is the
+  edit or the answer itself.
+- **Timestamps order the responses, not file position**, because a subagent's
+  spend sits in another file and its clock is what places it against the main
+  file's.
+- **Each phase stops at the next boundary**, so no response is counted in two.
+  A phase that never acted records its spend with the `ended*` fields null.
+- **A re-read is an exact repeat of a call made before the latest boundary** —
+  a `Read` of the same path and range with no write to it since, or a `Grep`,
+  `Glob` or `Bash` with the same input bar its `description` — counted once per
+  boundary. Only the session's own calls count: a subagent starts with no
+  context the summary could have dropped. The estimate is an estimate because a
+  tool result has no `usage`: its tokens are its share, by characters, of the
+  cache write of the response it arrived in, and its dollars that write plus a
+  cache read on every later response before the next boundary.
+
+**What it misses.** An edit made through `Bash` is not seen as acting, so such a
+session's orientation runs long. Re-reads are a floor: a hole read around — a
+`cat` after a `Read`, a narrower grep — or one that shows as a wrong turn goes
+uncounted, while a repeat that was simply due, a `git status` before each
+commit, counts; `byTool` is what lets `Bash` be read apart. The compaction call
+itself has no `usage` to price. A resume in a fresh container reloads the
+transcript with no boundary to restart at, so what it spends getting its
+bearings lands in the work.
+
+## Telemetry
+
+`hooks/start-telemetry-receiver.sh` starts a receiver on `127.0.0.1:4318` at
+`SessionStart`, and `.claude/settings.json`'s `env` points Claude Code's
+OpenTelemetry log export at it. Each `api_request` event lands in
+`tmp/telemetry/<session-id>.jsonl`, stripped to its numbers and a few named
+fields. **The events are collected and not yet read**: nothing in a row comes
+from them. `NO_PROXY` stays out of the `env` block, because a value there
+replaces the environment's own list rather than extending it.
+
 ## Checking the arithmetic
 
 The table has no published source to check itself against, but the transcript
