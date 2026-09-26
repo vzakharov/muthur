@@ -124,40 +124,6 @@ session is the one that runs with it on and can check it.
 
 `--json` carries the lot.
 
-## Rest of the elephant
-
-The telemetry side, coarse. The first bite leaves events landing on disk; what
-is left is reading them.
-
-- **Check the capture works.** Whether the `env` block in `.claude/settings.json`
-  reaches Claude Code's telemetry at all decides the operator-facing half below:
-  events on disk at this session's start say it does. If it does not, the
-  variables move to the environment's own settings and the block goes.
-- **The events become the row's total.** Read the session's event file, keep the
-  numbers, and join each event to its transcript response by `request_id` against
-  the record's `requestId`. A matched response is priced from its event, so the
-  phases above sum billed dollars rather than estimates; an unmatched event is a
-  call the transcript never saw, and lands in a bucket of its own split by
-  `query_source`. The compaction's own call is the `compact` entry there, so each
-  compaction in the row gains its billed cost, where today the ledger can only
-  record its size.
-- **`prices.json` stays**, as the fallback for a session with no events and as
-  the cross-check on the ones it has — the events' `cost_usd` is Claude Code's
-  own estimate at list price, not an invoice. A row says which source priced it.
-- **`.claude/costs/CLAUDE.md` is corrected.** § "Checking the arithmetic" puts
-  the calls it cannot see at "a fraction of a percent" and calls them background
-  Haiku; this session measured about 8% of spend in Opus calls that read the
-  whole context and write almost nothing. § "What the totals do not cover" loses
-  "Each compact" once the events price it.
-- **The operator is told what to add, and where.** No agent can set an
-  environment's settings. If the `env` block does not carry, `ADOPTING.md` gains
-  a section beside § "Hand the operator a setup script" — the variables, and the
-  same gear-icon route to the environment's settings — and `/detemplate` Step 6,
-  `/spinoff`'s report and the catalog's `.claude/costs/` row point at it. Either
-  way, a session whose ledger runs without events says so once at start, the way
-  `.claude/hooks/gh-shim.sh` reports a missing `gh`, so a missing setting finds
-  itself instead of waiting for someone to read a doc.
-
 ## This bite
 
 Orientation over the transcript as it stands, and the telemetry capture switched
@@ -205,6 +171,40 @@ on for the next session.
    `end_turn` and a scratch write do not count, why timestamps rather than
    order, how the re-read estimate is made, and what the measure misses (below).
    The capture gets a line saying the events are collected and not yet read.
+
+## Rest of the elephant
+
+The telemetry side, coarse. The first bite leaves events landing on disk; what
+is left is reading them.
+
+- **Check the capture works.** Whether the `env` block in `.claude/settings.json`
+  reaches Claude Code's telemetry at all decides the operator-facing half below:
+  events on disk at this session's start say it does. If it does not, the
+  variables move to the environment's own settings and the block goes.
+- **The events become the row's total.** Read the session's event file, keep the
+  numbers, and join each event to its transcript response by `request_id` against
+  the record's `requestId`. A matched response is priced from its event, so the
+  phases above sum billed dollars rather than estimates; an unmatched event is a
+  call the transcript never saw, and lands in a bucket of its own split by
+  `query_source`. The compaction's own call is the `compact` entry there, so each
+  compaction in the row gains its billed cost, where today the ledger can only
+  record its size.
+- **`prices.json` stays**, as the fallback for a session with no events and as
+  the cross-check on the ones it has — the events' `cost_usd` is Claude Code's
+  own estimate at list price, not an invoice. A row says which source priced it.
+- **`.claude/costs/CLAUDE.md` is corrected.** § "Checking the arithmetic" puts
+  the calls it cannot see at "a fraction of a percent" and calls them background
+  Haiku; this session measured about 8% of spend in Opus calls that read the
+  whole context and write almost nothing. § "What the totals do not cover" loses
+  "Each compact" once the events price it.
+- **The operator is told what to add, and where.** No agent can set an
+  environment's settings. If the `env` block does not carry, `ADOPTING.md` gains
+  a section beside § "Hand the operator a setup script" — the variables, and the
+  same gear-icon route to the environment's settings — and `/detemplate` Step 6,
+  `/spinoff`'s report and the catalog's `.claude/costs/` row point at it. Either
+  way, a session whose ledger runs without events says so once at start, the way
+  `.claude/hooks/gh-shim.sh` reports a missing `gh`, so a missing setting finds
+  itself instead of waiting for someone to read a doc.
 
 ## What it does not see
 
