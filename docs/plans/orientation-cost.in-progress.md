@@ -42,46 +42,20 @@ nobody asked for.
   `.claude/settings.json`, so the environment's own settings carry them;
   `ADOPTING.md`, `/detemplate` Step 6, `/spinoff` and the catalog row point at
   the hook's list. Events land in `tmp/telemetry/<session-id>.jsonl`, stripped
-  to numbers and the named fields; nothing reads them yet.
+  to numbers and the named fields.
 - **The capture is checked live.** Claude Code strips `OTEL_*` from what it
   spawns, so the hook reads them from the `claude` process through `/proc`;
   with that, events reached `tmp/telemetry/` in a session whose environment
   set the variables. Every main-thread call there arrived with
   `query_source: "sdk"`.
-
-## This bite
-
-The events become part of the row. What the real file showed shapes it: on 39
-matched responses `prices.json` and the events' `cost_usd` agreed to the cent,
-and the two calls the transcript lacked were Opus `prompt_suggestion` calls.
-So the events' worth is the calls the transcript never sees, and a matched
-response keeps its table price, the event checking it.
-
-- **`lib/billed.py` reads the event file** — `tmp/telemetry/<session-id>.jsonl`,
-  the id being the transcript's stem — into events keyed by `request_id`,
-  parsed with `lib/shape.py`'s readers, a repeated id kept once.
-- **The join runs inside the one scan.** Each priced response whose
-  `requestId` has an event is counted matched; the rest of the events are
-  **unseen** calls, bucketed by `query_source` in the row's new `telemetry`
-  object and added to `total` and `byRate` (an event's `speed: "normal"` is the
-  table's `standard`). An event does not split its cache write by TTL, so an
-  unseen call's write sits under the 5-minute tokens, its dollars being the
-  event's own. `total` stops being `ownTurns + subagents` exactly, the
-  difference being `telemetry.unseen`.
-- **Each compaction gains `billedUsd`**: the `compact`-tagged unseen call
-  nearest its boundary in time. None tagged leaves it null; the
-  position fallback waits for the first real compaction to show it is needed.
-- **The table checks the events.** `telemetry` carries both prices of the
-  matched responses; beyond 1% apart, the row warns.
-- **No event file, no `telemetry`** — null, as on every older row, which
-  parses unchanged. `session_cost.py` takes `--events <path>` for a hand run.
-- **The row's shape moves to `lib/rows.py`** (`SessionCost`,
-  `parse_session_cost`), keeping `lib/pricing.py` under ~450 lines.
-- **`.claude/costs/CLAUDE.md` is corrected**: § "Telemetry" says what reads the
-  events and what stripping `OTEL_*` means for the hook; § "Checking the
-  arithmetic" loses "background Haiku … a fraction of a percent" for what the
-  events show; § "What the totals do not cover" loses "Each compact" where
-  events exist.
+- **The events are in the row** (`lib/billed.py`, joined inside the one scan
+  by request id). On a live session the table and the events priced all 45
+  matched responses alike, so a matched response keeps its table price and the
+  row warns past 1% drift; the calls no response matches — Opus
+  `prompt_suggestion` calls there — go into `total`, `byRate` and
+  `telemetry.unseen` by `query_source`, and a compaction's `billedUsd` is the
+  `compact` call nearest its boundary. No event file leaves `telemetry` null.
+  The row's shape moved into `lib/rows.py`.
 
 ## Rest of the elephant
 
@@ -92,12 +66,10 @@ response keeps its table price, the event checking it.
 
 ## What the events are still to cover
 
-- **The compaction call itself.** The transcript records it without `usage`,
-  so the row records its size and not its price. Its size does not bound its
-  price either: the one compaction measured, of a 230k-token context with a
-  warm cache, cost about $0.22 by Claude Code's own counter, of which reading
-  the context was $0.05 and the rest was output — the summary and the thinking
-  behind it.
+- **A compaction seen live.** `billedUsd` rests on Claude Code's code tagging
+  the call `compact`; no event file has held one yet. The one compaction
+  measured, of a 230k-token context with a warm cache, cost about $0.22 by
+  Claude Code's own counter, most of it output.
 - **Events emitted after the last `Stop`.** The row is written at `Stop`, and
   the exporter flushes once a second, so the tail of a session's last turn can
   miss its row.
@@ -107,8 +79,11 @@ response keeps its table price, the event checking it.
 - **No second walk for the join.** The scan already keeps each response's
   `requestId`; matching events to responses reads the event file and that list,
   never the transcript again.
-- **Pricing from an event reuses `Tally`**: a matched response's tally takes
-  the event's `cost_usd` in place of `cost_of`, so the phases and totals sum it
-  without knowing which source priced it.
+- **An unseen call is a `Tally`**, the event's `cost_usd` in it, so `total`,
+  `byRate` and the `unseen` buckets sum it with the `add` every other tally
+  uses.
+- **The row's shape has one home**, `lib/rows.py`, beside the code that writes
+  and reads it; `lib/billed.py` imports nothing from `lib/pricing.py`, so the
+  two cannot cycle.
 - **The receiver stays apart** from the pricing code: they share only the
   field names it writes and the join reads.
