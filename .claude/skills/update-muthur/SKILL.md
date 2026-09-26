@@ -80,7 +80,7 @@ first sync overwrites the only other trace of the birth point.
 
 **An empty array means no ancestors; a missing one means nobody wrote them
 down.** The root ships `[]`, which is complete. A watermark filled in by hand
-from `ADOPTING.md` has no `lineage` at all, and that gap is not recoverable from
+from `docs/adopting/sync.md` has no `lineage` at all, and that gap is not recoverable from
 anything else in the file — so a partial array, its first entry naming something
 other than `repo`, is valid rather than malformed.
 
