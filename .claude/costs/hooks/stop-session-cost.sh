@@ -119,14 +119,19 @@ commit_row() {
   # The turn's spend is measured from the row as last committed, not as last
   # written: a hand run between turns rewrites the file too. A row HEAD lacks
   # is a session's first, and its subject says so, telling new sessions from
-  # continued ones in the log.
+  # continued ones in the log, and names the orientation within it — settled
+  # by the time the first turn ends.
   now="$(jq -r '.total.costUsd' "$staged")"
   if committed="$(repo show "HEAD:$path" 2>/dev/null)"; then
     was="$(jq -r '.total.costUsd // 0' <<<"$committed" 2>/dev/null)"
     subject="$(awk -v was="${was:-0}" -v now="$now" \
       'BEGIN { printf "chore: session cost +%.2f USD, total %.2f USD", now - was, now }')"
   else
-    subject="$(awk -v now="$now" 'BEGIN { printf "chore: session cost (new) %.2f USD", now }')"
+    oriented="$(jq -r '.orientation.spend.costUsd // empty' "$staged")"
+    subject="$(awk -v now="$now" -v oriented="$oriented" 'BEGIN {
+      printf "chore: session cost (new) %.2f USD", now
+      if (oriented != "") printf ", incl. %.2f USD orientation", oriented
+    }')"
   fi
 
   # `commit-tree` signs only when told to, where `commit` reads the config.
