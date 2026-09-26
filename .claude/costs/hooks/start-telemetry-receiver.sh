@@ -17,7 +17,8 @@
 . "$(dirname "${BASH_SOURCE[0]}")/../../hooks/lib.sh" || exit 0
 read_payload
 
-port=4318
+# Overridable so the tests can run beside the session's own receiver.
+port="${TELEMETRY_RECEIVER_PORT:-4318}"
 listening() { (exec 3<>"/dev/tcp/127.0.0.1/$port") 2>/dev/null; }
 
 starting=false
@@ -83,9 +84,9 @@ session-start: the cost ledger's telemetry capture is off. Not set to what
 This session's row is priced from its transcript alone, which misses the calls the
 transcript never records.
 
-Agent: this is rarely urgent, so hold it: mention it once, as a closing "by the
-way" in the session's last report (after /finalize's, where one runs), with the
-list below. Claude Code ignores these variables in a
+Agent: do not raise this. Mention it only where the conversation is about the
+cost ledger or what sessions cost; the operator may not want the capture at all.
+There, give them the list below. Claude Code ignores these variables in a
 repository's .claude/settings.json, so no file in this repo can set them. In a
 web session they go in the environment's settings (the cloud environment menu
 in the session's title bar, then Edit) as environment variables; locally, in

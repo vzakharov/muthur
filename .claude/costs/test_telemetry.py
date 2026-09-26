@@ -170,18 +170,19 @@ class WhatTheReceiverKeeps(unittest.TestCase):
 
 
 HOOK = Path(__file__).resolve().parent / "hooks" / "start-telemetry-receiver.sh"
-EXPORT = {
-    "CLAUDE_CODE_ENABLE_TELEMETRY": "1",
-    "OTEL_LOGS_EXPORTER": "otlp",
-    "OTEL_EXPORTER_OTLP_PROTOCOL": "http/json",
-    "OTEL_EXPORTER_OTLP_ENDPOINT": "http://127.0.0.1:4318",
-}
+
+
+def free_port() -> int:
+    with socket.socket() as probe:
+        probe.bind(("127.0.0.1", 0))
+        return int(probe.getsockname()[1])
 
 
 class WhenTheHookStartsTheReceiver(unittest.TestCase):
-    """Over a `python3` stub that records its arguments, so no test binds the
-    receiver's port, and under a shell named `claude` that holds the exporter's
-    variables and strips `OTEL_*` from the hook, as Claude Code does."""
+    """Over a `python3` stub that records its arguments, on a port of the
+    test's own so the session's receiver on 4318 is no obstacle, and under a
+    shell named `claude` that holds the exporter's variables and strips `OTEL_*`
+    from the hook, as Claude Code does."""
 
     def setUp(self) -> None:
         base = tempfile.TemporaryDirectory()
@@ -197,6 +198,13 @@ class WhenTheHookStartsTheReceiver(unittest.TestCase):
         self.claude = stubs / "claude"
         self.claude.symlink_to(shutil.which("bash") or "/bin/bash")
         self.path = f"{stubs}:{os.environ['PATH']}"
+        self.port = free_port()
+        self.export = {
+            "CLAUDE_CODE_ENABLE_TELEMETRY": "1",
+            "OTEL_LOGS_EXPORTER": "otlp",
+            "OTEL_EXPORTER_OTLP_PROTOCOL": "http/json",
+            "OTEL_EXPORTER_OTLP_ENDPOINT": f"http://127.0.0.1:{self.port}",
+        }
 
     def run_hook(self, event: str = "SessionStart", **env: str) -> str:
         inherited = {
@@ -213,14 +221,20 @@ class WhenTheHookStartsTheReceiver(unittest.TestCase):
             capture_output=True,
             text=True,
             check=True,
-            env={**inherited, "PATH": self.path, "CLAUDE_PROJECT_DIR": str(self.root), **env},
+            env={
+                **inherited,
+                "PATH": self.path,
+                "CLAUDE_PROJECT_DIR": str(self.root),
+                "TELEMETRY_RECEIVER_PORT": str(self.port),
+                **env,
+            },
         )
         return ran.stdout
 
     def test_names_what_to_set_and_starts_nothing_when_the_variables_are_unset(self) -> None:
-        notice = self.run_hook(**{**EXPORT, "OTEL_EXPORTER_OTLP_ENDPOINT": "http://collector:4318"})
+        notice = self.run_hook(**{**self.export, "OTEL_EXPORTER_OTLP_ENDPOINT": "http://collector:4318"})
         self.assertIn("listens for: OTEL_EXPORTER_OTLP_ENDPOINT.", notice)
-        for name, value in EXPORT.items():
+        for name, value in self.export.items():
             self.assertIn(f"    {name}={value}\n", notice)
         self.assert_nothing_started()
 
@@ -229,15 +243,12 @@ class WhenTheHookStartsTheReceiver(unittest.TestCase):
         self.assertFalse(self.started.exists())
 
     def assert_started(self, event: str) -> None:
-        with socket.socket() as probe:
-            if probe.connect_ex(("127.0.0.1", 4318)) == 0:
-                self.skipTest("something already listens on 4318, so the hook starts nothing")
-        self.assertEqual(self.run_hook(event, **EXPORT), "")
+        self.assertEqual(self.run_hook(event, **self.export), "")
         for _ in range(50):
             if self.started.exists():
                 break
             time.sleep(0.1)
-        self.assertIn(f"--out {self.root}/tmp/telemetry --port 4318", self.started.read_text())
+        self.assertIn(f"--out {self.root}/tmp/telemetry --port {self.port}", self.started.read_text())
 
     def test_starts_the_receiver_into_tmp_when_they_are_set(self) -> None:
         self.assert_started("SessionStart")
