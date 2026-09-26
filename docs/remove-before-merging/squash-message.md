@@ -30,7 +30,9 @@ session without events is priced as before. Claude Code ignores its
 exporter variables in a repository's settings.json and strips them from
 the processes it spawns, so the environment's settings carry them and
 the start hook reads them from the claude process, listing what is
-unset; it reruns after every tool call to restart a missing receiver.
+unset for the agent to raise only where talk turns to costs; an adopter
+taking the ledger reads docs/adopting/costs.md. The hook reruns after
+every tool call to restart a missing receiver.
 
 report.py averages orientation and compactions across the rows that
 carry them, by what ended the phase and by opening command, and gives
