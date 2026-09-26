@@ -10,8 +10,7 @@
 
 You are here because the adopting repo takes `/update-muthur` (G0) and will pull
 later changes forward — [`ADOPTING.md`](../../ADOPTING.md)'s shared tail sent
-you. An adopter taking a one-time snapshot deletes the skill instead and never
-needs this file.
+you. An adopter taking a one-time snapshot deletes the skill instead.
 
 `/update-muthur` is a stub for want of a watermark, not a procedure, so
 hydrating it is `.claude/skills/update-muthur/watermark.json` — the file the

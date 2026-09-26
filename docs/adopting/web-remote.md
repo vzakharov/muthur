@@ -11,7 +11,7 @@
 
 You are here because sessions on the adopting repo run on Claude Code web/remote
 — [`ADOPTING.md`](../../ADOPTING.md) Step 3 sent you, before Step 4 copies
-anything. Laptop-only adopters never need this file.
+anything.
 
 ## Settle G4 before copying anything
 

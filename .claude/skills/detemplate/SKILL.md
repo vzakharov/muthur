@@ -176,9 +176,8 @@ Ordering is load-bearing at exactly one point, and it is the first step:
    catalog's presence. Sweep it first and the G6 prune is enforced by the vet run
    instead of remembered.
 2. **The rest of the `never` rows**: `README.md` — replaced with the project's,
-   not merely deleted — `ADOPTING.md`, and **`docs/adopting/`** with it. That
-   directory is `ADOPTING.md`'s chapters and their asset, and a literal
-   row-by-row sweep that misses it strands them as orphans.
+   not merely deleted — `ADOPTING.md`, and **`docs/adopting/`** with it: its
+   chapters, which a sweep of the one file strands as orphans.
 3. **Prune the groups**, applying the reverse-closure edits the plan recorded.
 4. **Fill `CLAUDE.md` § "About this project"'s stub** from the brief — which
    retires the standing notice in § "Recognizing an undetemplated fork" along

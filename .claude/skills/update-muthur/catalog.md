@@ -346,7 +346,7 @@ someone else's work in progress, not the product.
 | --- | --- | --- | --- | --- |
 | `README.md` | What this repo is, and the two ways to acquire it. Yours already exists. | — | — | never |
 | `ADOPTING.md` | The acquisition procedure. Read once, over the network, from the clone. | — | — | never |
-| `docs/adopting/` | `ADOPTING.md`'s chapters — the ones only some adopters read — and the screenshot locating the environment setup script. Goes when that file does, or it is left an orphan. | — | — | never |
+| `docs/adopting/` | `ADOPTING.md`'s chapters, each read only by some adopters, and the screenshot locating the environment setup script. Goes when that file does, or it is left an orphan. | — | — | never |
 | `.claude/skills/update-muthur/catalog.md` | This file, and the only row naming something a skill directory would otherwise carry in: taking `/update-muthur` brings it along, which must not happen. Read it from a fresh clone on every sync instead, so it cannot go stale downstream — both copy steps name it as a carve-out. | — | — | never |
 | `/detemplate` | Turn a fresh template fork into a project: prune the `never` rows and unused groups, hydrate what stays, hand back the setup script. Routes through `/plan` and deletes itself last. | `gh`, `$GH_TOKEN`; a whole-tree fork, not a subset copy | `/plan` (G2); `/spinoff`, `/update-muthur` (G0) | never |
 | `scripts/check-muthur.sh` | The one vet line behind which everything that tests only this repo's own machinery sits, so a sync offers it as a single decision. Keyed on this catalog's presence, so it exits 0 the moment it is downstream. | `bash` | `scripts/check-repo-identity.sh`, `scripts/test_*.py` (both never) | never |
