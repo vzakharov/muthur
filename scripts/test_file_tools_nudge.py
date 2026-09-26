@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Drives `.claude/hooks/file-tools-nudge.py` as the harness does — a payload on
 stdin — and reads what it prints. What it protects is which commands count as a
-shell read, edit or write of a file, and the refuse-once-then-allow contract.
+shell edit or write of a file, and the refuse-once-then-allow contract.
 
 Run by path (`python3 scripts/test_file_tools_nudge.py`), as
 `scripts/check-muthur.sh` does.
@@ -18,6 +18,7 @@ from pathlib import Path
 from typing import Optional
 
 HOOK = Path(__file__).resolve().parent.parent / ".claude" / "hooks" / "file-tools-nudge.py"
+EDIT = "sed -i 's/a/b/' README.md"
 
 
 class NudgeTestCase(unittest.TestCase):
@@ -58,28 +59,15 @@ class WhatIsRefused(NudgeTestCase):
         assert reason is not None
         self.assertIn(tool, reason, command)
 
-    def test_reads(self) -> None:
-        for command in (
-            "cat README.md",
-            "cat -n src/app.py",
-            "head -n 40 CLAUDE.md",
-            "tail -20 log.txt",
-            "sed -n '10,20p' notes.md",
-            "cd sub && cat file.txt",
-            "git status; less CHANGELOG.md",
-            "cat < input.txt",
-            "echo $(cat VERSION)",
-            "timeout 5 head big.log",
-        ):
-            with self.subTest(command=command):
-                self.assert_refused(command, "`Read`")
-
     def test_edits(self) -> None:
         for command in (
             "sed -i 's/foo/bar/' a.txt",
             "sed -i.bak -e 's/a/b/' a.txt",
             "sed --in-place 's/a/b/' a.txt",
             "sed -Ei 's/a+/b/' a.txt",
+            "sed -e 's/a/b/' -i a.txt",
+            "cd sub && sed -i 's/a/b/' a.txt",
+            "timeout 5 sed -i 's/a/b/' a.txt",
             "perl -pi -e 's/a/b/' a.txt",
             "awk -i inplace '{print}' a.txt",
             "grep -rl foo . | xargs sed -i 's/foo/bar/g'",
@@ -102,6 +90,20 @@ class WhatIsRefused(NudgeTestCase):
 
 
 class WhatIsLeftAlone(NudgeTestCase):
+    def test_reads(self) -> None:
+        for command in (
+            "cat README.md",
+            "head -n 40 CLAUDE.md",
+            "tail -20 log.txt",
+            "sed -n '10,20p' notes.md",
+            "sed 's/i/x/' notes.md",
+            "cat < input.txt",
+            "echo $(cat VERSION)",
+            "perl -e 'print' -i",
+        ):
+            with self.subTest(command=command):
+                self.assertIsNone(self.reason(command))
+
     def test_commands_not_touching_a_file_through_the_shell(self) -> None:
         for command in (
             "git log --oneline | head -5",
@@ -122,7 +124,7 @@ class WhatIsLeftAlone(NudgeTestCase):
                 self.assertIsNone(self.reason(command))
 
     def test_an_untokenisable_command_is_allowed(self) -> None:
-        self.assertIsNone(self.reason("cat 'unterminated"))
+        self.assertIsNone(self.reason("sed -i 'unterminated"))
 
     def test_another_tool_is_ignored(self) -> None:
         payload = {"session_id": "sess", "tool_name": "Read", "tool_input": {"command": "cat a"}}
@@ -136,27 +138,27 @@ class WhatIsLeftAlone(NudgeTestCase):
 
 class RefusedOnceThenAllowed(NudgeTestCase):
     def test_the_identical_command_goes_through_on_retry(self) -> None:
-        self.assertIsNotNone(self.reason("cat README.md"))
-        self.assertIsNone(self.reason("cat README.md"))
-        self.assertIsNone(self.reason("cat README.md"))
+        self.assertIsNotNone(self.reason(EDIT))
+        self.assertIsNone(self.reason(EDIT))
+        self.assertIsNone(self.reason(EDIT))
 
     def test_a_different_command_is_refused_afresh(self) -> None:
-        self.reason("cat README.md")
-        self.assertIsNotNone(self.reason("cat CLAUDE.md"))
+        self.reason(EDIT)
+        self.assertIsNotNone(self.reason("sed -i 's/a/b/' CLAUDE.md"))
 
     def test_sessions_are_kept_apart(self) -> None:
-        self.reason("cat README.md", session="one")
-        self.assertIsNotNone(self.reason("cat README.md", session="two"))
+        self.reason(EDIT, session="one")
+        self.assertIsNotNone(self.reason(EDIT, session="two"))
 
     def test_the_reason_says_how_to_go_through(self) -> None:
-        reason = self.reason("cat README.md")
+        reason = self.reason(EDIT)
         assert reason is not None
         self.assertIn("run the identical command again", reason)
-        self.assertIn("with `cat`", reason)
+        self.assertIn("with `sed -i`", reason)
 
     def test_an_unrecordable_refusal_is_not_made(self) -> None:
         (self.root / "tmp").write_text("a file where the state directory goes")
-        self.assertIsNone(self.reason("cat README.md"))
+        self.assertIsNone(self.reason(EDIT))
 
 
 if __name__ == "__main__":

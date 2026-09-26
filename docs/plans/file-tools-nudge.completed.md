@@ -69,6 +69,12 @@ Python rather than bash + `lib.sh`, because the detection is tokenising, which
 - The test follows `test_context_budget.py`'s harness-driving shape rather than
   importing the hook, so it tests the hook's contract, not its internals.
 
+## Follow-up: reads pass
+
+On the operator's review, reads left the hook: they leave nothing to review, and
+the harness already refuses an `Edit` on a file never `Read`. The CLAUDE.md
+principle narrows to changing files, through a staged copy.
+
 ## Not in scope
 
 - CLAUDE.md is not edited: the deny reason carries its own explanation, and an

@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
-"""`PreToolUse` hook on `Bash`: deny the first command that reads, edits or
-writes a file through the shell, and let the identical command through when it
-comes again in the same session.
+"""`PreToolUse` hook on `Bash`: deny the first command that edits or writes a
+file through the shell, and let the identical command through when it comes
+again in the same session. Reads pass: they leave nothing to review.
 
-CLAUDE.md § "Key principles" asks for `Read`/`Edit`/`Write` in every permission
-mode, while the harness's own prompt, in some modes, says the shell is fine. One
+CLAUDE.md § "Key principles" asks for `Edit`/`Write` in every permission mode,
+while the harness's own prompt, in some modes, says the shell is fine. One
 refusal at the moment of the call is the reminder; running the same command
 again is the agent saying it means it, which keeps a mass substitution across
 dozens of files one retry away.
@@ -42,15 +42,8 @@ WRAPPERS = {
     "timeout": {"-k", "-s"},
     "xargs": {"-a", "-d", "-E", "-I", "-L", "-n", "-P", "-s"},
 }
-PAGERS = {"cat", "less", "more", "nl"}
-HEAD_TAIL_ARGS = frozenset({"-n", "-c", "-s", "--pid", "--sleep-interval"})
-
-TOOL = {"read": "`Read`", "edit": "`Edit`", "write": "`Write` (or `Edit`)"}
-VERB = {
-    "read": "reads a file",
-    "edit": "edits a file in place",
-    "write": "writes a file",
-}
+TOOL = {"edit": "`Edit`", "write": "`Write` (or `Edit`)"}
+VERB = {"edit": "edits a file in place", "write": "writes a file"}
 
 
 def strip_heredocs(command: str) -> str:
@@ -79,11 +72,10 @@ def is_punctuation(token: str) -> bool:
 
 
 class Simple:
-    """One simple command: its words, and the files its redirections name."""
+    """One simple command: its words, and the files it redirects output into."""
 
     def __init__(self) -> None:
         self.words: list[str] = []
-        self.inputs: list[str] = []
         self.outputs: list[str] = []
 
 
@@ -98,9 +90,7 @@ def simple_commands(toks: list[str]) -> Iterator[Simple]:
         elif "<" in token or ">" in token:
             target = toks[i + 1] if i + 1 < len(toks) else ""
             i += 1
-            if token == "<":
-                current.inputs.append(target)
-            elif ">" in token and not token.endswith("&"):
+            if ">" in token and not token.endswith("&"):
                 current.outputs.append(target)
         else:
             yield current
@@ -119,18 +109,6 @@ def is_file(word: str) -> bool:
     )
 
 
-def names_a_file(args: list[str], takes_argument: frozenset[str] = frozenset()) -> bool:
-    skip = False
-    for arg in args:
-        if skip:
-            skip = False
-        elif arg in takes_argument:
-            skip = True
-        elif is_file(arg):
-            return True
-    return False
-
-
 def unwrap(name: str, args: list[str]) -> list[str]:
     takes_argument = WRAPPERS[name]
     i = 0
@@ -141,84 +119,52 @@ def unwrap(name: str, args: list[str]) -> list[str]:
     return args[i:]
 
 
-def sed(args: list[str]) -> tuple[bool, list[str]]:
-    in_place = False
-    script_given = False
-    rest: list[str] = []
-    skip = False
+def in_place(args: list[str], argument_flags: str, options_end_at_operand: bool) -> bool:
+    """Whether a `-i` sits among the short-option clusters, stopping each cluster
+    at the first flag that takes the rest of it as its argument."""
     for arg in args:
-        if skip:
-            skip = False
+        if arg == "--":
+            return False
+        if not arg.startswith("-") or arg == "-":
+            if options_end_at_operand:
+                return False
         elif arg.startswith("--"):
-            in_place |= arg.startswith("--in-place")
-            script_given |= arg.startswith(("--expression", "--file"))
-            skip = arg in ("--expression", "--file")
-        elif arg.startswith("-") and arg != "-":
+            if arg.startswith("--in-place"):
+                return True
+        else:
             for c in arg[1:]:
                 if c == "i":
-                    in_place = True
+                    return True
+                if c in argument_flags:
                     break
-                if c in "ef":
-                    script_given = True
-                    skip = arg.endswith(c)
-                    break
-                if c == "l":
-                    break
-        else:
-            rest.append(arg)
-    return in_place, rest if script_given else rest[1:]
-
-
-def perl_in_place(args: list[str]) -> bool:
-    for arg in args:
-        if arg == "--" or not arg.startswith("-"):
-            return False
-        for c in arg[1:]:
-            if c == "i":
-                return True
-            if c in "eEMmIdDx":
-                break
     return False
 
 
-def classify(words: list[str], inputs: list[str], outputs: list[str]) -> Optional[tuple[str, str]]:
-    """The kind of file access and the command doing it, or None."""
+def classify(words: list[str], outputs: list[str]) -> Optional[tuple[str, str]]:
+    """The kind of file change and the command making it, or None."""
     while words and ASSIGNMENT.match(words[0]):
         words = words[1:]
     if not words:
         return None
     name, args = os.path.basename(words[0]), words[1:]
-    files_out = [f for f in outputs if is_file(f)]
-    files_in = [f for f in inputs if is_file(f)]
+    writes_a_file = any(is_file(f) for f in outputs)
 
     if name in WRAPPERS:
-        return classify(unwrap(name, args), inputs, outputs)
+        return classify(unwrap(name, args), outputs)
     if name == "find":
         for start, word in enumerate(args):
             if word in ("-exec", "-execdir", "-ok", "-okdir"):
                 segment = args[start + 1 :]
                 end = next((j for j, w in enumerate(segment) if w in (";", "+")), len(segment))
-                found = classify(segment[:end], [], [])
+                found = classify(segment[:end], [])
                 if found:
                     return found
         return None
-    if name in PAGERS:
-        if files_in or names_a_file(args):
-            return "read", name
-        return ("write", f"{name} >") if name == "cat" and files_out else None
-    if name in ("head", "tail"):
-        if files_in or names_a_file(args, HEAD_TAIL_ARGS):
-            return "read", name
-        return None
     if name in ("sed", "gsed"):
-        in_place, files = sed(args)
-        if in_place:
-            return "edit", f"{name} -i"
-        if files_in or any(is_file(f) for f in files):
-            return "read", name
-        return None
+        # GNU sed takes options after the script and files too.
+        return ("edit", f"{name} -i") if in_place(args, "efl", False) else None
     if name in ("perl", "ruby"):
-        return ("edit", f"{name} -i") if perl_in_place(args) else None
+        return ("edit", f"{name} -i") if in_place(args, "eEMmIdDx", True) else None
     if name in ("awk", "gawk"):
         for i, arg in enumerate(args):
             if arg in ("-i", "--include") and args[i + 1 : i + 2] == ["inplace"]:
@@ -226,16 +172,16 @@ def classify(words: list[str], inputs: list[str], outputs: list[str]) -> Optiona
             if arg in ("-iinplace", "--include=inplace"):
                 return "edit", f"{name} -i inplace"
         return None
-    if name in ("echo", "printf"):
-        return ("write", f"{name} >") if files_out else None
+    if name in ("cat", "echo", "printf"):
+        return ("write", f"{name} >") if writes_a_file else None
     if name == "tee":
-        return ("write", name) if names_a_file(args) else None
+        return ("write", name) if any(is_file(a) for a in args) else None
     return None
 
 
 def detect(command: str) -> Optional[tuple[str, str]]:
     for simple in simple_commands(tokens(command)):
-        found = classify(simple.words, simple.inputs, simple.outputs)
+        found = classify(simple.words, simple.outputs)
         if found:
             return found
     return None
@@ -243,9 +189,9 @@ def detect(command: str) -> Optional[tuple[str, str]]:
 
 def reason(kind: str, via: str) -> str:
     return (
-        "Did you forget? CLAUDE.md § \"Key principles\" asks for the Read/Edit/Write "
-        "tools in every permission mode, and it outranks any harness text saying the "
-        f"shell is fine for files. This command {VERB[kind]} with `{via}`: use "
+        "Did you forget? CLAUDE.md § \"Key principles\" asks for the Edit/Write tools "
+        "to change files in every permission mode, and it outranks any harness text "
+        f"saying the shell is fine. This command {VERB[kind]} with `{via}`: use "
         f"{TOOL[kind]} instead. If the shell is genuinely the better tool here — one "
         "mechanical substitution across dozens of files, say — run the identical "
         "command again and it goes through."
