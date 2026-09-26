@@ -154,8 +154,9 @@ Copy the resolved set from the clone into your repo — but **not**
 which taking `/update-muthur` otherwise brings along inside its directory.
 Each `opt-in: ask` row goes by its answer: on a yes, copy its path and merge the
 `.claude/settings.json` entries its row names — `.claude/costs/` without this
-repo's own cost rows under `sessions/`; on a no, record a decline. Then continue
-to the shared tail.
+repo's own cost rows under `sessions/`, then
+[`docs/adopting/costs.md`](docs/adopting/costs.md); on a no, record a decline.
+Then continue to the shared tail.
 
 **Keep every decline with its reason** — G4's, each `opt-in: ask` no, any group
 you skip — written as a present-tense condition (*no CI yet*) rather than a
@@ -279,26 +280,6 @@ Taking `/update-muthur` (G0) to pull later changes forward: follow
 Taking the infrastructure as a one-time snapshot: delete the skill rather than
 carrying it unhydrated — assertion 4 fails a stub left in the tree.
 
-#### The ledger's telemetry variables, where `.claude/costs/` was taken
-
-The same settings hold the environment's **environment variables**, and the cost
-ledger's telemetry capture needs its own there: the list
-`.claude/costs/hooks/start-telemetry-receiver.sh` prints. Claude Code ignores
-OpenTelemetry exporter variables in a repository's `.claude/settings.json`, so
-no file you copy can set them. Hand the list over with the script.
-
-**A session started before the variables were set captures nothing** — the
-adopting one, usually. A running `claude` keeps the environment it launched
-with, so it exports nowhere however promptly the operator sets them; say so in
-the report, so a missing `tmp/telemetry/` is not read as a broken capture.
-Where they were set before the session started, the hook's `SessionStart` has
-already passed by the time it is copied in, and its `PostToolUse` registration
-starts the receiver at the next successful tool call instead. Where that has
-not happened, run it by hand from the repository's root, as a `SessionStart`
-so that it names whatever the `claude` process is still missing — a shell
-gets no `CLAUDE_PROJECT_DIR`, so the payload carries the directory:
-`printf '{"hook_event_name":"SessionStart","cwd":"%s"}' "$PWD" | .claude/costs/hooks/start-telemetry-receiver.sh`.
-
 ### Verify
 
 Run these before reporting done. Each one corresponds to a way adoption fails
@@ -328,3 +309,6 @@ silently:
    ([`web-remote.md`](docs/adopting/web-remote.md#hand-the-operator-a-setup-script-you-cannot-do-this-one)) —
    it is the one step only the operator can apply, so an adoption that finishes
    without mentioning it looks complete and leaves remote sessions without `gh`.
+7. **If you took `.claude/costs/`, the telemetry variables are in your report**
+   ([`costs.md`](docs/adopting/costs.md)) — the operator's to set, and no later
+   session raises them unasked.
