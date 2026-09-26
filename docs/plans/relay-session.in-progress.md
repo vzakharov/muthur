@@ -74,6 +74,6 @@ The first relay hands off this plan's own review, before any of it is built: the
 
 ## Checklist
 
-- [ ] Write `.claude/skills/relay/SKILL.md`, both ends.
-- [ ] Offer `/relay` in the context budget hook's warning; update its test if it pins the text.
-- [ ] Add the catalog row; `./scripts/vet.sh` passes.
+- [x] Write `.claude/skills/relay/SKILL.md`, both ends.
+- [x] Offer `/relay` in the context budget hook's warning; update its test if it pins the text.
+- [x] Add the catalog row; `./scripts/vet.sh` passes.
