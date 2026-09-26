@@ -160,12 +160,12 @@ chain is what makes it load-bearing.
 Two words, order-free, each changing one step. Bare, the sync claims its own
 lock and is a task of its own.
 
-- **`claimed`** — another session holds the lock for this sync on this one's
-  behalf, so Step 1 skips the claim. The prompt a session spawned from the offer
-  gets.
+- **`claimed`** — the session that made the offer holds the lock on this one's
+  behalf, so Step 1 skips the claim. A session spawned from the offer starts
+  with it.
 - **`ride-along`** — the sync is part of a task this session is already running,
-  not a task of its own, so Step 3a is skipped and Step 8's tail is that task's.
-  What a ride-along offer runs.
+  so Step 3a is skipped and Step 8's tail is that task's. A ride-along offer
+  runs it.
 
 ## Procedure
 
