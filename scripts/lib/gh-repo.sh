@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Proxy-aware "owner/repo" resolution for the scripts that call `gh`
-# (scripts/check-merge.sh, scripts/ci-watch-tick.sh).
+# (scripts/check-merge.sh, scripts/ci-watch-tick.sh, scripts/muthur-sync.sh).
 #
 # This file is meant to be SOURCED, not executed — it defines a function and
 # does not set shell options (the sourcing script owns `set -euo pipefail`).

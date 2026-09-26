@@ -1,0 +1,58 @@
+{
+  "sessionId": "4c5da48c-0bf1-5cd3-b5e4-c520eb4439de",
+  "branch": "claude/muthur-self-update-0izdlm",
+  "cwd": "/home/user/muthur",
+  "openingPrompt": "думаю сделать так, чтобы адоптеры сами обновляли muthur, примерно по такой схеме: 1- в session start смотрим, насколько muthur уехал 2- если на один-два коммита…",
+  "prs": [
+    114
+  ],
+  "url": "https://claude.ai/code/session_01YLfBm3fmvhhvPvT2qafeDX",
+  "operator": "vzakharov",
+  "firstResponseAt": "2026-09-25T23:13:22.164Z",
+  "lastResponseAt": "2026-09-26T00:00:02.544Z",
+  "pricesAsOf": "2026-09-23",
+  "claudeCodeTotalUsd": 0.6721640000000001,
+  "total": {
+    "inputTokens": 56,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 131904,
+    "cacheReadTokens": 3702585,
+    "outputTokens": 38795,
+    "thinkingTokens": 22258,
+    "responses": 28,
+    "costUsd": 2.571873
+  },
+  "ownTurns": {
+    "inputTokens": 56,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 131904,
+    "cacheReadTokens": 3702585,
+    "outputTokens": 38795,
+    "thinkingTokens": 22258,
+    "responses": 28,
+    "costUsd": 2.571873
+  },
+  "subagents": {
+    "inputTokens": 0,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 0,
+    "cacheReadTokens": 0,
+    "outputTokens": 0,
+    "thinkingTokens": 0,
+    "responses": 0,
+    "costUsd": 0.0
+  },
+  "byRate": {
+    "claude-opus-5-5/standard": {
+      "inputTokens": 56,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 131904,
+      "cacheReadTokens": 3702585,
+      "outputTokens": 38795,
+      "thinkingTokens": 22258,
+      "responses": 28,
+      "costUsd": 2.571873
+    }
+  },
+  "warnings": []
+}

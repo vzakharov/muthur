@@ -24,6 +24,16 @@
             "command": "$CLAUDE_PROJECT_DIR/.claude/costs/hooks/start-telemetry-receiver.sh"
           }
         ]
+      },
+      {
+        "matcher": "startup",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "$CLAUDE_PROJECT_DIR/scripts/muthur-sync.sh nudge",
+            "timeout": 30
+          }
+        ]
       }
     ],
     "UserPromptSubmit": [

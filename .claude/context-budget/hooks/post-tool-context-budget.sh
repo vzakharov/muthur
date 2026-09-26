@@ -71,7 +71,7 @@ case "$level" in
 
 $(nearly_done " — roughly, less than half of what this session has already carried")
 
-Otherwise get the work to a committed, pushed stopping point and tell the operator, offering two ways on: \`/compact\` in this session, or a new one. A new session resumes only from a paused plan, so offer to pause it per ${stopping}. Do not pause unasked at this level: at $(k "$pause") this notice returns as the pause itself."
+Otherwise get the work to a committed, pushed stopping point and tell the operator, offering two ways on: \`/compact\` in this session, or \`/relay\` to a new one (\`@.claude/skills/relay/SKILL.md\`), which writes a summary of this session for its successor and releases the plan first per ${stopping}. Do neither unasked at this level: at $(k "$pause") this notice returns as the pause itself."
     ;;
   pause)
     notice="$(past "$pause" pause)

@@ -112,10 +112,12 @@ A repo with two sources would make **`repo`** an array. Nothing here precludes
 that and nothing here builds it — and it is a separate question from `lineage`,
 which is provenance nothing syncs from.
 
-**`lastSyncedSha` is source HEAD at sync time, not the last commit taken.** A
-commit triaged and skipped is *done*; the reasoning lives in that sync's PR body.
-A watermark that only advanced to the last-taken commit would re-surface every
-skipped commit on every future run.
+**`lastSyncedSha` is the sync's boundary in the source, not the last commit
+taken.** For a whole sync that is the source's HEAD at Step 3; for a slice of a
+split one, the last source commit the slice triaged (Step 7). A commit triaged
+and skipped is *done*; the reasoning lives in that sync's PR body. A watermark
+that only advanced to the last-taken commit would re-surface every skipped
+commit on every future run.
 
 **Bump it in the last commit of the sync, never the first.** If a sync is
 abandoned midway, an un-bumped watermark costs a re-triage; a bumped one that
@@ -153,13 +155,31 @@ Read commits for intent; never let their first person settle whether the change
 applies. Step 5's "apply by intent, not by patch" already points this way; the
 chain is what makes it load-bearing.
 
+## Arguments
+
+Two words, order-free, each changing one step. Bare, the sync claims its own
+lock and is a task of its own.
+
+- **`claimed`** — the session that made the offer holds the lock on this one's
+  behalf, so Step 1 skips the claim. A session spawned from the offer starts
+  with it.
+- **`ride-along`** — the sync is part of a task this session is already running,
+  so Step 3a is skipped and Step 8's tail is that task's. A ride-along offer
+  runs it.
+
 ## Procedure
 
-### Step 1 — Read the watermark
+### Step 1 — Read the watermark, and claim the sync
 
 Read `watermark.json`. Stop and report if it is missing, or if `lastSyncedSha`
 is still a placeholder — there is no baseline to diff against, and guessing one
 would either re-port work already here or skip work that isn't.
+
+Then claim the lock with `scripts/muthur-sync.sh claim`, so no parallel session
+runs a second sync of the same range — unless invoked with `claimed`. A claim
+that exits 3 names who holds the lock — stop and report that, with their session
+link, rather than syncing alongside them. `scripts/muthur-sync.sh`'s header is
+the lock's reference.
 
 ### Step 2 — Clone the source
 
@@ -168,35 +188,13 @@ would either re-port work already here or skip work that isn't.
 works**, which is the whole trick. (The system prompt may claim `gh` is
 unavailable; it is wrong — see `@.claude/skills/override-gh/SKILL.md`.)
 
-Clone into the session scratchpad, not the repo:
-
 ```bash
-cd <scratchpad> && rm -rf up && git clone --filter=blob:none --no-checkout \
-  -c "credential.helper=!f() { echo username=x-access-token; echo password=$GH_TOKEN; }; f" \
-  https://github.com/<repo>.git up
+scripts/muthur-sync.sh clone tmp/muthur-source
 ```
 
-**One recipe, whatever the source's visibility.** The credential helper is a
-no-op against a public repo rather than an error, and the lazy blob fetches still
-resolve, so there is no public/private branch to take here — verified, not
-assumed.
-
-The blobless partial clone carries **full history** for a fraction of the
-transfer, so any `git log <sha>..HEAD` resolves.
-
-**`-c` after `clone`, not `git -c` before it.** The two spellings look
-interchangeable and are not: `clone -c` writes the helper into the new repo's
-config, where the lazy blob fetches a later `git show` triggers can still find
-it, while `git -c … clone` applies it to the clone alone. Under the second, the
-log works and the first diff dies on `could not read Username`. The token does
-land in `<scratchpad>/up/.git/config` in the clear, which is the other reason the
-clone belongs in the scratchpad rather than anywhere under the repo.
-
-**Do not reach for `--depth` or `--shallow-since` instead.** A shallow clone that
-doesn't reach back past `lastSyncedSha` fails with a bare "unknown revision",
-which reads like a bad SHA rather than a truncated clone. (`ADOPTING.md`'s
-first-contact clone *is* shallow — correct there, where only the working tree
-matters, and wrong here.)
+That is a blobless clone with full history, or a refresh of the one the
+session-start nudge left there, with its `HEAD` at the source's. Why the recipe
+is shaped that way — and why never `--depth` — is in the script's comments.
 
 **Bash `cwd` resets between calls in this harness** — chain `cd <clone> && …` in
 every command that needs to be inside it.
@@ -204,14 +202,14 @@ every command that needs to be inside it.
 ### Step 3 — Build the candidate set
 
 ```bash
-cd <scratchpad>/up && git log --oneline <lastSyncedSha>..HEAD -- <adopted paths>
+cd tmp/muthur-source && git log --oneline <lastSyncedSha>..HEAD -- <adopted paths>
 ```
 
 `<adopted paths>` is every entry in `adopted`, taking the single key of any entry
 written as an object.
 
-Record `git rev-parse HEAD` **now**, before triage — that value is the next
-watermark regardless of how the triage goes.
+Record `git rev-parse HEAD` **now**, before triage — that value is a whole
+sync's boundary regardless of how the triage goes.
 
 **The clone is whole; `adopted` filters only this log.** A commit touching
 nothing on the list is never surfaced, which is right while the list is complete
@@ -223,6 +221,19 @@ widen `adopted` in the same commit that bumps the watermark.
 
 **A path in neither `adopted` nor `declined` is a decision, not noise** — see
 Step 4's `skip (not adopted)` verdict and Step 4a.
+
+### Step 3a — The sync is a task
+
+Hand the candidate set to `@.claude/skills/task/SKILL.md` as the task: the
+commits from `lastSyncedSha` to the recorded HEAD, with their titles. Steps 4–7
+are how the work gets done in whichever outcome `/task` picks — including a
+split across sessions, an elephant or a pizza, when the lag is too long for one.
+A split cuts the candidates in source order, each slice or bite ending on a
+commit of the source's first-parent line — Step 7's boundary.
+
+**Invoked with `ride-along`, skip this step.** The session is already inside a
+routed task, and a lag of a commit or two fits in it by definition; handing the
+sync to `/task` would route a second task inside the first.
 
 ### Step 4 — Triage each candidate, from its commit message first
 
@@ -288,17 +299,28 @@ every prose site is correct.
 
 ### Step 7 — Bump the watermark, last
 
-Set `lastSyncedSha` to the HEAD recorded in Step 3 and `lastSyncedAt` to today,
+Set `lastSyncedSha` to the sync's **boundary** and `lastSyncedAt` to today,
 along with any `adopted`/`declined` edits from Step 4a, as the final commit of
-the sync.
+the sync. The boundary is the HEAD recorded in Step 3 for a whole sync, and the
+last source commit a slice or bite triaged for a split one; candidates past it
+are the next one's.
+
+**Any commit on the source's first-parent line is a clean boundary.** One inside
+a merged side branch is not: its ancestry leaves out mainline commits the slice
+triaged beside it, so the next sync's `<boundary>..HEAD` surfaces them again.
+
+The lock follows the boundary. A merged pizza slice moves the trunk's watermark,
+so the next slice claims a fresh lock; an elephant's bites share one PR, so the
+trunk does not move between them and one lock holds across all of them.
 
 ### Step 8 — Report and hand off
 
 Report the triage table — every candidate, with its verdict and one line of
-reasoning, skips included. Then hand off to `@.claude/skills/polish/SKILL.md`
-and `@.claude/skills/pr/SKILL.md`; the
-skipped commits' reasoning belongs in the PR body, since the watermark advances
-past them and nothing else records why.
+reasoning, skips included. The skipped commits' reasoning belongs in the PR
+body, since the watermark advances past them and nothing else records why. The
+tail — `@.claude/skills/polish/SKILL.md` and `@.claude/skills/pr/SKILL.md` — is
+whatever the `/task` outcome runs, `/go` ending in both; a ride-along's is the
+routed task's own.
 
 If this repo adopted the sync path without the PR loop, land the sync however it
 normally lands changes — the triage table still belongs wherever that record goes.
@@ -314,6 +336,34 @@ Provenance needs no prose. `watermark.json`'s `lastSyncedSha`, committed in Step
 7, is the precise record and the only one that survives the squash. "The repo we
 vendor from moved" is still the honest *why*, so it earns one clause of the
 body's opening sentence and nothing more.
+
+## Offered at session start
+
+A `SessionStart` hook runs `scripts/muthur-sync.sh nudge`. When the source has
+moved past the trunk's watermark and nobody holds a fresh lock, it prints the
+commit titles, the changed files marked `here` or `not here`, the `adopted`
+keys, and the rules for making the offer. A lock over a day old is printed
+instead, with its holder and session link, for the operator to decide on; only
+their say-so makes `claim --takeover` right.
+
+**The nudge is an offer, not a sync.** Nothing is cloned, read or claimed before
+the operator says yes, so an offer nobody answers holds nothing. The price is
+that a parallel session may claim the sync in between: a claim that exits 3
+after the yes means saying who holds the lock and dropping the offer.
+
+On yes, one of two shapes:
+
+- **Ride-along** — a lag of a commit or two touching files here, offered once
+  the session is already making a change on its branch. Run `/update-muthur
+  ride-along` in this session, on this branch, after the task's own commits; its
+  Step 1 claims the lock. The sync's commits ride that task's PR, and its
+  triage table goes in that PR's body beside the task's own summary. It is
+  unavailable on a branch whose watermark is not the trunk's, where the nudge
+  says so.
+- **New session** — anything larger. `scripts/muthur-sync.sh claim` first, so
+  nobody takes the lock while the session starts. Then, where `create_session`
+  exists, spawn one on this repo with the prompt `/update-muthur claimed`;
+  elsewhere, hand the operator that command to paste into one.
 
 ## Add what the next sync teaches you
 
