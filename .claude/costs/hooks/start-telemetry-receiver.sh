@@ -1,16 +1,13 @@
 #!/bin/bash
 # `SessionStart` hook: start the receiver Claude Code's telemetry is exported
 # to, unless one is already listening. On `resume` too, since a container that
-# slept has lost it.
-#
-# Claude Code reads the exporter variables only from the process environment,
-# user settings and managed settings — never from a repository's
-# `.claude/settings.json` — so they are the environment's to set and this hook's
-# only to check. Where they are not set to what the receiver listens on, it
-# starts nothing and tells the agent what to relay.
+# slept has lost it. Where the exporter variables do not point at it, start
+# nothing and print what to set instead — the environment's to set, never the
+# repo's.
 #
 # The events land under the repo's `tmp/telemetry/`; `.claude/costs/CLAUDE.md`
-# § "Telemetry" says what reads them.
+# § "Telemetry" says why the repo cannot set the variables, and what reads the
+# events.
 
 . "$(dirname "${BASH_SOURCE[0]}")/../../hooks/lib.sh" || exit 0
 read_payload
