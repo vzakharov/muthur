@@ -43,7 +43,7 @@ WRAPPERS = {
     "xargs": {"-a", "-d", "-E", "-I", "-L", "-n", "-P", "-s"},
 }
 PAGERS = {"cat", "less", "more", "nl"}
-HEAD_TAIL_ARGS = {"-n", "-c", "-s", "--pid", "--sleep-interval"}
+HEAD_TAIL_ARGS = frozenset({"-n", "-c", "-s", "--pid", "--sleep-interval"})
 
 TOOL = {"read": "`Read`", "edit": "`Edit`", "write": "`Write` (or `Edit`)"}
 VERB = {
@@ -119,17 +119,16 @@ def is_file(word: str) -> bool:
     )
 
 
-def operands(args: list[str], takes_argument: set[str]) -> list[str]:
-    found: list[str] = []
+def names_a_file(args: list[str], takes_argument: frozenset[str] = frozenset()) -> bool:
     skip = False
     for arg in args:
         if skip:
             skip = False
         elif arg in takes_argument:
             skip = True
-        elif not arg.startswith("-") or arg == "-":
-            found.append(arg)
-    return found
+        elif is_file(arg):
+            return True
+    return False
 
 
 def unwrap(name: str, args: list[str]) -> list[str]:
@@ -204,11 +203,11 @@ def classify(words: list[str], inputs: list[str], outputs: list[str]) -> Optiona
                     return found
         return None
     if name in PAGERS:
-        if files_in or any(is_file(a) for a in operands(args, set())):
+        if files_in or names_a_file(args):
             return "read", name
         return ("write", f"{name} >") if name == "cat" and files_out else None
     if name in ("head", "tail"):
-        if files_in or any(is_file(a) for a in operands(args, HEAD_TAIL_ARGS)):
+        if files_in or names_a_file(args, HEAD_TAIL_ARGS):
             return "read", name
         return None
     if name in ("sed", "gsed"):
@@ -230,7 +229,7 @@ def classify(words: list[str], inputs: list[str], outputs: list[str]) -> Optiona
     if name in ("echo", "printf"):
         return ("write", f"{name} >") if files_out else None
     if name == "tee":
-        return ("write", name) if any(is_file(a) for a in operands(args, set())) else None
+        return ("write", name) if names_a_file(args) else None
     return None
 
 
