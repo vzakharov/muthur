@@ -177,10 +177,9 @@ would either re-port work already here or skip work that isn't.
 
 Then claim the lock with `scripts/muthur-sync.sh claim`, so no parallel session
 runs a second sync of the same range — unless invoked with `claimed`. A claim
-this session already holds, as it does after making the offer, succeeds again. A
-claim that exits 3 names who holds the lock — stop and report that, with their
-session link, rather than syncing alongside them. `scripts/muthur-sync.sh`'s
-header is the lock's reference.
+that exits 3 names who holds the lock — stop and report that, with their session
+link, rather than syncing alongside them. `scripts/muthur-sync.sh`'s header is
+the lock's reference.
 
 ### Step 2 — Clone the source
 
@@ -347,26 +346,24 @@ keys, and the rules for making the offer. A lock over a day old is printed
 instead, with its holder and session link, for the operator to decide on; only
 their say-so makes `claim --takeover` right.
 
-**The nudge is an offer, not a sync.** Nothing is cloned or read before the
-operator says yes.
-
-**The claim comes just before the offer is made**, so the operator is never
-offered a sync another session is already running. A claim that exits 3 drops
-the offer unsaid; on a no, `scripts/muthur-sync.sh release` frees the lock. An
-offer left unanswered keeps it until it goes stale, a day in which every other
-session's nudge stays silent — the accepted cost of that guarantee.
+**The nudge is an offer, not a sync.** Nothing is cloned, read or claimed before
+the operator says yes, so an offer nobody answers holds nothing. The price is
+that a parallel session may claim the sync in between: a claim that exits 3
+after the yes means saying who holds the lock and dropping the offer.
 
 On yes, one of two shapes:
 
 - **Ride-along** — a lag of a commit or two touching files here, offered once
   the session is already making a change on its branch. Run `/update-muthur
-  ride-along` in this session, on this branch, after the task's own commits. The
-  sync's commits ride that task's PR, and its triage table goes in that PR's
-  body beside the task's own summary. It is unavailable on a branch whose
-  watermark is not the trunk's, where the nudge says so.
-- **New session** — anything larger. Where `create_session` exists, spawn one on
-  this repo with the prompt `/update-muthur claimed`; elsewhere, hand the
-  operator that command to paste into one.
+  ride-along` in this session, on this branch, after the task's own commits; its
+  Step 1 claims the lock. The sync's commits ride that task's PR, and its
+  triage table goes in that PR's body beside the task's own summary. It is
+  unavailable on a branch whose watermark is not the trunk's, where the nudge
+  says so.
+- **New session** — anything larger. `scripts/muthur-sync.sh claim` first, so
+  nobody takes the lock while the session starts. Then, where `create_session`
+  exists, spawn one on this repo with the prompt `/update-muthur claimed`;
+  elsewhere, hand the operator that command to paste into one.
 
 ## Add what the next sync teaches you
 

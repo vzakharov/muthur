@@ -129,11 +129,9 @@ class Fixture:
             text=True,
         )
 
-    def lock_ref(self, last_synced: str) -> str:
-        return f"refs/heads/muthur-sync-lock-{last_synced[:12]}"
-
     def lock_message(self, last_synced: str) -> str:
-        return self.git(self.origin, "log", "-1", "--format=%B", self.lock_ref(last_synced))
+        ref = f"refs/heads/muthur-sync-lock-{last_synced[:12]}"
+        return self.git(self.origin, "log", "-1", "--format=%B", ref)
 
 
 class MuthurSyncTestCase(unittest.TestCase):
@@ -151,10 +149,6 @@ class MuthurSyncTestCase(unittest.TestCase):
 
     def claim(self, work: Path, *args: str, **env: str) -> subprocess.CompletedProcess[str]:
         return self.fx.sync(work, "claim", *args, **env)
-
-    def lock_sha(self) -> str:
-        ref = self.fx.lock_ref(self.fx.base)
-        return self.fx.git(self.fx.origin, "for-each-ref", "--format=%(objectname)", ref)
 
     def lagging(self) -> Path:
         work = self.fx.adopter(self.fx.base)
@@ -289,47 +283,6 @@ class LockTest(MuthurSyncTestCase):
         result = self.claim(work, "--takeover", FAKE_GH_LOGIN="bob")
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertIn("Claimed-By: @bob", self.fx.lock_message(self.fx.base))
-
-    def test_reclaim_by_the_holder(self) -> None:
-        work = self.lagging()
-        session = {"CLAUDE_CODE_REMOTE_SESSION_ID": "cse_a"}
-        self.assertEqual(self.claim(work, **session).returncode, 0)
-        before = self.lock_sha()
-        result = self.claim(work, **session)
-        self.assertEqual(result.returncode, 0, result.stderr)
-        self.assertIn("already holds", result.stdout)
-        self.assertEqual(self.lock_sha(), before)
-
-    def test_another_session_of_the_same_operator_is_refused(self) -> None:
-        work = self.lagging()
-        self.assertEqual(self.claim(work, CLAUDE_CODE_REMOTE_SESSION_ID="cse_a").returncode, 0)
-        self.assertEqual(self.claim(work, CLAUDE_CODE_REMOTE_SESSION_ID="cse_b").returncode, 3)
-
-
-class ReleaseTest(MuthurSyncTestCase):
-    def release(self, work: Path, **env: str) -> subprocess.CompletedProcess[str]:
-        return self.fx.sync(work, "release", **env)
-
-    def test_release_frees_the_lock(self) -> None:
-        work = self.lagging()
-        self.assertEqual(self.claim(work).returncode, 0)
-        result = self.release(work)
-        self.assertEqual(result.returncode, 0, result.stderr)
-        self.assertEqual(self.lock_sha(), "")
-        self.assertIn("is 3 commit(s) past", self.nudge(work))
-
-    def test_someone_elses_lock_is_kept(self) -> None:
-        work = self.lagging()
-        self.assertEqual(self.claim(work).returncode, 0)
-        result = self.release(work, FAKE_GH_LOGIN="bob")
-        self.assertEqual(result.returncode, 3)
-        self.assertIn("Claimed-By: @alice", result.stderr)
-        self.assertNotEqual(self.lock_sha(), "")
-
-    def test_nothing_to_release(self) -> None:
-        result = self.release(self.lagging())
-        self.assertEqual(result.returncode, 0, result.stderr)
-        self.assertIn("nothing to release", result.stdout)
 
 
 class CloneTest(MuthurSyncTestCase):

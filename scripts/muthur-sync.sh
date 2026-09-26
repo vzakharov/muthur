@@ -4,7 +4,6 @@
 #
 #   muthur-sync.sh nudge               what the SessionStart hook prints
 #   muthur-sync.sh claim [--takeover]  take the lock for the next sync
-#   muthur-sync.sh release             drop a lock this session holds
 #   muthur-sync.sh clone <dir>         the source, blobless, at its current HEAD
 #
 # The watermark is always read **off the trunk**, not the working tree: the lock
@@ -18,12 +17,7 @@
 #
 # `nudge` never fails the session: every failure is one line of context and exit
 # 0, for `prompt-issue-export.sh`'s reason — a session must not fail to start
-# over an offer. `claim` and `release` exit 3 when someone else holds the lock,
-# 1 on any other failure.
-#
-# A lock is this session's when its trailers are the ones a claim from here
-# would write. Two local sessions of one operator both write `Session: local`,
-# so between them either one may re-claim or release the other's.
+# over an offer. `claim` exits 3 when the lock is held, 1 on any other failure.
 #
 # Functions whose output is captured with `$(…)` fail only through an explicit
 # `die`: outside POSIX mode bash clears `-e` in command substitutions, so an
@@ -166,20 +160,6 @@ session_url() {
   fi
 }
 
-# Sets CLAIMED_BY and SESSION to the trailers a claim from this session writes.
-claimant() {
-  local handle
-  handle="$(gh api user --jq .login 2>/dev/null)" && [ -n "$handle" ] ||
-    die "could not resolve the operator's GitHub handle with \`gh api user\`."
-  CLAIMED_BY="@$handle"
-  SESSION="$(session_url)"
-}
-
-own_lock() {
-  fetch_lock "$1"
-  [ "$(trailer "$1" Claimed-By)" = "$CLAIMED_BY" ] && [ "$(trailer "$1" Session)" = "$SESSION" ]
-}
-
 # `here` is the working tree, so a file taken without being listed in `adopted`
 # still shows. The watermark and the source's cost rows are never synced.
 mark_files() {
@@ -199,19 +179,18 @@ offer_rules() {
 
 This is an offer to make, not work to start:
 - Investigate nothing before the operator says yes: no clone, no `git show`, no
-  reading of diffs. The lists above are the whole input for the offer.
+  reading of diffs, no claim. The lists above are the whole input for the offer.
 - Offer it once, at a natural moment. A ride-along ("by the way, …") only once
   this session is making a change on this branch, never in answer to a question
   that changes nothing; a new session at the end of a turn that delivered
   something. Declined means not offered again in this session.
 - Which offer: a ride-along when the changes are one or two commits touching
   files here; a new session otherwise.
-- Just before making it, `scripts/muthur-sync.sh claim`. Exit 3 means another
-  session holds the sync: drop the offer without mentioning it.
 - On yes, `/update-muthur ride-along` in this session after the task's own
-  commits, or `/update-muthur claimed` as a new session's prompt. On no,
-  `scripts/muthur-sync.sh release`. `/update-muthur` § "Offered at session
-  start" has the rest.
+  commits; for a new session, `scripts/muthur-sync.sh claim` first, then
+  `/update-muthur claimed` as its prompt. A claim that exits 3 means another
+  session got there first: say who holds the lock and drop the offer.
+  `/update-muthur` § "Offered at session start" has the rest.
 EOF
 }
 
@@ -301,15 +280,10 @@ claim() {
   need jq
   need gh
   load_watermark || die "the trunk has no hydrated $WATERMARK to claim a sync from."
-  claimant
 
   local held expect=""
   held="$(lock_sha)"
   if [ -n "$held" ]; then
-    if own_lock "$held"; then
-      echo "muthur-sync: this session already holds the sync from ${LAST_SHA:0:12} as $LOCK."
-      exit 0
-    fi
     if [ -z "$takeover" ]; then
       echo "muthur-sync: the sync from ${LAST_SHA:0:12} is already claimed:" >&2
       describe_lock "$held" >&2
@@ -318,12 +292,14 @@ claim() {
     expect="$held"
   fi
 
-  local commit
+  local handle commit
+  handle="$(gh api user --jq .login 2>/dev/null)" && [ -n "$handle" ] ||
+    die "could not resolve the operator's GitHub handle with \`gh api user\`."
   commit="$(git commit-tree "$TRUNK^{tree}" -p "$TRUNK" -F - <<EOF
 chore: claim the muthur sync from ${LAST_SHA:0:12}
 
-Claimed-By: $CLAIMED_BY
-Session: $SESSION
+Claimed-By: @$handle
+Session: $(session_url)
 EOF
 )"
 
@@ -340,31 +316,6 @@ EOF
     fi
   fi
   echo "muthur-sync: claimed the sync from ${LAST_SHA:0:12} as $LOCK."
-}
-
-# Leased on the lock's SHA, so a takeover between the check and the delete
-# fails the push rather than deleting the new holder's lock.
-release() {
-  [ -z "${1:-}" ] || die "usage: muthur-sync.sh release"
-  need jq
-  need gh
-  load_watermark || die "the trunk has no hydrated $WATERMARK to release a sync of."
-  claimant
-
-  local held
-  held="$(lock_sha)"
-  if [ -z "$held" ]; then
-    echo "muthur-sync: nobody holds the sync from ${LAST_SHA:0:12}; nothing to release."
-    return 0
-  fi
-  if ! own_lock "$held"; then
-    echo "muthur-sync: the sync from ${LAST_SHA:0:12} is not this session's to release:" >&2
-    describe_lock "$held" >&2
-    exit 3
-  fi
-  git push --quiet origin ":refs/heads/$LOCK" "--force-with-lease=refs/heads/$LOCK:$held" 2>/dev/null ||
-    die "could not delete $LOCK on origin."
-  echo "muthur-sync: released the sync from ${LAST_SHA:0:12}."
 }
 
 clone() {
@@ -399,7 +350,6 @@ run_nudge() {
 case "$MODE" in
 nudge) run_nudge ;;
 claim) claim "${@:2}" ;;
-release) release "${@:2}" ;;
 clone) clone "${@:2}" ;;
-*) die "usage: muthur-sync.sh nudge | claim [--takeover] | release | clone <dir>" ;;
+*) die "usage: muthur-sync.sh nudge | claim [--takeover] | clone <dir>" ;;
 esac
