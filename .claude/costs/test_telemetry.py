@@ -18,6 +18,7 @@ import gzip
 import io
 import json
 import os
+import shutil
 import socket
 import subprocess
 import tempfile
@@ -179,7 +180,8 @@ EXPORT = {
 
 class WhenTheHookStartsTheReceiver(unittest.TestCase):
     """Over a `python3` stub that records its arguments, so no test binds the
-    receiver's port."""
+    receiver's port, and under a shell named `claude` that holds the exporter's
+    variables and strips `OTEL_*` from the hook, as Claude Code does."""
 
     def setUp(self) -> None:
         base = tempfile.TemporaryDirectory()
@@ -192,6 +194,8 @@ class WhenTheHookStartsTheReceiver(unittest.TestCase):
         stub = stubs / "python3"
         stub.write_text(f'#!/bin/sh\necho "$@" > {self.started}\n')
         stub.chmod(0o755)
+        self.claude = stubs / "claude"
+        self.claude.symlink_to(shutil.which("bash") or "/bin/bash")
         self.path = f"{stubs}:{os.environ['PATH']}"
 
     def run_hook(self, **env: str) -> str:
@@ -200,8 +204,11 @@ class WhenTheHookStartsTheReceiver(unittest.TestCase):
             for k, v in os.environ.items()
             if not (k.startswith("OTEL_") or k == "CLAUDE_CODE_ENABLE_TELEMETRY")
         }
+        # The trailing `:` keeps `claude` from exec'ing into the hook, which
+        # would leave it no such ancestor.
+        strip_otel = 'env $(env | sed -n "s/^\\(OTEL_[A-Z_]*\\)=.*/-u \\1/p") bash "$0"; :'
         ran = subprocess.run(
-            ["bash", str(HOOK)],
+            [str(self.claude), "-c", strip_otel, str(HOOK)],
             input="{}",
             capture_output=True,
             text=True,

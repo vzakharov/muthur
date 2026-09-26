@@ -26,13 +26,38 @@ expected=(
   "OTEL_LOGS_EXPORT_INTERVAL=1000"
 )
 
+# Claude Code strips `OTEL_*` from everything it spawns, this hook included, so
+# what its exporter was given is read from its own process — the nearest
+# ancestor named `claude` — where `/proc` shows it.
+claude_environ() {
+  local pid=$PPID
+  while [ "$pid" -gt 1 ] && [ -r "/proc/$pid/stat" ]; do
+    if [ "$(cat "/proc/$pid/comm")" = claude ]; then
+      tr '\0' '\n' <"/proc/$pid/environ"
+      return
+    fi
+    pid="$(awk '{print $4}' "/proc/$pid/stat")"
+  done
+  return 1
+}
+
 # `OTEL_METRICS_EXPORTER` and the interval only trim the export, so a value of
 # the operator's own there is theirs to keep; the rest decide whether events
-# reach this port at all.
+# reach this port at all. Where that process is out of sight, only
+# `CLAUDE_CODE_ENABLE_TELEMETRY` survives into this one to be checked, and the
+# receiver starts on it alone: a listener nothing exports to costs nothing.
+checked=("${expected[@]:0:4}")
+if exporter_env="$(claude_environ 2>/dev/null)"; then
+  value_of() { sed -n "s|^$1=||p" <<<"$exporter_env"; }
+else
+  checked=("${expected[0]}")
+  value_of() { printf '%s' "${!1-}"; }
+fi
+
 off=()
-for pair in "${expected[@]:0:4}"; do
+for pair in "${checked[@]}"; do
   name="${pair%%=*}"
-  [ "${!name-}" = "${pair#*=}" ] || off+=("$name")
+  [ "$(value_of "$name")" = "${pair#*=}" ] || off+=("$name")
 done
 
 if [ "${#off[@]}" -gt 0 ]; then
