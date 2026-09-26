@@ -64,21 +64,23 @@ allowed=(
   "$WATERMARK"
   README.md
   ADOPTING.md
+  docs/adopting/web-remote.md
+  docs/adopting/sync.md
   .claude/skills/detemplate/SKILL.md
 )
 
 # The durable agent infrastructure, as git tracks it. Tracked is what matters —
 # an untracked file reaches nobody else's tree — and it keeps
 # `.claude/settings.local.json` out, a per-machine permission log quoting
-# whatever commands a session ran. `docs/` is outside the surface too: a plan
-# discussing a rename quotes both names by necessity. So is the cost ledger's
-# `sessions/`: each row quotes its session's opening prompt, which may name any
-# sibling repository.
+# whatever commands a session ran. `docs/` is outside the surface too, bar
+# `ADOPTING.md`'s chapters: a plan discussing a rename quotes both names by
+# necessity. So is the cost ledger's `sessions/`: each row quotes its session's
+# opening prompt, which may name any sibling repository.
 mapfile -t sources < <(
   git ls-files -z -- \
     '.claude/*.md' '.claude/*.sh' '.claude/*.json' \
     ':!:.claude/costs/sessions/*' \
-    CLAUDE.md README.md ADOPTING.md \
+    CLAUDE.md README.md ADOPTING.md 'docs/adopting/*.md' \
     'scripts/*.sh' 'scripts/*.py' 2>/dev/null | tr '\0' '\n'
 )
 
