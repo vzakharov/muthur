@@ -145,10 +145,12 @@ fetch_lock() {
 
 lock_age() { echo $(($(date +%s) - $(git log -1 --format=%ct "$1"))); }
 
+trailer() { git log -1 --format="%(trailers:key=$2,valueonly)" "$1"; }
+
 describe_lock() {
   fetch_lock "$1"
-  echo "  Claimed-By: $(git log -1 --format='%(trailers:key=Claimed-By,valueonly)' "$1")"
-  echo "  Session: $(git log -1 --format='%(trailers:key=Session,valueonly)' "$1")"
+  echo "  Claimed-By: $(trailer "$1" Claimed-By)"
+  echo "  Session: $(trailer "$1" Session)"
   echo "  Claimed: $(($(lock_age "$1") / 3600))h ago, as $LOCK on origin"
 }
 
@@ -175,8 +177,7 @@ claimant() {
 
 own_lock() {
   fetch_lock "$1"
-  [ "$(git log -1 --format='%(trailers:key=Claimed-By,valueonly)' "$1")" = "$CLAIMED_BY" ] &&
-    [ "$(git log -1 --format='%(trailers:key=Session,valueonly)' "$1")" = "$SESSION" ]
+  [ "$(trailer "$1" Claimed-By)" = "$CLAIMED_BY" ] && [ "$(trailer "$1" Session)" = "$SESSION" ]
 }
 
 # `here` is the working tree, so a file taken without being listed in `adopted`

@@ -129,9 +129,11 @@ class Fixture:
             text=True,
         )
 
+    def lock_ref(self, last_synced: str) -> str:
+        return f"refs/heads/muthur-sync-lock-{last_synced[:12]}"
+
     def lock_message(self, last_synced: str) -> str:
-        ref = f"refs/heads/muthur-sync-lock-{last_synced[:12]}"
-        return self.git(self.origin, "log", "-1", "--format=%B", ref)
+        return self.git(self.origin, "log", "-1", "--format=%B", self.lock_ref(last_synced))
 
 
 class MuthurSyncTestCase(unittest.TestCase):
@@ -151,7 +153,7 @@ class MuthurSyncTestCase(unittest.TestCase):
         return self.fx.sync(work, "claim", *args, **env)
 
     def lock_sha(self) -> str:
-        ref = f"refs/heads/muthur-sync-lock-{self.fx.base[:12]}"
+        ref = self.fx.lock_ref(self.fx.base)
         return self.fx.git(self.fx.origin, "for-each-ref", "--format=%(objectname)", ref)
 
     def lagging(self) -> Path:
