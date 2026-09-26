@@ -9,12 +9,12 @@ feat: /relay, hand the session to a fresh one with a summary (pr #113)
 sees written, at a cost the transcript does not itemize. /relay does
 the same move in the open: the agent writes the summary once, as a
 committed file, and starts a new session on the same branch with the
-one-line prompt `/relay from <branch>`.
+one-line prompt `/relay take <branch>`.
 
 The summary follows /compact's own sections and rules, the operator's
 messages verbatim among them, but points at files by path instead of
 quoting code, since the successor re-reads the pushed branch. An
-in-progress plan is paused first; `/relay from` attaches, then
+in-progress plan is paused first; `/relay take` attaches, then
 dispatches on the summary's next step: /go for a plan, a planless /go
 for other work, or a stop. On the web the successor starts through
 create_session; locally the report gives the line to type.
