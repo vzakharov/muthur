@@ -100,12 +100,19 @@ bearings lands in the work.
 ## Telemetry
 
 `hooks/start-telemetry-receiver.sh` starts a receiver on `127.0.0.1:4318` at
-`SessionStart`, and `.claude/settings.json`'s `env` points Claude Code's
-OpenTelemetry log export at it. Each `api_request` event lands in
+`SessionStart`, and each `api_request` event Claude Code exports to it lands in
 `tmp/telemetry/<session-id>.jsonl`, stripped to its numbers and a few named
 fields. **The events are collected and not yet read**: nothing in a row comes
-from them. `NO_PROXY` stays out of the `env` block, because a value there
-replaces the environment's own list rather than extending it.
+from them.
+
+**The export is the environment's to switch on, never the repository's.**
+Claude Code ignores its OpenTelemetry exporter variables in a project's
+`.claude/settings.json` (code.claude.com/docs/en/env-vars), reading them only
+from the process environment, user settings and managed settings — so, in a
+web session, the cloud environment's own variables. The hook checks them rather
+than setting them, and where they do not point at the receiver it starts nothing
+and prints a notice naming them, its list being the one home of what to set. `NO_PROXY` is not among them: the environment's own list already
+exempts `127.0.0.1`, and a value set beside the others would replace it.
 
 ## Checking the arithmetic
 

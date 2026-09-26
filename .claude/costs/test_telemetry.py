@@ -17,8 +17,12 @@ import contextlib
 import gzip
 import io
 import json
+import os
+import socket
+import subprocess
 import tempfile
 import threading
+import time
 import unittest
 import urllib.request
 from pathlib import Path
@@ -162,6 +166,68 @@ class WhatTheReceiverKeeps(unittest.TestCase):
 
     def test_answers_nothing_but_logs(self) -> None:
         self.assertEqual(self.post(b"{}", path="/v1/metrics"), 404)
+
+
+HOOK = Path(__file__).resolve().parent / "hooks" / "start-telemetry-receiver.sh"
+EXPORT = {
+    "CLAUDE_CODE_ENABLE_TELEMETRY": "1",
+    "OTEL_LOGS_EXPORTER": "otlp",
+    "OTEL_EXPORTER_OTLP_PROTOCOL": "http/json",
+    "OTEL_EXPORTER_OTLP_ENDPOINT": "http://127.0.0.1:4318",
+}
+
+
+class WhenTheHookStartsTheReceiver(unittest.TestCase):
+    """Over a `python3` stub that records its arguments, so no test binds the
+    receiver's port."""
+
+    def setUp(self) -> None:
+        base = tempfile.TemporaryDirectory()
+        self.addCleanup(base.cleanup)
+        self.root = Path(base.name) / "repo"
+        self.root.mkdir()
+        stubs = Path(base.name) / "bin"
+        stubs.mkdir()
+        self.started = Path(base.name) / "started"
+        stub = stubs / "python3"
+        stub.write_text(f'#!/bin/sh\necho "$@" > {self.started}\n')
+        stub.chmod(0o755)
+        self.path = f"{stubs}:{os.environ['PATH']}"
+
+    def run_hook(self, **env: str) -> str:
+        inherited = {
+            k: v
+            for k, v in os.environ.items()
+            if not (k.startswith("OTEL_") or k == "CLAUDE_CODE_ENABLE_TELEMETRY")
+        }
+        ran = subprocess.run(
+            ["bash", str(HOOK)],
+            input="{}",
+            capture_output=True,
+            text=True,
+            check=True,
+            env={**inherited, "PATH": self.path, "CLAUDE_PROJECT_DIR": str(self.root), **env},
+        )
+        return ran.stdout
+
+    def test_names_what_to_set_and_starts_nothing_when_the_variables_are_unset(self) -> None:
+        notice = self.run_hook(**{**EXPORT, "OTEL_EXPORTER_OTLP_ENDPOINT": "http://collector:4318"})
+        self.assertIn("listens for: OTEL_EXPORTER_OTLP_ENDPOINT.", notice)
+        for name, value in EXPORT.items():
+            self.assertIn(f"    {name}={value}\n", notice)
+        time.sleep(0.2)
+        self.assertFalse(self.started.exists())
+
+    def test_starts_the_receiver_into_tmp_when_they_are_set(self) -> None:
+        with socket.socket() as probe:
+            if probe.connect_ex(("127.0.0.1", 4318)) == 0:
+                self.skipTest("something already listens on 4318, so the hook starts nothing")
+        self.assertEqual(self.run_hook(**EXPORT), "")
+        for _ in range(50):
+            if self.started.exists():
+                break
+            time.sleep(0.1)
+        self.assertIn(f"--out {self.root}/tmp/telemetry --port 4318", self.started.read_text())
 
 
 if __name__ == "__main__":

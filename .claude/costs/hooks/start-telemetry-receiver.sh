@@ -1,7 +1,13 @@
 #!/bin/bash
-# `SessionStart` hook: start the receiver Claude Code's telemetry is pointed at
-# by `.claude/settings.json`'s `env`, unless one is already listening. On
-# `resume` too, since a container that slept has lost it.
+# `SessionStart` hook: start the receiver Claude Code's telemetry is exported
+# to, unless one is already listening. On `resume` too, since a container that
+# slept has lost it.
+#
+# Claude Code reads the exporter variables only from the process environment,
+# user settings and managed settings — never from a repository's
+# `.claude/settings.json` — so they are the environment's to set and this hook's
+# only to check. Where they are not set to what the receiver listens on, it
+# starts nothing and tells the agent what to relay.
 #
 # The events land under the repo's `tmp/telemetry/`; `.claude/costs/CLAUDE.md`
 # § "Telemetry" says what reads them.
@@ -13,8 +19,46 @@ need_command python3 "no telemetry is being captured"
 root="$(project_root)"
 [ -n "$root" ] || exit 0
 
-# The port `.claude/settings.json`'s `OTEL_EXPORTER_OTLP_ENDPOINT` names.
 port=4318
+expected=(
+  "CLAUDE_CODE_ENABLE_TELEMETRY=1"
+  "OTEL_LOGS_EXPORTER=otlp"
+  "OTEL_EXPORTER_OTLP_PROTOCOL=http/json"
+  "OTEL_EXPORTER_OTLP_ENDPOINT=http://127.0.0.1:$port"
+  "OTEL_METRICS_EXPORTER=none"
+  "OTEL_LOGS_EXPORT_INTERVAL=1000"
+)
+
+# `OTEL_METRICS_EXPORTER` and the interval only trim the export, so a value of
+# the operator's own there is theirs to keep; the rest decide whether events
+# reach this port at all.
+off=()
+for pair in "${expected[@]:0:4}"; do
+  name="${pair%%=*}"
+  [ "${!name-}" = "${pair#*=}" ] || off+=("$name")
+done
+
+if [ "${#off[@]}" -gt 0 ]; then
+  listed="$(printf '%s, ' "${off[@]}")"
+  # stdout, not stderr: Claude Code folds a SessionStart hook's stdout into the
+  # session context, and this notice is the only sign the variables are unset.
+  cat <<MSG
+session-start: the cost ledger's telemetry capture is off. Not set to what
+.claude/costs/hooks/telemetry_receiver.py listens for: ${listed%, }.
+This session's row is priced from its transcript alone, which misses the calls the
+transcript never records.
+
+Agent: relay this to the operator once. Claude Code ignores these variables in
+a repository's .claude/settings.json, so no file in this repo can set them. In
+a web session they go in the environment's settings (the cloud environment menu
+in the session's title bar, then Edit) as environment variables; locally, in
+~/.claude/settings.json's "env" or the shell. A new session picks them up:
+
+$(printf '    %s\n' "${expected[@]}")
+MSG
+  exit 0
+fi
+
 (exec 3<>"/dev/tcp/127.0.0.1/$port") 2>/dev/null && exit 0
 
 out="$root/tmp/telemetry"

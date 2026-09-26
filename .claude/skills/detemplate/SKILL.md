@@ -255,7 +255,13 @@ is — each records a trap that actually bit:
 6. **Prime the dependency cache last**, guarded, since the repo directory may be
    absent.
 
-Say plainly in the report that this is the one step you could not apply yourself.
+**Where the ledger was kept, the same settings take its telemetry variables** —
+as environment variables beside the script, the list being the one
+`.claude/costs/hooks/start-telemetry-receiver.sh` prints. Claude Code ignores
+them in a repository's `.claude/settings.json`, so no file of the fork can set
+them, and until they are set every session opens on that hook's notice.
+
+Say plainly in the report that these are the steps you could not apply yourself.
 
 ## Step 7 — Hand over the first build session
 
