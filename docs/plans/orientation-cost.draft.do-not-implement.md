@@ -1,16 +1,28 @@
 > ⛔ **DRAFT — DO NOT IMPLEMENT.** This plan is not approved. Do not edit source while this file is named `*.draft.do-not-implement.md` — prep and spikes go in `tmp/`. On an explicit operator go-ahead, `git mv` it to `*.in-progress.md` and delete this banner (quoting the go-ahead in the commit) *before* touching code.
 
-# Orientation cost in the session ledger
+# Orientation cost and billed spend in the session ledger
 
 ## Goal
 
-Each cost row records what the session spent **before it started acting** — tokens
-and dollars up to its first write into the repository or its first `end_turn` —
-and `report.py` averages it across rows. The number feeds a later call on whether
-a fresh session or a compact is the cheaper way to shed context, so every
-compaction is measured too, on both of its costs: the looking around it forces
-before the agent acts again, and the reading it forces later, when the summary
-turns out to have left a hole.
+Two changes to the ledger under `.claude/costs/`, in one PR:
+
+- **Orientation.** Each cost row records what the session spent **before it
+  started acting** — tokens and dollars up to its first write into the
+  repository or its first `end_turn` — and `report.py` averages it across rows.
+  The number feeds a later call on whether a fresh session or a compact is the
+  cheaper way to shed context, so every compaction is measured too, on both of
+  its costs: the looking around it forces before the agent acts again, and the
+  reading it forces later, when the summary turns out to have left a hole.
+- **Billed spend.** Claude Code's OpenTelemetry `api_request` events become the
+  ledger's first source: one event per API call, the calls the transcript never
+  records included. Pricing the transcript with `prices.json` stays, as the
+  fallback for a session without telemetry and as the cross-check on the events.
+
+Split as an **elephant**: the two share the row, the phases and one PR, and
+neither is whole alone — orientation priced from estimates is the thing the
+events exist to correct, and the events without the phases are a better total
+nobody asked for. The first bite also ships the telemetry capture, so the next
+session is the one that runs with it on and can check it.
 
 ## Definitions
 
@@ -60,7 +72,9 @@ turns out to have left a hole.
 "compactions": [
   {
     "at": "2026-09-25T23:40:12.000Z",
-    "compactedFrom": 912345,
+    "trigger": "manual",
+    "compactedFrom": 230043,
+    "summaryChars": 15361,
     "reorientation": { "...": "the same shape as `orientation`" },
     "rereads": {
       "calls": 7,
@@ -78,17 +92,19 @@ turns out to have left a hole.
 - `contextTokens` is the acting response's input + cache read + cache write: how
   much context the phase had built by the time the session acted. It is the
   figure that sets a fresh session's size against a compacted one's.
-- `compactedFrom` is the boundary's `preTokens`: how large the context was when
-  it was compacted.
+- `trigger`, `compactedFrom` and `summaryChars` are the boundary's
+  `compactMetadata.trigger` and `preTokens`, and the length of the summary
+  record that follows it: how large the context was, and how much the summary
+  kept of it.
 - `rereads` is an **estimate**, and the row says so in its field names. A tool
   result has no `usage` of its own, so its tokens are the next response's cache
   write, split between the results that arrived together by their length in
   characters. Its dollars are what carrying those tokens cost: one cache write,
   then a cache read on every later response until the next boundary or the end
   of the session.
-- All of it is optional on read. The fifteen rows already under
-  `sessions/2026-09/` stay without these fields: their transcripts are gone from
-  every container, so nothing can be backfilled.
+- All of it is optional on read. The rows already under `sessions/2026-09/` stay
+  without these fields: their transcripts are gone from every container, so
+  nothing can be backfilled.
 
 ## Report
 
@@ -108,13 +124,51 @@ turns out to have left a hole.
 
 `--json` carries the lot.
 
-## Steps
+## Rest of the elephant
+
+The telemetry side, coarse. The first bite leaves events landing on disk; what
+is left is reading them.
+
+- **Check the capture works.** Whether the `env` block in `.claude/settings.json`
+  reaches Claude Code's telemetry at all decides the operator-facing half below:
+  events on disk at this session's start say it does. If it does not, the
+  variables move to the environment's own settings and the block goes.
+- **The events become the row's total.** Read the session's event file, keep the
+  numbers, and join each event to its transcript response by `request_id` against
+  the record's `requestId`. A matched response is priced from its event, so the
+  phases above sum billed dollars rather than estimates; an unmatched event is a
+  call the transcript never saw, and lands in a bucket of its own split by
+  `query_source`. The compaction's own call is the `compact` entry there, so each
+  compaction in the row gains its billed cost, where today the ledger can only
+  record its size.
+- **`prices.json` stays**, as the fallback for a session with no events and as
+  the cross-check on the ones it has — the events' `cost_usd` is Claude Code's
+  own estimate at list price, not an invoice. A row says which source priced it.
+- **`.claude/costs/CLAUDE.md` is corrected.** § "Checking the arithmetic" puts
+  the calls it cannot see at "a fraction of a percent" and calls them background
+  Haiku; this session measured about 8% of spend in Opus calls that read the
+  whole context and write almost nothing. § "What the totals do not cover" loses
+  "Each compact" once the events price it.
+- **The operator is told what to add, and where.** No agent can set an
+  environment's settings. If the `env` block does not carry, `ADOPTING.md` gains
+  a section beside § "Hand the operator a setup script" — the variables, and the
+  same gear-icon route to the environment's settings — and `/detemplate` Step 6,
+  `/spinoff`'s report and the catalog's `.claude/costs/` row point at it. Either
+  way, a session whose ledger runs without events says so once at start, the way
+  `.claude/hooks/gh-shim.sh` reports a missing `gh`, so a missing setting finds
+  itself instead of waiting for someone to read a doc.
+
+## This bite
+
+Orientation over the transcript as it stands, and the telemetry capture switched
+on for the next session.
 
 1. `lib/pricing.py`: `Response` gains the tool calls its record carries (name
-   and input), read off the `content` blocks. `summarise_transcript` keeps each
-   priced response's first timestamp, id, tally and calls, the main file's
-   compaction boundaries, and each tool result's length, and hands them to the
-   new module. Calls are gathered **before** the dedup `continue`, so a later
+   and input), read off the `content` blocks, and the record's `requestId`, which
+   the next bite joins on. `summarise_transcript` keeps each priced response's
+   first timestamp, id, tally and calls, the main file's compaction boundaries
+   with their summary's length, and each tool result's length, and hands them to
+   the new module. Calls are gathered **before** the dedup `continue`, so a later
    record of an already-seen response still contributes its calls.
 2. `lib/orientation.py` (new): the phases, the re-read matching and its estimate.
    `SessionCost` gains `orientation` and `compactions`, parsed back optionally in
@@ -127,17 +181,30 @@ turns out to have left a hole.
    `tmp/` not ending anything; two boundaries each opening its own
    re-orientation; a re-read charged to the latest boundary, and a `Read` after
    an `Edit` to the same path not counted; a row without the fields parsing and
-   being skipped by the summary.
-6. `.claude/costs/CLAUDE.md`: a § "Orientation" carrying what the code cannot
+   being skipped by the summary. The boundary fixture copies the shape this
+   session's transcript recorded: `type: system`, `subtype: compact_boundary`,
+   `compactMetadata` with `trigger`, `preTokens`, `durationMs`,
+   `preservedSegment` and `preservedMessages`, and the summary as the `user`
+   record after it, flagged `isCompactSummary`.
+6. **The capture.** A stdlib OTLP/HTTP-JSON receiver on `127.0.0.1:4318`,
+   started detached by a `SessionStart` hook on `startup|resume` — a container
+   that slept loses it — and a no-op when one is already listening. It appends
+   each `api_request` event to a per-session file under the repo's `tmp/`,
+   keeping only the numeric attributes and `request_id`, `model`, `speed`,
+   `query_source` and the timestamp: the events also carry the account's email
+   and ids, which have no business on disk. `.claude/settings.json` gains the
+   `env` block:
+   `CLAUDE_CODE_ENABLE_TELEMETRY=1`, `OTEL_LOGS_EXPORTER=otlp`,
+   `OTEL_METRICS_EXPORTER=none`, `OTEL_EXPORTER_OTLP_PROTOCOL=http/json`,
+   `OTEL_EXPORTER_OTLP_ENDPOINT=http://127.0.0.1:4318`,
+   `OTEL_LOGS_EXPORT_INTERVAL=1000`, `NO_PROXY=127.0.0.1,localhost`. A test
+   posts a recorded payload to the receiver and reads back the kept fields
+   only.
+7. `.claude/costs/CLAUDE.md`: a § "Orientation" carrying what the code cannot
    say for itself — why the acting response is left out, why a subagent's
    `end_turn` and a scratch write do not count, why timestamps rather than
    order, how the re-read estimate is made, and what the measure misses (below).
-7. Confirm the `compact_boundary` shape (`type: system`, `subtype:
-   compact_boundary`, `compactMetadata.preTokens`) and where a tool result's
-   text sits against a real transcript before the fixtures are written from
-   them. This session's transcript has no boundary, so the check is a session
-   that compacts on this branch; failing that, the shape ships under a test that
-   says where it came from.
+   The capture gets a line saying the events are collected and not yet read.
 
 ## What it does not see
 
@@ -152,14 +219,18 @@ turns out to have left a hole.
 - **A repeat that was simply due.** A `git status` before each commit repeats
   by design, and counts as a re-read when a boundary falls between two of them.
   `byTool` is what lets the report read `Bash` apart.
-- **The compaction call itself.** The request that writes the summary is billed,
-  but the transcript records it without its `usage` (see § "What the totals do
-  not cover"), so the compact side of the comparison carries a cost the ledger
-  can only bound: `compactedFrom` at the cache-read rate when the prefix was
-  warm, at the input rate when it was not.
+- **The compaction call itself, until the events are read.** The transcript
+  records it without `usage`, so this bite records its size and not its price.
+  Its size does not bound its price either: the one compaction measured, of a
+  230k-token context with a warm cache, cost about $0.22 by Claude Code's own
+  counter, of which reading the context was $0.05 and the rest was output — the
+  summary and the thinking behind it.
 - **A resume in a fresh container.** It reloads the transcript without a
   boundary to restart at, so any looking around it does lands in the work rather
   than in a phase of its own.
+- **Events emitted after the last `Stop`.** The row is written at `Stop`, and
+  the exporter flushes once a second, so the tail of a session's last turn can
+  miss its row. The next bite's rows carry that edge; this bite only collects.
 
 ## DRY notes
 
@@ -167,11 +238,13 @@ turns out to have left a hole.
   tallies `summarise_transcript` already prices, never re-priced; the re-read
   estimate prices its tokens at the rates of the response they arrived in; the
   `read_*` helpers in `lib/shape.py` for the new fields; `to_json` for writing
-  them; `_parse_tally` for reading `spend` back.
+  them; `_parse_tally` for reading `spend` back. The receiver's hook sources
+  `.claude/hooks/lib.sh` like the other `SessionStart` hooks.
 - **Not re-scanned:** the transcript is read once. The new module takes what the
   existing scan collects, rather than walking the records a second time with its
   own copy of the dedup rule — two walks would be two places to keep `message.id`
-  deduplication right.
+  deduplication right. The same scan collects `requestId`, so the next bite's
+  join adds no walk of its own.
 - **Shared shape:** orientation and each re-orientation are one `Phase` type,
   since they differ only in where they start.
 - **Kept apart:** `OrientationSummary` sits beside `Bucket` rather than
@@ -180,4 +253,6 @@ turns out to have left a hole.
   mean nothing there.
 - **A new module rather than growth:** `lib/pricing.py` is at 454 lines, so the
   phases and re-reads live in `lib/orientation.py`, and pricing gains only the
-  fields it hands over.
+  fields it hands over. The receiver is its own script under
+  `.claude/costs/hooks/`: it runs as a daemon and shares nothing with the
+  pricing code but the field names, which it writes and the next bite reads.
