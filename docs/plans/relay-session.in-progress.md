@@ -1,5 +1,3 @@
-> ⛔ **DRAFT — do not implement.** This plan has not been approved. A session that finds it under this name edits no source; `@.claude/skills/plan/SKILL.md` § "Plan file lifecycle" says who flips it and when.
-
 # `/relay` — hand the session to a fresh one, with a summary we can read
 
 ## Why
