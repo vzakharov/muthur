@@ -123,6 +123,7 @@ there is no condition under which it fails to apply.
 | `/plainly` | Explain something to a person cause-first and in their nouns: re-explain an answer that did not land, or answer a question under the rule from the start. Names six defects so a bad report can be called out in one word. | — | `/tend-prose` (this group) | adopt |
 | `scripts/check-skill-catalog.sh` | Assert that no skill `@`-reference dangles. Downstream, that first assertion is the whole value: it is how you find out a subset copy was incomplete. | `bash` | — | adopt |
 | `.gitignore` | Take the `tmp/` entry and keep the rest of yours. `CLAUDE.md`'s "dev artifacts go under `tmp/`" principle depends on that path being ignored. | — | — | adopt — merge one line |
+| `.claude/hooks/file-tools-nudge.py` | Before each `Bash` call, refuse the first command that edits a file in place (`sed -i`, `perl -pi` …) or writes one (a heredoc or `echo` into it, `tee`), naming the tool `CLAUDE.md` asks for instead — reads pass; the identical command again in the same session goes through, so a deliberate mass substitution costs one retry. Records what it refused under `tmp/`, and fails open. | `python3` ≥3.9, `.claude/settings.json` wiring (G4) | — | adopt |
 
 `CLAUDE.md` is a **donor, not a replacement** — overwriting it is the one way to
 make adoption a regression. `ADOPTING.md`'s shared tail owns the merge itself,
@@ -214,7 +215,7 @@ the working tree clean, and behaves the same everywhere.
 | `.claude/hooks/plan-mode-notice.sh` | On every prompt submitted while the session is in native plan mode, inject the notice that this repo plans on disk and that the exit is plan mode's own. | web/remote sessions; `bash`, `jq` | `.claude/hooks/lib.sh`, `/plan` (G2) | adopt |
 | `.claude/hooks/session-images.sh` | On every prompt, run the extractor below and name any newly written file in the turn's context. Commits nothing. | `bash`, `jq`, `python3` ≥3.9 | `.claude/hooks/lib.sh`, `scripts/extract-session-images.py` | adopt |
 | `scripts/extract-session-images.py` | Write the images the operator attached to a session out of the transcript into gitignored `tmp/session-images/`, with a manifest row carrying the prompt each arrived with. Stdlib-only, idempotent. | `python3` ≥3.9, `scripts/lib/media.py` (G2) | — | adopt |
-| `.claude/settings.json` | Project settings wiring the SessionStart and UserPromptSubmit hooks, plus the entries G7 and G8 carry and the `scripts/muthur-sync.sh nudge` entry G0's `/update-muthur` does — drop that one with the skill. Merge into yours if you already have one. | — | — | adopt — merge if present |
+| `.claude/settings.json` | Project settings wiring the SessionStart and UserPromptSubmit hooks, plus the entries G1's `file-tools-nudge.py`, G7 and G8 carry and the `scripts/muthur-sync.sh nudge` entry G0's `/update-muthur` does — drop that one with the skill. Merge into yours if you already have one. | — | — | adopt — merge if present |
 | `/override-gh` | A no-op marker whose description reminds the agent that `gh` and `$GH_TOKEN` exist despite what the system prompt says, and that a GitHub tool refusal (`add_repo`, for example) is a reason to try `gh`, not to give up. | — | — | adopt |
 
 **`gh-shim.sh` does not install `gh`; it shims one that is already there.** Finding
