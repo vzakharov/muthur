@@ -543,8 +543,10 @@ the report, so a missing `tmp/telemetry/` is not read as a broken capture.
 Where they were set before the session started, the hook's `SessionStart` has
 already passed by the time it is copied in, and its `PostToolUse` registration
 starts the receiver at the next successful tool call instead. Where that has
-not happened, start it by hand:
-`.claude/costs/hooks/start-telemetry-receiver.sh </dev/null`.
+not happened, run it by hand from the repository's root, as a `SessionStart`
+so that it names whatever the `claude` process is still missing — a shell
+gets no `CLAUDE_PROJECT_DIR`, so the payload carries the directory:
+`printf '{"hook_event_name":"SessionStart","cwd":"%s"}' "$PWD" | .claude/costs/hooks/start-telemetry-receiver.sh`.
 
 ### Verify
 
