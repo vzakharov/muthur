@@ -8,9 +8,10 @@ leave out.
 from __future__ import annotations
 
 import json
-from dataclasses import dataclass, field, fields
+from dataclasses import dataclass, fields
 from typing import Any, Dict, List, Mapping, Optional, Sequence, Set, Tuple
 
+from lib.billed import Event, Telemetry, compaction_costs, disagreement
 from lib.identity import (
     cost_state_of,
     kind_of,
@@ -20,8 +21,6 @@ from lib.identity import (
     session_url_in,
 )
 from lib.orientation import (
-    Compaction,
-    Phase,
     Priced,
     ToolCall,
     Trail,
@@ -30,10 +29,9 @@ from lib.orientation import (
     is_boundary,
     measure,
     note_results,
-    parse_compaction,
-    parse_phase,
     summary_chars_of,
 )
+from lib.rows import SessionCost
 from lib.shape import (
     ShapeError,
     mistyped,
@@ -43,7 +41,7 @@ from lib.shape import (
     read_string,
     required,
 )
-from lib.tally import Rates, Tally, billable_tokens, cost_of, parse_tally
+from lib.tally import Rates, Tally, billable_tokens, cost_of
 
 
 class UnpricedError(ValueError):
@@ -78,91 +76,6 @@ def parse_prices(text: str) -> PriceTable:
 def rate_key(model: str, speed: Optional[str]) -> str:
     """`<model>/<speed>`, the pair a response is billed under."""
     return f"{model}/{speed if speed is not None else 'standard'}"
-
-
-# --- A session's row ----------------------------------------------------------
-
-
-@dataclass
-class SessionCost:
-    session_id: str
-    branch: Optional[str]
-    cwd: Optional[str]
-    opening_prompt: Optional[str]
-    prs: List[int]
-    # The URL a person opens the session at — a different id from the
-    # transcript's own, present only in a remote session.
-    url: Optional[str]
-    # The operator's GitHub handle, lowercased and without the `@`; null when
-    # no person was resolved behind the session's token.
-    operator: Optional[str]
-    first_response_at: Optional[str]
-    last_response_at: Optional[str]
-    prices_as_of: str
-    # What Claude Code itself had counted the session at, off the `cost-state`
-    # records it writes into the transcript. Written into the same file partway
-    # through, it is a floor rather than a rival total: `report.py` flags a row
-    # that came out *under* it.
-    claude_code_total_usd: Optional[float]
-    total: Tally
-    own_turns: Tally
-    subagents: Tally
-    by_rate: Dict[str, Tally]
-    warnings: List[str]
-    # Null on a row written before orientation was measured, and on a session
-    # with no priced response to measure it over.
-    orientation: Optional[Phase] = None
-    compactions: List[Compaction] = field(default_factory=list)
-
-
-def _list_of(obj: Mapping[str, Any], key: str, where: str, kind: type) -> List[Any]:
-    value = obj.get(key)
-    if value is None:
-        return []
-    if not isinstance(value, list) or not all(
-        isinstance(item, kind) and not isinstance(item, bool) for item in value
-    ):
-        raise ShapeError(f"{where}: `{key}` is not a list of {kind.__name__}")
-    return value
-
-
-def parse_session_cost(text: str, where: str = "row") -> SessionCost:
-    """Rows are read back in a later process, so they are parsed rather than
-    trusted. The naming and orientation fields default when absent, so a row
-    written before they existed still parses."""
-    row = json.loads(text)
-    if not isinstance(row, dict):
-        raise ShapeError(f"{where}: not an object")
-    return SessionCost(
-        session_id=required(read_string, row, "sessionId", where),
-        branch=read_string(row, "branch", where),
-        cwd=read_string(row, "cwd", where),
-        opening_prompt=read_string(row, "openingPrompt", where),
-        prs=_list_of(row, "prs", where, int),
-        url=read_string(row, "url", where),
-        operator=read_string(row, "operator", where),
-        first_response_at=read_string(row, "firstResponseAt", where),
-        last_response_at=read_string(row, "lastResponseAt", where),
-        prices_as_of=required(read_string, row, "pricesAsOf", where),
-        claude_code_total_usd=read_number(row, "claudeCodeTotalUsd", where),
-        total=parse_tally(row.get("total"), f"{where} total"),
-        own_turns=parse_tally(row.get("ownTurns"), f"{where} ownTurns"),
-        subagents=parse_tally(row.get("subagents"), f"{where} subagents"),
-        by_rate={
-            key: parse_tally(tally, f"{where} byRate[{key!r}]")
-            for key, tally in required(read_object, row, "byRate", where).items()
-        },
-        warnings=_list_of(row, "warnings", where, str),
-        orientation=(
-            None
-            if row.get("orientation") is None
-            else parse_phase(row["orientation"], f"{where} orientation")
-        ),
-        compactions=[
-            parse_compaction(item, f"{where} compactions[{index}]")
-            for index, item in enumerate(_list_of(row, "compactions", where, dict))
-        ],
-    )
 
 
 # --- Reading a transcript -----------------------------------------------------
@@ -272,6 +185,7 @@ def summarise_transcript(
     prices: PriceTable,
     fallback_session_id: str,
     at_stop: bool = False,
+    events: Optional[Mapping[str, Event]] = None,
 ) -> SessionCost:
     """Raises `UnpricedError` when a transcript names a `(model, speed)` pair the
     table cannot price, and `ShapeError` when a response record does not parse:
@@ -280,7 +194,12 @@ def summarise_transcript(
 
     `at_stop` says the turn is over, so the session's own last response should
     be the `end_turn` that closed it; anything else is warned about as a tail
-    the file had not yet been given."""
+    the file had not yet been given.
+
+    `events` are the session's telemetry by request id. A response they cover
+    keeps its table price, the event's checking it; an event no response
+    matches is a call the transcript never recorded, and is added to the
+    totals at the event's own price."""
     warnings: List[str] = []
     last_own: Optional[Response] = None
     seen: Set[str] = set()
@@ -299,13 +218,16 @@ def summarise_transcript(
     trail = Trail()
     # The priced responses by id, which a later record of one adds its calls to.
     held: Dict[str, Priced] = {}
+    matched: Set[str] = set()
+    matched_event_usd = 0.0
+    matched_table_usd = 0.0
 
     # `delegated` forces the bucket for a subagent's own file. Its records carry
     # `isSidechain` too, but the file they are in is the fact that does not
     # depend on a flag having been set.
     def scan(jsonl: str, label: str, delegated: bool) -> None:
         nonlocal session_id, branch, cwd, opening_prompt, url, operator
-        nonlocal claude_code_total_usd, last_own
+        nonlocal claude_code_total_usd, last_own, matched_event_usd, matched_table_usd
         for number, line in enumerate(jsonl.split("\n"), start=1):
             if line.strip() == "":
                 continue
@@ -394,6 +316,11 @@ def summarise_transcript(
 
             tokens.responses = 1
             tokens.cost_usd = cost_of(tokens, rates)
+            event = events.get(response.request_id or "") if events else None
+            if event is not None:
+                matched.add(event.request_id)
+                matched_event_usd += event.tokens.cost_usd
+                matched_table_usd += tokens.cost_usd
             by_rate.setdefault(key, Tally()).add(tokens)
             total.add(tokens)
             own = not (delegated or response.is_sidechain)
@@ -431,8 +358,30 @@ def summarise_transcript(
             f" {UNWRITTEN_TAIL}"
         )
 
+    telemetry: Optional[Telemetry] = None
+    unseen: List[Event] = []
+    if events is not None:
+        telemetry = Telemetry(
+            events=len(events),
+            matched=len(matched),
+            matched_table_usd=matched_table_usd,
+            matched_event_usd=matched_event_usd,
+        )
+        unseen = [event for key, event in events.items() if key not in matched]
+        for event in unseen:
+            total.add(event.tokens)
+            by_rate.setdefault(rate_key(event.model, event.speed), Tally()).add(event.tokens)
+            telemetry.unseen.setdefault(event.query_source, Tally()).add(event.tokens)
+        mismatch = disagreement(telemetry)
+        if mismatch is not None:
+            warnings.append(mismatch)
+
     in_order = sorted(timestamps)
     orientation, compactions = measure(trail)
+    for compaction, billed in zip(
+        compactions, compaction_costs(unseen, [c.at for c in compactions])
+    ):
+        compaction.billed_usd = billed
     return SessionCost(
         session_id=session_id if session_id is not None else fallback_session_id,
         branch=branch,
@@ -452,4 +401,5 @@ def summarise_transcript(
         warnings=warnings,
         orientation=orientation,
         compactions=compactions,
+        telemetry=telemetry,
     )

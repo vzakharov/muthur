@@ -168,6 +168,9 @@ class Compaction:
     summary_chars: Optional[int]
     reorientation: Phase
     rereads: Rereads
+    # The compaction call's own price, off the session's events; null without
+    # them, since the transcript records that call with no usage.
+    billed_usd: Optional[float] = None
 
 
 def parse_phase(obj: Any, where: str) -> Phase:
@@ -200,6 +203,7 @@ def parse_compaction(obj: Any, where: str) -> Compaction:
             estimated_tokens=required(read_count, rereads, "estimatedTokens", at),
             estimated_usd=required(read_number, rereads, "estimatedUsd", at),
         ),
+        billed_usd=read_number(obj, "billedUsd", where),
     )
 
 

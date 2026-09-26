@@ -17,9 +17,9 @@ from datetime import date
 from pathlib import Path
 
 from lib.orientation import Compaction, Phase, Rereads
-from lib.pricing import SessionCost, Tally, parse_session_cost
-from lib.rows import ROOT, read_row, row_text
+from lib.rows import ROOT, SessionCost, parse_session_cost, read_row, row_text
 from lib.shape import to_json
+from lib.tally import Tally
 from lib.totals import branch_label, iso_week, opening_command, operator_label, totals_of
 
 

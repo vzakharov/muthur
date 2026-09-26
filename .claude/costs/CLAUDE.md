@@ -102,8 +102,20 @@ bearings lands in the work.
 `hooks/start-telemetry-receiver.sh` starts a receiver on `127.0.0.1:4318` at
 `SessionStart`, and each `api_request` event Claude Code exports to it lands in
 `tmp/telemetry/<session-id>.jsonl`, stripped to its numbers and a few named
-fields. **The events are collected and not yet read**: nothing in a row comes
-from them.
+fields. `lib/billed.py` joins them to the priced responses by request id.
+
+**The events' worth is the calls the transcript never records.** Where a
+response and its event are both there, the table and the event price it alike,
+so the response keeps the table's price and the event checks it; the row warns
+when the two drift apart. An event no response matches is such a call — a
+prompt suggestion, a compaction — and goes into `total` and `byRate` at the
+event's price, and into `telemetry.unseen` by its `query_source`, which takes
+values the documentation does not list (`sdk` for a web session's main thread,
+`prompt_suggestion`, `compact`). A compaction's `billedUsd` is the
+`compact`-tagged call nearest its boundary. An event does not split its cache
+write by TTL, so an unseen call's write is filed under the 5-minute tokens.
+Events are only as complete as the receiver's uptime: what Claude Code sent
+before it started, or after the row was written, is in no row.
 
 **The export is the environment's to switch on, never the repository's.**
 Claude Code ignores its OpenTelemetry exporter variables in a project's
@@ -111,7 +123,8 @@ Claude Code ignores its OpenTelemetry exporter variables in a project's
 from the process environment, user settings and managed settings — so, in a
 web session, the cloud environment's own variables. Where they do not point at
 the receiver, the hook starts nothing and prints a notice naming them; its list
-is the one home of what to set. `NO_PROXY` stays off it: the environment's own
+is the one home of what to set. Claude Code strips `OTEL_*` from every process
+it spawns, so the hook reads them from the `claude` process's own environment. `NO_PROXY` stays off it: the environment's own
 list already exempts `127.0.0.1`, and a value set beside the others replaces it.
 
 ## Checking the arithmetic
@@ -128,11 +141,12 @@ file the row was priced from — so it was written at or before the moment the r
 was. A row coming out **under** it has missed a source. A row coming out over it
 means only that the session kept going, which every row's last turn does.
 
-A couple of percent of slack covers what Claude Code counts and no row can: the
-background Haiku calls and each compact's own request, neither of which appears
-in the transcript as a response. Together they measured a fraction of a percent;
-reading a subagent's file short of its spend was seven, which is the failure
-this check exists to catch.
+Without events, a row misses what Claude Code counts and the transcript does
+not record as a response: prompt suggestions, which are full-context calls on
+the session's own model, and each compact's own request. They measured a few
+percent of a session's spend; reading a subagent's file short of its spend was
+seven, which is the failure this check exists to catch. A row with events has
+them in its total.
 
 **The usage panel is not a third opinion, and what breaks it is compaction.**
 Against a session that has never compacted it agrees to within 1%, and each
@@ -209,11 +223,10 @@ commit.
 - **The turn that merges.** `/finalize and merge` merges within its turn and the
   row lands after, on a branch already merged — so that turn's spend reaches
   neither the trunk nor any later merge.
-- **Each compact.** The transcript records the compaction call without its
-  `usage` — the boundary record carries `preTokens`, the summary arrives as a
-  `user` record — so there is nothing to price. Bounded rather than unknown: two
-  compacts of one measured session read 526k tokens between them, about $0.30 at
-  the cache-read rate a warm prefix gets.
+- **Each compact, without events.** The transcript records the compaction call
+  without its `usage` — the boundary record carries `preTokens`, the summary
+  arrives as a `user` record — so only the events price it. One compaction of a
+  230k-token context with a warm cache measured about $0.22, most of it output.
 - **A rate that changed after a row was written.** Each row records the
   `pricesAsOf` it was priced under and is never re-priced — its transcript is
   usually gone by then — so a table update applies forward only, and `report.py`

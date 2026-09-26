@@ -24,8 +24,8 @@ from datetime import date, datetime, timezone
 from pathlib import Path
 from typing import Dict, List, Optional
 
-from lib.pricing import SessionCost, parse_prices
-from lib.rows import read_row
+from lib.pricing import parse_prices
+from lib.rows import SessionCost, read_row
 from lib.shape import to_json
 from lib.totals import Bucket, OrientationSummary, PhaseStats, Spread, totals_of
 

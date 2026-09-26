@@ -15,7 +15,7 @@ from statistics import mean, median
 from typing import Callable, Dict, Iterable, List, Optional, Sequence, Tuple
 
 from lib.orientation import Phase
-from lib.pricing import SessionCost
+from lib.rows import SessionCost
 
 
 @dataclass

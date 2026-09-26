@@ -65,6 +65,7 @@ def response(
     at: str = "2026-03-04T05:06:07.000Z",
     cwd: Optional[str] = None,
     calls: Sequence[Dict[str, Any]] = (),
+    request: Optional[str] = None,
 ) -> str:
     usage = {
         "input_tokens": input,
@@ -89,6 +90,7 @@ def response(
             "cwd": cwd,
             "timestamp": at,
             "isSidechain": sidechain,
+            "requestId": request,
             "message": {
                 "id": id,
                 "model": model,
