@@ -17,10 +17,10 @@ ExitPlanMode, or its own first end_turn. Scratch writes into tmp/ do
 not end it, subagent responses before that point count toward it, and
 the acting response itself does not. Every compaction boundary restarts
 the measure and estimates the holes the summary left: calls after the
-boundary that repeat a read made before it.
+boundary that repeat one made before it.
 
 Claude Code's OpenTelemetry api_request events, captured by a local
-receiver that keeps only their numbers, now price the row. Each is
+receiver that keeps only their numbers and request ids, now price the row. Each is
 joined to its transcript response by request id; the calls the
 transcript never saw, the compaction's own among them, get a bucket of
 their own. prices.json remains the fallback and the cross-check, and a
