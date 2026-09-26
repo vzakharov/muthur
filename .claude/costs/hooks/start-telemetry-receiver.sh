@@ -13,12 +13,14 @@ need_command python3 "no telemetry is being captured"
 root="$(project_root)"
 [ -n "$root" ] || exit 0
 
-(exec 3<>/dev/tcp/127.0.0.1/4318) 2>/dev/null && exit 0
+# The port `.claude/settings.json`'s `OTEL_EXPORTER_OTLP_ENDPOINT` names.
+port=4318
+(exec 3<>"/dev/tcp/127.0.0.1/$port") 2>/dev/null && exit 0
 
 out="$root/tmp/telemetry"
 mkdir -p "$out"
 # Every descriptor redirected, or the harness waits on the daemon's copy of
 # the hook's stdout.
-setsid nohup python3 "$(dirname "${BASH_SOURCE[0]}")/telemetry_receiver.py" --out "$out" \
+setsid nohup python3 "$(dirname "${BASH_SOURCE[0]}")/telemetry_receiver.py" --out "$out" --port "$port" \
   </dev/null >>"$out/receiver.log" 2>&1 &
 exit 0
