@@ -5,18 +5,30 @@
 # nothing and print what to set instead — the environment's to set, never the
 # repo's.
 #
+# Also a `PostToolUse` keep-alive, silent there: a session that checks out a
+# branch carrying this hook gets it registered with its `SessionStart` already
+# past, and a receiver can die mid-session. A listening port makes that firing
+# a probe and nothing more.
+#
 # The events land under the repo's `tmp/telemetry/`; `.claude/costs/CLAUDE.md`
 # § "Telemetry" says why the repo cannot set the variables, and what reads the
 # events.
 
 . "$(dirname "${BASH_SOURCE[0]}")/../../hooks/lib.sh" || exit 0
 read_payload
+
+port=4318
+listening() { (exec 3<>"/dev/tcp/127.0.0.1/$port") 2>/dev/null; }
+
+starting=false
+[ "$(field hook_event_name)" = SessionStart ] && starting=true
+$starting || ! listening || exit 0
+
 need_command python3 "no telemetry is being captured"
 
 root="$(project_root)"
 [ -n "$root" ] || exit 0
 
-port=4318
 expected=(
   "CLAUDE_CODE_ENABLE_TELEMETRY=1"
   "OTEL_LOGS_EXPORTER=otlp"
@@ -61,6 +73,7 @@ for pair in "${checked[@]}"; do
 done
 
 if [ "${#off[@]}" -gt 0 ]; then
+  $starting || exit 0
   listed="$(printf '%s, ' "${off[@]}")"
   # stdout, not stderr: Claude Code folds a SessionStart hook's stdout into the
   # session context, and this notice is the only sign the variables are unset.
@@ -83,7 +96,7 @@ MSG
   exit 0
 fi
 
-(exec 3<>"/dev/tcp/127.0.0.1/$port") 2>/dev/null && exit 0
+listening && exit 0
 
 out="$root/tmp/telemetry"
 mkdir -p "$out"

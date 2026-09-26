@@ -115,7 +115,10 @@ values the documentation does not list (`sdk` for a web session's main thread,
 `compact`-tagged call nearest its boundary. An event does not split its cache
 write by TTL, so an unseen call's write is filed under the 5-minute tokens.
 Events are only as complete as the receiver's uptime: what Claude Code sent
-before it started, or after the row was written, is in no row.
+before it started, or after the row was written, is in no row. The hook also
+runs after every tool call, silent there, and starts a receiver that is
+missing. That covers a session that checked out a branch carrying the hook,
+which registers it with `SessionStart` already past, and a receiver that died.
 
 **The export is the environment's to switch on, never the repository's.**
 Claude Code ignores its OpenTelemetry exporter variables in a project's

@@ -198,7 +198,7 @@ class WhenTheHookStartsTheReceiver(unittest.TestCase):
         self.claude.symlink_to(shutil.which("bash") or "/bin/bash")
         self.path = f"{stubs}:{os.environ['PATH']}"
 
-    def run_hook(self, **env: str) -> str:
+    def run_hook(self, event: str = "SessionStart", **env: str) -> str:
         inherited = {
             k: v
             for k, v in os.environ.items()
@@ -209,7 +209,7 @@ class WhenTheHookStartsTheReceiver(unittest.TestCase):
         strip_otel = 'env $(env | sed -n "s/^\\(OTEL_[A-Z_]*\\)=.*/-u \\1/p") bash "$0"; :'
         ran = subprocess.run(
             [str(self.claude), "-c", strip_otel, str(HOOK)],
-            input="{}",
+            input=json.dumps({"hook_event_name": event}),
             capture_output=True,
             text=True,
             check=True,
@@ -225,16 +225,27 @@ class WhenTheHookStartsTheReceiver(unittest.TestCase):
         time.sleep(0.2)
         self.assertFalse(self.started.exists())
 
-    def test_starts_the_receiver_into_tmp_when_they_are_set(self) -> None:
+    def assert_started(self, event: str) -> None:
         with socket.socket() as probe:
             if probe.connect_ex(("127.0.0.1", 4318)) == 0:
                 self.skipTest("something already listens on 4318, so the hook starts nothing")
-        self.assertEqual(self.run_hook(**EXPORT), "")
+        self.assertEqual(self.run_hook(event, **EXPORT), "")
         for _ in range(50):
             if self.started.exists():
                 break
             time.sleep(0.1)
         self.assertIn(f"--out {self.root}/tmp/telemetry --port 4318", self.started.read_text())
+
+    def test_starts_the_receiver_into_tmp_when_they_are_set(self) -> None:
+        self.assert_started("SessionStart")
+
+    def test_starts_a_missing_receiver_after_a_tool_call_too(self) -> None:
+        self.assert_started("PostToolUse")
+
+    def test_says_nothing_after_a_tool_call_when_the_variables_are_unset(self) -> None:
+        self.assertEqual(self.run_hook("PostToolUse"), "")
+        time.sleep(0.2)
+        self.assertFalse(self.started.exists())
 
 
 if __name__ == "__main__":

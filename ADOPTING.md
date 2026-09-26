@@ -536,6 +536,16 @@ ledger's telemetry capture needs its own there: the list
 OpenTelemetry exporter variables in a repository's `.claude/settings.json`, so
 no file you copy can set them. Hand the list over with the script.
 
+**A session started before the variables were set captures nothing** — the
+adopting one, usually. A running `claude` keeps the environment it launched
+with, so it exports nowhere however promptly the operator sets them; say so in
+the report, so a missing `tmp/telemetry/` is not read as a broken capture.
+Where they were set before the session started, the hook's `SessionStart` has
+already passed by the time it is copied in, and its `PostToolUse` registration
+starts the receiver at the next successful tool call instead. Where that has
+not happened, start it by hand:
+`.claude/costs/hooks/start-telemetry-receiver.sh </dev/null`.
+
 ### Verify
 
 Run these before reporting done. Each one corresponds to a way adoption fails
