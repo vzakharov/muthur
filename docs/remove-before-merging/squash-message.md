@@ -20,11 +20,11 @@ the measure and estimates the holes the summary left: calls after the
 boundary that repeat one made before it.
 
 Claude Code's OpenTelemetry api_request events, captured by a local
-receiver that keeps only their numbers and request ids, now price the row. Each is
-joined to its transcript response by request id; the calls the
-transcript never saw, the compaction's own among them, get a bucket of
-their own. prices.json remains the fallback and the cross-check, and a
-session running without the events says so at start, pointing the
+receiver that keeps only their numbers and request ids, now price the
+row. Each is joined to its transcript response by request id; the calls
+the transcript never saw, the compaction's own among them, get a bucket
+of their own. prices.json remains the fallback and the cross-check, and
+a session running without the events says so at start, pointing the
 operator at the settings to add.
 
 report.py averages orientation and compactions across the rows that
