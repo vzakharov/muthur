@@ -155,6 +155,18 @@ Read commits for intent; never let their first person settle whether the change
 applies. Step 5's "apply by intent, not by patch" already points this way; the
 chain is what makes it load-bearing.
 
+## Arguments
+
+Two words, order-free, each changing one step. Bare, the sync claims its own
+lock and is a task of its own.
+
+- **`claimed`** — another session holds the lock for this sync on this one's
+  behalf, so Step 1 skips the claim. The prompt a session spawned from the offer
+  gets.
+- **`ride-along`** — the sync is part of a task this session is already running,
+  not a task of its own, so Step 3a is skipped and Step 8's tail is that task's.
+  What a ride-along offer runs.
+
 ## Procedure
 
 ### Step 1 — Read the watermark, and claim the sync
@@ -164,11 +176,11 @@ is still a placeholder — there is no baseline to diff against, and guessing on
 would either re-port work already here or skip work that isn't.
 
 Then claim the lock with `scripts/muthur-sync.sh claim`, so no parallel session
-runs a second sync of the same range. **Skip the claim when invoked as
-`/update-muthur claimed`**: a session that offered this one already holds the
-lock for it (§ "Offered at session start"). A claim that exits 3 names who holds
-the lock — stop and report that, with their session link, rather than syncing
-alongside them. `scripts/muthur-sync.sh`'s header is the lock's reference.
+runs a second sync of the same range — unless invoked with `claimed`. A claim
+this session already holds, as it does after making the offer, succeeds again. A
+claim that exits 3 names who holds the lock — stop and report that, with their
+session link, rather than syncing alongside them. `scripts/muthur-sync.sh`'s
+header is the lock's reference.
 
 ### Step 2 — Clone the source
 
@@ -220,8 +232,9 @@ split across sessions, an elephant or a pizza, when the lag is too long for one.
 A split cuts the candidates in source order, each slice or bite ending on a
 commit of the source's first-parent line — Step 7's boundary.
 
-**A ride-along skips this step.** It is already inside a routed task, and a lag
-of a commit or two fits in it by definition.
+**Invoked with `ride-along`, skip this step.** The session is already inside a
+routed task, and a lag of a commit or two fits in it by definition; handing the
+sync to `/task` would route a second task inside the first.
 
 ### Step 4 — Triage each candidate, from its commit message first
 
@@ -334,13 +347,20 @@ keys, and the rules for making the offer. A lock over a day old is printed
 instead, with its holder and session link, for the operator to decide on; only
 their say-so makes `claim --takeover` right.
 
-**The nudge is an offer, not a sync.** Nothing is cloned, read or claimed before
-the operator says yes. On yes, the claim comes first, so nobody takes the lock
-in the gap, then one of two shapes:
+**The nudge is an offer, not a sync.** Nothing is cloned or read before the
+operator says yes.
+
+**The claim comes just before the offer is made**, so the operator is never
+offered a sync another session is already running. A claim that exits 3 drops
+the offer unsaid; on a no, `scripts/muthur-sync.sh release` frees the lock. An
+offer left unanswered keeps it until it goes stale, a day in which every other
+session's nudge stays silent — the accepted cost of that guarantee.
+
+On yes, one of two shapes:
 
 - **Ride-along** — a lag of a commit or two touching files here, offered once
   the session is already making a change on its branch. Run `/update-muthur
-  claimed` in this session, on this branch, after the task's own commits. The
+  ride-along` in this session, on this branch, after the task's own commits. The
   sync's commits ride that task's PR, and its triage table goes in that PR's
   body beside the task's own summary. It is unavailable on a branch whose
   watermark is not the trunk's, where the nudge says so.
