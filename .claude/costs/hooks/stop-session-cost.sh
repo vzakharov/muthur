@@ -118,8 +118,8 @@ commit_row() {
 
   # The turn's spend is measured from the row as last committed, not as last
   # written: a hand run between turns rewrites the file too. A row HEAD lacks
-  # is a session's first, and says so, so the log tells new sessions from
-  # continued ones.
+  # is a session's first, and its subject says so, telling new sessions from
+  # continued ones in the log.
   now="$(jq -r '.total.costUsd' "$staged")"
   if committed="$(repo show "HEAD:$path" 2>/dev/null)"; then
     was="$(jq -r '.total.costUsd // 0' <<<"$committed" 2>/dev/null)"

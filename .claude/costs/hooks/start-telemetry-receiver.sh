@@ -70,9 +70,9 @@ session-start: the cost ledger's telemetry capture is off. Not set to what
 This session's row is priced from its transcript alone, which misses the calls the
 transcript never records.
 
-Agent: this is rarely urgent, so do not raise it now. Mention it once, as a
-closing "by the way" at the end of the session's last report, after /finalize's
-where one runs, with the list below. Claude Code ignores these variables in a
+Agent: this is rarely urgent, so hold it: mention it once, as a closing "by the
+way" in the session's last report (after /finalize's, where one runs), with the
+list below. Claude Code ignores these variables in a
 repository's .claude/settings.json, so no file in this repo can set them. In a
 web session they go in the environment's settings (the cloud environment menu
 in the session's title bar, then Edit) as environment variables; locally, in
