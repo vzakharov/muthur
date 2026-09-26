@@ -188,3 +188,15 @@ The body changes; the `description:` does not, so there is nothing to stage.
     around one `gh` call is not worth a file.
 - **Not built:** hook-side filtering by `adopted`. The agent matches instead,
   which removes the machinery rather than sharing it.
+
+## Where the build differs from the text above
+
+- `load_watermark` fetches the trunk before trusting its watermark, so a sync
+  that landed since the clone last fetched is not offered again.
+- The credential helper stores `$GH_TOKEN` unexpanded, so no token lands in a
+  clone's config; `/update-muthur` Step 2 therefore shares the nudge's
+  `tmp/muthur-source` rather than cloning into the scratchpad.
+- `clone <dir>` on an existing clone fetches and moves its `HEAD` to the
+  source's, and refuses a directory cloned from anything else.
+- What `claimed` means lives in Step 1 alone; § "Offered at session start"
+  points there rather than restating it.
