@@ -49,31 +49,46 @@ nobody asked for.
   set the variables. Every main-thread call there arrived with
   `query_source: "sdk"`.
 
+## This bite
+
+The events become part of the row. What the real file showed shapes it: on 39
+matched responses `prices.json` and the events' `cost_usd` agreed to the cent,
+and the two calls the transcript lacked were Opus `prompt_suggestion` calls.
+So the events' worth is the calls the transcript never sees, and a matched
+response keeps its table price, the event checking it.
+
+- **`lib/billed.py` reads the event file** — `tmp/telemetry/<session-id>.jsonl`,
+  the id being the transcript's stem — into events keyed by `request_id`,
+  parsed with `lib/shape.py`'s readers, a repeated id kept once.
+- **The join runs inside the one scan.** Each priced response whose
+  `requestId` has an event is counted matched; the rest of the events are
+  **unseen** calls, bucketed by `query_source` in the row's new `telemetry`
+  object and added to `total` and `byRate` (an event's `speed: "normal"` is the
+  table's `standard`). An event does not split its cache write by TTL, so an
+  unseen call's write sits under the 5-minute tokens, its dollars being the
+  event's own. `total` stops being `ownTurns + subagents` exactly, the
+  difference being `telemetry.unseen`.
+- **Each compaction gains `billedUsd`**: the `compact`-tagged unseen call
+  nearest its boundary in time. None tagged leaves it null; the
+  position fallback waits for the first real compaction to show it is needed.
+- **The table checks the events.** `telemetry` carries both prices of the
+  matched responses; beyond 1% apart, the row warns.
+- **No event file, no `telemetry`** — null, as on every older row, which
+  parses unchanged. `session_cost.py` takes `--events <path>` for a hand run.
+- **The row's shape moves to `lib/rows.py`** (`SessionCost`,
+  `parse_session_cost`), keeping `lib/pricing.py` under ~450 lines.
+- **`.claude/costs/CLAUDE.md` is corrected**: § "Telemetry" says what reads the
+  events and what stripping `OTEL_*` means for the hook; § "Checking the
+  arithmetic" loses "background Haiku … a fraction of a percent" for what the
+  events show; § "What the totals do not cover" loses "Each compact" where
+  events exist.
+
 ## Rest of the elephant
 
-The telemetry side, coarse: reading the events.
-
-- **The events become the row's total.** Read the session's event file, keep the
-  numbers, and join each event to its transcript response by `request_id` against
-  the record's `requestId`. A matched response is priced from its event, so the
-  phases above sum billed dollars rather than estimates; an unmatched event is a
-  call the transcript never saw, and lands in a bucket of its own split by
-  `query_source`. Its values are not the documented `main`, `subagent` and
-  `auxiliary`: a web session's main thread reports `sdk`, and Claude Code's
-  code tags a compaction's request `compact`. So the compaction's own call is
-  found by that tag, with position — an unmatched call between the boundary
-  and the last response before it — as the fallback if a compaction arrives
-  untagged; the first real compaction in an event file settles which. Each
-  compaction in the row gains its billed cost, where today the ledger can only
-  record its size.
-- **`prices.json` stays**, as the fallback for a session with no events and as
-  the cross-check on the ones it has — the events' `cost_usd` is Claude Code's
-  own estimate at list price, not an invoice. A row says which source priced it.
-- **`.claude/costs/CLAUDE.md` is corrected.** § "Checking the arithmetic" puts
-  the calls it cannot see at "a fraction of a percent" and calls them background
-  Haiku; this session measured about 8% of spend in Opus calls that read the
-  whole context and write almost nothing. § "What the totals do not cover" loses
-  "Each compact" once the events price it.
+- **`report.py` shows the unseen calls** — their share of spend by
+  `query_source`, and how many rows were priced with events.
+- **The position fallback for an untagged compaction**, if the first real
+  compaction in an event file arrives without `compact`.
 
 ## What the events are still to cover
 
