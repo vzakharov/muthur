@@ -57,7 +57,7 @@ trunk_ref() {
   return 1
 }
 
-# Sets SOURCE_REPO and LAST_SHA from the trunk's watermark. Returns 1 when there
+# Sets SOURCE_REPO, LAST_SHA and ADOPTED from the trunk's watermark. Returns 1 when there
 # is nothing to sync against: no watermark (the sync path was declined) or a
 # placeholder SHA (an unhydrated stub, which the template itself ships).
 read_trunk_watermark() {
@@ -81,11 +81,9 @@ load_watermark() {
   SOURCE_URL="https://github.com/${SOURCE_REPO}.git"
 }
 
-# The token is single-quoted into the helper, so the config stores `$GH_TOKEN`
-# and the shell git spawns expands it on every use: nothing secret lands on
-# disk, and the lazy blob fetches a later `git show` triggers still
-# authenticate. No terminal prompt, so a refused credential fails instead of
-# hanging the hook.
+# Single-quoted, so a clone's config stores `$GH_TOKEN` itself and each use
+# expands it: no secret on disk, and the lazy blob fetches still authenticate.
+# Without a terminal prompt, a refused credential fails rather than hanging.
 CREDENTIAL_HELPER='!f() { echo username=x-access-token; echo "password=$GH_TOKEN"; }; f'
 export GIT_TERMINAL_PROMPT=0
 
@@ -139,7 +137,6 @@ fetch_lock() {
     die "could not fetch $LOCK from origin."
 }
 
-# Seconds since the claim commit was made, which is what staleness reads.
 lock_age() { echo $(($(date +%s) - $(git log -1 --format=%ct "$1"))); }
 
 describe_lock() {
@@ -249,7 +246,7 @@ $(mark_files <<<"$files")"
   echo "from, is $count commit(s) past the last sync (${LAST_SHA:0:12})."
   echo
   # Past the cap the lag is large, the offer is a new session whatever the rest
-  # says, and the exact list no longer matters.
+  # says, and the exact list stops mattering.
   if [ "$lines" -gt "$NUDGE_CAP" ]; then
     head -n "$NUDGE_CAP" <<<"$data"
     echo "  … and $((lines - NUDGE_CAP)) more"

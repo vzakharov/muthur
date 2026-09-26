@@ -217,8 +217,8 @@ Hand the candidate set to `@.claude/skills/task/SKILL.md` as the task: the
 commits from `lastSyncedSha` to the recorded HEAD, with their titles. Steps 4–7
 are how the work gets done in whichever outcome `/task` picks — including a
 split across sessions, an elephant or a pizza, when the lag is too long for one.
-A split takes the candidates in source order, so each slice or bite ends on a
-commit of the source's first-parent line, which is Step 7's boundary.
+A split cuts the candidates in source order, each slice or bite ending on a
+commit of the source's first-parent line — Step 7's boundary.
 
 **A ride-along skips this step.** It is already inside a routed task, and a lag
 of a commit or two fits in it by definition.
@@ -347,10 +347,6 @@ in the gap, then one of two shapes:
 - **New session** — anything larger. Where `create_session` exists, spawn one on
   this repo with the prompt `/update-muthur claimed`; elsewhere, hand the
   operator that command to paste into one.
-
-**`claimed` means the lock is already this sync's**, taken by the session that
-made the offer, so Step 1 does not claim it again. It is the only argument this
-skill reads.
 
 ## Add what the next sync teaches you
 
