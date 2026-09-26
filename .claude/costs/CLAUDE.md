@@ -109,10 +109,10 @@ from them.
 Claude Code ignores its OpenTelemetry exporter variables in a project's
 `.claude/settings.json` (code.claude.com/docs/en/env-vars), reading them only
 from the process environment, user settings and managed settings — so, in a
-web session, the cloud environment's own variables. The hook checks them rather
-than setting them, and where they do not point at the receiver it starts nothing
-and prints a notice naming them, its list being the one home of what to set. `NO_PROXY` is not among them: the environment's own list already
-exempts `127.0.0.1`, and a value set beside the others would replace it.
+web session, the cloud environment's own variables. Where they do not point at
+the receiver, the hook starts nothing and prints a notice naming them; its list
+is the one home of what to set. `NO_PROXY` stays off it: the environment's own
+list already exempts `127.0.0.1`, and a value set beside the others replaces it.
 
 ## Checking the arithmetic
 

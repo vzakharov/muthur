@@ -531,7 +531,7 @@ in your report that this is the one step you could not apply yourself.
 #### The ledger's telemetry variables, where `.claude/costs/` was taken
 
 The same settings hold the environment's **environment variables**, and the cost
-ledger's telemetry capture needs six of them there: the list
+ledger's telemetry capture needs its own there: the list
 `.claude/costs/hooks/start-telemetry-receiver.sh` prints. Claude Code ignores
 OpenTelemetry exporter variables in a repository's `.claude/settings.json`, so
 no file you copy can set them. Hand the list over with the script; until it is
