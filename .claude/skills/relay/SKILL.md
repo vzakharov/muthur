@@ -1,14 +1,12 @@
 ---
 description: >-
   Hand the session to a fresh one instead of compacting it: write a summary of
-  the conversation to a committed file, start a new session on the same branch
-  with a one-line prompt, and stop. Invoke as `/relay [<first message>]` to hand
-  off — the argument being what the operator would type first after a compact,
-  so `/relay /go` relays and then implements, `/relay /handle` relays and then
-  works the PR's comments; the new session runs `/relay take <branch>` to pick
-  the work up. Use when the
-  operator says "/relay", "relay the session", "hand this to a new session", or
-  picks the new-session route the context budget notice offers.
+  the conversation to a committed file, start a new session on the branch, and
+  stop. Invoke as `/relay [<first message>]`, the argument being what the
+  operator would type first after a compact (`/relay /go`, `/relay /handle`);
+  the new session runs `/relay take <branch>`. Use when the operator says
+  "/relay", "relay the session", "hand this to a new session", or picks the
+  new-session route the context budget notice offers.
 ---
 
 A relay is `/compact` done in the open. The summary is written as an ordinary turn — its tokens priced like any other, its text a file the operator can read — and a new session, the **successor**, starts from it. The branch already holds the plan, the commits and the PR, and the successor re-reads them from disk, so the summary carries only what the tree does not.
@@ -53,7 +51,7 @@ Its prompt is one line, `/relay take <branch>`. The summary is not passed in the
 
 ### Step 4 — Report and stop
 
-The successor's link (or the local recipe), and the summary's size in characters with a rough token count at four characters a token — the context the successor starts with on top of its baseline. Leave this session open: archiving it is the operator's call, and on the web it is the only place the full transcript still exists.
+The successor's link (or the local recipe), and the summary's size in characters with a rough token count at four characters a token — the context the successor starts with on top of its baseline. Leave this session open: archiving it is the operator's call (§ "What a relay loses").
 
 ## What a relay loses
 
