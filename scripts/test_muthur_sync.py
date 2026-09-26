@@ -23,7 +23,7 @@ from pathlib import Path
 
 SCRIPTS = Path(__file__).resolve().parent
 WATERMARK = ".claude/skills/update-muthur/watermark.json"
-SOURCE_REPO = "vzakharov/muthur"
+SOURCE_REPO = json.loads((SCRIPTS.parent / WATERMARK).read_text())["repo"]
 DAY = 24 * 3600
 
 FAKE_GH = """#!/bin/sh
@@ -171,7 +171,7 @@ class SilentTest(MuthurSyncTestCase):
 
     def test_the_template_itself(self) -> None:
         work = self.lagging()
-        self.assertEqual(self.nudge(work, FAKE_GH_REPO="VZakharov/Muthur"), "")
+        self.assertEqual(self.nudge(work, FAKE_GH_REPO=SOURCE_REPO.upper()), "")
 
     def test_up_to_date(self) -> None:
         self.assertEqual(self.nudge(self.fx.adopter(self.fx.base)), "")
@@ -215,7 +215,7 @@ class LagTest(MuthurSyncTestCase):
         work = self.lagging()
         out = self.nudge(work, GIT_CONFIG_KEY_0=f"url.file://{self.fx.root}/gone.git.insteadOf")
         self.assertEqual(len(out.splitlines()), 1, out)
-        self.assertIn("could not run — could not reach vzakharov/muthur.", out)
+        self.assertIn(f"could not run — could not reach {SOURCE_REPO}.", out)
 
 
 class LockTest(MuthurSyncTestCase):
