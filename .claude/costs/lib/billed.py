@@ -1,9 +1,9 @@
 """Claude Code's `api_request` events beside the transcript: one per API call,
 the calls the transcript never records included.
 
-`hooks/telemetry_receiver.py` writes them; this reads them back and joins them
-to the priced responses by request id. `.claude/costs/CLAUDE.md` § "Telemetry"
-carries what the events add and what they cannot.
+`hooks/telemetry_receiver.py` writes them, and this reads them back for the
+pricing scan to join to its responses by request id. `.claude/costs/CLAUDE.md`
+§ "Telemetry" carries what the events add and what they cannot.
 """
 
 from __future__ import annotations
@@ -55,7 +55,8 @@ def parse_events(text: str, where: str) -> Dict[str, Event]:
             at=required(read_string, record, "timestamp", at),
             tokens=Tally(
                 input_tokens=required(read_count, record, "input_tokens", at),
-                # An event does not split its cache write by TTL.
+                # An event does not split its cache write by TTL, so all of it
+                # is filed as the 5-minute kind; the dollars are the event's.
                 cache_write_5m_tokens=read_count(record, "cache_creation_tokens", at) or 0,
                 cache_read_tokens=read_count(record, "cache_read_tokens", at) or 0,
                 output_tokens=required(read_count, record, "output_tokens", at),

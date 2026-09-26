@@ -48,7 +48,7 @@ class SessionCost:
     # with no priced response to measure it over.
     orientation: Optional[Phase] = None
     compactions: List[Compaction] = field(default_factory=list)
-    # Null where the session left no events, and on every row from before.
+    # Null where the session left no events to read.
     telemetry: Optional[Telemetry] = None
 
 
