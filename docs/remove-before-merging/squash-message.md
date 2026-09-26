@@ -11,11 +11,12 @@ a URL - so the report could leave the operator a bare id to turn into
 a URL by hand. Nor did anything lead back from the new session to the
 old one, which on the web is the only place the full transcript lives.
 
-The handoff report now names the URL, https://claude.ai/code/<session_id>
-built from the returned id, written bare so the chat renders it as a
-link. The summary's Pointers record the relaying session's own URL
-(from get_session with no id), and the pickup's first reply names that
-session as a bare link, so the operator can click either way.
+The handoff report now names the URL,
+https://claude.ai/code/<session_id> built from the returned id, written
+bare so the chat renders it as a link. The summary's Pointers record
+the relaying session's own URL (from get_session with no id), and the
+pickup's first reply names that session as a bare link, so the operator
+can click either way.
 
 Co-authored-by: Claude <noreply@anthropic.com>
 ```
