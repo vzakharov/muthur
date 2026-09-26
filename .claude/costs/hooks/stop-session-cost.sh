@@ -102,7 +102,7 @@ place_row() { mkdir -p -- "$(dirname "$2")" && mv -f -- "$1" "$2"; }
 # in flight. What is left is two steps — the ref move and the rename — between
 # which the tree differs from HEAD.
 commit_row() {
-  local staged=$1 row=$2 top path head blob was now subject index tree commit
+  local staged=$1 row=$2 top path head blob was now oriented subject index tree commit
   local sign=()
 
   top="$(repo rev-parse --show-toplevel)" &&
@@ -119,8 +119,8 @@ commit_row() {
   # The turn's spend is measured from the row as last committed, not as last
   # written: a hand run between turns rewrites the file too. A row HEAD lacks
   # is a session's first, and its subject says so, telling new sessions from
-  # continued ones in the log, and names the orientation within it — settled
-  # by the time the first turn ends.
+  # continued ones in the log. Only that subject names the orientation, which
+  # the first turn settles.
   now="$(jq -r '.total.costUsd' "$staged")"
   if committed="$(repo show "HEAD:$path" 2>/dev/null)"; then
     was="$(jq -r '.total.costUsd // 0' <<<"$committed" 2>/dev/null)"
