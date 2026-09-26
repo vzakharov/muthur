@@ -198,5 +198,10 @@ The body changes; the `description:` does not, so there is nothing to stage.
   `tmp/muthur-source` rather than cloning into the scratchpad.
 - `clone <dir>` on an existing clone fetches and moves its `HEAD` to the
   source's, and refuses a directory cloned from anything else.
-- What `claimed` means lives in Step 1 alone; § "Offered at session start"
-  points there rather than restating it.
+- `claimed` and `ride-along` are defined in `/update-muthur` § "Arguments";
+  a ride-along runs `/update-muthur ride-along`, which skips Step 3a.
+- The claim comes just before the offer rather than after the yes, and a no
+  runs `muthur-sync.sh release`. A claim this session already holds succeeds
+  again.
+- `scripts/muthur-sync.sh` has no catalog row of its own; the `/update-muthur`
+  row carries it (#116 applies the same rule catalog-wide).
