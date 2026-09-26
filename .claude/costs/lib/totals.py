@@ -27,7 +27,7 @@ class Bucket:
     cost_usd: float = 0.0
 
     def count(self, spend: Tally) -> None:
-        """One session's spend, the whole of it or one source's share."""
+        """Adds one session: all it spent, or one source's part of that."""
         self.sessions += 1
         self.responses += spend.responses
         self.cost_usd += spend.cost_usd
@@ -87,7 +87,7 @@ class OrientationSummary:
 
 @dataclass
 class TelemetrySummary:
-    """The calls only the events saw. Their share is of `pricedUsd`, the spend
+    """The calls only the events saw. Their share is of `priced_usd`, the spend
     of the rows priced with events: a row without them has no unseen calls to
     count, so its spend would only dilute the share."""
 
