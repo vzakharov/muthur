@@ -11,14 +11,16 @@ the same move in the open: the agent writes the summary once, as a
 committed file, and starts a new session on the same branch with the
 one-line prompt `/relay take <branch>`.
 
-The summary follows /compact's own sections and rules, the operator's
-messages verbatim among them, but points at files by path instead of
-quoting code, since the successor re-reads the pushed branch. An
-in-progress plan is paused first. `/relay <message>` takes what the
-operator would type first after a compact, so `/relay /go` relays and
-implements; `/relay take` attaches and dispatches that message, or
-else the summary's own next step. On the web the successor starts
-through create_session; locally the report gives the line to type.
+The summary follows /compact's own sections and rules but carries the
+whole conversation: operator messages verbatim up to a few paragraphs,
+each followed by the agent's reply condensed to a line. It points at
+files by path instead of quoting code, since the successor re-reads
+the pushed branch. An in-progress plan is paused first.
+`/relay <to-be first message>` takes what the operator would type
+first after a compact, so `/relay /go` relays and implements;
+`/relay take` attaches and dispatches that message, or else the
+summary's own next step. On the web the successor starts through
+create_session; locally the report gives the line to type.
 
 The context budget hook's warning offers /relay beside /compact, and
 the catalog lists it under the PR loop.
