@@ -1,0 +1,56 @@
+{
+  "sessionId": "777ed2f3-b273-5406-8637-0c9a6b5c1ed2",
+  "branch": "claude/relay-session-if5xk4",
+  "cwd": "/home/user/muthur",
+  "openingPrompt": "/from-branch claude/relay-session-if5xk4 read docs/remove-before-merging/relay.md — the summary a previous session handed off to you — and follow its Next step.",
+  "prs": [],
+  "url": "https://claude.ai/code/session_01DfktE5AiQTUjsvEXRxBJ5i",
+  "operator": "vzakharov",
+  "firstResponseAt": "2026-09-26T00:06:14.747Z",
+  "lastResponseAt": "2026-09-26T00:06:35.841Z",
+  "pricesAsOf": "2026-09-23",
+  "claudeCodeTotalUsd": null,
+  "total": {
+    "inputTokens": 8,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 45020,
+    "cacheReadTokens": 292383,
+    "outputTokens": 1223,
+    "thinkingTokens": 241,
+    "responses": 4,
+    "costUsd": 0.44312860000000004
+  },
+  "ownTurns": {
+    "inputTokens": 8,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 45020,
+    "cacheReadTokens": 292383,
+    "outputTokens": 1223,
+    "thinkingTokens": 241,
+    "responses": 4,
+    "costUsd": 0.44312860000000004
+  },
+  "subagents": {
+    "inputTokens": 0,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 0,
+    "cacheReadTokens": 0,
+    "outputTokens": 0,
+    "thinkingTokens": 0,
+    "responses": 0,
+    "costUsd": 0.0
+  },
+  "byRate": {
+    "claude-opus-5-5/standard": {
+      "inputTokens": 8,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 45020,
+      "cacheReadTokens": 292383,
+      "outputTokens": 1223,
+      "thinkingTokens": 241,
+      "responses": 4,
+      "costUsd": 0.44312860000000004
+    }
+  },
+  "warnings": []
+}
