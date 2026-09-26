@@ -1,7 +1,7 @@
 Proposed squash title/body:
 
 ```
-feat: split ADOPTING.md along the decisions that make it optional (pr #117)
+refactor: split ADOPTING.md along the decisions that make it optional (pr #117)
 ```
 
 ```
