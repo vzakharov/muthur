@@ -34,7 +34,9 @@ unset.
 
 report.py averages orientation and compactions across the rows that
 carry them, by what ended the phase and by opening command. Older rows
-stay without the fields. Bash edits are not seen.
+stay without the fields. Bash edits are not seen. A session's first cost
+commit reads "session cost (new)", telling new sessions from continued
+ones in the log.
 
 The operator's voice entry also asks for Russian replies to messages
 that carry no language of their own.
