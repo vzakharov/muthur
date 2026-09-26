@@ -43,28 +43,29 @@ nobody asked for.
   `ADOPTING.md`, `/detemplate` Step 6, `/spinoff` and the catalog row point at
   the hook's list. Events land in `tmp/telemetry/<session-id>.jsonl`, stripped
   to numbers and the named fields; nothing reads them yet.
+- **The capture is checked live.** Claude Code strips `OTEL_*` from what it
+  spawns, so the hook reads them from the `claude` process through `/proc`;
+  with that, events reached `tmp/telemetry/` in a session whose environment
+  set the variables. Every main-thread call there arrived with
+  `query_source: "sdk"`.
 
 ## Rest of the elephant
 
-The telemetry side, coarse. The capture is ready for the environment to switch
-on; what is left is checking it and reading the events.
+The telemetry side, coarse: reading the events.
 
-- **Check the capture works**, in the first session started after the operator
-  sets the variables the hook's notice lists: events in `tmp/telemetry/` after its first turn. An environment whose
-  `NO_PROXY` lacks `127.0.0.1` sends the export through its proxy;
-  `tmp/telemetry/receiver.log` staying empty with no events beside it is that
-  case. The join below is built against that session's real event file, not
-  the documented shape alone.
 - **The events become the row's total.** Read the session's event file, keep the
   numbers, and join each event to its transcript response by `request_id` against
   the record's `requestId`. A matched response is priced from its event, so the
   phases above sum billed dollars rather than estimates; an unmatched event is a
   call the transcript never saw, and lands in a bucket of its own split by
-  `query_source`. That field takes only `main`, `subagent` and `auxiliary`, so
-  the compaction's own call is found by position — an unmatched call between
-  the boundary and the last response before it, the one that wrote the most —
-  and each compaction in the row gains its billed cost, where today the ledger
-  can only record its size. The real file settles whether that rule holds.
+  `query_source`. Its values are not the documented `main`, `subagent` and
+  `auxiliary`: a web session's main thread reports `sdk`, and Claude Code's
+  code tags a compaction's request `compact`. So the compaction's own call is
+  found by that tag, with position — an unmatched call between the boundary
+  and the last response before it — as the fallback if a compaction arrives
+  untagged; the first real compaction in an event file settles which. Each
+  compaction in the row gains its billed cost, where today the ledger can only
+  record its size.
 - **`prices.json` stays**, as the fallback for a session with no events and as
   the cross-check on the ones it has — the events' `cost_usd` is Claude Code's
   own estimate at list price, not an invoice. A row says which source priced it.
