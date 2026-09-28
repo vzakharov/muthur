@@ -161,6 +161,15 @@ class WhenTheNoticesFire(BudgetTestCase):
         self.assertIn("the open bite", warning)
         self.assertIn("the open bite", pause)
 
+    def test_both_notices_offer_relay_as_the_way_on(self) -> None:
+        self.session.append(assistant(WARN + 1))
+        warning = self.session.notice()
+        self.session.append(assistant(PAUSE + 1))
+        pause = self.session.notice()
+        assert warning is not None and pause is not None
+        self.assertIn("offering `/relay`", warning)
+        self.assertIn("offering `/relay`", pause)
+
 
 class WhichRecordsAreTheReading(BudgetTestCase):
     def test_reads_the_last_main_chain_response(self) -> None:
