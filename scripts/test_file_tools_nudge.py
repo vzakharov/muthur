@@ -136,6 +136,29 @@ class WhatIsLeftAlone(NudgeTestCase):
         self.assertIn("unreadable payload", result.stderr)
 
 
+class TheBatchPrefix(NudgeTestCase):
+    def test_everything_after_it_goes_through_the_first_time(self) -> None:
+        for command in (
+            "BATCH_EDIT=1 sed -i 's/a/b/' a.txt",
+            "LC_ALL=C BATCH_EDIT=1 sed -i 's/a/b/' a.txt",
+            "BATCH_EDIT=1 find . -name '*.md' -exec sed -i 's/a/b/' {} +",
+            "cd sub && BATCH_EDIT=1 sed -i 's/a/b/' a.txt && echo x > b.txt",
+        ):
+            with self.subTest(command=command):
+                self.assertIsNone(self.reason(command))
+
+    def test_what_comes_before_it_is_still_checked(self) -> None:
+        self.assertIsNotNone(self.reason("echo x > b.txt && BATCH_EDIT=1 sed -i 's/a/b/' a.txt"))
+
+    def test_only_as_an_assignment_in_front_of_a_command(self) -> None:
+        for command in (
+            "echo BATCH_EDIT=1 > notes.txt",
+            "BATCH_EDIT=0 sed -i 's/a/b/' a.txt",
+        ):
+            with self.subTest(command=command):
+                self.assertIsNotNone(self.reason(command))
+
+
 class RefusedOnceThenAllowed(NudgeTestCase):
     def test_the_identical_command_goes_through_on_retry(self) -> None:
         self.assertIsNotNone(self.reason(EDIT))
@@ -155,6 +178,11 @@ class RefusedOnceThenAllowed(NudgeTestCase):
         assert reason is not None
         self.assertIn("run the identical command again", reason)
         self.assertIn("with `sed -i`", reason)
+
+    def test_the_reason_names_the_batch_prefix(self) -> None:
+        reason = self.reason(EDIT)
+        assert reason is not None
+        self.assertIn("`BATCH_EDIT=1`", reason)
 
     def test_an_unrecordable_refusal_is_not_made(self) -> None:
         (self.root / "tmp").write_text("a file where the state directory goes")

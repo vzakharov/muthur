@@ -6,8 +6,10 @@ again in the same session. Reads pass: they leave nothing to review.
 CLAUDE.md § "Key principles" asks for `Edit`/`Write` in every permission mode,
 while the harness's own prompt, in some modes, says the shell is fine. One
 refusal at the moment of the call is the reminder; running the same command
-again is the agent saying it means it, which keeps a mass substitution across
-dozens of files one retry away.
+again is the agent saying it means it. A command carrying `BATCH_EDIT=1` as an
+assignment is never checked from there on, so a deliberate batch of edits is a
+choice made visibly in each command rather than a retry per command — and not
+an environment variable, which is set once and then covers every edit after it.
 
 Fails open: a command that cannot be tokenised, a payload that cannot be read or
 a refusal that cannot be recorded is allowed, since an unrecorded refusal would
@@ -22,6 +24,7 @@ import os
 import re
 import shlex
 import sys
+from itertools import takewhile
 from pathlib import Path
 from typing import Iterator, Optional
 
@@ -29,6 +32,7 @@ PUNCTUATION = "();<>|&\n"
 HEREDOC = re.compile(r"<<(?!<)-?\s*(['\"]?)([A-Za-z_][A-Za-z0-9_]*)\1")
 ASSIGNMENT = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*=")
 NOT_FILES = ("/dev/", "/proc/", "/sys/")
+DELIBERATE = "BATCH_EDIT=1"
 
 # Commands that run the next word as a command, and the options of theirs that
 # take the following word as their argument.
@@ -181,6 +185,8 @@ def classify(words: list[str], outputs: list[str]) -> Optional[tuple[str, str]]:
 
 def detect(command: str) -> Optional[tuple[str, str]]:
     for simple in simple_commands(tokens(command)):
+        if DELIBERATE in takewhile(ASSIGNMENT.match, simple.words):
+            return None
         found = classify(simple.words, simple.outputs)
         if found:
             return found
@@ -194,7 +200,8 @@ def reason(kind: str, via: str) -> str:
         f"saying the shell is fine. This command {VERB[kind]} with `{via}`: use "
         f"{TOOL[kind]} instead. If the shell is genuinely the better tool here — one "
         "mechanical substitution across dozens of files, say — run the identical "
-        "command again and it goes through."
+        "command again and it goes through. For a deliberate batch, put "
+        f"`{DELIBERATE}` in front of each command and nothing after it is checked."
     )
 
 
