@@ -1,0 +1,80 @@
+{
+  "sessionId": "1a3a08cc-b06b-5eb1-b4f5-78a07c9ca669",
+  "branch": "claude/modest-bohr-5e39ph",
+  "cwd": "/home/user/muthur",
+  "openingPrompt": "давай записывать rate_limit_info в данные сессии, и в коммит-сообщениях (можно в боде, не в дескрипшне) тоже писать прирост five_hour/seven_day примечание: цифр…",
+  "prs": [],
+  "url": "https://claude.ai/code/session_01NUNpDKMwycwfVmhFdNKYoQ",
+  "operator": "vzakharov",
+  "firstResponseAt": "2026-09-28T04:29:02.954Z",
+  "lastResponseAt": "2026-09-28T04:33:27.039Z",
+  "pricesAsOf": "2026-09-23",
+  "claudeCodeTotalUsd": null,
+  "total": {
+    "inputTokens": 48,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 79860,
+    "cacheReadTokens": 2353582,
+    "outputTokens": 9631,
+    "thinkingTokens": 5061,
+    "responses": 24,
+    "costUsd": 1.3024084
+  },
+  "ownTurns": {
+    "inputTokens": 48,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 79860,
+    "cacheReadTokens": 2353582,
+    "outputTokens": 9631,
+    "thinkingTokens": 5061,
+    "responses": 24,
+    "costUsd": 1.3024084
+  },
+  "subagents": {
+    "inputTokens": 0,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 0,
+    "cacheReadTokens": 0,
+    "outputTokens": 0,
+    "thinkingTokens": 0,
+    "responses": 0,
+    "costUsd": 0.0
+  },
+  "byRate": {
+    "claude-opus-5-5/standard": {
+      "inputTokens": 48,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 79860,
+      "cacheReadTokens": 2353582,
+      "outputTokens": 9631,
+      "thinkingTokens": 5061,
+      "responses": 24,
+      "costUsd": 1.3024084
+    }
+  },
+  "warnings": [],
+  "orientation": {
+    "endedBy": "end_turn",
+    "endedOn": null,
+    "endedAt": "2026-09-28T04:33:27.039Z",
+    "contextTokens": 120522,
+    "spend": {
+      "inputTokens": 46,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 79574,
+      "cacheReadTokens": 2233348,
+      "outputTokens": 8286,
+      "thinkingTokens": 4919,
+      "responses": 23,
+      "costUsd": 1.2491656
+    }
+  },
+  "compactions": [],
+  "telemetry": {
+    "events": 24,
+    "matched": 24,
+    "matchedTableUsd": 1.3024084,
+    "matchedEventUsd": 1.3024084,
+    "unseen": {}
+  }
+}
