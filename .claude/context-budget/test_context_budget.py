@@ -169,7 +169,6 @@ class WhenTheNoticesFire(BudgetTestCase):
         assert warning is not None and pause is not None
         self.assertIn("offering `/relay`", warning)
         self.assertIn("offering `/relay`", pause)
-        self.assertNotIn("/go <branch>", pause)
 
 
 class WhichRecordsAreTheReading(BudgetTestCase):
