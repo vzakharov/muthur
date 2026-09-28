@@ -1,7 +1,7 @@
 Proposed squash title/body:
 
 ```
-feat: turn away the first Bash edit of a file (pr #118)
+fix: turn away the first Bash edit of a file (pr #118)
 ```
 
 ```
@@ -12,15 +12,16 @@ CLAUDE.md line is one bullet among many.
 
 A PreToolUse hook on Bash now denies the first command it sees that
 edits a file in place or writes one, naming the tool to use instead.
-The identical command run again in the same session goes through, so
-the accidental habit is caught while a deliberate mass substitution
-costs one retry. The command is tokenised with shlex rather than
-matched as a string, and the hook fails open on anything it cannot
-parse or record.
+The identical command run again in the same session goes through, and
+a BATCH_EDIT=1 in front of a command exempts everything after it, so
+the accidental habit is caught while a deliberate batch is a choice
+made visibly in each command. The command is tokenised with shlex
+rather than matched as a string, and the hook fails open on anything
+it cannot parse or record.
 
 The CLAUDE.md principle narrows to changing files: a shell read
-leaves no effect for the operator to reconstruct, and the harness
-already refuses an Edit on a file that never went through Read.
+leaves no effect for the operator to reconstruct, though a file about
+to be changed still goes through Read, which Edit requires anyway.
 
 Co-authored-by: Claude <noreply@anthropic.com>
 ```
