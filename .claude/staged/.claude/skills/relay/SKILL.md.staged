@@ -5,8 +5,8 @@ description: >-
   stop. Invoke as `/relay [<to-be first message>]`, the argument being what
   the operator would type first after a compact (`/relay /go`, `/relay /handle`);
   the new session runs `/relay take <branch>`. Use when the operator says
-  "/relay", "relay the session", "hand this to a new session", or picks the
-  new-session route the context budget notice offers.
+  "/relay", "relay the session", "hand this to a new session", or takes up
+  the `/relay` the context budget notice offers.
 ---
 
 A relay is `/compact` done in the open. The summary is written as an ordinary turn — its tokens priced like any other, its text a file the operator can read — and a new session, the **successor**, starts from it. The branch already holds the plan, the commits and the PR, and the successor re-reads them from disk, so the summary carries only what the tree does not.
