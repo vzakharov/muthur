@@ -6,10 +6,10 @@ again in the same session. Reads pass: they leave nothing to review.
 CLAUDE.md § "Key principles" asks for `Edit`/`Write` in every permission mode,
 while the harness's own prompt, in some modes, says the shell is fine. One
 refusal at the moment of the call is the reminder; running the same command
-again is the agent saying it means it. A command carrying `BATCH_EDIT=1` as an
-assignment is never checked from there on, so a deliberate batch of edits is a
-choice made visibly in each command rather than a retry per command — and not
-an environment variable, which is set once and then covers every edit after it.
+again is the agent saying it means it. `BATCH_EDIT=1` in front of a command
+exempts everything from there on: a deliberate batch stays a choice made
+visibly in each command, where a variable exported once would cover every edit
+after it (#118).
 
 Fails open: a command that cannot be tokenised, a payload that cannot be read or
 a refusal that cannot be recorded is allowed, since an unrecorded refusal would

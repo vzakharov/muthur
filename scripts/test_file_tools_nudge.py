@@ -178,10 +178,6 @@ class RefusedOnceThenAllowed(NudgeTestCase):
         assert reason is not None
         self.assertIn("run the identical command again", reason)
         self.assertIn("with `sed -i`", reason)
-
-    def test_the_reason_names_the_batch_prefix(self) -> None:
-        reason = self.reason(EDIT)
-        assert reason is not None
         self.assertIn("`BATCH_EDIT=1`", reason)
 
     def test_an_unrecordable_refusal_is_not_made(self) -> None:
