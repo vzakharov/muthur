@@ -32,10 +32,10 @@
 #     `.claude/staged/` to a tracked file it stands for and to the `.staged` suffix
 #     that keeps it from loading, passing quietly when nothing is staged.
 #     Dropping it lets a copy of nothing ride to `/finalize`, or a live one load.
-#   check-claude-md-size.sh — caps the CLAUDE.md the branch will land, its
-#     staged copy where there is one, with a ceiling and a lower target for a
-#     branch that crossed it. Dropping it leaves a file paid for on every turn
-#     free to grow unnoticed.
+#   check-claude-md-size.sh — caps the CLAUDE.md the branch will land plus
+#     everything it `@`-imports, each file's staged copy where there is one,
+#     with a ceiling and a lower target for a branch that crossed it. Dropping
+#     it leaves text paid for on every turn free to grow unnoticed.
 #   check-muthur.sh — everything that tests only this repo's own machinery: the
 #     repo-identity check and every `scripts/test_*.py`. One line because an
 #     adopting repo drops them together; it keys on the catalog and exits 0

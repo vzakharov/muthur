@@ -45,9 +45,11 @@ class CheckClaudeMdSize(unittest.TestCase):
             ["git", *args], cwd=self.root, check=True, capture_output=True, text=True
         ).stdout.strip()
 
-    def write(self, path: str, chars: int, char: str = "a") -> None:
+    def write(self, path: str, chars: int, char: str = "a", head: str = "") -> None:
+        """Write `chars` characters to `path`: `head`, padded out with `char`."""
         (self.root / path).parent.mkdir(parents=True, exist_ok=True)
-        (self.root / path).write_text(char * chars, encoding="utf-8")
+        text = head + char * (chars - len(head))
+        (self.root / path).write_text(text, encoding="utf-8")
 
     def remove(self, path: str) -> None:
         (self.root / path).unlink()
@@ -156,7 +158,63 @@ class CheckClaudeMdSize(unittest.TestCase):
         self.remove(STAGED_COPY)
         self.write("CLAUDE.md", TARGET + 10)
         self.commit("swap")
-        self.assertIn("CLAUDE.md is", self.assertPasses().stdout)
+        self.assertIn(f"(CLAUDE.md {TARGET + 10})", self.assertPasses().stdout)
+
+    def test_an_import_counts_toward_the_total(self) -> None:
+        self.base(100)
+        self.write("CLAUDE.md", TARGET, head="See @docs/moved.md for more.\n")
+        self.write("docs/moved.md", CEILING - TARGET + 1)
+        self.commit("move text into an import")
+        self.assertIn("docs/moved.md", self.assertFails().stderr)
+
+    def test_imports_are_followed_transitively_from_each_files_directory(
+        self,
+    ) -> None:
+        self.base(100)
+        self.write("CLAUDE.md", 100, head="@docs/a.md\n")
+        self.write("docs/a.md", 100, head="@sub/b.md\n")
+        self.write("docs/sub/b.md", CEILING)
+        self.commit()
+        self.assertIn("docs/sub/b.md", self.assertFails().stderr)
+
+    def test_a_cited_path_is_not_an_import(self) -> None:
+        self.base(100)
+        self.write(
+            "CLAUDE.md",
+            TARGET,
+            head="Cited as `@docs/big.md`, or mailed to me@docs/big.md\n"
+            "```\n@docs/big.md\n```\n",
+        )
+        self.write("docs/big.md", CEILING)
+        self.commit()
+        self.assertNotIn("docs/big.md", self.assertPasses().stdout)
+
+    def test_an_imports_staged_copy_is_what_counts(self) -> None:
+        self.base(100)
+        self.write("CLAUDE.md", 100, head="@docs/a.md\n")
+        self.write("docs/a.md", 100)
+        self.write(".claude/staged/docs/a.md.staged", CEILING)
+        self.commit("stage and grow the import")
+        self.assertIn(".claude/staged/docs/a.md.staged", self.assertFails().stderr)
+
+    def test_imports_past_the_hop_limit_are_not_followed(self) -> None:
+        hops = constant("MAX_IMPORT_HOPS")
+        self.base(100)
+        self.write("CLAUDE.md", 100, head="@f1.md\n")
+        for n in range(1, hops + 1):
+            self.write(f"f{n}.md", 100, head=f"@f{n + 1}.md\n")
+        self.write(f"f{hops + 1}.md", CEILING)
+        self.commit()
+        stdout = self.assertPasses().stdout
+        self.assertIn(f"f{hops}.md", stdout)
+        self.assertNotIn(f"f{hops + 1}.md", stdout)
+
+    def test_an_import_cycle_is_counted_once(self) -> None:
+        self.base(100)
+        self.write("CLAUDE.md", 100, head="@a.md\n")
+        self.write("a.md", 100, head="@CLAUDE.md\n")
+        self.commit()
+        self.assertIn("are 200/", self.assertPasses().stdout)
 
     def test_multibyte_characters_count_once(self) -> None:
         self.base(TARGET)
