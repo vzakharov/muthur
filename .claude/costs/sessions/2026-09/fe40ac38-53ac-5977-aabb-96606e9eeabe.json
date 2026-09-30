@@ -1,0 +1,58 @@
+{
+  "sessionId": "fe40ac38-53ac-5977-aabb-96606e9eeabe",
+  "branch": "claude/claude-md-size-cap-vn0pdj",
+  "cwd": "/home/user/muthur",
+  "openingPrompt": "а сравни пжст по всем \"моим\" репам (через шимнутый gh) размер CLAUDE.md. Грубо если: vzakharov/vovazakharov.com, vzakharov/life, playgramai/playgramapp, metkain…",
+  "prs": [
+    123
+  ],
+  "url": "https://claude.ai/code/session_01GXYBayCsJLcxyatvbENoSC",
+  "operator": "vzakharov",
+  "firstResponseAt": "2026-09-24T18:33:45.251Z",
+  "lastResponseAt": "2026-09-30T15:40:22.738Z",
+  "pricesAsOf": "2026-09-23",
+  "claudeCodeTotalUsd": 1.468821,
+  "total": {
+    "inputTokens": 110,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 207390,
+    "cacheReadTokens": 8082721,
+    "outputTokens": 47498,
+    "thinkingTokens": 16069,
+    "responses": 55,
+    "costUsd": 4.2260642
+  },
+  "ownTurns": {
+    "inputTokens": 110,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 207390,
+    "cacheReadTokens": 8082721,
+    "outputTokens": 47498,
+    "thinkingTokens": 16069,
+    "responses": 55,
+    "costUsd": 4.2260642
+  },
+  "subagents": {
+    "inputTokens": 0,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 0,
+    "cacheReadTokens": 0,
+    "outputTokens": 0,
+    "thinkingTokens": 0,
+    "responses": 0,
+    "costUsd": 0.0
+  },
+  "byRate": {
+    "claude-opus-5-5/standard": {
+      "inputTokens": 110,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 207390,
+      "cacheReadTokens": 8082721,
+      "outputTokens": 47498,
+      "thinkingTokens": 16069,
+      "responses": 55,
+      "costUsd": 4.2260642
+    }
+  },
+  "warnings": []
+}
