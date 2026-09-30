@@ -22,6 +22,10 @@ under .claude/rules/ is a rule, a CLAUDE.md there included, and an
 unscoped one loads into every session. tend-prose's homes table and the
 other places stating the old convention follow.
 
+The shipped skills rule, scoped to .claude/skills/ alone, becomes
+.claude/skills/CLAUDE.md; neither form loads at launch or on a Skill
+invocation, both on a Read beneath it.
+
 Adopters: sweep your own .claude/rules/. A rule whose paths: globs all
 sit under one directory moves, frontmatter dropped, into that
 directory's CLAUDE.md; one whose globs span directories stays.
