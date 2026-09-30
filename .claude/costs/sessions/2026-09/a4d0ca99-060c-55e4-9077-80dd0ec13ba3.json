@@ -2,12 +2,12 @@
   "sessionId": "a4d0ca99-060c-55e4-9077-80dd0ec13ba3",
   "branch": "claude/cost-row-end-turn-x2sn2u",
   "cwd": "/home/user/muthur",
-  "name": null,
   "openingPrompt": "/handle and finalize claude/cost-row-end-turn-x2sn2u",
   "prs": [
     95
   ],
   "url": "https://claude.ai/code/session_01MnoASCbmL3koeMAL96BgQ1",
+  "operator": "vzakharov",
   "firstResponseAt": "2026-09-23T11:59:39.724Z",
   "lastResponseAt": "2026-09-23T12:02:39.436Z",
   "pricesAsOf": "2026-09-23",

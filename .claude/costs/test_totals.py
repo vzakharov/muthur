@@ -10,13 +10,18 @@ does, which puts this directory on `sys.path` for `lib`.
 from __future__ import annotations
 
 import json
+import tempfile
 import unittest
 from dataclasses import replace
 from datetime import date
+from pathlib import Path
 
-from lib.pricing import SessionCost, Tally, parse_session_cost
+from lib.billed import Telemetry
+from lib.orientation import Compaction, Phase, Rereads
+from lib.rows import ROOT, SessionCost, parse_session_cost, read_row, row_text
 from lib.shape import to_json
-from lib.totals import branch_label, iso_week, totals_of
+from lib.tally import Tally
+from lib.totals import Bucket, branch_label, iso_week, opening_command, operator_label, totals_of
 
 
 def tally(cost_usd: float) -> Tally:
@@ -27,10 +32,10 @@ ROW = SessionCost(
     session_id="sess",
     branch="a-branch",
     cwd=None,
-    name=None,
     opening_prompt=None,
     prs=[],
     url=None,
+    operator=None,
     first_response_at="2026-03-04T05:06:07.000Z",
     last_response_at="2026-03-04T06:06:07.000Z",
     prices_as_of="2026-01-01",
@@ -88,6 +93,16 @@ class HowABranchIsLabelled(unittest.TestCase):
         self.assertEqual(branch_label(replace(ROW, branch=None)), "(no branch)")
 
 
+class WhoseSessionItWas(unittest.TestCase):
+    def test_files_a_session_under_its_operator_s_handle(self) -> None:
+        totals = totals_of([replace(ROW, operator="vzakharov"), replace(ROW, total=tally(2))])
+        self.assertEqual(totals.by_operator["@vzakharov"].cost_usd, 1)
+        self.assertEqual(totals.by_operator["(unknown)"].cost_usd, 2)
+
+    def test_says_so_rather_than_dropping_a_row_whose_operator_went_unresolved(self) -> None:
+        self.assertEqual(operator_label(ROW), "(unknown)")
+
+
 class IsoWeeks(unittest.TestCase):
     def test_gives_a_late_december_day_the_next_year_s_week_by_its_thursday(self) -> None:
         # 2025-12-29 is a Monday whose Thursday falls on 2026-01-01.
@@ -102,11 +117,137 @@ class RowsReadBack(unittest.TestCase):
     def test_a_written_row_parses_back_to_itself(self) -> None:
         self.assertEqual(parse_session_cost(json.dumps(to_json(ROW))), ROW)
 
-    def test_a_row_from_before_the_naming_fields_still_parses(self) -> None:
+    def test_a_row_from_before_the_naming_and_orientation_fields_still_parses(self) -> None:
         row = to_json(ROW)
-        for key in ("name", "openingPrompt", "prs", "url", "claudeCodeTotalUsd"):
+        for key in (
+            "openingPrompt",
+            "prs",
+            "url",
+            "operator",
+            "claudeCodeTotalUsd",
+            "orientation",
+            "compactions",
+        ):
             del row[key]
         self.assertEqual(parse_session_cost(json.dumps(row)), ROW)
+
+    def test_a_measured_row_parses_back_to_itself(self) -> None:
+        self.assertEqual(parse_session_cost(json.dumps(to_json(MEASURED))), MEASURED)
+
+
+def phase(cost_usd: float, ended_by: str = "Edit", context: int = 50_000) -> Phase:
+    return Phase(ended_by, "lib/a.py", "2026-03-04T05:10:00.000Z", context, tally(cost_usd))
+
+
+MEASURED = replace(
+    ROW,
+    total=tally(4),
+    opening_prompt="/handle claude/a-branch",
+    orientation=phase(1),
+    compactions=[
+        Compaction(
+            at="2026-03-04T05:30:00.000Z",
+            trigger="manual",
+            compacted_from=200_000,
+            summary_chars=15_000,
+            reorientation=phase(0.5, "end_turn", 30_000),
+            rereads=Rereads(3, {"Read": 2, "Bash": 1}, 9_000, 0.2),
+        )
+    ],
+)
+
+
+class WhatOrientationAverages(unittest.TestCase):
+    def test_skips_a_row_written_before_orientation_was_measured(self) -> None:
+        summary = totals_of([ROW, MEASURED]).orientation
+        assert summary is not None and summary.orientation is not None
+        self.assertEqual((summary.measured, summary.rows), (1, 2))
+        self.assertEqual(summary.orientation.phases, 1)
+        self.assertEqual(summary.orientation.share_of_session.mean, 0.25)
+
+    def test_has_nothing_to_average_over_unmeasured_rows(self) -> None:
+        summary = totals_of([ROW]).orientation
+        assert summary is not None
+        self.assertIsNone(summary.orientation)
+        self.assertIsNone(summary.compactions)
+
+    def test_groups_by_what_ended_it_and_by_the_opening_command(self) -> None:
+        other = replace(MEASURED, opening_prompt="fix the thing", orientation=phase(3, "end_turn"))
+        summary = totals_of([MEASURED, other]).orientation
+        assert summary is not None and summary.orientation is not None
+        self.assertEqual(summary.orientation.usd.mean, 2)
+        self.assertEqual(sorted(summary.by_ended_by), ["Edit", "end_turn"])
+        self.assertEqual(summary.by_opening_command["/handle"].usd.mean, 1)
+        self.assertEqual(summary.by_opening_command["(none)"].usd.mean, 3)
+
+    def test_averages_the_compactions_and_sums_the_re_reads_by_tool(self) -> None:
+        summary = totals_of([MEASURED, MEASURED]).orientation
+        assert summary is not None and summary.compactions is not None
+        self.assertEqual(summary.compactions.compactions, 2)
+        self.assertEqual(summary.compactions.reorientation.usd.median, 0.5)
+        self.assertEqual(summary.compactions.reread_calls.mean, 3)
+        self.assertEqual(summary.compactions.rereads_by_tool, {"Bash": 2, "Read": 4})
+
+    def test_reads_the_opening_command_off_the_opening_prompt(self) -> None:
+        self.assertEqual(opening_command(MEASURED), "/handle")
+        self.assertEqual(opening_command(ROW), "(none)")
+
+
+def events(**unseen: float) -> Telemetry:
+    return Telemetry(
+        events=10,
+        matched=8,
+        matched_table_usd=3,
+        matched_event_usd=3,
+        unseen={source: tally(cost_usd) for source, cost_usd in unseen.items()},
+    )
+
+
+class WhatTheEventsAddUp(unittest.TestCase):
+    def test_takes_the_share_of_the_rows_priced_with_events_alone(self) -> None:
+        priced = replace(ROW, total=tally(4), telemetry=events(prompt_suggestion=0.2, compact=0.3))
+        summary = totals_of([ROW, priced]).telemetry
+        assert summary is not None
+        self.assertEqual((summary.priced, summary.rows, summary.priced_usd), (1, 2, 4))
+        self.assertEqual(summary.unseen["compact"].cost_usd, 0.3)
+
+    def test_sums_a_source_across_the_rows_it_appeared_in(self) -> None:
+        summary = totals_of(
+            [
+                replace(ROW, telemetry=events(prompt_suggestion=0.2)),
+                replace(ROW, telemetry=events(prompt_suggestion=0.1, compact=0.3)),
+            ]
+        ).telemetry
+        assert summary is not None
+        self.assertEqual(sorted(summary.unseen), ["compact", "prompt_suggestion"])
+        self.assertEqual(summary.unseen["prompt_suggestion"], Bucket(2, 2, 0.3))
+        self.assertEqual(summary.unseen["compact"].sessions, 1)
+
+    def test_has_no_unseen_calls_over_rows_without_events(self) -> None:
+        summary = totals_of([ROW]).telemetry
+        assert summary is not None
+        self.assertEqual((summary.priced, summary.priced_usd, summary.unseen), (0, 0, {}))
+
+
+class RetiredFields(unittest.TestCase):
+    def setUp(self) -> None:
+        # Under the repo's `tmp/`, where `write_atomic` stages: a rename out of
+        # the system temp directory may cross filesystems.
+        (ROOT / "tmp").mkdir(exist_ok=True)
+        base = tempfile.TemporaryDirectory(dir=ROOT / "tmp")
+        self.addCleanup(base.cleanup)
+        self.path = Path(base.name) / "sess.json"
+
+    def test_a_row_carrying_a_retired_key_is_rewritten_without_it(self) -> None:
+        self.path.write_text(json.dumps({**to_json(ROW), "name": "a named session"}))
+        self.assertEqual(read_row(self.path), (ROW, ["name"]))
+        self.assertEqual(self.path.read_text(), row_text(ROW))
+
+    def test_a_row_in_the_current_shape_is_left_untouched(self) -> None:
+        self.path.write_text(row_text(ROW))
+        before = self.path.stat().st_mtime_ns
+        self.assertEqual(read_row(self.path), (ROW, []))
+        self.assertEqual(self.path.stat().st_mtime_ns, before)
 
 
 if __name__ == "__main__":

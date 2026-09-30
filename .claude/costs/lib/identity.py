@@ -13,7 +13,7 @@ carries why a session needs standing in for at all.
 from __future__ import annotations
 
 import re
-from typing import Any, Optional
+from typing import Any, Dict, Optional
 
 from lib.shape import is_number
 
@@ -40,6 +40,13 @@ def pr_number_of(record: Any) -> Optional[int]:
     return None
 
 
+def _attachment_of(record: Any) -> Optional[Dict[str, Any]]:
+    if not isinstance(record, dict):
+        return None
+    attachment = record.get("attachment")
+    return attachment if isinstance(attachment, dict) else None
+
+
 SESSION_URL = re.compile(r"https://claude\.ai/code/session_[0-9A-Za-z]+")
 
 
@@ -49,15 +56,30 @@ def session_url_in(record: Any, line: str) -> Optional[str]:
     changes. Matching that one record's raw line is narrower than scanning the
     file, where any quoted commit trailer carries a session URL too — usually
     another session's."""
-    if not isinstance(record, dict):
-        return None
-    attachment = record.get("attachment")
-    if not isinstance(attachment, dict):
-        return None
-    if attachment.get("type") != "remote_session_change":
+    attachment = _attachment_of(record)
+    if attachment is None or attachment.get("type") != "remote_session_change":
         return None
     found = SESSION_URL.search(line)
     return found.group(0) if found else None
+
+
+# `.claude/hooks/operator-voice.sh` prints `Name (@handle)` or a bare `@handle`,
+# already lowercased, and only this phrasing when it resolved a person: the
+# lines it prints for a bot's token or an unreachable `gh` do not match.
+OPERATOR_LINE = re.compile(
+    r"^session-start: the operator is (?:[^\n]* \()?@([a-z0-9-]+)\)? — the GitHub token"
+)
+
+
+def operator_of(record: Any) -> Optional[str]:
+    attachment = _attachment_of(record)
+    if attachment is None or attachment.get("hookEvent") != "SessionStart":
+        return None
+    content = attachment.get("content")
+    if not isinstance(content, str):
+        return None
+    found = OPERATOR_LINE.match(content)
+    return found.group(1) if found else None
 
 
 COMMAND_ENVELOPE = re.compile(

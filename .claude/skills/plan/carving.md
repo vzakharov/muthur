@@ -1,13 +1,12 @@
-# Carving a task into issues
+# Carving a pizza into issues
 
-What to do once `@.claude/skills/plan/SKILL.md` § "Carving a task into issues"
-has answered yes — that skill holds the bar the answer is measured against.
+What to do once `@.claude/skills/plan/SKILL.md` § "Splitting work across
+sessions" has picked the pizza — that section holds the reasons the choice is
+measured against, and the rule that only the next slice is spelled out in full.
 
 Two readers, one procedure: `/plan` writes the proposal and `/go` files it,
 stated together because the filing half is written against the shape the
 proposal takes.
-
-**Only the next slice has to be manageable.** Spell out the immediate work in full and give a **coarse** view of what follows — smaller than the original umbrella, but not fully decomposed. Parked slices are placeholders and ordering hints, not mini-specs; you owe no implementation DAG and no per-child plans up front.
 
 ## What the plan file carries
 

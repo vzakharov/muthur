@@ -2,12 +2,12 @@
   "sessionId": "59ec73f4-d589-5d11-8c2a-5a533ea36337",
   "branch": "claude/trim-claude-md-w8am6w",
   "cwd": "/home/user/muthur",
-  "name": "Trim CLAUDE.md (#97)",
   "openingPrompt": "/go claude/trim-claude-md-w8am6w но есть один нюанс: любая редактура claude.md обнуляет кеш контекста (потому что claude.md грузится в самый верх), поэтому необ…",
   "prs": [
     98
   ],
   "url": "https://claude.ai/code/session_015Qc785VvP7pYgXbSZKPFHB",
+  "operator": "vzakharov",
   "firstResponseAt": "2026-09-23T13:00:09.564Z",
   "lastResponseAt": "2026-09-23T13:11:25.891Z",
   "pricesAsOf": "2026-09-23",

@@ -2,12 +2,12 @@
   "sessionId": "b1e2e7e8-277e-5def-aeb0-c1883add4b7a",
   "branch": "claude/trim-claude-md-w8am6w",
   "cwd": "/home/user/muthur",
-  "name": "finalize the CLAUDE.md trim (#98)",
   "openingPrompt": "давай /handle и finalize claude/trim-claude-md-w8am6w",
   "prs": [
     98
   ],
   "url": "https://claude.ai/code/session_01XQSiueJZRojUbEo7BfMnA1",
+  "operator": "vzakharov",
   "firstResponseAt": "2026-09-23T13:25:23.395Z",
   "lastResponseAt": "2026-09-23T13:29:04.063Z",
   "pricesAsOf": "2026-09-23",

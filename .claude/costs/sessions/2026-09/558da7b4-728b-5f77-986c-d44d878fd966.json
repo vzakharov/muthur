@@ -2,12 +2,12 @@
   "sessionId": "558da7b4-728b-5f77-986c-d44d878fd966",
   "branch": "claude/trim-claude-md-w8am6w",
   "cwd": "/home/user/muthur",
-  "name": null,
   "openingPrompt": "Trim CLAUDE.md to what every turn needs, and write that test into it #97",
   "prs": [
     98
   ],
   "url": "https://claude.ai/code/session_01SPZ91HxsEmafUTUzcCmPbH",
+  "operator": "vzakharov",
   "firstResponseAt": "2026-09-23T12:12:49.214Z",
   "lastResponseAt": "2026-09-23T12:18:24.713Z",
   "pricesAsOf": "2026-09-23",
