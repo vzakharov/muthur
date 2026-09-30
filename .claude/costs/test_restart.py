@@ -23,6 +23,7 @@ from lib.restart import (
     Reorientation,
     Session,
     line_for,
+    rates_of,
     read_history,
     recache,
     reorientation_of,
@@ -117,6 +118,14 @@ class TheCostModel(unittest.TestCase):
     def test_no_line_when_the_slice_is_too_short_to_pay_the_summary_turn(self) -> None:
         tiny = Session(0, 0, 0.5 / FINISH, Reorientation(97_000, 0.57, "test"), OPUS, OPUS.cache_write_1h)
         self.assertIsNone(line_for(tiny, FINISH, 0.0))
+
+    def test_a_dated_model_id_is_priced_at_its_undated_row(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            transcript = Path(tmp) / "session.jsonl"
+            transcript.write_text(json.dumps(opening(model=f"{MODEL}-20260901")) + "\n")
+            history = read_history(transcript)
+            assert history is not None
+            self.assertEqual(rates_of(history, PRICES), OPUS)
 
 
 def row(opening_prompt: str, context: Optional[int], cost: float) -> Dict[str, Any]:

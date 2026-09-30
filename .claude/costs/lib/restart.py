@@ -21,7 +21,6 @@ from lib.pricing import (
     UnpricedError,
     is_response_record,
     parse_response,
-    rate_key,
     subagents_of,
     summarise_transcript,
 )
@@ -185,7 +184,7 @@ def read_history(transcript: Path) -> Optional[History]:
 
 
 def rates_of(history: History, prices: PriceTable) -> Optional[Rates]:
-    return prices.rates.get(rate_key(history.last.model, history.last.speed))
+    return prices.rates_for(history.last.model, history.last.speed)
 
 
 def write_rate(r: Rates, ttl: int) -> float:
