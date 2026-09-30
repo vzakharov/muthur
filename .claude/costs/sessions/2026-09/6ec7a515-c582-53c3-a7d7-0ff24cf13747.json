@@ -1,0 +1,82 @@
+{
+  "sessionId": "6ec7a515-c582-53c3-a7d7-0ff24cf13747",
+  "branch": "claude/cold-cache-guard-ytr7vo",
+  "cwd": "/home/user/muthur",
+  "openingPrompt": "/go claude/cold-cache-guard-ytr7vo This session is a relay from https://claude.ai/code/session_01W5Z6hYnVH1dMZ9VQFNBpyH — read docs/remove-before-merging/relay.…",
+  "prs": [
+    109
+  ],
+  "url": "https://claude.ai/code/session_01KKrHiPfZWBgj1SznNTxdZX",
+  "operator": "vzakharov",
+  "firstResponseAt": "2026-09-30T15:12:22.089Z",
+  "lastResponseAt": "2026-09-30T15:27:33.783Z",
+  "pricesAsOf": "2026-09-23",
+  "claudeCodeTotalUsd": null,
+  "total": {
+    "inputTokens": 146,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 218580,
+    "cacheReadTokens": 13374555,
+    "outputTokens": 59994,
+    "thinkingTokens": 18073,
+    "responses": 73,
+    "costUsd": 5.624014999999999
+  },
+  "ownTurns": {
+    "inputTokens": 146,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 218580,
+    "cacheReadTokens": 13374555,
+    "outputTokens": 59994,
+    "thinkingTokens": 18073,
+    "responses": 73,
+    "costUsd": 5.624014999999999
+  },
+  "subagents": {
+    "inputTokens": 0,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 0,
+    "cacheReadTokens": 0,
+    "outputTokens": 0,
+    "thinkingTokens": 0,
+    "responses": 0,
+    "costUsd": 0.0
+  },
+  "byRate": {
+    "claude-opus-5-5/standard": {
+      "inputTokens": 146,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 218580,
+      "cacheReadTokens": 13374555,
+      "outputTokens": 59994,
+      "thinkingTokens": 18073,
+      "responses": 73,
+      "costUsd": 5.624014999999999
+    }
+  },
+  "warnings": [],
+  "orientation": {
+    "endedBy": "Write",
+    "endedOn": ".claude/costs/lib/restart.py",
+    "endedAt": "2026-09-30T15:16:49.422Z",
+    "contextTokens": 167143,
+    "spend": {
+      "inputTokens": 52,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 123746,
+      "cacheReadTokens": 3125542,
+      "outputTokens": 14497,
+      "thinkingTokens": 9406,
+      "responses": 26,
+      "costUsd": 1.9052244000000005
+    }
+  },
+  "compactions": [],
+  "telemetry": {
+    "events": 65,
+    "matched": 65,
+    "matchedTableUsd": 4.885768999999999,
+    "matchedEventUsd": 4.885768999999999,
+    "unseen": {}
+  }
+}
