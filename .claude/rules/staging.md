@@ -44,8 +44,10 @@ only the next session.
   is paid once, and the next edit to the file stages it again.
 
 **`scripts/check-claude-md-size.sh` caps the CLAUDE.md a branch lands**, its
-staged copy where there is one. Over the cap, move a narrower line out per
-CLAUDE.md § "About this file" rather than raising the number.
+staged copy where there is one: a branch that takes it past the ceiling lands it
+back at the lower target. The trim is a subagent's — it is never the PR's own
+work, and its cut-and-remeasure loop would spend the session's context — briefed
+with the target and CLAUDE.md § "About this file" as the test for what moves.
 
 The PR's file view shows a staged copy as a new file; its diff against the
 original is the range from the staging commit to the head.
