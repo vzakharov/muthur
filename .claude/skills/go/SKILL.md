@@ -20,7 +20,7 @@ No operator writes the work they want done as a single whitespace-free string �
 
 A token that fails to resolve must **not** fall through to "task". The likely cause is a handoff block pasted into a session opened on the wrong repository, and implementing a branch name as if it were a task description is the worst available response — worse than one round-trip. A handoff that did not land intact gets a question, not a guess.
 
-- **`/go <target>`** is shorthand for `/from-branch <target> /go` — attach to that existing branch, then run this skill. Load `@.claude/skills/from-branch/SKILL.md` and follow it to attach (it re-points the working tree and discards the auto-branch), then continue from Step 1 below.
+- **`/go <target>`** is shorthand for `/from-branch <target> go` — attach to that existing branch, then run this skill. Load `@.claude/skills/from-branch/SKILL.md` and follow it to attach (it re-points the working tree and discards the auto-branch), then continue from Step 1 below.
 - **`/go <task>`** enters at § "Planless entry" below, with that prose as the task.
 - **Bare `/go`** runs against the current branch as-is.
 
