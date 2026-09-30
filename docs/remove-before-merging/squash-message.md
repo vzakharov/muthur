@@ -23,10 +23,10 @@ measured as its staged copy where there is one, so a staged trim of an
 oversized file passes before /finalize swaps it in.
 
 The count is characters rather than bytes. There is no env override:
-an adopter with its own idea of the right size
-edits the two constants in its copy. The failure message and the staging
-rule send the trim to a subagent: it is never the PR's own work, and its
-cut-and-remeasure loop would spend the session's context.
+an adopter with its own idea of the right size edits the two constants
+in its copy. The failure message and the staging rule send the trim to
+a subagent: it is never the PR's own work, and its cut-and-remeasure
+loop would spend the session's context.
 
 Co-authored-by: Claude <noreply@anthropic.com>
 ```
