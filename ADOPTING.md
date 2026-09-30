@@ -209,8 +209,9 @@ new line to it as it is written.
 infrastructure, so a skill edit is `docs:` or `chore:` under your own convention.
 
 Replace the remaining stubs — repository layout, testing — as those conventions
-stabilize, and add `.claude/rules/` files as area-specific conventions emerge
-(the mechanism ships with a README and the loop's own two rules).
+stabilize, and give a directory its own `CLAUDE.md` as area-specific conventions
+emerge — or a `.claude/rules/` file, when the area is a glob no single directory
+bounds (the mechanism ships with a README and the loop's own rules).
 
 ### Settle the language decision
 
