@@ -3,7 +3,8 @@ description: >-
   Hand the session to a fresh one instead of compacting it: write a summary of
   the conversation to a committed file, start a new session on the branch, and
   stop. Invoke as `/relay [<to-be first message>]`, the argument being what
-  the operator would type first after a compact (`/relay /go`, `/relay /handle`);
+  the operator would type first after a compact, a skill in it named bare
+  (`/relay go`, `/relay handle`);
   the new session runs `/relay take <branch>`. Use when the operator says
   "/relay", "relay the session", "hand this to a new session", or takes up
   the `/relay` the context budget notice offers.
@@ -15,7 +16,7 @@ Two ends, told apart by the first token: `take` is the pickup; anything else, or
 
 ## `/relay [<to-be first message>]` — hand off
 
-The argument is the message the operator would have sent first after a compact, addressed to the successor: a slash command (`/go`, `/handle`, `/finalize`), prose, or both. It becomes the summary's Next step verbatim, and the summary dwells on what that message will need. With no argument, the Next step is the agent's own call under § "Step 2"'s rule for it.
+The argument is the message the operator would have sent first after a compact, addressed to the successor: a skill named bare (`go`, `handle`, `finalize and merge` — `@.claude/rules/skills.md` says why), prose, or both. It becomes the summary's Next step verbatim, and the summary dwells on what that message will need. With no argument, the Next step is the agent's own call under § "Step 2"'s rule for it.
 
 ### Step 1 — Leave the branch resumable
 
