@@ -1,7 +1,6 @@
 """What the ways on from a session cost, read off its transcript and priced from
-`prices.json`: carrying on against `/relay` for the context budget hook, and
-against a fresh session for the cold-cache guard. `.claude/cold-cache/CLAUDE.md`
-and `.claude/context-budget/CLAUDE.md` carry why the model reads what it reads.
+`prices.json`: carrying on against `/relay`, or against a fresh session.
+`.claude/context-budget/CLAUDE.md` carries why the model reads what it reads.
 """
 
 from __future__ import annotations
@@ -22,7 +21,6 @@ from lib.pricing import (
     UnpricedError,
     is_response_record,
     parse_response,
-    rate_key,
     subagents_of,
     summarise_transcript,
 )
@@ -186,7 +184,7 @@ def read_history(transcript: Path) -> Optional[History]:
 
 
 def rates_of(history: History, prices: PriceTable) -> Optional[Rates]:
-    return prices.rates.get(rate_key(history.last.model, history.last.speed))
+    return prices.rates_for(history.last.model, history.last.speed)
 
 
 def write_rate(r: Rates, ttl: int) -> float:
