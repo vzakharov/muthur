@@ -1,7 +1,7 @@
 Proposed squash title/body:
 
 ```
-feat: cap CLAUDE.md with hysteresis at 25.5k/24.5k characters (pr #123)
+feat: cap CLAUDE.md and its imports with hysteresis at 29k/28k chars (pr #123)
 ```
 
 ```
@@ -10,16 +10,20 @@ session, and nothing pushed back on its growth: each addition passed its
 own test while the total drifted up. Across the repos built on this
 template it had reached 24-61k characters before hand trims.
 
-vet now fails when the CLAUDE.md the branch will land passes 25,500
-characters, and a branch that took it past that must land it at 24,500
-or under. A single cap would be trimmed back to just under itself every
-session; the gap makes one trim buy room for many additions. "Crossed"
-is read off the branch's own commits since its merge-base, so no state
-is kept. The landing file is the staged copy where there is one, so a
-staged trim of an oversized file passes before /finalize swaps it in.
+vet now fails when the CLAUDE.md the branch will land, plus everything
+it @-imports, passes 29,000 characters, and a branch that took it past
+that must land it at 28,000 or under. The imports count because the
+harness loads them into the same prefix, so moving text into one would
+cut nothing; backticked @-citations load nothing and are not counted,
+and .claude/rules/ is left for separate work. A single cap would be
+trimmed back to just under itself every session; the gap makes one
+trim buy room for many additions. "Crossed" is read off the branch's
+own commits since its merge-base, so no state is kept. Each file is
+measured as its staged copy where there is one, so a staged trim of an
+oversized file passes before /finalize swaps it in.
 
-Imports are not counted, and the count is characters rather than bytes.
-There is no env override: an adopter with its own idea of the right size
+The count is characters rather than bytes. There is no env override:
+an adopter with its own idea of the right size
 edits the two constants in its copy. The failure message and the staging
 rule send the trim to a subagent: it is never the PR's own work, and its
 cut-and-remeasure loop would spend the session's context.
