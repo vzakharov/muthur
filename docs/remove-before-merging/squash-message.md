@@ -1,25 +1,28 @@
 Proposed squash title/body:
 
 ```
-feat: per-operator auto-relay at the context budget's pause line (pr #125)
+feat: per-operator auto-relay on the context budget's pauses (pr #125)
 ```
 
 ```
-The context budget's pause notice ended the turn offering `/relay`, so
-a long autonomous run stopped until someone came back to say yes. An
-operator who always says yes can now have the pause relay on its own.
+The context budget's pauses ended the turn offering `/relay`, so a long
+autonomous run stopped until someone came back to say yes, and the
+warning at 200k only asked for a stopping point while the work ran on
+to 300k and stopped wherever it stood.
 
-The opt-in is per operator rather than per repo, because nothing
-documented tells a session someone is watching from an unattended one:
-a Claude Tag session's successor would be spawned where nobody looks.
-The setting is `.claude/context-budget/auto-relay/<handle>`, `on` or
-`off`, keyed on the lowercased login of a `User`-type GitHub token as
-the voice entries are, so a session on a bot's token never auto-relays.
+The warning now gives the work the room up to the pause line: finish
+in it if it fits, otherwise steer to the best stopping point reachable
+within it and pause there. The pause line is where that estimate
+missed, so it pauses where the work stands, a last step of ~20k aside.
 
-The hook resolves the operator only when a notice fires. With no
-setting, the relay offer also asks whether to relay unasked from then
-on, and the operator's answer is what writes the file; `/relay` §
-"Auto-relay" owns that procedure, and `/go`'s pause points at it.
+An operator can have either pause relay on its own. The opt-in is per
+operator, because nothing documented tells a watched session from an
+unattended one such as Claude Tag's, whose successor nobody would find:
+`.claude/context-budget/auto-relay/<handle>`, `on` or `off`, keyed on
+the lowercased login of a `User`-type token as the voice entries are,
+so a bot-token session never auto-relays. With no setting, the relay
+offer asks, and the answer writes the file; `/relay` § "Auto-relay"
+owns that procedure.
 
 Co-authored-by: Claude <noreply@anthropic.com>
 ```
