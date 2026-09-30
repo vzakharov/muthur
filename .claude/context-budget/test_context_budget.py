@@ -174,21 +174,31 @@ class WhenTheNoticesFire(BudgetTestCase):
         assert notice is not None
         self.assertIn("50k warning line", notice)
 
-    def test_nearly_done_is_an_estimate_under_100k_with_the_gauge_at_the_warning(
-        self,
-    ) -> None:
-        # The half-of-the-session gauge matches 100k only at the warning line;
-        # at the pause line it would read 150k, so that notice carries none.
-        warning, pause = self.notices()
+    def test_the_warning_gives_the_work_the_room_up_to_the_pause_line(self) -> None:
+        # The half-of-the-session gauge matches that room only at the default
+        # lines, which is all it claims: "roughly".
+        warning, _ = self.notices()
         self.assertIn("under ~100k more tokens", warning)
         self.assertIn("less than half", warning)
-        self.assertIn("under ~100k more tokens", pause)
-        self.assertNotIn("less than half", pause)
+        self.assertIn("steer to a pause within that same ~100k", warning)
 
-    def test_nearly_done_judges_an_elephants_open_bite(self) -> None:
-        warning, pause = self.notices()
+    def test_the_room_follows_the_lines(self) -> None:
+        self.session.append(assistant(60_000))
+        notice = self.session.notice(
+            {"CONTEXT_BUDGET_WARN": "50000", "CONTEXT_BUDGET_PAUSE": "80000"}
+        )
+        assert notice is not None
+        self.assertIn("under ~30k more tokens", notice)
+
+    def test_the_pause_leaves_room_only_for_a_last_step(self) -> None:
+        _, pause = self.notices()
+        self.assertIn("Pause now, without asking, wherever the work stands", pause)
+        self.assertIn("under ~20k more tokens", pause)
+        self.assertNotIn("100k", pause)
+
+    def test_the_warning_judges_an_elephants_open_bite(self) -> None:
+        warning, _ = self.notices()
         self.assertIn("the open bite", warning)
-        self.assertIn("the open bite", pause)
 
     def test_both_notices_offer_relay_as_the_way_on(self) -> None:
         warning, pause = self.notices()
@@ -206,15 +216,14 @@ class WhetherThePauseRelaysOnItsOwn(BudgetTestCase):
         self.assertIn("@someone", pause)
         self.assertIn("offering `/relay`", pause)
 
-    def test_on_makes_the_pause_relay_without_asking(self) -> None:
+    def test_on_makes_either_pause_relay_without_asking(self) -> None:
         self.session.signed_in_as("Someone")
         self.session.auto_relay("someone", "on\n")
-        warning, pause = self.notices()
-        self.assertIn("which relays on its own", warning)
-        self.assertIn("without asking and with no argument, run `/relay`", pause)
-        self.assertIn("auto-relay/someone", pause)
-        self.assertNotIn("offering `/relay`", pause)
-        self.assertNotIn(self.OPT_IN, pause)
+        for notice in self.notices():
+            self.assertIn("without asking and with no argument, run `/relay`", notice)
+            self.assertIn("auto-relay/someone", notice)
+            self.assertNotIn("offering `/relay`", notice)
+            self.assertNotIn(self.OPT_IN, notice)
 
     def test_off_keeps_the_offer_and_asks_nothing(self) -> None:
         self.session.signed_in_as("someone")

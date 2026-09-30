@@ -62,7 +62,7 @@ The successor's link — on the web `https://claude.ai/code/<session_id>` from t
 
 ## Auto-relay
 
-The context budget's pause notice (`.claude/context-budget/`) ends the turn offering a relay; an operator who has opted in has it run instead, unasked and with no argument. The setting is **per operator, not per repo**, because nothing documented tells a session someone is watching from one nobody will reopen — a Claude Tag launch, say — and a successor spawned from the second is a session nobody finds. The operator is the one `.claude/hooks/operator-voice.sh` resolves, the lowercased login of the session's `User`-type GitHub token; a session running on a bot's token resolves none, so it never auto-relays and is never asked.
+A pause the context budget calls for (`.claude/context-budget/`, at either of its lines) ends the turn offering a relay; an operator who has opted in has it run instead, unasked and with no argument. The setting is **per operator, not per repo**, because nothing documented tells a session someone is watching from one nobody will reopen — a Claude Tag launch, say — and a successor spawned from the second is a session nobody finds. The operator is the one `.claude/hooks/operator-voice.sh` resolves, the lowercased login of the session's `User`-type GitHub token; a session running on a bot's token resolves none, so it never auto-relays and is never asked.
 
 - **The file** is `.claude/context-budget/auto-relay/<handle>`, holding `on` or `off`. Anything else reads as never asked.
 - **Only the operator's own answer writes it.** The notice asks when there is no file; they may also say so at any other time, either way. Write the one word, commit it with their words quoted, and push. `off` is recorded too, so the question is not put again.

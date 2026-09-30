@@ -15,6 +15,7 @@ So the setting is **per operator**, as the ask's fallback says. It is keyed on t
 
 - **The setting**: `.claude/context-budget/auto-relay/<handle>`, one word, `on` or `off`. The filename is the whole lookup, as with the voice entries; it sits in `.claude/context-budget/` because that hook is its only reader, and not in `.claude/voice/operators/`, because `voice.md` scopes those entries to how an answer sounds and forbids them from changing what the agent does. No file means the operator hasn't been asked; anything but `on` or `off` reads as no file.
 - **The hook** resolves the handle with `gh api user` only when a notice is about to fire (once per climb), never on the ordinary tool call. Unresolvable (`gh` missing, API down, non-`User` token) → today's notice, no opt-in offer, since there is nowhere to record an answer.
+- **The two lines** (the operator's follow-up, in this session): the warning gives the work the room up to the pause line — finish in it if it fits, otherwise steer to the best stopping point reachable within it and pause there; the pause line is where that estimate missed, so it pauses where the work stands, with an escape only for a last step (~20k), not the warning's 100k. Either pause ends by the setting below.
 - **Notice text by setting**:
   - *unset* — today's offer of `/relay`, plus: offer, once in the session, to relay on its own from now on; the operator's yes writes `on`, their no writes `off` (§ "Auto-relay" in `/relay`).
   - *`off`* — today's notices exactly.

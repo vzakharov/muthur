@@ -2,7 +2,10 @@
 
 `hooks/post-tool-context-budget.sh` tells the agent when its session's context
 crosses 200k tokens (a warning) and 300k (the pause), so work is left resumable
-before a compact or a dead session takes the choice away. What the agent does on
+before a compact or a dead session takes the choice away. The warning gives the
+work the room up to the pause line, to finish in or to steer to a good stopping
+point and pause there; the pause line is where that estimate missed, so it
+stops the work where it stands, a last step aside. What the agent does on
 each notice is `@.claude/skills/go/SKILL.md` § "Stopping partway releases the
 plan".
 

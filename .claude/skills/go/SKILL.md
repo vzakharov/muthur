@@ -81,7 +81,7 @@ Commit/push discipline is already governed by CLAUDE.md — don't reinvent it he
 - Conventional-commit subjects; descriptive bodies.
 - **Do not** run `./scripts/vet.sh` per commit on a feature branch — that's `/finalize`'s job once the operator has reviewed.
 
-**Stopping partway releases the plan.** Two things call for it: the operator asking you to stop where you've reached, and the context budget hook's pause notice (`.claude/context-budget/`), which also offers it at its warning. Record in the plan file what is done and what is left, `git mv` it to `docs/plans/<slug>.paused.md`, commit and push. No format is prescribed for that record — a next session only has to be able to tell finished work from remaining work. The rename is what makes the work resumable: left as `*.in-progress.md` it still reads as claimed, and Step 1 stops on it.
+**Stopping partway releases the plan.** Two things call for it: the operator asking you to stop where you've reached, and the context budget hook (`.claude/context-budget/`) — at its warning, at the best stopping point the work can reach before the pause line; at its pause, wherever the work stands. Record in the plan file what is done and what is left, `git mv` it to `docs/plans/<slug>.paused.md`, commit and push. No format is prescribed for that record — a next session only has to be able to tell finished work from remaining work. The rename is what makes the work resumable: left as `*.in-progress.md` it still reads as claimed, and Step 1 stops on it.
 
 **An elephant pauses at every bite's end, and the record is the plan's own sections** (`@.claude/skills/plan/elephant.md` § "The plan's shape"). Two ways to get there:
 
