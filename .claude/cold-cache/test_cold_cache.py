@@ -106,7 +106,7 @@ class WhenAPromptIsStopped(HookCase):
 
     def test_the_ways_on_and_the_built_ins_that_prompt_nothing_pass(self) -> None:
         self.append(opening(), latest())
-        for command in ("/compact", "  /clear", "/relay /go", "/context", "/usage", "/model opus"):
+        for command in ("/compact", "  /clear", "/relay go", "/context", "/usage", "/model opus"):
             self.assertIsNone(self.prompt(command), command)
         self.assertIsNotNone(self.prompt())
 
