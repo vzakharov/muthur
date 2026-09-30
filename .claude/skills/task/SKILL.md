@@ -49,10 +49,10 @@ Now the plan exists, so the question is asked against it rather than forecast fr
 
 - **The work costs far more to produce than to describe.** The plan is a page, the work is a day, and a wrong direction is caught for the price of the page.
 - **A fork carries no recommendation** — the exception in `@.claude/skills/plan/SKILL.md` Part 2. Guess wrong and most of the work is wasted; the plan is what makes the choice the operator's.
-- **A review round comes too late.** The step is irreversible or outward-facing, or later work builds on it before the PR is read.
+- **The alternatives land far apart** — an operator who read the diff and asked for the next-best option would be asking for a rewrite, not an amendment.
 - **The scope is itself the question** — you would be deciding *what* the task is, not just how to do it. So is a split across sessions, an elephant or a pizza alike (`@.claude/skills/plan/SKILL.md` § "Splitting work across sessions"): the shape is the operator's to pick, so a plan that splits ends here.
 
-None of these asks how important the change is. Importance is why the operator reviews the diff; the gate is for what reviewing a diff cannot undo.
+None of these asks how important the change is. Importance is why the operator reviews the diff; the gate is for what a diff review could only change by rewriting the diff.
 
 **Yes → end at `@.claude/skills/plan/SKILL.md` § "Handing off"**, and the next session flips the draft.
 
