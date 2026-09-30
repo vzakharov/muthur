@@ -157,6 +157,39 @@ class WhenTheNoticesFire(BudgetTestCase):
         assert notice is not None
         self.assertIn("50k warning line", notice)
 
+    def test_nearly_done_is_an_estimate_under_100k_with_the_gauge_at_the_warning(
+        self,
+    ) -> None:
+        # The half-of-the-session gauge matches 100k only at the warning line;
+        # at the pause line it would read 150k, so that notice carries none.
+        self.session.append(assistant(WARN + 1))
+        warning = self.session.notice()
+        self.session.append(assistant(PAUSE + 1))
+        pause = self.session.notice()
+        assert warning is not None and pause is not None
+        self.assertIn("under ~100k more tokens", warning)
+        self.assertIn("less than half", warning)
+        self.assertIn("under ~100k more tokens", pause)
+        self.assertNotIn("less than half", pause)
+
+    def test_nearly_done_judges_an_elephants_open_bite(self) -> None:
+        self.session.append(assistant(WARN + 1))
+        warning = self.session.notice()
+        self.session.append(assistant(PAUSE + 1))
+        pause = self.session.notice()
+        assert warning is not None and pause is not None
+        self.assertIn("the open bite", warning)
+        self.assertIn("the open bite", pause)
+
+    def test_both_notices_offer_relay_as_the_way_on(self) -> None:
+        self.session.append(assistant(WARN + 1))
+        warning = self.session.notice()
+        self.session.append(assistant(PAUSE + 1))
+        pause = self.session.notice()
+        assert warning is not None and pause is not None
+        self.assertIn("offering `/relay`", warning)
+        self.assertIn("offering `/relay`", pause)
+
 
 class ThePricedWarnLine(BudgetTestCase):
     # Opening at 43k and editing at 90k prices the warm-up at ~$0.07: past ~93k,

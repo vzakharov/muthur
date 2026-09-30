@@ -306,7 +306,7 @@ Three consequences, each stated by a check rather than by taste:
   point.
 - **`main`'s `vet.sh` is the stub, and the stub exits `0`** — `main` has no stack
   yet, so the loop's own checks are the whole run and they genuinely pass. That
-  is `CLAUDE.md` § "Vetting"'s no-stack-yet clause, and the assertion worth
+  is `.claude/rules/stack.md`'s no-stack-yet clause, and the assertion worth
   making is the pair: the script passes **and** it names no stack-specific
   checks. A non-zero exit here would be a `main` whose `/finalize` cannot pass
   for a reason the contract calls legitimate.
@@ -356,4 +356,7 @@ old repo's rules resident.
 The report also carries the one thing no agent can apply: the target needs an
 **environment setup script**, which lives in Claude Code's environment settings
 and has no API behind it. Tell the operator to reuse the caller's, adapting the
-pins; the caller demonstrably has one.
+pins; the caller demonstrably has one. Where the target runs the ledger, the
+same settings carry its telemetry variables, the ones
+`.claude/costs/hooks/start-telemetry-receiver.sh` lists — no file in the repo
+can set them, so an environment of its own starts without them.

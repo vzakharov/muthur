@@ -2,12 +2,12 @@
   "sessionId": "912b7b59-61ef-511e-9b0e-98ed328a3e79",
   "branch": "claude/context-budget-hook-tb5p5q",
   "cwd": "/home/user/muthur",
-  "name": "planning the context budget hook",
   "openingPrompt": "давай добавим хук который, при достижении 200к токенов даёт агенту ворнинг, мол, у тебя уже много контекста, посмотри, не стоит ли зафиксировать работу там, до …",
   "prs": [
     96
   ],
   "url": "https://claude.ai/code/session_011Vm5Mo7YPyCrTpgjYSUS6g",
+  "operator": "vzakharov",
   "firstResponseAt": "2026-09-23T11:12:34.000Z",
   "lastResponseAt": "2026-09-23T11:16:06.166Z",
   "pricesAsOf": "2026-09-23",

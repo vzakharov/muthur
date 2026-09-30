@@ -1,0 +1,58 @@
+{
+  "sessionId": "28a2670c-d668-596f-ad2a-24d4fef9ca78",
+  "branch": "claude/relay-session-if5xk4",
+  "cwd": "/home/user/muthur",
+  "openingPrompt": "хочу попробовать собственный заменитель низкоуровневого /compact (потому что он как чёрный ящик, непонятно ни сколько стоит, ни как работает): скилл, который го…",
+  "prs": [
+    113
+  ],
+  "url": "https://claude.ai/code/session_019Hf8y1bhrgMDR6ufztxZQ8",
+  "operator": "vzakharov",
+  "firstResponseAt": "2026-09-25T23:19:07.779Z",
+  "lastResponseAt": "2026-09-26T00:06:08.190Z",
+  "pricesAsOf": "2026-09-23",
+  "claudeCodeTotalUsd": 2.4343854,
+  "total": {
+    "inputTokens": 90,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 143371,
+    "cacheReadTokens": 6165815,
+    "outputTokens": 46520,
+    "thinkingTokens": 16135,
+    "responses": 45,
+    "costUsd": 3.310891
+  },
+  "ownTurns": {
+    "inputTokens": 90,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 143371,
+    "cacheReadTokens": 6165815,
+    "outputTokens": 46520,
+    "thinkingTokens": 16135,
+    "responses": 45,
+    "costUsd": 3.310891
+  },
+  "subagents": {
+    "inputTokens": 0,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 0,
+    "cacheReadTokens": 0,
+    "outputTokens": 0,
+    "thinkingTokens": 0,
+    "responses": 0,
+    "costUsd": 0.0
+  },
+  "byRate": {
+    "claude-opus-5-5/standard": {
+      "inputTokens": 90,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 143371,
+      "cacheReadTokens": 6165815,
+      "outputTokens": 46520,
+      "thinkingTokens": 16135,
+      "responses": 45,
+      "costUsd": 3.310891
+    }
+  },
+  "warnings": []
+}

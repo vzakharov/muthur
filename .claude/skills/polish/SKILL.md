@@ -42,6 +42,8 @@ git diff origin/<base>...HEAD                     # the branch's net change
 
 That range plus anything uncommitted is the scope, unless the floor below moves up.
 
+**A staged copy counts by its diff against the real file.** One under `.claude/staged/` (`@.claude/rules/staging.md`) shows in the range as a whole new file, so a pass reading it that way reviews all of `CLAUDE.md` as this branch's prose. Its change is `git diff --no-index <real path> <copy>`, for each pair `scripts/staged.sh list` prints, and the rest of the copy is context.
+
 ## The floor: the last polish commit
 
 A branch is polished more than once — at `/go`, again at `/finalize` — and the second run has no business re-reading what the first one cleared. The passes commit their own edits, so the run is already in the history; what makes it findable is the subject line every commit either pass makes here carries:
@@ -50,7 +52,7 @@ A branch is polished more than once — at `/go`, again at `/finalize` — and t
 polish: <what the passes changed>
 ```
 
-`polish:` is a branch-local commit type, and CLAUDE.md § "Git conventions" is the home of what makes a type outside the standard set legitimate. A focused run writes `polish(<the guidance>):` instead, which the lookup below skips: guidance narrows what the passes look for, so a clean result says nothing about the defects they were not looking for. **The type belongs to this skill, not to the passes** — `/dry` invoked on its own is not a polish and marks nothing.
+`polish:` is a branch-local commit type, outside the standard set on purpose: the passes' edits are `refactor:` or `docs:` by nature, which says nothing about who made them or why, so no standard type would carry the mark. It reaches no trunk — the squash gives the branch one subject of its own, written by hand — so it costs a reader of `main` nothing and gives a reader of the branch a legible `git log --oneline`. A focused run writes `polish(<the guidance>):` instead, which the lookup below skips: guidance narrows what the passes look for, so a clean result says nothing about the defects they were not looking for. **The type belongs to this skill, not to the passes** — `/dry` invoked on its own is not a polish and marks nothing.
 
 **A run that changes nothing commits anyway, empty:**
 

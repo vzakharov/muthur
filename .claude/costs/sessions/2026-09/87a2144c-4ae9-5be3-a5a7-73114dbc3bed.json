@@ -2,12 +2,12 @@
   "sessionId": "87a2144c-4ae9-5be3-a5a7-73114dbc3bed",
   "branch": "claude/session-costs-sekrye",
   "cwd": "/home/user/muthur",
-  "name": null,
   "openingPrompt": "/handle & finalize claude/session-costs-sekrye",
   "prs": [
     94
   ],
   "url": "https://claude.ai/code/session_018serhFvTNjTXbQbmH9UMwv",
+  "operator": "vzakharov",
   "firstResponseAt": "2026-09-23T09:51:44.142Z",
   "lastResponseAt": "2026-09-23T09:55:28.881Z",
   "pricesAsOf": "2026-09-23",

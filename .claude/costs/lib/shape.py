@@ -9,8 +9,9 @@ transcript line, so a changed record shape is found rather than guessed at.
 
 from __future__ import annotations
 
+import json
 from dataclasses import fields, is_dataclass
-from typing import Any, Callable, Dict, Mapping, Optional, TypeVar
+from typing import Any, Callable, Dict, Iterator, Mapping, Optional, Tuple, TypeVar
 
 
 class ShapeError(ValueError):
@@ -27,6 +28,19 @@ def mistyped(where: str, key: str, value: Any, wanted: str) -> ShapeError:
 def is_number(value: Any) -> bool:
     """JSON's numbers, less `bool`, which Python counts as an `int`."""
     return isinstance(value, (int, float)) and not isinstance(value, bool)
+
+
+def json_lines(text: str, label: str) -> Iterator[Tuple[str, str, Any]]:
+    """`(where, line, record)` for each non-blank line of a JSONL file."""
+    for number, line in enumerate(text.split("\n"), start=1):
+        if line.strip() == "":
+            continue
+        where = f"{label} line {number}"
+        try:
+            record = json.loads(line)
+        except json.JSONDecodeError as error:
+            raise ShapeError(f"{where}: not JSON ({error})") from error
+        yield where, line, record
 
 
 def read_number(obj: Mapping[str, Any], key: str, where: str) -> Optional[float]:

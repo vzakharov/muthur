@@ -12,7 +12,7 @@ command -v ffmpeg >/dev/null ||
 ```
 
 Prefix `sudo` where the session is not root, or `brew install ffmpeg` on macOS.
-It installs here, not in the environment setup script CLAUDE.md § "Vetting"
+It installs here, not in the environment setup script `.claude/rules/stack.md`
 sends a toolchain to: that script runs for every session, and a video
 attachment is the rare one.
 

@@ -11,7 +11,9 @@ The decision this skill makes, before any other: **does this task get a plan, an
 
 **The prompt is a conditional go-ahead.** It authorizes implementation *on condition that* the agent judges the operator's gate unnecessary, scoped to the task in that message and to that message alone.
 
-`/task <what to do>` is the invocation, and it is also where a launch-time directive lands: CLAUDE.md § "Plan mode & questions in web sessions" routes any opening prompt that asks for a change to this codebase here, so most tasks arrive without anyone typing the name. A `#<N>` in that prompt means the thread is exported and committed before anything else happens — `/take-issue` does that and hands the number back. Both mentions stay bare rather than `@`-references: this skill ships to adopters who track no issues at all, and nothing here needs those files read.
+`/task <what to do>` is the invocation, and it is also where an unrouted session's first change lands: CLAUDE.md § "Plan mode & questions in web sessions" routes here the first turn that asks for a change to this codebase, whether that is the opening prompt or a follow-up to one that was answered, so most tasks arrive without anyone typing the name. A task routed mid-session is the work as the conversation now stands. A `#<N>` in that prompt means the thread is exported and committed before anything else happens — `/take-issue` does that and hands the number back. Both mentions stay bare rather than `@`-references: this skill ships to adopters who track no issues at all, and nothing here needs those files read.
+
+**What that routing costs, plainly:** the agent makes the plan-or-not call on every session that asks for a change, without the operator opting into it. The gate survives that — Step 3 routes gate-worthy work back to `/plan` — but it fires when Step 3's questions say so rather than on every task.
 
 **Anything a caller passes beyond the task — an `<issue>`, an export path — rides through unchanged to whichever outcome runs, and is never read here:** this skill knows what a task is and nothing else, and what the extras mean belongs to the skills at either end of them.
 
@@ -48,7 +50,7 @@ Now the plan exists, so the question is asked against it rather than forecast fr
 - **The work costs far more to produce than to describe.** The plan is a page, the work is a day, and a wrong direction is caught for the price of the page.
 - **A fork carries no recommendation** — the exception in `@.claude/skills/plan/SKILL.md` Part 2. Guess wrong and most of the work is wasted; the plan is what makes the choice the operator's.
 - **A review round comes too late.** The step is irreversible or outward-facing, or later work builds on it before the PR is read.
-- **The scope is itself the question** — you would be deciding *what* the task is, not just how to do it. A carve is this clause satisfied, so a plan that carves ends here.
+- **The scope is itself the question** — you would be deciding *what* the task is, not just how to do it. So is a split across sessions, an elephant or a pizza alike (`@.claude/skills/plan/SKILL.md` § "Splitting work across sessions"): the shape is the operator's to pick, so a plan that splits ends here.
 
 None of these asks how important the change is. Importance is why the operator reviews the diff; the gate is for what reviewing a diff cannot undo.
 

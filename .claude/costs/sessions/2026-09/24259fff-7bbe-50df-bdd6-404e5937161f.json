@@ -1,0 +1,62 @@
+{
+  "sessionId": "24259fff-7bbe-50df-bdd6-404e5937161f",
+  "branch": "claude/cost-row-clean-tree-5fcj6n",
+  "cwd": "/home/user/muthur",
+  "openingPrompt": "Cost ledger's Stop hook still races the harness git check #105",
+  "prs": [
+    106
+  ],
+  "url": "https://claude.ai/code/session_018Uy7EfiYGHHdXHNX84dMvB",
+  "operator": "vzakharov",
+  "firstResponseAt": "2026-09-24T02:06:11.166Z",
+  "lastResponseAt": "2026-09-24T10:22:11.197Z",
+  "pricesAsOf": "2026-09-23",
+  "claudeCodeTotalUsd": 8.191179400000003,
+  "total": {
+    "inputTokens": 236,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 513839,
+    "cacheReadTokens": 17839026,
+    "outputTokens": 96671,
+    "thinkingTokens": 40638,
+    "responses": 118,
+    "costUsd": 9.612881200000002
+  },
+  "ownTurns": {
+    "inputTokens": 236,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 513839,
+    "cacheReadTokens": 17839026,
+    "outputTokens": 96671,
+    "thinkingTokens": 40638,
+    "responses": 118,
+    "costUsd": 9.612881200000002
+  },
+  "subagents": {
+    "inputTokens": 0,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 0,
+    "cacheReadTokens": 0,
+    "outputTokens": 0,
+    "thinkingTokens": 0,
+    "responses": 0,
+    "costUsd": 0.0
+  },
+  "byRate": {
+    "claude-opus-5-5/standard": {
+      "inputTokens": 236,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 513839,
+      "cacheReadTokens": 17839026,
+      "outputTokens": 96671,
+      "thinkingTokens": 40638,
+      "responses": 118,
+      "costUsd": 9.612881200000002
+    }
+  },
+  "warnings": [
+    "msg_011CfMTcTYdnEXS8N3yv4vnx: the session's last response stopped on `tool_use` rather than `end_turn` — the turn's tail was not yet written when the Stop hook read the transcript",
+    "msg_011CfMTd8CpMGLYg36fXcRuv: the session's last response stopped on `tool_use` rather than `end_turn` — the turn's tail was not yet written when the Stop hook read the transcript",
+    "msg_011CfMTeLUXjNKPhtYLaYPWM: the session's last response stopped on `tool_use` rather than `end_turn` — the turn's tail was not yet written when the Stop hook read the transcript"
+  ]
+}
