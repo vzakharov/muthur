@@ -4,7 +4,8 @@
 expired and prices the ways on, because that prompt re-caches the whole
 conversation and nothing else shows the price before it is paid. A blocked
 prompt makes no API request, so the stop is free. It prices carrying on against
-`/relay` with `.claude/costs/lib/restart.py`, the context budget hook's model.
+a fresh session with `.claude/costs/lib/restart.py`, the context budget hook's
+model.
 
 - **Two sources of "cold".** `SessionStart` on a resume carries
   `prompt_cache_likely_expired`, `context_tokens` and
@@ -18,13 +19,16 @@ prompt makes no API request, so the stop is free. It prices carrying on against
   from cache. The transcript's first response gives its size (its cache read),
   and Claude Code's `estimated_cache_write_usd`, which assumes a full rewrite,
   is shown only when the model has no row in `prices.json`.
-- **A relay is priced by what it saves over the next 100k tokens of work**,
-  against carrying on: the successor re-reads less context on every request
-  after it, and pays up front for the summary turn and its own reorientation.
-  Cold, the summary turn re-caches the whole context first, so a relay always
-  costs more up front than carrying on; the reason says so, since a relay reads
-  as the cheap option otherwise. `.claude/context-budget/CLAUDE.md` carries
-  where the reorientation's price comes from.
+- **The way on it prices is a fresh session, not `/relay`.** A relay's summary
+  turn is a request at the whole context, so on a cold cache it pays the same
+  re-cache carrying on does; the two cancel, and what is left is the context
+  budget's question, which that hook asks once the session goes on. Only a
+  fresh session skips the re-cache, so the guard prices it — the reorientation
+  up front, the smaller context on every request after — and offers it only for
+  work that is already all on the branch, a call the operator makes.
+  `.claude/context-budget/CLAUDE.md` carries where a reorientation's price comes
+  from; for a fresh successor the sources are the fresh sessions', not the
+  relayed ones'.
 - **Once per cold spell.** A block writes the last response's id and the
   stopped prompt to `tmp/cold-cache/<session_id>.blocked`, and a prompt against
   the same id passes. A bare `!` then stands for the stopped prompt: a hook

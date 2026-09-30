@@ -33,7 +33,7 @@ def priced(transcript: Path, context: Optional[int]) -> Optional[Session]:
         return None
     prices = parse_prices((COSTS / "prices.json").read_text(encoding="utf-8"))
     project = Path(os.environ.get("CLAUDE_PROJECT_DIR") or COSTS.parents[1])
-    return session_of(transcript, history, context or 0, prices, project)
+    return session_of(transcript, history, context or 0, prices, project, relay=True)
 
 
 def main() -> None:

@@ -27,11 +27,11 @@ sys.path.insert(0, str(HERE.parent / "costs"))
 
 from lib.pricing import parse_prices
 from lib.restart import (
-    FINISH,
     Reorientation,
     Session,
     line_for,
     read_history,
+    recache,
     reorientation_of,
     saving_over,
 )
@@ -40,6 +40,8 @@ PRICES = parse_prices((HERE.parent / "costs" / "prices.json").read_text())
 MODEL = "claude-opus-5-5"
 OPUS = PRICES.rates[f"{MODEL}/standard"]
 HOUR = 3600
+# The context budget hook's `finish`, the slice a relay's saving is priced over.
+FINISH = 100_000
 
 
 def iso(at: float) -> str:
@@ -115,19 +117,13 @@ class TheCostModel(unittest.TestCase):
         self.assertAlmostEqual(line, 300_000, delta=10_000)
         self.assertAlmostEqual(saving_over(worked(line), FINISH).share, 0.2, places=4)
 
-    def test_a_warm_relay_costs_the_summary_turn_and_the_reorientation(self) -> None:
+    def test_a_relay_costs_the_summary_turn_and_the_reorientation(self) -> None:
         saving = saving_over(worked(126_000), FINISH)
-        self.assertEqual(saving.carry_on, 0.0)
         self.assertEqual(f"{saving.relay:.2f}", "0.76")
         self.assertLess(saving.usd, 0)
 
-    def test_a_cold_relay_pays_the_recache_too(self) -> None:
-        warm, cold = saving_over(worked(174_000), FINISH), saving_over(worked(174_000), FINISH, cold=True)
-        self.assertEqual(f"{cold.carry_on:.2f}", "1.07")
-        self.assertGreater(cold.relay, cold.carry_on)
-        # Both options re-cache, so the cold saving is the warm one plus the read
-        # a warm summary turn pays and a cold one folds into its re-cache.
-        self.assertAlmostEqual(cold.usd - warm.usd, 174_000 * OPUS.cache_read / 1e6)
+    def test_a_recache_reads_the_shared_prefix_and_writes_the_rest(self) -> None:
+        self.assertEqual(f"{recache(worked(174_000)):.2f}", "1.07")
 
     def test_no_line_when_the_slice_is_too_short_to_pay_the_summary_turn(self) -> None:
         tiny = Session(0, 0, 0.5 / FINISH, Reorientation(97_000, 0.57, "test"), OPUS, OPUS.cache_write_1h)
@@ -169,12 +165,12 @@ class TheReorientation(unittest.TestCase):
         self.sessions = self.dir / "sessions"
         (self.sessions / "2026-09").mkdir(parents=True)
 
-    def source(self, opening: str, *records: Dict[str, Any]) -> Reorientation:
+    def source(self, opening: str, *records: Dict[str, Any], relay: bool = True) -> Reorientation:
         path = self.dir / "t.jsonl"
         path.write_text("\n".join(json.dumps(r) for r in (prompt_record(opening), *records)) + "\n")
         history = read_history(path)
         assert history is not None
-        return reorientation_of(path, history, PRICES, self.sessions, OPUS)
+        return reorientation_of(path, history, PRICES, self.sessions, OPUS, relay)
 
     def ledger(self, *rows: Dict[str, Any]) -> None:
         for i, r in enumerate(rows):
@@ -194,6 +190,17 @@ class TheReorientation(unittest.TestCase):
         found = self.source("/relay take b", opening())
         self.assertEqual((found.context, round(found.cost_usd, 2)), (100_000, 0.6))
         self.assertEqual(found.source, "the mean of 2 relayed sessions in the ledger")
+
+    def test_a_fresh_successor_reads_the_ledgers_fresh_sessions(self) -> None:
+        self.ledger(row("/relay take a", 90_000, 0.5), row("/go x", 50_000, 0.1), row("/handle y", 70_000, 0.3))
+        found = self.source("/relay take b", opening(), self.acts(), relay=False)
+        self.assertEqual((found.context, round(found.cost_usd, 2)), (60_000, 0.2))
+        self.assertEqual(found.source, "the mean of 2 fresh sessions in the ledger")
+
+    def test_a_fresh_successor_uses_a_fresh_sessions_own_orientation(self) -> None:
+        self.ledger(row("/go y", 50_000, 0.1))
+        found = self.source("/go x", opening(), self.acts(), relay=False)
+        self.assertEqual(found.source, "this session's own orientation")
 
     def test_then_this_sessions_own_orientation(self) -> None:
         self.ledger(row("/go x", 50_000, 0.1))
@@ -266,7 +273,7 @@ class WhenAPromptIsStopped(HookCase):
         self.append(opening(), latest())
         reason = self.prompt()
         assert reason is not None
-        for figure in ("2.0 h", "174k", "Carry on: ~$1.07", "/relay: ~$2.40", "costs ~$1.33 more", "from an estimate"):
+        for figure in ("2.0 h", "174k", "Carry on: ~$1.07", "A new session, if everything", "~$1.17 to reorient", "from an estimate", "~142k instead of ~174k"):
             self.assertIn(figure, reason)
 
     def test_a_five_minute_ttl_expires_in_minutes(self) -> None:

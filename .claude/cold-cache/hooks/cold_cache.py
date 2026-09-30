@@ -15,14 +15,14 @@ import sys
 import time
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Dict, Optional, Tuple
+from typing import Any, Dict, Optional
 
 # The ledger's lib is reached by path, as its own scripts reach it.
 ROOT = Path(__file__).resolve().parents[3]
 sys.path.insert(0, str(ROOT / ".claude" / "costs"))
 
 from lib.pricing import parse_prices
-from lib.restart import FINISH, History, Saving, context_of, epoch, read_history, saving_over, session_of, verdict
+from lib.restart import History, Session, context_of, epoch, read_history, recache, session_of
 
 PRICES = ROOT / ".claude" / "costs" / "prices.json"
 RESEND = "!"
@@ -105,38 +105,30 @@ def kilo(tokens: float) -> str:
     return f"{tokens / 1000:.0f}k"
 
 
-def relay_line(saving: Saving) -> str:
-    return (
-        f"/relay: ~${saving.relay:.2f} up front, more than carrying on, since its summary turn"
-        f" re-caches the context too, and then {verdict(saving)} over the next {kilo(FINISH)}"
-        " tokens of work."
-    )
-
-
-def reason(idle: float, context: int, priced: Optional[Tuple[Saving, str]], claude_code_usd: Optional[float]) -> str:
+def reason(idle: float, context: int, priced: Optional[Session], claude_code_usd: Optional[float]) -> str:
     lines = [f"Prompt cache expired: {span(idle)} since the last response, {kilo(context)} tokens to re-cache."]
     if priced is not None:
-        saving, source = priced
-        lines.append(f"Carry on: ~${saving.carry_on:.2f} up front.")
-        lines.append(relay_line(saving))
-        lines.append(f"The successor's reorientation is priced from {source}.")
+        fresh = priced.reorientation
+        lines.append(f"Carry on: ~${recache(priced):.2f} to re-cache.")
+        lines.append(
+            f"A new session, if everything the work needs is already on the branch: ~${fresh.cost_usd:.2f}"
+            f" to reorient, priced from {fresh.source}, and each request after reads ~{kilo(fresh.context)}"
+            f" instead of ~{kilo(context)}."
+        )
     elif claude_code_usd is not None:
-        lines.append(f"Claude Code estimates re-caching at ${claude_code_usd:.2f}; this model has no row in the price table to price a relay.")
+        lines.append(f"Claude Code estimates re-caching at ${claude_code_usd:.2f}; this model has no row in the price table to price a new session.")
     else:
         lines.append("This model has no row in the price table, so the options are not priced.")
     lines.append(
         f"This message was not sent: send {RESEND} alone to carry on with it as written, send anything"
-        " else to carry on with that instead, or run /relay."
+        " else to carry on with that instead, or start a new session on the branch."
     )
     return " ".join(lines)
 
 
-def price(transcript: Path, history: History, context: int, project: Path) -> Optional[Tuple[Saving, str]]:
+def price(transcript: Path, history: History, context: int, project: Path) -> Optional[Session]:
     prices = parse_prices(PRICES.read_text(encoding="utf-8"))
-    s = session_of(transcript, history, context, prices, project)
-    if s is None:
-        return None
-    return saving_over(s, FINISH, cold=True), s.reorientation.source
+    return session_of(transcript, history, context, prices, project, relay=False)
 
 
 @dataclass(frozen=True)
@@ -190,7 +182,7 @@ def on_prompt(event: Dict[str, Any], state: State, min_usd: float, project: Path
 
     priced = price(transcript, history, context, project)
     claude_code_usd = flag.get("estimated_cache_write_usd") if flag else None
-    cost = priced[0].carry_on if priced else claude_code_usd
+    cost = recache(priced) if priced else claude_code_usd
     if cost is not None and cost < min_usd:
         return Verdict()
 

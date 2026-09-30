@@ -1,7 +1,7 @@
-"""What relaying a session saves over carrying it on, read off its transcript and
-priced from `prices.json`. The cold-cache guard prices it after the prompt cache
-expired, the context budget hook while it is warm; `.claude/cold-cache/CLAUDE.md`
-carries why the model reads what it reads.
+"""What the ways on from a session cost, read off its transcript and priced from
+`prices.json`: carrying on against `/relay` for the context budget hook, and
+against a fresh session for the cold-cache guard. `.claude/cold-cache/CLAUDE.md`
+and `.claude/context-budget/CLAUDE.md` carry why the model reads what it reads.
 """
 
 from __future__ import annotations
@@ -40,10 +40,6 @@ RAMP_UP_OUT_PER_REQUEST = 700
 REQUESTS_PER_TOKEN = 40 / 100_000
 MIN_GROWTH = 20_000
 
-# The slice of work a saving is counted over: the context budget hook's
-# `finish`, which it passes to its own calls.
-FINISH = 100_000
-
 # The opening prompt of a session `/relay` started.
 RELAY_TAKE = "/relay take"
 
@@ -75,7 +71,6 @@ class Session:
 class Saving:
     usd: float  # what relaying saves over the slice, up-front costs included
     share: float  # of what carrying on costs over it
-    carry_on: float  # USD carrying on pays before its first answer
     relay: float  # USD a relay pays before its successor's first action
 
 
@@ -88,26 +83,23 @@ def recache(s: Session) -> float:
     return usd(s.context - shared, s.write) + usd(shared, s.rates.cache_read)
 
 
-def relay_once(s: Session, cold: bool) -> float:
+def relay_once(s: Session) -> float:
     """The summary turn, one request at the whole context, plus the successor's
-    reorientation. Cold, that request re-caches the context first, just as
-    carrying on does."""
-    summary = recache(s) if cold else usd(s.context, s.rates.cache_read)
-    return summary + usd(SUMMARY_OUT, s.rates.output) + s.reorientation.cost_usd
+    reorientation."""
+    return usd(s.context, s.rates.cache_read) + usd(SUMMARY_OUT, s.rates.output) + s.reorientation.cost_usd
 
 
-def saving_over(s: Session, slice_tokens: int, cold: bool = False) -> Saving:
+def saving_over(s: Session, slice_tokens: int) -> Saving:
     """Carrying on against relaying, over the requests `slice_tokens` of context
     growth takes. New context is written at the same rate under both, so the
     writes cancel out of the saving and stay in carrying on's total."""
     n = slice_tokens * s.requests_per_token
     r = s.rates.cache_read
     growth = usd(slice_tokens, s.write)
-    carry_once = recache(s) if cold else 0.0
-    carry = carry_once + usd(n * (s.context + slice_tokens / 2), r) + growth
-    once = relay_once(s, cold)
+    carry = usd(n * (s.context + slice_tokens / 2), r) + growth
+    once = relay_once(s)
     relay = once + usd(n * (s.reorientation.context + slice_tokens / 2), r) + growth
-    return Saving(carry - relay, (carry - relay) / carry, carry_once, once)
+    return Saving(carry - relay, (carry - relay) / carry, once)
 
 
 def verdict(saving: Saving) -> str:
@@ -232,13 +224,14 @@ def own_orientation(transcript: Path, prices: PriceTable) -> Tuple[bool, Optiona
     return relayed(cost.opening_prompt), acted(cost.orientation)
 
 
-def ledger_reorientations(sessions: Path) -> List[Tuple[int, float]]:
-    """The orientation of each session the ledger records `/relay` starting."""
+def ledger_orientations(sessions: Path, relay: bool) -> List[Tuple[int, float]]:
+    """The orientation of each session the ledger records `/relay` starting, or
+    of each it records starting any other way."""
     found = []
     for path in sorted(sessions.glob("*/*.json")):
         row = parse_session_cost(path.read_text(encoding="utf-8"), str(path))
         measured = acted(row.orientation)
-        if relayed(row.opening_prompt) and measured is not None:
+        if relayed(row.opening_prompt) == relay and measured is not None:
             found.append(measured)
     return found
 
@@ -254,23 +247,26 @@ def estimated(first: Response, r: Rates, write: float) -> Tuple[int, float]:
 
 
 def reorientation_of(
-    transcript: Path, history: History, prices: PriceTable, sessions: Path, r: Rates
+    transcript: Path, history: History, prices: PriceTable, sessions: Path, r: Rates, relay: bool
 ) -> Reorientation:
-    """From the first source that has a measurement: this session's own, when
-    `/relay` started it; the ledger's relayed sessions; this session's own
-    fresh orientation; the `RAMP_UP*` estimate."""
+    """What a successor spends before it acts — one `/relay` started, or a fresh
+    one. From the first source that has a measurement: this session's own, when
+    it started the same way; the ledger's sessions that did; this session's own
+    anyway; the `RAMP_UP*` estimate."""
     was_relayed, own = own_orientation(transcript, prices)
-    if was_relayed and own is not None:
-        return Reorientation(*own, "this session's own reorientation")
-    ledger = ledger_reorientations(sessions)
+    own_name = "this session's own reorientation" if was_relayed else "this session's own orientation"
+    if own is not None and was_relayed == relay:
+        return Reorientation(*own, own_name)
+    ledger = ledger_orientations(sessions, relay)
     if ledger:
+        kind = "relayed" if relay else "fresh"
         return Reorientation(
             round(sum(c for c, _ in ledger) / len(ledger)),
             sum(u for _, u in ledger) / len(ledger),
-            f"the mean of {len(ledger)} relayed session{'s' if len(ledger) > 1 else ''} in the ledger",
+            f"the mean of {len(ledger)} {kind} session{'s' if len(ledger) > 1 else ''} in the ledger",
         )
     if own is not None:
-        return Reorientation(*own, "this session's own orientation")
+        return Reorientation(*own, own_name)
     return Reorientation(
         *estimated(history.first, r, write_rate(r, history.ttl)),
         "an estimate, no orientation having been measured yet",
@@ -278,10 +274,10 @@ def reorientation_of(
 
 
 def session_of(
-    transcript: Path, history: History, context: int, prices: PriceTable, project: Path
+    transcript: Path, history: History, context: int, prices: PriceTable, project: Path, relay: bool
 ) -> Optional[Session]:
-    """None when the session's model has no row in the price table. The ledger
-    read is `project`'s own."""
+    """None when the session's model has no row in the price table. `relay` says
+    which successor it is priced against; the ledger read is `project`'s own."""
     r = rates_of(history, prices)
     if r is None:
         return None
@@ -289,7 +285,7 @@ def session_of(
         context,
         history.first.tokens.cache_read_tokens,
         history.requests_per_token or REQUESTS_PER_TOKEN,
-        reorientation_of(transcript, history, prices, project / ".claude" / "costs" / "sessions", r),
+        reorientation_of(transcript, history, prices, project / ".claude" / "costs" / "sessions", r, relay),
         r,
         write_rate(r, history.ttl),
     )

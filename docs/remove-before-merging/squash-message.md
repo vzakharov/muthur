@@ -1,7 +1,7 @@
 Proposed squash title/body:
 
 ```
-feat: cold-cache guard, and a context budget priced by what /relay saves (pr #109)
+feat: cold-cache guard, and a relay-priced context budget (pr #109)
 ```
 
 ```
@@ -9,10 +9,11 @@ Coming back to a session after its prompt cache expired, the first
 message re-caches the whole conversation, and nothing shows the price
 before it is paid. A SessionStart/UserPromptSubmit hook pair now stops
 that message before it reaches the model and prices the two ways on:
-carry on, which pays the re-cache, or /relay, with what it costs up
-front and saves over the next 100k tokens of work. A blocked prompt
-makes no request, so the stop is free. Resending goes through, and a
-bare ! resends the stopped prompt, which the block stores.
+carry on, which pays the re-cache, or a fresh session, which pays only
+its reorientation and suits work already all on the branch. A relay is
+not offered there: its summary turn pays the same re-cache. A blocked
+prompt makes no request, so the stop is free. Resending goes through,
+and a bare ! resends the stopped prompt, which the block stores.
 
 Only the commands that shed context (/compact, /clear, /relay) and the
 built-ins that make no model request pass the guard; skills and
@@ -25,9 +26,9 @@ relay starts saving over the next 100k tokens, the pause where it saves
 20% (CONTEXT_BUDGET_PAUSE_SAVING), each capped at the fixed 200k/300k,
 with the dollars in the notice. CONTEXT_BUDGET_LINES=fixed keeps the
 pure-bash lines. Both hooks price with .claude/costs/lib/restart.py,
-and the successor's reorientation is the ledger's own orientation
-measure: this session's when /relay started it, else the ledger's
-relayed sessions, else this session's orientation, else an estimate.
+and a successor's reorientation is the ledger's own orientation
+measure: this session's when it started the same way, else the mean of
+the ledger's sessions that did, else this session's, else an estimate.
 
 Co-authored-by: Claude <noreply@anthropic.com>
 ```
