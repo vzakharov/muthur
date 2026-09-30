@@ -33,8 +33,8 @@ So the setting is **per operator**, as the ask's fallback says. It is keyed on t
 
 ## Checklist
 
-- [ ] Hook: handle resolution at notice time, setting read, three notice variants
-- [ ] Tests for the five cases above
-- [ ] `/relay` § "Auto-relay"
-- [ ] `/go` § "Stopping partway" pointer
-- [ ] `.claude/context-budget/CLAUDE.md` bullet, catalog row
+- [x] Hook: handle resolution at notice time, setting read, three notice variants
+- [x] Tests for the five cases above
+- [x] `/relay` § "Auto-relay"
+- [x] `/go` § "Stopping partway" pointer
+- [x] `.claude/context-budget/CLAUDE.md` bullet, catalog row
