@@ -43,5 +43,10 @@ only the next session.
   (`chore: swap the staged always-loaded files in early`), and push; the cache
   is paid once, and the next edit to the file stages it again.
 
+**The CLAUDE.md a branch lands has a size cap**, measured on its staged copy
+where there is one: `scripts/check-claude-md-size.sh` holds the number, and vet
+fails over it. A line that pushes the file over is the cue to move a narrower
+one out, per CLAUDE.md § "About this file", rather than to raise the cap.
+
 The PR's file view shows a staged copy as a new file; its diff against the
 original is the range from the staging commit to the head.
