@@ -1,7 +1,7 @@
 Proposed squash title/body:
 
 ```
-feat: one directory's conventions go in its own CLAUDE.md (pr #99)
+feat: ADOPTERS, read body: a directory's conventions go in a CLAUDE.md (pr #99)
 ```
 
 ```
@@ -18,9 +18,13 @@ what load a directory's conventions, so an agent reads something in a
 directory before creating a file there, until
 anthropics/claude-code#96361 makes Write load them too. The rules
 README scopes itself to its own directory with paths:, since every .md
-under .claude/rules/ is a rule and an unscoped one loads into every
-session. tend-prose's homes table and the other places stating the old
-convention follow.
+under .claude/rules/ is a rule, a CLAUDE.md there included, and an
+unscoped one loads into every session. tend-prose's homes table and the
+other places stating the old convention follow.
+
+Adopters: sweep your own .claude/rules/. A rule whose paths: globs all
+sit under one directory moves, frontmatter dropped, into that
+directory's CLAUDE.md; one whose globs span directories stays.
 
 Co-authored-by: Claude <noreply@anthropic.com>
 ```
