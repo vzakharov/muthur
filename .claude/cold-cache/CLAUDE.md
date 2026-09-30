@@ -40,12 +40,10 @@ model.
 - **What always passes:** `/compact`, `/clear` and its aliases, `/relay`, and
   every built-in command that makes no model request — `PASSES`, taken from
   code.claude.com/docs/en/commands. Skills and the built-ins that prompt the
-  model (`/go`, `/btw`, `/init`, `/plan`) are prompts like any other. A command
-  that never reaches `UserPromptSubmit` is in the list all the same, so the list
-  is kept whole rather than probed. Also passing: a session whose re-cache
-  costs under `COLD_CACHE_MIN_USD` (default `0.30`), where the stop costs more
-  attention than it saves. An unpriced model is still stopped, with the times
-  and token counts and no dollars.
+  model (`/go`, `/btw`, `/init`, `/plan`) are prompts like any other. Also
+  passing: a session whose re-cache costs under `COLD_CACHE_MIN_USD` (default
+  `0.30`), where the stop costs more attention than it saves. An unpriced model
+  is still stopped, with the times and token counts and no dollars.
 
 `COLD_CACHE_GUARD=off` in `.claude/settings.local.json`'s `env` disables both
 halves.

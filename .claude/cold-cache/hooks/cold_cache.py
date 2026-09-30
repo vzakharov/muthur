@@ -76,6 +76,9 @@ class State:
     def blocked(self) -> Path:
         return self.dir / f"{self.session}.blocked"
 
+    def last_block(self) -> Dict[str, Any]:
+        return json.loads(self.blocked.read_text()) if self.blocked.exists() else {}
+
 
 def on_session_start(event: Dict[str, Any], state: State) -> None:
     if event.get("source") in ("resume", "fork") and event.get("prompt_cache_likely_expired") is True:
@@ -141,11 +144,8 @@ class Verdict:
 
 
 def resent(state: State) -> Verdict:
-    """A bare `!` stands for the stopped prompt. A hook cannot rewrite the prompt
-    it is given, so the model is told what `!` stands for."""
-    if not state.blocked.exists():
-        return Verdict()
-    stopped = json.loads(state.blocked.read_text()).get("prompt")
+    """A bare `!` stands for the stopped prompt, which the model is told."""
+    stopped = state.last_block().get("prompt")
     if not isinstance(stopped, str):
         return Verdict()
     return Verdict(
@@ -168,7 +168,7 @@ def on_prompt(event: Dict[str, Any], state: State, min_usd: float, project: Path
         return Verdict()
     last_at = epoch(history.last.timestamp)
     flag = read_flag(state, last_at)
-    if state.blocked.exists() and json.loads(state.blocked.read_text()).get("after") == history.last.message_id:
+    if state.last_block().get("after") == history.last.message_id:
         state.flag.unlink(missing_ok=True)
         return Verdict()
 
