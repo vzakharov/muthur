@@ -24,7 +24,7 @@ COSTS = Path(__file__).resolve().parents[2] / "costs"
 sys.path.insert(0, str(COSTS))
 
 from lib.pricing import parse_prices
-from lib.restart import Session, line_for, read_history, saving_over, session_of
+from lib.restart import Session, line_for, read_history, saving_over, session_of, verdict
 
 
 def priced(transcript: Path, context: Optional[int]) -> Optional[Session]:
@@ -32,9 +32,8 @@ def priced(transcript: Path, context: Optional[int]) -> Optional[Session]:
     if history is None:
         return None
     prices = parse_prices((COSTS / "prices.json").read_text(encoding="utf-8"))
-    # The project's own ledger, which is this repository's unless the hook says otherwise.
     project = Path(os.environ.get("CLAUDE_PROJECT_DIR") or COSTS.parents[1])
-    return session_of(transcript, history, context or 0, prices, project / ".claude" / "costs" / "sessions")
+    return session_of(transcript, history, context or 0, prices, project)
 
 
 def main() -> None:
@@ -50,14 +49,8 @@ def main() -> None:
         s = priced(transcript, reading)
         if s is not None:
             saving = saving_over(s, slice_tokens)
-            if abs(saving.usd) < 0.01:
-                verdict = "about breaks even"
-            elif saving.usd > 0:
-                verdict = f"saves ~${saving.usd:.2f} (~{saving.share:.0%})"
-            else:
-                verdict = f"costs ~${-saving.usd:.2f} more than carrying on"
             print(
-                f"Relaying now costs ~${saving.relay:.2f} up front and {verdict} over the next"
+                f"Relaying now costs ~${saving.relay:.2f} up front and {verdict(saving)} over the next"
                 f" {slice_tokens // 1000}k tokens of work, reorientation priced from"
                 f" {s.reorientation.source}."
             )

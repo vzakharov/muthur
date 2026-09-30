@@ -266,7 +266,7 @@ class WhenAPromptIsStopped(HookCase):
         self.append(opening(), latest())
         reason = self.prompt()
         assert reason is not None
-        for figure in ("2.0 h", "174k", "Carry on: ≈$1.07", "/relay: ≈$2.40", "costs ≈$1.33 more", "from an estimate"):
+        for figure in ("2.0 h", "174k", "Carry on: ~$1.07", "/relay: ~$2.40", "costs ~$1.33 more", "from an estimate"):
             self.assertIn(figure, reason)
 
     def test_a_five_minute_ttl_expires_in_minutes(self) -> None:

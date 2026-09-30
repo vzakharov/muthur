@@ -110,6 +110,15 @@ def saving_over(s: Session, slice_tokens: int, cold: bool = False) -> Saving:
     return Saving(carry - relay, (carry - relay) / carry, carry_once, once)
 
 
+def verdict(saving: Saving) -> str:
+    """What relaying does against carrying on, as both hooks' notices say it."""
+    if abs(saving.usd) < 0.01:
+        return "about breaks even with carrying on"
+    if saving.usd > 0:
+        return f"saves ~${saving.usd:.2f} (~{saving.share:.0%})"
+    return f"costs ~${-saving.usd:.2f} more than carrying on"
+
+
 def line_for(s: Session, slice_tokens: int, share: float) -> Optional[int]:
     """The context at which a warm relay's saving over `slice_tokens` reaches
     `share` of carrying on's cost: `saving_over` solved for context. None when
@@ -269,9 +278,10 @@ def reorientation_of(
 
 
 def session_of(
-    transcript: Path, history: History, context: int, prices: PriceTable, sessions: Path
+    transcript: Path, history: History, context: int, prices: PriceTable, project: Path
 ) -> Optional[Session]:
-    """None when the session's model has no row in the price table."""
+    """None when the session's model has no row in the price table. The ledger
+    read is `project`'s own."""
     r = rates_of(history, prices)
     if r is None:
         return None
@@ -279,7 +289,7 @@ def session_of(
         context,
         history.first.tokens.cache_read_tokens,
         history.requests_per_token or REQUESTS_PER_TOKEN,
-        reorientation_of(transcript, history, prices, sessions, r),
+        reorientation_of(transcript, history, prices, project / ".claude" / "costs" / "sessions", r),
         r,
         write_rate(r, history.ttl),
     )

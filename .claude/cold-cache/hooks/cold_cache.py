@@ -22,7 +22,7 @@ ROOT = Path(__file__).resolve().parents[3]
 sys.path.insert(0, str(ROOT / ".claude" / "costs"))
 
 from lib.pricing import parse_prices
-from lib.restart import FINISH, History, Saving, context_of, epoch, read_history, saving_over, session_of
+from lib.restart import FINISH, History, Saving, context_of, epoch, read_history, saving_over, session_of, verdict
 
 PRICES = ROOT / ".claude" / "costs" / "prices.json"
 RESEND = "!"
@@ -106,21 +106,18 @@ def kilo(tokens: float) -> str:
 
 
 def relay_line(saving: Saving) -> str:
-    more = "more than carrying on, since its summary turn re-caches the context too"
-    if abs(saving.usd) < 0.01:
-        verdict = f"then about breaks even with carrying on over the next {kilo(FINISH)} tokens of work"
-    elif saving.usd > 0:
-        verdict = f"then saves ≈${saving.usd:.2f} (~{saving.share:.0%}) over the next {kilo(FINISH)} tokens of work"
-    else:
-        verdict = f"and still costs ≈${-saving.usd:.2f} more than carrying on over the next {kilo(FINISH)} tokens of work"
-    return f"/relay: ≈${saving.relay:.2f} up front, {more}, {verdict}."
+    return (
+        f"/relay: ~${saving.relay:.2f} up front, more than carrying on, since its summary turn"
+        f" re-caches the context too, and then {verdict(saving)} over the next {kilo(FINISH)}"
+        " tokens of work."
+    )
 
 
 def reason(idle: float, context: int, priced: Optional[Tuple[Saving, str]], claude_code_usd: Optional[float]) -> str:
     lines = [f"Prompt cache expired: {span(idle)} since the last response, {kilo(context)} tokens to re-cache."]
     if priced is not None:
         saving, source = priced
-        lines.append(f"Carry on: ≈${saving.carry_on:.2f} up front.")
+        lines.append(f"Carry on: ~${saving.carry_on:.2f} up front.")
         lines.append(relay_line(saving))
         lines.append(f"The successor's reorientation is priced from {source}.")
     elif claude_code_usd is not None:
@@ -136,7 +133,7 @@ def reason(idle: float, context: int, priced: Optional[Tuple[Saving, str]], clau
 
 def price(transcript: Path, history: History, context: int, project: Path) -> Optional[Tuple[Saving, str]]:
     prices = parse_prices(PRICES.read_text(encoding="utf-8"))
-    s = session_of(transcript, history, context, prices, project / ".claude" / "costs" / "sessions")
+    s = session_of(transcript, history, context, prices, project)
     if s is None:
         return None
     return saving_over(s, FINISH, cold=True), s.reorientation.source
