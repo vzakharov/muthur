@@ -116,7 +116,7 @@ State this explicitly in your turn output so the user can see the redirect took 
 - **Free-form follow-up** → load `@.claude/skills/go/SKILL.md` and follow it via its § "Planless entry", treating the follow-up text as the task. Two points are `/from-branch`-specific:
   - **A concrete request is not a plan cycle.** `/from-branch` is continued work (CLAUDE.md § "Plan mode & questions in web sessions"), so routing through `/go` is not an invitation to write a plan file first.
   - **The quality passes are diff-scoped, so they self-limit.** A follow-up that produced no code ("explain why X fails", "rerun CI") leaves them nothing to act on, and each says so in its own "When to use". That is a property of the passes — "the change was small" is not grounds to skip them.
-- **Skill follow-up** (e.g. `finalize`, `check-merge`, `sync-branch`, or `test-on-gh` where the project has hydrated it, slash or no slash) → load `@.claude/skills/<name>/SKILL.md` and follow it with the rest of the follow-up as its arguments. Do **not** inline-copy its steps; read and execute the actual file so updates to that skill flow through.
+- **Skill follow-up** (e.g. `finalize`, `check-merge`, `sync-branch`, or `test-on-gh` where the project has hydrated it) → load `@.claude/skills/<name>/SKILL.md` and follow it with the rest of the follow-up as its arguments. Do **not** inline-copy its steps; read and execute the actual file so updates to that skill flow through.
 
 ## Failure modes to call out
 
