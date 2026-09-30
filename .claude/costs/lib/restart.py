@@ -1,7 +1,6 @@
 """What the ways on from a session cost, read off its transcript and priced from
-`prices.json`: carrying on against `/relay` for the context budget hook, and
-against a fresh session for the cold-cache guard. `.claude/cold-cache/CLAUDE.md`
-and `.claude/context-budget/CLAUDE.md` carry why the model reads what it reads.
+`prices.json`: carrying on against `/relay`, or against a fresh session.
+`.claude/context-budget/CLAUDE.md` carries why the model reads what it reads.
 """
 
 from __future__ import annotations
