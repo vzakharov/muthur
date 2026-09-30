@@ -41,11 +41,34 @@ def tool_result() -> dict:
     return {"type": "user", "isSidechain": False, "message": {"content": "ok"}}
 
 
+# Stands in for `gh api user`: the hook's one network call, so every run gets a
+# `gh` that answers from the environment rather than from GitHub.
+GH_STUB = """#!/bin/sh
+[ -n "$STUB_GH_USER" ] || exit 1
+printf '%s\\n' "$STUB_GH_USER"
+"""
+
+
 class Session:
     def __init__(self, root: Path) -> None:
         self.root = root
         self.transcript = root / "transcript.jsonl"
         self.transcript.write_text("")
+        self.bin = root / "bin"
+        self.bin.mkdir()
+        gh = self.bin / "gh"
+        gh.write_text(GH_STUB)
+        gh.chmod(0o755)
+        # No identity: `gh` fails, as it does with no token or no network.
+        self.identity: dict[str, str] | None = None
+
+    def signed_in_as(self, login: str, kind: str = "User") -> None:
+        self.identity = {"login": login, "type": kind}
+
+    def auto_relay(self, handle: str, setting: str) -> None:
+        path = self.root / ".claude" / "context-budget" / "auto-relay" / handle
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(setting)
 
     def append(self, *records: dict) -> None:
         with self.transcript.open("a") as f:
@@ -68,7 +91,12 @@ class Session:
             capture_output=True,
             text=True,
             check=True,
-            env={"PATH": "/usr/bin:/bin", "CLAUDE_PROJECT_DIR": str(self.root), **(env or {})},
+            env={
+                "PATH": f"{self.bin}:/usr/bin:/bin",
+                "CLAUDE_PROJECT_DIR": str(self.root),
+                "STUB_GH_USER": json.dumps(self.identity) if self.identity else "",
+                **(env or {}),
+            },
         )
 
     def notice(self, env: dict[str, str] | None = None, **payload: str) -> str | None:
@@ -169,6 +197,62 @@ class WhenTheNoticesFire(BudgetTestCase):
         assert warning is not None and pause is not None
         self.assertIn("offering `/relay`", warning)
         self.assertIn("offering `/relay`", pause)
+
+
+class WhetherThePauseRelaysOnItsOwn(BudgetTestCase):
+    OPT_IN = "has not said whether to relay on their own"
+
+    def notices(self) -> tuple[str, str]:
+        self.session.append(assistant(WARN + 1))
+        warning = self.session.notice()
+        self.session.append(assistant(PAUSE + 1))
+        pause = self.session.notice()
+        assert warning is not None and pause is not None
+        return warning, pause
+
+    def test_an_operator_never_asked_is_offered_it_with_the_relay(self) -> None:
+        self.session.signed_in_as("Someone")
+        warning, pause = self.notices()
+        self.assertIn(self.OPT_IN, warning)
+        self.assertIn("@someone", pause)
+        self.assertIn("offering `/relay`", pause)
+
+    def test_on_makes_the_pause_relay_without_asking(self) -> None:
+        self.session.signed_in_as("Someone")
+        self.session.auto_relay("someone", "on\n")
+        warning, pause = self.notices()
+        self.assertIn("which relays on its own", warning)
+        self.assertIn("without asking and with no argument, run `/relay`", pause)
+        self.assertIn("auto-relay/someone", pause)
+        self.assertNotIn("offering `/relay`", pause)
+        self.assertNotIn(self.OPT_IN, pause)
+
+    def test_off_keeps_the_offer_and_asks_nothing(self) -> None:
+        self.session.signed_in_as("someone")
+        self.session.auto_relay("someone", "off")
+        warning, pause = self.notices()
+        self.assertIn("offering `/relay`", pause)
+        self.assertNotIn(self.OPT_IN, warning)
+        self.assertNotIn(self.OPT_IN, pause)
+
+    def test_a_setting_that_is_neither_reads_as_never_asked(self) -> None:
+        self.session.signed_in_as("someone")
+        self.session.auto_relay("someone", "yes please")
+        _, pause = self.notices()
+        self.assertIn(self.OPT_IN, pause)
+        self.assertNotIn("with no argument, run", pause)
+
+    def test_a_bot_token_has_no_operator_to_ask(self) -> None:
+        self.session.signed_in_as("claude[bot]", kind="Bot")
+        self.session.auto_relay("claude[bot]", "on")
+        _, pause = self.notices()
+        self.assertIn("offering `/relay`", pause)
+        self.assertNotIn(self.OPT_IN, pause)
+
+    def test_an_unanswering_gh_has_no_operator_to_ask(self) -> None:
+        _, pause = self.notices()
+        self.assertIn("offering `/relay`", pause)
+        self.assertNotIn(self.OPT_IN, pause)
 
 
 class WhichRecordsAreTheReading(BudgetTestCase):

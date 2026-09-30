@@ -59,6 +59,23 @@ mkdir -p "$state_dir" && printf '%s\n' "$level" >"$state_file" || {
   exit 0
 }
 
+# Whether the pause relays on its own is the operator's setting, so it is read
+# only here, with a notice about to go out — resolving the operator costs an API
+# call. The key is the one `.claude/hooks/operator-voice.sh` names voice entries
+# by, the lowercased login of a `User` token; any other token is the agent's own
+# identity, with no operator behind it to have opted in, and reads as
+# `unresolved` along with a `gh` that cannot answer.
+auto_relay=unresolved
+handle="$(gh api user 2>/dev/null | jq -r 'select(.type == "User") | .login | ascii_downcase' 2>/dev/null)"
+if [[ "$handle" =~ ^[a-z0-9-]+$ ]]; then
+  setting=".claude/context-budget/auto-relay/$handle"
+  case "$(tr -d '[:space:]' 2>/dev/null <"$root/$setting")" in
+    on) auto_relay=on ;;
+    off) auto_relay=off ;;
+    *) auto_relay=unset ;;
+  esac
+fi
+
 k() { echo "$(($1 / 1000))k"; }
 past() { echo "Context budget: this session is carrying ~$(k "$reading") tokens of context, past the $(k "$1") $2 line."; }
 stopping='`@.claude/skills/go/SKILL.md` § "Stopping partway releases the plan" — which also covers work that has no plan yet'
@@ -66,21 +83,34 @@ relay='`/relay` (`@.claude/skills/relay/SKILL.md`), which hands the branch to a 
 finish=100000
 nearly_done() { echo "First judge whether the work is nearly done — the open bite, when the plan has a \`## This bite\` section: by your own estimate, under ~$(k "$finish") more tokens of context to finish$1. If it is, finish it, and say in your report that you did and why rather than stopping."; }
 
+auto='`@.claude/skills/relay/SKILL.md` § "Auto-relay"'
+turned_on="this operator turned auto-relay on (\`${setting:-}\`, ${auto})"
+
 case "$level" in
   warn)
+    returns="at $(k "$pause") this notice returns as the pause itself"
+    [ "$auto_relay" != on ] || returns="$returns, which relays on its own — $turned_on"
     notice="$(past "$warn" warning)
 
 $(nearly_done " — roughly, less than half of what this session has already carried")
 
-Otherwise get the work to a committed, pushed stopping point and tell the operator, offering ${relay}. Do not relay unasked at this level: at $(k "$pause") this notice returns as the pause itself."
+Otherwise get the work to a committed, pushed stopping point and tell the operator, offering ${relay}. Do not relay unasked at this level: ${returns}."
     ;;
   pause)
+    way_on="tell the operator the session was paused for its context budget, and end the turn offering ${relay}"
+    [ "$auto_relay" != on ] || way_on="then, without asking and with no argument, run ${relay}. Do so because ${turned_on}; its report tells the operator the session was paused for its context budget and relayed on its own"
     notice="$(past "$pause" pause)
 
 $(nearly_done "")
 
-Otherwise pause now, without asking: follow ${stopping}. Push, tell the operator the session was paused for its context budget, and end the turn offering ${relay}; the new session resumes the paused plan."
+Otherwise pause now, without asking: follow ${stopping}. Push, ${way_on}; the new session resumes the paused plan."
     ;;
 esac
+
+# An operator who has never answered is asked alongside the offer, once a
+# session; their answer is what writes the setting.
+[ "$auto_relay" != unset ] || notice="$notice
+
+This operator (@${handle}) has not said whether to relay on their own. Unless you already asked in this session, add to the offer: from now on, at the pause line, you can run \`/relay\` without asking. Record their answer, yes or no, per ${auto}."
 
 emit_context "$notice"
