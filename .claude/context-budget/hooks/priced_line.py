@@ -1,78 +1,62 @@
 #!/usr/bin/env python3
 """The context budget's priced figures, for `post-tool-context-budget.sh`:
 
-- `line <transcript>` prints `<tokens> <observed|estimated>` — the context past
-  which a new session pays for itself within `CONTEXT_BUDGET_REQUESTS` requests,
-  and whether the warm-up it is costed from has happened yet;
-- `notice <transcript> <reading>` prints the break-even sentence for the notice.
+- `lines <transcript> <slice> <pause-percent>` prints `<warn> <pause>` — the
+  contexts at which relaying saves $0, and `<pause-percent>` of what carrying on
+  costs, over the next `<slice>` tokens of work; `-` for a line no context
+  reaches;
+- `notice <transcript> <reading> <slice>` prints the saving sentence for the
+  notice.
 
 Prints nothing when the session cannot be priced, which leaves the caller on
-its fixed line. Stdlib only — Python 3.9+.
+its fixed lines. Stdlib only — Python 3.9+.
 """
 
 from __future__ import annotations
 
-import os
 import sys
 from pathlib import Path
-from typing import Optional, Tuple
+from typing import Optional
 
 # The ledger's lib is reached by path, as its own scripts reach it.
 COSTS = Path(__file__).resolve().parents[2] / "costs"
 sys.path.insert(0, str(COSTS))
 
-from lib.pricing import Rates, parse_prices
-from lib.restart import (
-    History,
-    Session,
-    break_even_context,
-    payback,
-    rates_of,
-    read_history,
-    session_of,
-    while_warm,
-    write_rate,
-)
-
-DEFAULT_REQUESTS = 100
+from lib.pricing import parse_prices
+from lib.restart import Session, line_for, read_history, saving_over, session_of
 
 
-def priced(transcript: Path, context: Optional[int]) -> Optional[Tuple[History, Session, Rates]]:
-    prices = parse_prices((COSTS / "prices.json").read_text(encoding="utf-8"))
-    history = read_history(transcript, prices)
+def priced(transcript: Path, context: Optional[int]) -> Optional[Session]:
+    history = read_history(transcript)
     if history is None:
         return None
-    rates = rates_of(history, prices)
-    if rates is None:
-        return None
-    return history, session_of(history, context or 0, rates), rates
-
-
-def pays(back: Optional[float]) -> str:
-    if back is None:
-        return "does not pay for itself at this size"
-    return f"pays for itself after ~{max(1, round(back))} more requests"
+    prices = parse_prices((COSTS / "prices.json").read_text(encoding="utf-8"))
+    return session_of(transcript, history, context or 0, prices, COSTS / "sessions")
 
 
 def main() -> None:
     command, transcript = sys.argv[1], Path(sys.argv[2])
-    budget = float(os.environ.get("CONTEXT_BUDGET_REQUESTS") or DEFAULT_REQUESTS)
-    if command == "line":
-        found = priced(transcript, None)
-        if found is not None:
-            history, s, rates = found
-            kind = "observed" if history.warm_up is not None else "estimated"
-            print(break_even_context(s, rates, budget), kind)
+    if command == "lines":
+        slice_tokens, share = int(sys.argv[3]), int(sys.argv[4]) / 100
+        s = priced(transcript, None)
+        if s is not None:
+            lines = (line_for(s, slice_tokens, 0.0), line_for(s, slice_tokens, share))
+            print(*("-" if line is None else line for line in lines))
     elif command == "notice":
-        found = priced(transcript, int(sys.argv[3]))
-        if found is not None:
-            history, s, rates = found
-            options = while_warm(s, rates, write_rate(rates, history.ttl))
-            carry_on = options["carry on"]
+        reading, slice_tokens = int(sys.argv[3]), int(sys.argv[4])
+        s = priced(transcript, reading)
+        if s is not None:
+            saving = saving_over(s, slice_tokens)
+            if abs(saving.usd) < 0.01:
+                verdict = "about breaks even"
+            elif saving.usd > 0:
+                verdict = f"saves ~${saving.usd:.2f} (~{saving.share:.0%})"
+            else:
+                verdict = f"costs ~${-saving.usd:.2f} more than carrying on"
             print(
-                f"Priced off this session's own warm-up, a new session"
-                f" {pays(payback(options['new session'], carry_on))},"
-                f" and /compact {pays(payback(options['/compact'], carry_on))}."
+                f"Relaying now costs ~${saving.relay:.2f} up front and {verdict} over the next"
+                f" {slice_tokens // 1000}k tokens of work, reorientation priced from"
+                f" {s.reorientation.source}."
             )
 
 

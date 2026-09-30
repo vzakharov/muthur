@@ -25,29 +25,20 @@ import json
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Dict, List, Optional
+from typing import Dict, Optional
 
 from lib.billed import Event, parse_events
 from lib.pricing import (
     TranscriptSources,
     is_unwritten_tail,
     parse_prices,
+    subagents_of,
     summarise_transcript,
 )
 from lib.rows import ROOT, SessionCost, parse_session_cost, row_text, write_atomic
 from lib.shape import ShapeError
 
 COSTS = Path(__file__).resolve().parent
-
-
-def subagents_of(main: Path) -> List[str]:
-    """A subagent's responses are billed to this session and written to their own
-    file under `<transcript>/subagents/`, so the directory is read rather than
-    assumed empty. A session that spawned none has no directory at all."""
-    directory = main.parent / main.stem / "subagents"
-    if not directory.is_dir():
-        return []
-    return [path.read_text(encoding="utf-8") for path in sorted(directory.glob("*.jsonl"))]
 
 
 def previous(row: Path) -> Optional[SessionCost]:

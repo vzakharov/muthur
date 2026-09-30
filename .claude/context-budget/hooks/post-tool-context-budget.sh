@@ -14,11 +14,18 @@ need_command jq "no context-budget reading this tool call."
 
 warn="${CONTEXT_BUDGET_WARN:-200000}"
 pause="${CONTEXT_BUDGET_PAUSE:-300000}"
-requests="${CONTEXT_BUDGET_REQUESTS:-100}"
-[[ "$warn" =~ ^[0-9]+$ && "$pause" =~ ^[0-9]+$ && "$requests" =~ ^[1-9][0-9]*$ ]] || {
-  say "CONTEXT_BUDGET_WARN / CONTEXT_BUDGET_PAUSE / CONTEXT_BUDGET_REQUESTS must be whole counts; no reading taken."
+pause_saving="${CONTEXT_BUDGET_PAUSE_SAVING:-20}"
+lines="${CONTEXT_BUDGET_LINES:-priced}"
+[[ "$warn" =~ ^[0-9]+$ && "$pause" =~ ^[0-9]+$ && "$pause_saving" =~ ^[0-9]+$ && "$pause_saving" -lt 100 ]] || {
+  say "CONTEXT_BUDGET_WARN / CONTEXT_BUDGET_PAUSE must be whole counts, CONTEXT_BUDGET_PAUSE_SAVING a percentage under 100; no reading taken."
   exit 0
 }
+[[ "$lines" == priced || "$lines" == fixed ]] || {
+  say "CONTEXT_BUDGET_LINES must be \`priced\` or \`fixed\`; no reading taken."
+  exit 0
+}
+# What "nearly done" means, and the slice of work a relay's saving is priced over.
+finish=100000
 
 root="$(project_root)"
 transcript="$(field transcript_path)"
@@ -42,21 +49,28 @@ reading="$(tac "$transcript" | grep -F '"type":"assistant"' | jq -rn '
 state_dir="$root/tmp/context-budget"
 state_file="$state_dir/$session"
 
-# Priced where the ledger's lib can price it and no fixed line was set. Cached as
-# `<line> <kind> <reading>`; recomputed while the warm-up is an estimate, per 10k.
+# Priced where the ledger's lib can price it, each line capped at its fixed one;
+# a hand-set line stays fixed. Cached as `<warn> <pause> <reading>`, recomputed
+# per 10k of growth, since a Python start-up per tool call is what this bash hook
+# avoids.
 hooks="$(dirname "${BASH_SOURCE[0]}")"
 priced=
-if [ -z "${CONTEXT_BUDGET_WARN:-}" ] && [ -f "$hooks/../../costs/lib/restart.py" ] && command -v python3 >/dev/null; then
+if [ "$lines" = priced ] && [ -z "${CONTEXT_BUDGET_WARN:-}" -o -z "${CONTEXT_BUDGET_PAUSE:-}" ] \
+  && [ -f "$hooks/../../costs/lib/restart.py" ] && command -v python3 >/dev/null; then
   line_file="$state_dir/$session.line"
-  line= kind= at=
-  [ ! -f "$line_file" ] || read -r line kind at <"$line_file"
-  if [ "$kind" != observed ] && ! [[ "$at" =~ ^[0-9]+$ && "$reading" -ge "$at" && "$reading" -lt $((at + 10000)) ]]; then
-    read -r line kind < <(CONTEXT_BUDGET_REQUESTS="$requests" python3 "$hooks/priced_line.py" line "$transcript")
-    mkdir -p "$state_dir" && printf '%s %s %s\n' "${line:--}" "${kind:-unpriced}" "$reading" >"$line_file"
+  priced_warn= priced_pause= at=
+  [ ! -f "$line_file" ] || read -r priced_warn priced_pause at <"$line_file"
+  if ! [[ "$at" =~ ^[0-9]+$ && "$reading" -ge "$at" && "$reading" -lt $((at + 10000)) ]]; then
+    read -r priced_warn priced_pause < <(python3 "$hooks/priced_line.py" lines "$transcript" "$finish" "$pause_saving")
+    mkdir -p "$state_dir" && printf '%s %s %s\n' "${priced_warn:--}" "${priced_pause:--}" "$reading" >"$line_file"
   fi
-  if [[ "$line" =~ ^[0-9]+$ ]]; then
-    warn="$line"
+  if [ -z "${CONTEXT_BUDGET_WARN:-}" ] && [[ "$priced_warn" =~ ^[0-9]+$ ]]; then
     priced=1
+    [ "$priced_warn" -ge "$warn" ] || warn="$priced_warn"
+  fi
+  if [ -z "${CONTEXT_BUDGET_PAUSE:-}" ] && [[ "$priced_pause" =~ ^[0-9]+$ ]]; then
+    priced=1
+    [ "$priced_pause" -ge "$pause" ] || pause="$priced_pause"
   fi
 fi
 
@@ -82,21 +96,22 @@ k() { echo "$(($1 / 1000))k"; }
 past() { echo "Context budget: this session is carrying ~$(k "$reading") tokens of context, past the $(k "$1") $2 line."; }
 stopping='`@.claude/skills/go/SKILL.md` § "Stopping partway releases the plan" — which also covers work that has no plan yet'
 relay='`/relay` (`@.claude/skills/relay/SKILL.md`), which hands the branch to a fresh session starting from a summary of this one — the summary `/compact` would make, written to a file instead'
-finish=100000
 nearly_done() { echo "First judge whether the work is nearly done — the open bite, when the plan has a \`## This bite\` section: by your own estimate, under ~$(k "$finish") more tokens of context to finish$1. If it is, finish it, and say in your report that you did and why rather than stopping."; }
+
+saving=
+[ -z "$priced" ] || saving="$(python3 "$hooks/priced_line.py" notice "$transcript" "$reading" "$finish")"
+priced_past() { echo "$(past "$@")${saving:+ $saving Give the operator those figures when you offer the choice.}"; }
 
 case "$level" in
   warn)
-    breakeven=
-    [ -z "$priced" ] || breakeven="$(python3 "$hooks/priced_line.py" notice "$transcript" "$reading")"
-    notice="$(past "$warn" warning)${breakeven:+ $breakeven Compare that with the requests the work has left, and give both numbers when you offer the choice.}
+    notice="$(priced_past "$warn" warning)
 
 $(nearly_done " — roughly, less than half of what this session has already carried")
 
 Otherwise get the work to a committed, pushed stopping point and tell the operator, offering ${relay}. Do not relay unasked at this level: at $(k "$pause") this notice returns as the pause itself."
     ;;
   pause)
-    notice="$(past "$pause" pause)
+    notice="$(priced_past "$pause" pause)
 
 $(nearly_done "")
 

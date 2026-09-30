@@ -8,6 +8,7 @@ leave out.
 from __future__ import annotations
 
 import json
+from pathlib import Path
 from dataclasses import dataclass, fields
 from typing import Any, Dict, List, Mapping, Optional, Sequence, Set, Tuple
 
@@ -170,6 +171,16 @@ class TranscriptSources:
 
     main: str
     subagents: Sequence[str] = ()
+
+
+def subagents_of(main: Path) -> List[str]:
+    """A subagent's responses are billed to this session and written to their own
+    file under `<transcript>/subagents/`, so the directory is read rather than
+    assumed empty. A session that spawned none has no directory at all."""
+    directory = main.parent / main.stem / "subagents"
+    if not directory.is_dir():
+        return []
+    return [path.read_text(encoding="utf-8") for path in sorted(directory.glob("*.jsonl"))]
 
 
 # Marks the warning `at_stop` raises, which is what lets a rewrite of the row
