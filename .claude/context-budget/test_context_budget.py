@@ -115,6 +115,15 @@ class BudgetTestCase(unittest.TestCase):
         self.addCleanup(tmp.cleanup)
         self.session = Session(Path(tmp.name))
 
+    def notices(self) -> tuple[str, str]:
+        """The warning, then the pause, from one climb past both lines."""
+        self.session.append(assistant(WARN + 1))
+        warning = self.session.notice()
+        self.session.append(assistant(PAUSE + 1))
+        pause = self.session.notice()
+        assert warning is not None and pause is not None
+        return warning, pause
+
 
 class WhenTheNoticesFire(BudgetTestCase):
     def test_says_nothing_under_the_warn_line(self) -> None:
@@ -170,45 +179,25 @@ class WhenTheNoticesFire(BudgetTestCase):
     ) -> None:
         # The half-of-the-session gauge matches 100k only at the warning line;
         # at the pause line it would read 150k, so that notice carries none.
-        self.session.append(assistant(WARN + 1))
-        warning = self.session.notice()
-        self.session.append(assistant(PAUSE + 1))
-        pause = self.session.notice()
-        assert warning is not None and pause is not None
+        warning, pause = self.notices()
         self.assertIn("under ~100k more tokens", warning)
         self.assertIn("less than half", warning)
         self.assertIn("under ~100k more tokens", pause)
         self.assertNotIn("less than half", pause)
 
     def test_nearly_done_judges_an_elephants_open_bite(self) -> None:
-        self.session.append(assistant(WARN + 1))
-        warning = self.session.notice()
-        self.session.append(assistant(PAUSE + 1))
-        pause = self.session.notice()
-        assert warning is not None and pause is not None
+        warning, pause = self.notices()
         self.assertIn("the open bite", warning)
         self.assertIn("the open bite", pause)
 
     def test_both_notices_offer_relay_as_the_way_on(self) -> None:
-        self.session.append(assistant(WARN + 1))
-        warning = self.session.notice()
-        self.session.append(assistant(PAUSE + 1))
-        pause = self.session.notice()
-        assert warning is not None and pause is not None
+        warning, pause = self.notices()
         self.assertIn("offering `/relay`", warning)
         self.assertIn("offering `/relay`", pause)
 
 
 class WhetherThePauseRelaysOnItsOwn(BudgetTestCase):
     OPT_IN = "has not said whether to relay on their own"
-
-    def notices(self) -> tuple[str, str]:
-        self.session.append(assistant(WARN + 1))
-        warning = self.session.notice()
-        self.session.append(assistant(PAUSE + 1))
-        pause = self.session.notice()
-        assert warning is not None and pause is not None
-        return warning, pause
 
     def test_an_operator_never_asked_is_offered_it_with_the_relay(self) -> None:
         self.session.signed_in_as("Someone")
