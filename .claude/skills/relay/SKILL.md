@@ -16,7 +16,7 @@ Two ends, told apart by the first token: `take` is the pickup; anything else, or
 
 ## `/relay [<to-be first message>]` — hand off
 
-The argument is the message the operator would have sent first after a compact, addressed to the successor: a skill named bare (`go`, `handle`, `finalize and merge` — `@.claude/rules/skills.md` says why), prose, or both. It becomes the summary's Next step verbatim, and the summary dwells on what that message will need. With no argument, the Next step is the agent's own call under § "Step 2"'s rule for it.
+The argument is the message the operator would have sent first after a compact, addressed to the successor: a skill named bare (`go`, `handle`, `finalize and merge` — `@.claude/skills/CLAUDE.md` says why), prose, or both. It becomes the summary's Next step verbatim, and the summary dwells on what that message will need. With no argument, the Next step is the agent's own call under § "Step 2"'s rule for it.
 
 ### Step 1 — Leave the branch resumable
 
