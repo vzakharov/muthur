@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Pins the relay cost model to a worked example and its four
-reorientation sources.
+reorientation sources. The record builders here are also the cold-cache
+guard's fixtures, which is why they take the fields its hook reads.
 
 Run by path (`python3 .claude/costs/test_restart.py`), as `scripts/vet.sh`
 does, which puts this directory on `sys.path` for `lib`.

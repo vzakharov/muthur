@@ -34,6 +34,14 @@
             "timeout": 30
           }
         ]
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "$CLAUDE_PROJECT_DIR/.claude/cold-cache/hooks/cold_cache.py"
+          }
+        ]
       }
     ],
     "UserPromptSubmit": [
@@ -60,6 +68,10 @@
           {
             "type": "command",
             "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/prompt-route-notice.sh"
+          },
+          {
+            "type": "command",
+            "command": "$CLAUDE_PROJECT_DIR/.claude/cold-cache/hooks/cold_cache.py"
           }
         ]
       }
