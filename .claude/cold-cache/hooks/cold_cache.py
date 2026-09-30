@@ -111,7 +111,8 @@ def reason(idle: float, context: int, priced: Optional[Session], claude_code_usd
         fresh = priced.reorientation
         lines.append(f"Carry on: ~${recache(priced):.2f} to re-cache.")
         lines.append(
-            f"A new session, if everything the work needs is already on the branch: ~${fresh.cost_usd:.2f}"
+            "A new session, if everything the work needs is already on the branch and nothing decided"
+            f" since lives only in this conversation: ~${fresh.cost_usd:.2f}"
             f" to reorient, priced from {fresh.source}, and each request after reads ~{kilo(fresh.context)}"
             f" instead of ~{kilo(context)}."
         )

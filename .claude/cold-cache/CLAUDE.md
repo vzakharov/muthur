@@ -25,7 +25,9 @@ model.
   budget's question, which that hook asks once the session goes on. Only a
   fresh session skips the re-cache, so the guard prices it — the reorientation
   up front, the smaller context on every request after — and offers it only for
-  work that is already all on the branch, a call the operator makes.
+  work that is already all on the branch, a call the operator makes. The hook
+  cannot see a decision made in chat after the last step that wrote one down —
+  a plan, a PR body, a commit — so the offer names that condition too.
   `.claude/context-budget/CLAUDE.md` carries where a reorientation's price comes
   from; for a fresh successor the sources are the fresh sessions', not the
   relayed ones'.
