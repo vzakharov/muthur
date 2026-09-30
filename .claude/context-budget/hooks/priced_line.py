@@ -14,6 +14,7 @@ its fixed lines. Stdlib only — Python 3.9+.
 
 from __future__ import annotations
 
+import os
 import sys
 from pathlib import Path
 from typing import Optional
@@ -31,7 +32,9 @@ def priced(transcript: Path, context: Optional[int]) -> Optional[Session]:
     if history is None:
         return None
     prices = parse_prices((COSTS / "prices.json").read_text(encoding="utf-8"))
-    return session_of(transcript, history, context or 0, prices, COSTS / "sessions")
+    # The project's own ledger, which is this repository's unless the hook says otherwise.
+    project = Path(os.environ.get("CLAUDE_PROJECT_DIR") or COSTS.parents[1])
+    return session_of(transcript, history, context or 0, prices, project / ".claude" / "costs" / "sessions")
 
 
 def main() -> None:

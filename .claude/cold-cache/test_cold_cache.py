@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-"""Pins the restart cost model to the calculator's figures, and drives the hook
+"""Pins the relay cost model to the plan's worked example and its four
+reorientation sources, and drives the hook
 as the harness does — a payload on stdin, a transcript on disk — for each rule
 that decides whether a prompt is stopped.
 
@@ -26,12 +27,13 @@ sys.path.insert(0, str(HERE.parent / "costs"))
 
 from lib.pricing import parse_prices
 from lib.restart import (
+    FINISH,
+    Reorientation,
     Session,
-    after_expiry,
-    estimated_warm_up,
-    payback,
+    line_for,
     read_history,
-    while_warm,
+    reorientation_of,
+    saving_over,
 )
 
 PRICES = parse_prices((HERE.parent / "costs" / "prices.json").read_text())
@@ -55,12 +57,14 @@ def response(
     stop: str = "tool_use",
     tool: Optional[Dict[str, Any]] = None,
     ttl: str = "1h",
+    cwd: str = "/repo",
 ) -> Dict[str, Any]:
     split = {"ephemeral_5m_input_tokens": 0, "ephemeral_1h_input_tokens": 0}
     split[f"ephemeral_{ttl}_input_tokens"] = write
     return {
         "type": "assistant",
         "isSidechain": sidechain,
+        "cwd": cwd,
         "timestamp": iso(time.time() - ago),
         "message": {
             "id": message_id,
@@ -88,76 +92,124 @@ def latest(message_id: str = "last", ago: float = 2 * HOUR, context: int = 174_0
     return response(message_id, ago=ago, read=context - 1_000, write=1_000, **kw)
 
 
+def prompt_record(text: str) -> Dict[str, Any]:
+    return {"type": "user", "message": {"role": "user", "content": text}}
+
+
+def worked(context: int) -> Session:
+    """The plan's worked example: 37 requests per 100k of growth, a successor
+    reoriented at 97k for $0.57."""
+    return Session(context, 41_000, 37 / 100_000, Reorientation(97_000, 0.57, "test"), OPUS, OPUS.cache_write_1h)
+
+
 class TheCostModel(unittest.TestCase):
-    def test_after_expiry_matches_the_calculator(self) -> None:
-        write = OPUS.cache_write_1h
-        s = Session(174_000, 41_000, 82_000, estimated_warm_up(82_000, 41_000, OPUS, write))
-        priced = after_expiry(s, OPUS, write)
-        self.assertEqual(f"{priced['carry on'].once:.2f}", "1.07")
-        self.assertEqual(f"{priced['/compact'].once:.2f}", "1.15")
-        self.assertEqual(f"{priced['new session'].once:.2f}", "1.17")
-        back = payback(priced["/compact"], priced["carry on"])
-        assert back is not None
-        self.assertEqual(round(back), 5)
+    def test_the_warn_line_is_where_a_relay_starts_saving(self) -> None:
+        line = line_for(worked(0), FINISH, 0.0)
+        assert line is not None
+        self.assertAlmostEqual(line, 200_000, delta=5_000)
+        self.assertAlmostEqual(saving_over(worked(line), FINISH).usd, 0.0, places=4)
 
-    def test_while_warm_carrying_on_is_free_up_front(self) -> None:
-        write = OPUS.cache_write_1h
-        s = Session(250_000, 41_000, 82_000, estimated_warm_up(82_000, 41_000, OPUS, write))
-        priced = while_warm(s, OPUS, write)
-        self.assertEqual(priced["carry on"].once, 0.0)
-        back = payback(priced["new session"], priced["carry on"])
-        saved = (250_000 - s.warm_up.context) * OPUS.cache_read / 1e6
-        assert back is not None
-        self.assertAlmostEqual(back, s.warm_up.cost_usd / saved)
+    def test_the_pause_line_is_where_it_saves_a_fifth(self) -> None:
+        line = line_for(worked(0), FINISH, 0.2)
+        assert line is not None
+        self.assertAlmostEqual(line, 300_000, delta=10_000)
+        self.assertAlmostEqual(saving_over(worked(line), FINISH).share, 0.2, places=4)
 
-    def test_payback_is_none_when_the_option_never_catches_up(self) -> None:
-        write = OPUS.cache_write_1h
-        # Below the warm-up's own context a new session saves nothing per request.
-        s = Session(100_000, 41_000, 82_000, estimated_warm_up(82_000, 41_000, OPUS, write))
-        priced = while_warm(s, OPUS, write)
-        self.assertIsNone(payback(priced["new session"], priced["carry on"]))
+    def test_a_warm_relay_costs_the_summary_turn_and_the_reorientation(self) -> None:
+        saving = saving_over(worked(126_000), FINISH)
+        self.assertEqual(saving.carry_on, 0.0)
+        self.assertEqual(f"{saving.relay:.2f}", "0.76")
+        self.assertLess(saving.usd, 0)
+
+    def test_a_cold_relay_pays_the_recache_too(self) -> None:
+        warm, cold = saving_over(worked(174_000), FINISH), saving_over(worked(174_000), FINISH, cold=True)
+        self.assertEqual(f"{cold.carry_on:.2f}", "1.07")
+        self.assertGreater(cold.relay, cold.carry_on)
+        # Both options re-cache, so the cold saving is the warm one plus the read
+        # a warm summary turn pays and a cold one folds into its re-cache.
+        self.assertAlmostEqual(cold.usd - warm.usd, 174_000 * OPUS.cache_read / 1e6)
+
+    def test_no_line_when_the_slice_is_too_short_to_pay_the_summary_turn(self) -> None:
+        tiny = Session(0, 0, 0.5 / FINISH, Reorientation(97_000, 0.57, "test"), OPUS, OPUS.cache_write_1h)
+        self.assertIsNone(line_for(tiny, FINISH, 0.0))
 
 
-class TheWarmUp(unittest.TestCase):
-    def history(self, *records: Dict[str, Any]):
-        with tempfile.TemporaryDirectory() as tmp:
-            path = Path(tmp) / "t.jsonl"
-            path.write_text("\n".join(json.dumps(r) for r in records) + "\n")
-            return read_history(path, PRICES)
-
-    def test_ends_at_the_first_edit(self) -> None:
-        h = self.history(
-            opening(),
-            response("look", ago=100, read=82_000, write=20_000),
-            response("edit", ago=90, read=102_000, write=3_000, tool={"name": "Edit", "input": {}}),
-            response("more", ago=80, read=105_000, write=40_000, tool={"name": "Write", "input": {}}),
+def row(opening_prompt: str, context: Optional[int], cost: float) -> Dict[str, Any]:
+    """A ledger row as far as the reorientation reads it; the rest zeroed."""
+    tally = {
+        k: 0
+        for k in (
+            "inputTokens", "cacheWrite5mTokens", "cacheWrite1hTokens", "cacheReadTokens",
+            "outputTokens", "thinkingTokens", "responses",
         )
-        assert h is not None and h.warm_up is not None
-        self.assertEqual(h.warm_up.context, 105_000)
-        # Three responses priced, the fourth after the warm-up is not.
-        self.assertAlmostEqual(
-            h.warm_up.cost_usd,
-            (41_000 * 0.2 + 41_000 * 8 + 82_000 * 0.2 + 20_000 * 8 + 102_000 * 0.2 + 3_000 * 8 + 3 * 500 * 20) / 1e6,
-        )
+    }
+    ended = context is not None
+    return {
+        "sessionId": opening_prompt, "branch": None, "cwd": None, "openingPrompt": opening_prompt,
+        "prs": [], "url": None, "operator": None, "firstResponseAt": None, "lastResponseAt": None,
+        "pricesAsOf": "2026-09-01", "claudeCodeTotalUsd": None,
+        "total": {**tally, "costUsd": 0.0}, "ownTurns": {**tally, "costUsd": 0.0},
+        "subagents": {**tally, "costUsd": 0.0}, "byRate": {}, "warnings": [],
+        "orientation": {
+            "endedBy": "Edit" if ended else None, "endedOn": "a.py" if ended else None,
+            "endedAt": iso(0) if ended else None, "contextTokens": context,
+            "spend": {**tally, "costUsd": cost},
+        },
+        "compactions": [], "telemetry": None,
+    }
 
-    def test_ends_at_a_bash_commit_or_a_finished_answer(self) -> None:
-        commit = self.history(
-            opening(),
-            response("ls", ago=90, read=82_000, write=5_000, tool={"name": "Bash", "input": {"command": "ls"}}),
-            response("c", ago=80, read=87_000, write=1_000, tool={"name": "Bash", "input": {"command": "git commit -m x"}}),
-        )
-        answer = self.history(opening(), response("a", ago=80, read=82_000, write=9_000, stop="end_turn"))
-        assert commit is not None and commit.warm_up is not None
-        assert answer is not None and answer.warm_up is not None
-        self.assertEqual(commit.warm_up.context, 88_000)
-        self.assertEqual(answer.warm_up.context, 91_000)
 
-    def test_is_unknown_before_it_ends_or_when_unpriced(self) -> None:
-        looking = self.history(opening(), response("ls", ago=90, read=82_000, write=5_000))
-        unpriced = self.history(opening(model="claude-x"), response("a", ago=80, read=82_000, stop="end_turn"))
-        assert looking is not None and unpriced is not None
-        self.assertIsNone(looking.warm_up)
-        self.assertIsNone(unpriced.warm_up)
+class TheReorientation(unittest.TestCase):
+    """The four sources, each tried only when those before it have nothing."""
+
+    def setUp(self) -> None:
+        tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(tmp.cleanup)
+        self.dir = Path(tmp.name)
+        self.sessions = self.dir / "sessions"
+        (self.sessions / "2026-09").mkdir(parents=True)
+
+    def source(self, opening: str, *records: Dict[str, Any]) -> Reorientation:
+        path = self.dir / "t.jsonl"
+        path.write_text("\n".join(json.dumps(r) for r in (prompt_record(opening), *records)) + "\n")
+        history = read_history(path)
+        assert history is not None
+        return reorientation_of(path, history, PRICES, self.sessions, OPUS)
+
+    def ledger(self, *rows: Dict[str, Any]) -> None:
+        for i, r in enumerate(rows):
+            (self.sessions / "2026-09" / f"{i}.json").write_text(json.dumps(r))
+
+    def acts(self) -> Dict[str, Any]:
+        return response("edit", ago=90, read=102_000, write=3_000, tool={"name": "Edit", "input": {"file_path": "/repo/a.py"}})
+
+    def test_a_relayed_session_uses_its_own_reorientation(self) -> None:
+        self.ledger(row("/relay take b", 90_000, 0.5))
+        found = self.source("/relay take b", opening(), self.acts())
+        self.assertEqual(found.context, 105_000)
+        self.assertEqual(found.source, "this session's own reorientation")
+
+    def test_then_the_mean_of_the_ledgers_relayed_sessions(self) -> None:
+        self.ledger(row("/relay take a", 90_000, 0.5), row("/relay take b", 110_000, 0.7), row("/go x", 50_000, 0.1), row("/relay take c", None, 0.9))
+        found = self.source("/relay take b", opening())
+        self.assertEqual((found.context, round(found.cost_usd, 2)), (100_000, 0.6))
+        self.assertEqual(found.source, "the mean of 2 relayed sessions in the ledger")
+
+    def test_then_this_sessions_own_orientation(self) -> None:
+        self.ledger(row("/go x", 50_000, 0.1))
+        found = self.source("/go x", opening(), self.acts())
+        self.assertEqual(found.source, "this session's own orientation")
+        self.assertEqual(found.context, 105_000)
+
+    def test_a_scratch_write_is_not_acting(self) -> None:
+        scratch = response("tmp", ago=90, read=102_000, write=3_000, tool={"name": "Write", "input": {"file_path": "/repo/tmp/x"}})
+        found = self.source("/go x", opening(), scratch)
+        self.assertTrue(found.source.startswith("an estimate"))
+
+    def test_then_the_estimate(self) -> None:
+        found = self.source("/go x", opening())
+        self.assertEqual(found.context, 82_000 + 60_000)
+        self.assertTrue(found.source.startswith("an estimate"))
 
 
 class HookCase(unittest.TestCase):
@@ -214,7 +266,7 @@ class WhenAPromptIsStopped(HookCase):
         self.append(opening(), latest())
         reason = self.prompt()
         assert reason is not None
-        for figure in ("2.0 h", "174k", "$1.07", "$1.15", "$1.17", "~5 requests"):
+        for figure in ("2.0 h", "174k", "Carry on: ≈$1.07", "/relay: ≈$2.40", "costs ≈$1.33 more", "from an estimate"):
             self.assertIn(figure, reason)
 
     def test_a_five_minute_ttl_expires_in_minutes(self) -> None:
@@ -234,12 +286,34 @@ class WhenAPromptIsStopped(HookCase):
         self.append(latest("later", ago=1.5 * HOUR))
         self.assertIsNotNone(self.prompt())
 
-    def test_commands_and_the_stop_word_pass(self) -> None:
+    def test_the_ways_on_and_the_built_ins_that_prompt_nothing_pass(self) -> None:
         self.append(opening(), latest())
-        self.assertIsNone(self.prompt("/compact"))
-        self.assertIsNone(self.prompt("  /clear"))
-        self.assertIsNone(self.prompt("go on !pass"))
+        for command in ("/compact", "  /clear", "/relay /go", "/context", "/usage", "/model opus"):
+            self.assertIsNone(self.prompt(command), command)
         self.assertIsNotNone(self.prompt())
+
+    def test_skills_and_model_driven_built_ins_are_stopped(self) -> None:
+        for command in ("/go", "/handle x", "/finalize", "/btw why", "/init", "/plan fix it", "/code-review"):
+            with self.subTest(command=command):
+                (self.root / "tmp" / "cold-cache" / "sess.blocked").unlink(missing_ok=True)
+                self.transcript.write_text("")
+                self.append(opening(), latest())
+                self.assertIsNotNone(self.prompt(command))
+
+    def test_a_bare_bang_resends_the_stopped_prompt(self) -> None:
+        self.append(opening(), latest())
+        self.assertIsNotNone(self.prompt("fix the flaky test"))
+        out = json.loads(self.run_hook("UserPromptSubmit", prompt=" ! "))["hookSpecificOutput"]
+        self.assertEqual(out["hookEventName"], "UserPromptSubmit")
+        self.assertTrue(out["additionalContext"].endswith("verbatim:\n\nfix the flaky test"))
+
+    def test_a_bare_bang_with_nothing_stopped_passes_as_it_is(self) -> None:
+        self.append(opening(), latest(ago=600))
+        self.assertEqual(self.run_hook("UserPromptSubmit", prompt="!"), "")
+
+    def test_a_bang_inside_a_prompt_is_just_a_prompt(self) -> None:
+        self.append(opening(), latest())
+        self.assertIsNotNone(self.prompt("go on !pass"))
 
     def test_a_cheap_recache_passes(self) -> None:
         self.append(opening(), latest(context=45_000))

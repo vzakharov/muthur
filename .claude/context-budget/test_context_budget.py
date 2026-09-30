@@ -10,6 +10,7 @@ Run by path (`python3 .claude/context-budget/test_context_budget.py`), as
 from __future__ import annotations
 
 import json
+import re
 import subprocess
 import tempfile
 import unittest
@@ -37,16 +38,19 @@ def assistant(context: int, *, sidechain: bool = False, model: str = "claude-x")
     }
 
 
-def priced(message_id: str, context: int, *, tool: str | None = None) -> dict:
-    # A response the price table covers, which the priced warn line reads.
+def priced(message_id: str, context: int, at: int, *, edits: str | None = None) -> dict:
+    # A response the price table covers, which the priced lines read; `at` is
+    # its second in the session, which orders it for the orientation measure.
     return {
         "type": "assistant",
         "isSidechain": False,
+        "cwd": "/repo",
+        "timestamp": f"2026-09-30T10:{at // 60:02d}:{at % 60:02d}Z",
         "message": {
             "id": message_id,
             "model": "claude-opus-5-5",
             "stop_reason": "tool_use",
-            "content": [{"type": "tool_use", "name": tool, "input": {}}] if tool else [],
+            "content": [{"type": "tool_use", "name": "Edit", "input": {"file_path": edits}}] if edits else [],
             "usage": {
                 "input_tokens": 0,
                 "cache_read_input_tokens": context - 2_000,
@@ -191,36 +195,83 @@ class WhenTheNoticesFire(BudgetTestCase):
         self.assertIn("offering `/relay`", pause)
 
 
-class ThePricedWarnLine(BudgetTestCase):
-    # Opening at 43k and editing at 90k prices the warm-up at ~$0.07: past ~93k,
-    # a new session pays for itself within 100 requests.
+class ThePricedLines(BudgetTestCase):
+    # Opening at 43k, acting at 90k, then growing 2k a request: a successor
+    # reoriented at 90k for ~$0.04, and a relay that saves $0 over the next 100k
+    # from ~125k and 20% from ~190k, both drifting in as the rate settles.
     def setUp(self) -> None:
         super().setUp()
-        self.session.append(priced("open", 43_000), priced("edit", 90_000, tool="Edit"))
+        self.session.append(priced("open", 43_000, 0), priced("edit", 90_000, 1, edits="/repo/a.py"))
+        self.top, self.at = 90_000, 1
 
-    def test_warns_where_a_new_session_starts_paying_for_itself(self) -> None:
-        self.session.append(priced("under", 91_000))
+    def reach(self, context: int) -> None:
+        """Grow 2k a request, so each reading keeps the rate the lines were priced on."""
+        while self.top < context:
+            self.top, self.at = min(self.top + 2_000, context), self.at + 1
+            self.session.append(priced(f"r{self.at}", self.top, self.at))
+
+    def line(self, notice: str, kind: str) -> int:
+        found = re.search(rf"past the (\d+)k {kind} line", notice)
+        assert found is not None, notice
+        return int(found.group(1)) * 1_000
+
+    def test_warns_where_a_relay_starts_saving(self) -> None:
+        self.reach(110_000)
         self.assertIsNone(self.session.notice())
-        self.session.append(priced("past", 150_000))
+        self.reach(150_000)
         notice = self.session.notice()
+        assert notice is not None
+        self.assertLess(self.line(notice, "warning"), 150_000)
+        self.assertIn("Relaying now costs ~$", notice)
+        self.assertIn("over the next 100k tokens of work", notice)
+        self.assertIn("reorientation priced from this session's own orientation", notice)
+
+    def test_pauses_where_a_relay_saves_a_fifth(self) -> None:
+        self.reach(200_000)
+        notice = self.session.notice()
+        assert notice is not None
+        self.assertLess(self.line(notice, "pause"), 200_000)
+        self.assertIn("saves ~$", notice)
+
+    def test_a_larger_pause_saving_moves_the_pause_out(self) -> None:
+        self.reach(200_000)
+        notice = self.session.notice({"CONTEXT_BUDGET_PAUSE_SAVING": "40"})
         assert notice is not None
         self.assertIn("warning line", notice)
-        self.assertIn("a new session pays for itself after ~", notice)
-        self.assertIn("/compact", notice)
 
-    def test_a_smaller_request_budget_moves_the_line_out(self) -> None:
-        self.session.append(priced("past", 150_000))
-        self.assertIsNone(self.session.notice({"CONTEXT_BUDGET_REQUESTS": "5"}))
-
-    def test_a_fixed_warn_line_set_by_hand_wins(self) -> None:
-        self.session.append(priced("past", 150_000))
+    def test_a_line_set_by_hand_stays_fixed(self) -> None:
+        self.reach(150_000)
         self.assertIsNone(self.session.notice({"CONTEXT_BUDGET_WARN": "200000"}))
+        self.reach(200_000)
+        notice = self.session.notice({"CONTEXT_BUDGET_PAUSE": "300000"})
+        assert notice is not None
+        self.assertLess(self.line(notice, "warning"), 200_000)
 
-    def test_the_pause_line_stays_fixed(self) -> None:
-        self.session.append(priced("past", PAUSE + 1))
+    def test_fixed_lines_turn_the_pricing_off(self) -> None:
+        fixed = {"CONTEXT_BUDGET_LINES": "fixed"}
+        self.reach(190_000)
+        self.assertIsNone(self.session.notice(fixed))
+        self.reach(WARN + 1)
+        notice = self.session.notice(fixed)
+        assert notice is not None
+        self.assertIn("200k warning line", notice)
+        self.assertNotIn("Relaying now costs", notice)
+        self.assertFalse((self.session.root / "tmp" / "context-budget" / "sess.line").exists())
+
+    def test_the_fixed_lines_cap_the_priced_ones(self) -> None:
+        # A single response gives no growth to measure and prices a line past 200k.
+        self.session.transcript.write_text("")
+        self.session.append(priced("open", 43_000, 0))
+        self.reach(WARN + 1)
         notice = self.session.notice()
         assert notice is not None
-        self.assertIn("300k pause line", notice)
+        self.assertIn("200k warning line", notice)
+
+    def test_an_unknown_mode_is_refused(self) -> None:
+        self.reach(WARN + 1)
+        result = self.session.tool_call({"CONTEXT_BUDGET_LINES": "maybe"})
+        self.assertEqual(result.stdout, "")
+        self.assertIn("CONTEXT_BUDGET_LINES", result.stderr)
 
 
 class WhichRecordsAreTheReading(BudgetTestCase):

@@ -25,7 +25,6 @@ from lib.pricing import parse_prices
 from lib.restart import FINISH, History, Saving, context_of, epoch, read_history, saving_over, session_of
 
 PRICES = ROOT / ".claude" / "costs" / "prices.json"
-SESSIONS = ROOT / ".claude" / "costs" / "sessions"
 RESEND = "!"
 DEFAULT_MIN_USD = 0.30
 
@@ -108,7 +107,9 @@ def kilo(tokens: float) -> str:
 
 def relay_line(saving: Saving) -> str:
     more = "more than carrying on, since its summary turn re-caches the context too"
-    if saving.usd >= 0:
+    if abs(saving.usd) < 0.01:
+        verdict = f"then about breaks even with carrying on over the next {kilo(FINISH)} tokens of work"
+    elif saving.usd > 0:
         verdict = f"then saves ≈${saving.usd:.2f} (~{saving.share:.0%}) over the next {kilo(FINISH)} tokens of work"
     else:
         verdict = f"and still costs ≈${-saving.usd:.2f} more than carrying on over the next {kilo(FINISH)} tokens of work"
@@ -133,9 +134,9 @@ def reason(idle: float, context: int, priced: Optional[Tuple[Saving, str]], clau
     return " ".join(lines)
 
 
-def price(transcript: Path, history: History, context: int) -> Optional[Tuple[Saving, str]]:
+def price(transcript: Path, history: History, context: int, project: Path) -> Optional[Tuple[Saving, str]]:
     prices = parse_prices(PRICES.read_text(encoding="utf-8"))
-    s = session_of(transcript, history, context, prices, SESSIONS)
+    s = session_of(transcript, history, context, prices, project / ".claude" / "costs" / "sessions")
     if s is None:
         return None
     return saving_over(s, FINISH, cold=True), s.reorientation.source
@@ -165,7 +166,7 @@ def resent(state: State) -> Verdict:
     )
 
 
-def on_prompt(event: Dict[str, Any], state: State, min_usd: float) -> Verdict:
+def on_prompt(event: Dict[str, Any], state: State, min_usd: float, project: Path) -> Verdict:
     prompt = event.get("prompt") or ""
     if prompt.strip() == RESEND:
         return resent(state)
@@ -190,7 +191,7 @@ def on_prompt(event: Dict[str, Any], state: State, min_usd: float) -> Verdict:
     else:
         return Verdict()
 
-    priced = price(transcript, history, context)
+    priced = price(transcript, history, context, project)
     claude_code_usd = flag.get("estimated_cache_write_usd") if flag else None
     cost = priced[0].carry_on if priced else claude_code_usd
     if cost is not None and cost < min_usd:
@@ -219,7 +220,7 @@ def main() -> None:
     if kind == "SessionStart":
         on_session_start(event, state)
     elif kind == "UserPromptSubmit":
-        verdict = on_prompt(event, state, min_usd)
+        verdict = on_prompt(event, state, min_usd, project)
         if verdict.block is not None:
             print(json.dumps({"decision": "block", "reason": verdict.block}))
         elif verdict.context is not None:
