@@ -1,79 +1,70 @@
 # Relay summary
 
-Relayed from https://claude.ai/code/session_01W5Z6hYnVH1dMZ9VQFNBpyH on 2026-09-30. The operator asked for it with `/relay /go`. This branch has no `/relay` skill: it lives on `main` and only reaches here through step 1 of the plan, so this summary was written by hand, following main's `.claude/skills/relay/SKILL.md`.
+Relayed from https://claude.ai/code/session_01KKrHiPfZWBgj1SznNTxdZX on 2026-09-30, itself relayed from https://claude.ai/code/session_01W5Z6hYnVH1dMZ9VQFNBpyH. The operator asked for it with `/relay разделить #109 на два PR`.
 
 ## 1. Standing constraints
 
-The operator stated none in this session. These house rules apply to the work ahead and are easy to lose:
+The operator stated none in this session. House rules that bind the work ahead:
 
-- Never force-push. That is why the plan merges `main` in rather than rebasing, although the operator asked «посмотри можно ли безболезненно ребазнуть на мейн».
+- Never force-push. That is why the split below is built from a new branch plus a merge, not a rewrite of this one.
 - Never resolve or unresolve review threads.
 - Add no lint-suppression comment without explicit confirmation.
 
 ## 2. The conversation
 
-1. **`/go claude/cold-cache-guard-ytr7vo`**, before a compaction. The agent implemented `docs/plans/cold-cache-guard.completed.md`, ran `/polish`, and refreshed draft PR #109.
-2. **`/compact`, then `/handle`.** The agent exported the PR (commit 8a1d981) and found five unresolved threads by the operator:
-   - T01, `.claude/cold-cache/CLAUDE.md`:33: «просто `!` (не `!pass`) -- должно расцениваться равносильно повторению предыдущего промпта 1-в-1»
-   - T02, `.claude/cold-cache/CLAUDE.md`:32: «тут не уверен; например, стандартен запуск /go после плана, /handle после исполнения, /finalize и т.п. Их пропускать по умолчанию как раз не надо. Кажется, нужно пропускать только /compact, /clear и /relay (если на твоей ветке такого ещё нет, посмотри можно ли безболезненно ребазнуть на мейн), потом всякие /usage / /context -- посмотри, какой исчерпывающий список должен быть»
-   - T03, `.claude/context-budget/CLAUDE.md`:4: «а то где было 300к почему динамически не считаем? какие могут быть подходы тут? плюс я оставил бы вариант с захардкоженными 200/300 под фича-флагом, на случай если вот всё это что мы тут напрограммировали не будет работать идеально»
-   - T04, `.claude/costs/lib/restart.py`:1: «поскольку мейн теперь предлагает только /relay (который объединение /compact и new session) по сути, нужно считать из расчёта его. Кроме того, кажется, orientation тоже нужно отсчитывать по-другому для сессий, начавшихся с `/relay take` -- по сути, это будет уже reorientation. (orientation -- тоже на мейне, возможно его у тебя тоже нет.) что-то получаются достаточно drastic в сумме пересмотры, давай сделаем новый план на этой ветке про всё это.»
-   - T05, `.claude/skills/update-muthur/catalog.md`:1: «кажется, этот файл надо разбивать, по принципу того как разбили ADOPTING (8f0f29a). Тут уже не будем, но надо завести тикет»
-3. **Mid-turn message:** «хочу сказать, что сообщение вылезло, но не очень оно информативно, в первую очередь потому что оказалось (и это очевидно задним числом), что новая сессия всегда дешевле компакта. но сейчса все равно и то и то заменится релеем -- так что нужно сравнивать только его с продолжением. И да, все равно же будет сразу дешевле, поэтому нужно мерить как-то по-другому, типа НАСКОЛЬКО дешевле. а вот как измерять это "насколько" не очень понятно»
-   - The agent wrote `docs/plans/relay-pricing.draft.do-not-implement.md` (9c9301f), filed #122 for T05, replied in Russian on all five threads, and pointed the PR body at the new plan.
-   - In chat it explained that a relay is *not* cheaper at once on a warm cache (at 126k about $0.006 saved per request against about $0.76 up front) and asked three open questions, each with a recommendation already in the plan.
-4. **«обалдеть, вот это я мозг :)»**, quoting the agent's line that the fixed 200k/300k lines sit where the pricing would put them. The cold-cache guard stopped this prompt after 13.9 h idle, then the operator sent **«!»**.
-   - `!` passed only because a second prompt in the same cold spell always passes. T01 is not implemented yet.
-   - The agent found the stopped prompt in the transcript's block record, which carries a line `Original prompt: …`. It noted that on a cold cache a new session *is* cheaper from the first request ($0.57 against $0.82), but a relay loses that, because its summary turn re-reads the whole context.
-5. **Banter, not work:** «но новая сессия не поняла бы шутку! 🙂 прости я под 2 пива», «простите! я уверен в самосознании ЛЛМ на абсолютно трезвую голову :)», «60 копеек за то чтобы кто-то посмеялся над шуткой, кажется, вполне так себе ничего», «вот же ж ты труженик, даже под пивом войс прописываешь.а, погоди, под пивом ж я», «щас мы с тобой тут напридумывае», «это ты ещё не видел сессии с mushrooms», «лан, пойду посплю что ль пока не разорил владлельцев аккаунта)».
-   - The agent answered in kind.
-   - It admitted that a "Pratchett quote" it gave («боги пьют, чтобы забыть…») was probably its own invention. Vimes' Boots Theory, which it also cited, is real.
-6. **«и давай на ты».** `main`'s `operators/vzakharov.md` already says «ты», so the agent changed nothing and switched to «ты».
-7. **«и можно меня писать по-русски Вова :)».** The agent added the line «In Russian, write my name as «Вова».» at the *top* of `.claude/voice/operators/vzakharov.md` (81c1da1). At the top, it merges cleanly with main's lines appended below.
-8. **`/relay /go`**: this relay.
+1. **`/go claude/cold-cache-guard-ytr7vo`**, a hand relay whose go-ahead for `docs/plans/relay-pricing.draft.do-not-implement.md` was «/relay /go».
+   - The agent flipped the plan (a7713b3), merged `main` (c16273c), implemented the plan (cfaf2a6, 3c98367), ran `/polish` (76e214f, 2be74f8), flipped the plan to completed (eafa8d1), and refreshed #109's body, title and squash proposal. It replied on review threads T01–T04 with the commit that did each, and resolved none.
+   - The context budget's warning fired at 132k under the old formula and at 202k under the new one. The agent carried on, judging the rest of the work under 100k.
+2. **«хм, почему? там же фикс 200к стоял?»**, about the 132k warning.
+   - The agent ran the old `restart.py` on its own transcript. The fixed 200k was `main`'s. This branch's earlier plan had priced the warning as "a new session pays back within 100 requests": warm-up context 104k plus $0.58 ÷ (100 × $0.20/M) ≈ 133k. The formula left out the summary turn and assumed 100 requests.
+3. **The operator's point on the cold-cache guard**: «когда кеш уже протух, релей точно так же съест полное чтение токенов, то есть по сути предупреждение о протухшем кеше -- оно должно говорить только о "новой сессии" (например когда у тебя уже закончился /plan или /go и всё что нужно есть в коде, то есть в принципе можно и не релеить). понимаешь о чём я?»
+   - The agent agreed. A cold relay's summary turn pays the same re-cache as carrying on, so the two cancel and what is left is the context budget's question. Only a fresh session skips the re-cache. It proposed: the guard prices carry on against a fresh session, offered on the condition that everything is on the branch, and drops relay from its text; the budget hook keeps relay.
+4. **«да, давай. как думаешь, сможем ли мы (и стоит ли нам) это разделить на два пиара, так как, кажется, мы смешали несвязанное. или там слишком по разделению между файлами взаимозавязано?»**
+   - The agent implemented the guard change (74edf15), with vet green, and updated #109's body, title and squash proposal. It did this past the budget's pause at 285k, judging the change under 100k.
+   - It recommended splitting (see § 4) and asked for a go-ahead and a way to hand over. It suggested a relay, or a fresh session, which it said would have "всё нужное уже на ветке и в этом сообщении".
+5. **`/relay разделить #109 на два PR`**, with a question: «вот это мне не нравится, как ты сказал "в этом сообщении" для преемника в новой сессии будет недоступно, а на ветке как раз нет ничего, что дало бы ему контекст если б я просто сказал "разделить на два PR". что мы упустили, что ты пришёл к выводу такое сказать?» The agent's answer is the last point of § 4.
 
 ## 3. Intent
 
-- Reprice both hooks around `/relay`, which on `main` replaces `/compact` and "new session" as the way on. The comparison becomes relay against carrying on.
-- Say *how much* a relay saves, not how many requests it takes to pay back.
-- Price the successor's warm-up as a *reorientation*, using main's orientation measure.
-- Tighten what the guard lets through, and make a bare `!` resend the stopped prompt.
-- Keep fixed 200k/300k lines behind a flag.
-- The catalog split is not this branch's work; it is #122.
+- Split #109 into two PRs: the relay-priced context budget, and the cold-cache guard. The operator's reason: «кажется, мы смешали несвязанное».
+- The go-ahead for the split is the `/relay` argument itself.
 
 ## 4. Decisions
 
-- **The measure** (plan § "The measure"): the dollars and percentage a relay saves over the next 100k tokens of context growth. The slice is main's `finish` constant, so the figure is a floor whenever the budget notice fires. It beat the alternatives of a payback count and a per-request cost ratio.
-- **Warn at a saving of $0, pause at a 20% saving**, each capped at the fixed 200k/300k lines. `CONTEXT_BUDGET_LINES=fixed` is main's pure-bash behaviour.
-- **The three open questions got no answer, so the recommendations stand:** 1a, a 100k slice; 2a, a 20% pause capped at 300k; 3a, `/btw` is stopped.
-- **Merge `main`, don't rebase**, because a rebase needs a force-push. The conflicts are in `pricing.py`, the context-budget hook, `settings.json`, `vet.sh` and `catalog.md`, and GitHub shows the PR as `CONFLICTING`/`DIRTY`.
-- **"Acting" gets one definition**: main's `lib/orientation.py`. The branch's `ends_warm_up` and `WRITE_TOOLS` are deleted, not reconciled.
-- **For `!`, the guard stores its own copy of the stopped prompt** in `tmp/cold-cache/<session>.blocked`, rather than parsing Claude Code's `Original prompt:` record. The record's format is not ours to rely on.
-- **A relay on a cold cache costs more up front than carrying on**, because the summary turn pays for the re-cache too. The guard's text must say so plainly; otherwise it repeats the old "new session is always cheaper" misreading.
-- **The guard's pass list is exhaustive**, taken from https://code.claude.com/docs/en/commands. Passing a command that never reaches `UserPromptSubmit` is a no-op, so no probing is needed. The list in hand came from a Haiku subagent's summary, so re-read the page.
+- **The split, as the agent proposed it, with the operator's go-ahead:**
+  - **PR A, new, from a new branch off `main`**: the context budget (G8). It takes `.claude/context-budget/**` (`hooks/priced_line.py`, the hook, its tests and `CLAUDE.md`), all of `.claude/costs/lib/restart.py`, the move of `subagents_of` into `.claude/costs/lib/pricing.py` (and `session_cost.py`'s import), and the G8 catalog row. `restart.py` goes whole into A, because reading the transcript and pricing the reorientation are shared, and the guard's `recache` and `relay=False` are a few lines not worth splitting out.
+  - **#109 becomes the guard (G9)**: `.claude/cold-cache/**`, its two `.claude/settings.json` entries, its `scripts/vet.sh` loop entry if `main` lacks it, and the G9 catalog row. Build it by merging A's branch into this one and setting #109's base to A's branch, so its diff shows only the guard. When A merges, GitHub retargets #109 to `main`.
+  - No rewrite of this branch's history: a merge, never a force-push.
+  - The plan files and relay summaries under `docs/` stay on this branch, where `/finalize` sweeps them. PR A needs its own PR body and squash proposal.
+- **`main` moved since the last merge.** fa21eb1 (#125, per-operator auto-relay on the budget's pauses) and 72627bb (#118) conflict with this branch in the context-budget hook, its tests and `CLAUDE.md`, `settings.json` and `catalog.md`. PR A is where #125 has to be reconciled with the priced lines.
+- **The cold-cache guard prices a fresh session, not a relay.** A successor's reorientation is priced from sessions that started the same way: relayed ones for the budget, fresh ones for the guard (`reorientation_of(..., relay)`).
+- **What the agent got wrong in its handover advice, and the finding.** It said a fresh session had everything on the branch and "in this message". A successor cannot see the message. And the split — the decision and how to do it — existed only in the chat: no plan file, no PR comment, no issue. The agent had conflated "the code is on the branch" with "the decisions are on the branch". The guard's own offer carries the same blind spot: "everything the work needs is already on the branch" holds right after a step that writes its conclusion to disk, such as a plan file, a PR body or a commit. It stops holding once a decision is made in chat after that step. The guard cannot see that. Its wording could name it ("…and nothing decided since lives only in the conversation"). The agent offered this to the operator as a possible fix, and it is not done.
 
 ## 5. Errors and dead ends
 
-- **`session_cost.py --name` fails** with `UnpricedError: No rates for claude-haiku-4-5-20251001/standard`. `prices.json` has only `claude-haiku-4-5/standard`, the same on `main`, so a dated model ID is not normalised. The subagent that ran on Haiku caused it. The agent offered to file an issue and got no answer; the session still has no ledger name.
-- **The docs subagent's claim that `UserPromptSubmit` never fires for slash commands is contradicted** by `prompt-handle-pr-export.sh`, which fired on `/handle` in this session. Skills do reach `UserPromptSubmit`.
-- **The auto-branch `claude/great-goldberg-6w2o2m` could not be deleted**, because the auto-mode classifier blocked it. The operator has to delete it; don't pursue it by other means.
+- The "in this message" advice above.
+- The context budget's own notices ran on this session: warn at 202k ("relay about breaks even"), pause at 285k ("relay ~$0.74 up front, saves ~$0.69 (~20%) over 100k"). The agent twice carried on past them, saying why each time.
+- Still open from the previous relay: `claude-haiku-4-5-20251001` is not normalised to `prices.json`'s `claude-haiku-4-5` row, so `session_cost.py` fails on a session with a Haiku subagent. The hooks catch it and fall to the next reorientation source. No issue is filed; the operator has not answered the offer.
+- The auto-branch `claude/great-goldberg-6w2o2m` is gone from `origin`.
 
 ## 6. State
 
-- **Branch:** `claude/cold-cache-guard-ytr7vo`, whose head is the commit adding this file.
-- **PR:** https://github.com/vzakharov/muthur/pull/109, a draft, `CONFLICTING` with `main`, with no CI checks reported.
-- **Plans:** `docs/plans/cold-cache-guard.completed.md` (done) and `docs/plans/relay-pricing.draft.do-not-implement.md` (awaiting the go-ahead below).
-- **Issue #122** is filed for the catalog split.
+- **Branch:** `claude/cold-cache-guard-ytr7vo`; its head is the commit adding this file.
+- **PR:** https://github.com/vzakharov/muthur/pull/109, a draft titled "feat: cold-cache guard, and a relay-priced context budget", `CONFLICTING`/`DIRTY` with `main`, no CI checks reported.
+- **Plans:** `docs/plans/cold-cache-guard.completed.md` and `docs/plans/relay-pricing.completed.md`. The split has no plan file; § 4 is its only record.
+- `./scripts/vet.sh` was green at 74edf15.
 - Nothing is running: no PR subscription, no scheduled check-in.
 
 ## 7. Pointers
 
-- `docs/plans/relay-pricing.draft.do-not-implement.md`: the work.
-- `docs/pr/109/pr.md`: the PR export with the five threads and their replies. Re-export with `python3 scripts/export-github-item.py 109`.
-- `.claude/costs/lib/restart.py`, `.claude/cold-cache/hooks/cold_cache.py`, `.claude/context-budget/hooks/priced_line.py`, `.claude/context-budget/hooks/post-tool-context-budget.sh`: the branch's code the plan reworks.
-- On `main`: `.claude/skills/relay/SKILL.md`, `.claude/costs/lib/orientation.py`, `.claude/costs/CLAUDE.md` § "Orientation", and the relay wording in the context-budget hook (#121). Read them with `git show origin/main:<path>` until the merge.
-- The transcript: https://claude.ai/code/session_01W5Z6hYnVH1dMZ9VQFNBpyH, left open.
+- `.claude/costs/lib/restart.py`: the shared cost model (`saving_over`, `line_for`, `verdict`, `recache`, `reorientation_of`, `session_of`).
+- `.claude/context-budget/hooks/priced_line.py`, `post-tool-context-budget.sh`, `CLAUDE.md`, `test_context_budget.py`: PR A.
+- `.claude/cold-cache/hooks/cold_cache.py`, `CLAUDE.md`, `test_cold_cache.py`: #109.
+- `.claude/skills/update-muthur/catalog.md` G8 and G9 rows; `.claude/settings.json`.
+- `docs/remove-before-merging/squash-message.md`: #109's squash proposal, to rewrite for the guard alone.
+- `git diff HEAD...origin/main` shows what `main` brought since the last merge.
+- The transcript: https://claude.ai/code/session_01KKrHiPfZWBgj1SznNTxdZX, left open.
 
 ## 8. Next step
 
-The to-be first message, verbatim: **`/go`**. This is the go-ahead for `docs/plans/relay-pricing.draft.do-not-implement.md`, given as «/relay /go». Quote it in the flip commit.
+The to-be first message, verbatim: **`разделить #109 на два PR`**, as § 4 lays out. The operator's go-ahead for the split is this relay's argument.
