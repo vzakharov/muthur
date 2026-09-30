@@ -1,34 +1,33 @@
 Proposed squash title/body:
 
 ```
-feat: cold-cache guard, and a context budget priced off the warm-up (pr #109)
+feat: cold-cache guard, and a context budget priced by what /relay saves (pr #109)
 ```
 
 ```
 Coming back to a session after its prompt cache expired, the first
 message re-caches the whole conversation, and nothing shows the price
 before it is paid. A SessionStart/UserPromptSubmit hook pair now stops
-that first message before it reaches the model and prices the three
-ways on: carry on, /compact, or a new session, with how many requests
-the cheaper ones take to pay back. A blocked prompt makes no request,
-so the stop is free; resending, a /-command or !pass goes through.
+that message before it reaches the model and prices the two ways on:
+carry on, which pays the re-cache, or /relay, with what it costs up
+front and saves over the next 100k tokens of work. A blocked prompt
+makes no request, so the stop is free. Resending goes through, and a
+bare ! resends the stopped prompt, which the block stores.
 
-Cold is read from two sources: SessionStart on resume, which carries
-prompt_cache_likely_expired and context_tokens, and the transcript's
-last response time, since the cache also expires while the process
-never restarts. Rates come from .claude/costs/prices.json, and the
-transcript's first response gives the warm prefix every session shares,
-which the expiry leaves cached. A new session is costed from this
-session's own warm-up: every response up to its first edit, commit or
-finished answer, priced as billed.
+Only the commands that shed context (/compact, /clear, /relay) and the
+built-ins that make no model request pass the guard; skills and
+model-driven built-ins such as /go or /btw are stopped like any prompt.
+Cold is read from SessionStart on resume and from the transcript's last
+response time, since the cache also expires while the process lives.
 
-The same model, in .claude/costs/lib/restart.py, moves the context
-budget's warning line off its fixed 200k to where a new session starts
-paying for itself within CONTEXT_BUDGET_REQUESTS (default 100)
-requests, and the notice gives the break-even counts for a new session
-and for /compact so the agent can weigh them against the work left.
-The line is cached per session, so the bash hook starts Python only
-while the warm-up is still an estimate; the 300k pause stays fixed.
+The context budget's lines follow the same model: the warning where a
+relay starts saving over the next 100k tokens, the pause where it saves
+20% (CONTEXT_BUDGET_PAUSE_SAVING), each capped at the fixed 200k/300k,
+with the dollars in the notice. CONTEXT_BUDGET_LINES=fixed keeps the
+pure-bash lines. Both hooks price with .claude/costs/lib/restart.py,
+and the successor's reorientation is the ledger's own orientation
+measure: this session's when /relay started it, else the ledger's
+relayed sessions, else this session's orientation, else an estimate.
 
 Co-authored-by: Claude <noreply@anthropic.com>
 ```
