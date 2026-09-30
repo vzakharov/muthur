@@ -1,7 +1,7 @@
 Proposed squash title/body:
 
 ```
-feat: cap the CLAUDE.md a branch lands at 25k characters (pr #123)
+feat: cap CLAUDE.md with hysteresis at 25.5k/24.5k characters (pr #123)
 ```
 
 ```
@@ -10,16 +10,18 @@ session, and nothing pushed back on its growth: each addition passed its
 own test while the total drifted up. Across the repos built on this
 template it had reached 24-61k characters before hand trims.
 
-vet now fails when the CLAUDE.md the branch will land is over 25,000
-characters. That file is its staged copy when scripts/staged.sh has one,
-else CLAUDE.md itself, so a staged copy grown past the cap fails and a
+vet now fails when the CLAUDE.md the branch will land passes 25,500
+characters, and a branch that took it past that must land it at 24,500
+or under. A single cap would be trimmed back to just under itself every
+session; the gap makes one trim buy room for many additions. "Crossed"
+is read off the branch's own commits since its merge-base, so no state
+is kept. The landing file is the staged copy where there is one, so a
 staged trim of an oversized file passes before /finalize swaps it in.
-Imports are not counted, the count is characters rather than bytes, and
-there is no env override: an adopter raises the constant in a commit
-that says why.
 
-The staging rule, loaded whenever CLAUDE.md is touched, points at the
-cap and says to move a narrower line out rather than raise it.
+Imports are not counted, the count is characters rather than bytes, and
+there is no env override. The failure message and the staging rule send
+the trim to a subagent: it is never the PR's own work, and its
+cut-and-remeasure loop would spend the session's context.
 
 Co-authored-by: Claude <noreply@anthropic.com>
 ```
