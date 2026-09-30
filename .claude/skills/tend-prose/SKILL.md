@@ -129,12 +129,17 @@ The homes, in order of preference — take the first that fits:
 | --- | ------------------------------------------------------------- | -------------------------------------------------------------------------------------------- |
 | 1   | **A comment at the call site**                                | A trap that lives at one line                                                                |
 | 2   | **A docstring at the topmost point of the code it describes** | How a flow works, when following it means holding more modules in your head than fit at once |
-| 3   | **The directory's own `CLAUDE.md`**                           | An obligation every edit in that directory's files must respect                              |
-| 4   | **`.claude/rules/<area>.md`** (frontmatter `paths:`)          | The same, for files no single directory bounds — `'**/*.test.ts'`, several scattered paths   |
-| 5   | **A colocated `README.md`**                                   | The big picture, for when not having it is itself what blocks the edit                       |
-| 6   | **A runbook page** (`docs/runbook/*.md`, or the project's equivalent)       | A procedure a human executes                                                    |
+| 3   | **The skill or hook whose run it governs**                    | A step, or a rule that only binds while that process runs                                    |
+| 4   | **The directory's own `CLAUDE.md`**                           | An obligation every edit in that directory's files must respect, loaded on the first read there |
+| 5   | **`.claude/rules/<area>.md`** (frontmatter `paths:`)          | The same, for files no single directory bounds — `'**/*.test.ts'`, several scattered paths   |
+| 6   | **A colocated `README.md`**                                   | The big picture, for when not having it is itself what blocks the edit                       |
+| 7   | **A runbook page** (`docs/runbook/*.md`, or the project's equivalent)       | A procedure a human executes                                                    |
 
-**The alternatives already live in the PR or issue thread, and any of the six
+**A line in the root `CLAUDE.md` answers one question before any of these**:
+CLAUDE.md § "About this file"'s test, since that file loads on every turn. A line
+that fails it moves to the first home above that loads when its process runs.
+
+**The alternatives already live in the PR or issue thread, and any of these
 homes can cite it.** Add a `#1234` beside the line where a reader would otherwise
 stop and wonder "hmm, why this and not the obvious thing?"; leave it off where
 nobody would ask, because a citation on an unsurprising line is one more thing to

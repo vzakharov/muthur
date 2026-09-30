@@ -13,7 +13,7 @@ and reviewing it as a diff is what catches a bad call before anything is deleted
 So this skill's end state is `/plan`'s: a plan file published as a draft PR, and
 a copyable `/go <branch>` for the session that executes it.
 
-The brief is the argument. It fills `CLAUDE.md`'s "About this project" stub,
+The brief is the argument. It fills `CLAUDE.md` § "About this project"'s stub,
 drives the group decisions — a CLI tool keeps different groups than a deployed
 web app — and is filed as the project's first issue (Step 5.5), which is what
 keeps the operator's description of the product from dying with a run that
@@ -89,7 +89,7 @@ declines the group at plan review, a decision they state rather than one this
 step infers behind them.
 
 **The stack, including "no stack yet."** That is the normal state of a fork taken
-to start a project, and the state `CLAUDE.md` § "Vetting"'s no-stack-yet clause
+to start a project, and the state `.claude/rules/stack.md`'s no-stack-yet clause
 exists for. Read it off the tree rather than asking: a fork whose only commit is
 the template's has no manifest, no lockfile and no source.
 
@@ -97,13 +97,12 @@ What the tree cannot answer, asked as numbered prose in the plan turn per
 `@.claude/skills/plan/SKILL.md` Part 2: whether sessions run on Claude Code
 web/remote (G4); whether the project will have a deploy path, a visual surface,
 deployed logs, a production datastore, or sequential numbered migrations — the
-five that decide the individual G6 rows; the language decision; and whether to
-run the session cost ledger (G7), asked with what
-`.claude/skills/update-muthur/catalog.md` § "G7 — Session cost ledger" says it
-costs. A fork carries the ledger wired on and full of this template's own rows,
-so both answers change the tree: a yes empties `.claude/costs/sessions/`, a no
-deletes `.claude/costs/`, its two `.claude/settings.json` entries and its
-`scripts/vet.sh` loop.
+five that decide the individual G6 rows; the language decision; and one
+question per catalog row marked `opt-in: ask`, each asked with the cost its row
+states. A fork carries every such row wired on, so a no deletes the row's path,
+its `.claude/settings.json` entries and its `scripts/vet.sh` loop. The ledger's
+yes changes the tree too: it empties `.claude/costs/sessions/` of this template's
+own rows.
 
 **Language is the one question with evidence in hand**, so read it before asking:
 the language the brief is written in, the language the operator writes to the
@@ -126,7 +125,7 @@ This read-then-delete ordering is what routing through `/plan` buys.
 
 ## Step 3 — Derive the watermark, which git cannot give you
 
-`ADOPTING.md`'s recipe reads `lastSyncedSha` out of the clone you took. **A
+`docs/adopting/sync.md` reads `lastSyncedSha` out of the clone you took. **A
 template fork never made that clone**, and its single commit has no ancestry in
 the source, so there is no SHA in the tree to read. Derive it from the fork's
 creation time instead:
@@ -177,14 +176,13 @@ Ordering is load-bearing at exactly one point, and it is the first step:
    catalog's presence. Sweep it first and the G6 prune is enforced by the vet run
    instead of remembered.
 2. **The rest of the `never` rows**: `README.md` — replaced with the project's,
-   not merely deleted — `ADOPTING.md`, and **`docs/img/`** with it. That
-   directory is `ADOPTING.md`'s only asset, so a literal row-by-row sweep strands
-   it as an orphan.
+   not merely deleted — `ADOPTING.md`, and **`docs/adopting/`** with it: its
+   chapters, which a sweep of the one file strands as orphans.
 3. **Prune the groups**, applying the reverse-closure edits the plan recorded.
-4. **Fill `CLAUDE.md`'s "About this project" stub** from the brief — which
+4. **Fill `CLAUDE.md` § "About this project"'s stub** from the brief — which
    retires the standing notice in § "Recognizing an undetemplated fork" along
-   with it — and delete § "Git conventions"'s adopter-inverts rule, which
-   instructs adopters to delete it. **§ "Language"'s stub is replaced in the same
+   with it — and delete § "Git conventions"'s loop-is-the-product rule, which
+   holds only where the loop is the product. **§ "Language"'s stub is replaced in the same
    pass** with the Step 1 answer, one line; the rest of that section holds as
    shipped. **Delete `.claude/voice/operators/`'s shipped entry** and
    write one for whoever ran the detemplate, at `<their handle>.md`, if they
@@ -204,7 +202,7 @@ Ordering is load-bearing at exactly one point, and it is the first step:
 7. **`scripts/vet.sh`**: leave the exit alone, which is the normal case — a fork
    taken to start a project has no stack for the script to check. Wire the real
    checks only where the operator pushed a stack before realising they should
-   have detemplated first. CLAUDE.md § "Vetting" owns that contract, and names
+   have detemplated first. `.claude/rules/stack.md` owns that contract, and names
    `.claude/hooks/install-deps.sh` as the paired site.
 8. **Delete this skill.** Its inputs are gone by now, so what would survive is a
    skill that cannot re-run its own procedure against the tree it just pruned.
@@ -213,7 +211,7 @@ Ordering is load-bearing at exactly one point, and it is the first step:
 
 ## Step 6 — Hand back the setup script
 
-`ADOPTING.md` § "Hand the operator a setup script" is the one step no agent can
+`docs/adopting/web-remote.md` § "Hand the operator a setup script" is the one step no agent can
 apply: the environment setup script lives in Claude Code's environment settings,
 is set by a human in the web UI, and has no API, MCP tool or in-repo file behind
 it. Step 5 deletes that file, so the deliverable travels here instead — **text in
@@ -256,7 +254,11 @@ is — each records a trap that actually bit:
 6. **Prime the dependency cache last**, guarded, since the repo directory may be
    absent.
 
-Say plainly in the report that this is the one step you could not apply yourself.
+**If the fork kept `.claude/costs/`, the same settings take its telemetry
+variables** as environment variables, the list being the one
+`.claude/costs/hooks/start-telemetry-receiver.sh` prints.
+
+Say plainly in the report that these are the steps you could not apply yourself.
 
 ## Step 7 — Hand over the first build session
 
@@ -286,7 +288,7 @@ a literal `owner/repo`, checkable against the working directory in the reader's
 own system prompt at no round-trip, and every other tree carrying the
 description is a fork to route.
 
-`CLAUDE.md`'s "About this project" stub is the second surface, catching a
+`CLAUDE.md` § "About this project"'s stub is the second surface, catching a
 session that never consults the skill list: while that stub is unfilled and the
 tree still has the catalog, the first task is `/detemplate` whatever was asked.
 Step 5.4 rewrites that stub, so the notice retires with the condition it

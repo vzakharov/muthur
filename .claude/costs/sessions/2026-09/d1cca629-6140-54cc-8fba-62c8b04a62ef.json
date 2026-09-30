@@ -1,0 +1,93 @@
+{
+  "sessionId": "d1cca629-6140-54cc-8fba-62c8b04a62ef",
+  "branch": "claude/nested-skill-args-bare-hfemjr",
+  "cwd": "/home/user/muthur",
+  "openingPrompt": "с недавнего времени клод начал вот так ругаться если пытаешься скилл в теле другого скилла написать (не знаю зависит ли это от первого скилла). Давай либо сдела…",
+  "prs": [
+    124
+  ],
+  "url": "https://claude.ai/code/session_01QsBN1Vj7tLamGTLpuaxyKD",
+  "operator": "vzakharov",
+  "firstResponseAt": "2026-09-30T15:41:59.448Z",
+  "lastResponseAt": "2026-09-30T17:20:02.739Z",
+  "pricesAsOf": "2026-09-23",
+  "claudeCodeTotalUsd": 1.8253621999999998,
+  "total": {
+    "inputTokens": 594,
+    "cacheWrite5mTokens": 966,
+    "cacheWrite1hTokens": 227384,
+    "cacheReadTokens": 5382113,
+    "outputTokens": 20785,
+    "thinkingTokens": 6074,
+    "responses": 45,
+    "costUsd": 3.3212986000000004
+  },
+  "ownTurns": {
+    "inputTokens": 88,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 227384,
+    "cacheReadTokens": 5241787,
+    "outputTokens": 20776,
+    "thinkingTokens": 6074,
+    "responses": 44,
+    "costUsd": 3.2833014000000005
+  },
+  "subagents": {
+    "inputTokens": 0,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 0,
+    "cacheReadTokens": 0,
+    "outputTokens": 0,
+    "thinkingTokens": 0,
+    "responses": 0,
+    "costUsd": 0.0
+  },
+  "byRate": {
+    "claude-opus-5-5/standard": {
+      "inputTokens": 594,
+      "cacheWrite5mTokens": 966,
+      "cacheWrite1hTokens": 227384,
+      "cacheReadTokens": 5382113,
+      "outputTokens": 20785,
+      "thinkingTokens": 6074,
+      "responses": 45,
+      "costUsd": 3.3212986000000004
+    }
+  },
+  "warnings": [],
+  "orientation": {
+    "endedBy": "Edit",
+    "endedOn": ".claude/staged/.claude/skills/from-branch/SKILL.md.staged",
+    "endedAt": "2026-09-30T15:43:15.676Z",
+    "contextTokens": 101495,
+    "spend": {
+      "inputTokens": 20,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 56626,
+      "cacheReadTokens": 836022,
+      "outputTokens": 4094,
+      "thinkingTokens": 2531,
+      "responses": 10,
+      "costUsd": 0.7021723999999999
+    }
+  },
+  "compactions": [],
+  "telemetry": {
+    "events": 45,
+    "matched": 44,
+    "matchedTableUsd": 3.2833014000000005,
+    "matchedEventUsd": 3.2833014000000005,
+    "unseen": {
+      "prompt_suggestion": {
+        "inputTokens": 506,
+        "cacheWrite5mTokens": 966,
+        "cacheWrite1hTokens": 0,
+        "cacheReadTokens": 140326,
+        "outputTokens": 9,
+        "thinkingTokens": 0,
+        "responses": 1,
+        "costUsd": 0.0379972
+      }
+    }
+  }
+}

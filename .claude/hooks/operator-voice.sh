@@ -11,6 +11,9 @@
 # The lowercased login is both what the message prints and what names the entry
 # file, so the one spelling an agent ever sees is the one the lookup uses. The
 # filename is the whole lookup: no parse, so nothing an entry can malform.
+#
+# `.claude/costs/lib/identity.py` parses the resolved-person line back out of the
+# transcript for the cost row's `operator`, so rewording it empties that field.
 
 set -euo pipefail
 

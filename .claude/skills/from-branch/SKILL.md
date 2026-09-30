@@ -1,5 +1,5 @@
 ---
-description: Attach the current session to an existing branch or PR and continue work from there, abandoning the auto-created session branch. Invoke as `/from-branch <branch-name|#PR|PR-url> [<follow-up instruction or /skill ...>]`. The PR target may be a bare PR link or any deep link into it (a review link like `.../pull/NNN#pullrequestreview-<id>`, a review-comment or conversation-comment link, or a `/files` tab URL) — the PR number after `/pull/` is the basis for finding the branch. Also use when a session's launch prompt just names an existing branch to continue (e.g. `go claude/foo-xxxx`) instead of a literal `/from-branch`. The follow-up can be `go`/`implement`/`execute` to run the plan a prior `/plan` session left under `docs/plans/`.
+description: Attach the current session to an existing branch or PR and continue work from there, abandoning the auto-created session branch. Invoke as `/from-branch <branch-name|#PR|PR-url> [<follow-up instruction or skill ...>]`, a skill in the follow-up named bare (`/from-branch #123 finalize`). The PR target may be a bare PR link or any deep link into it (a review link like `.../pull/NNN#pullrequestreview-<id>`, a review-comment or conversation-comment link, or a `/files` tab URL) — the PR number after `/pull/` is the basis for finding the branch. Also use when a session's launch prompt just names an existing branch to continue (e.g. `go claude/foo-xxxx`) instead of a literal `/from-branch`. The follow-up can be `go`/`implement`/`execute` to run the plan a prior `/plan` session left under `docs/plans/`.
 ---
 
 When a Claude Code on-the-web session starts, the harness usually creates a fresh branch (e.g. `claude/add-foo-bar-XXXX`) and checks it out. This skill **discards that auto-branch** and re-points the working tree at an existing branch or PR head so the rest of the session continues that work.
@@ -20,7 +20,7 @@ The skill argument has two parts:
 1. **Target** (required, first token): a branch name, a `#NNN` PR number, or **any URL that carries a PR number** — a bare PR URL (`https://github.com/<owner>/<repo>/pull/NNN`) or a deep link into that PR: a review link (`.../pull/NNN#pullrequestreview-<id>`), a review-comment link (`.../pull/NNN#discussion_r<id>`), a conversation-comment link (`.../pull/NNN#issuecomment-<id>`), or a tab/file URL (`.../pull/NNN/files`, `.../pull/NNN/commits/<sha>`, …). The PR number `NNN` after `/pull/` is the basis; the `#fragment`, trailing path, and any `?query` are stripped when resolving the branch (see Step 1), but a review/comment fragment is worth keeping as a pointer to _which_ feedback the operator wants addressed.
 2. **Follow-up** (optional, everything after the target): one of —
    - a free-form instruction ("…fix the failing test, then push"),
-   - a slash-command invocation of another skill (e.g. `/finalize`, `/check-merge`) — if so, load and follow that skill **after** the attach step completes, or
+   - another skill — a first token that names a directory under `.claude/skills/`, the rest being its arguments (e.g. `finalize and merge`, `check-merge`), with or without its slash (`@.claude/rules/skills.md` says why it comes bare) — if so, load and follow that skill **after** the attach step completes, or
    - the keyword **`go`** (or its synonyms **`implement`** / **`execute`**), optionally trailed by "the plan" / "plan" filler, meaning "execute the plan file a prior `/plan` session left under `docs/plans/`". Bare, with no plan named, it still means "implement the plan". Step 6 dispatches it.
 
 Examples:
@@ -29,8 +29,8 @@ Examples:
 - `/from-branch #123 finish the migration and push` — attach, then do the described work.
 - `/from-branch #123 go` — attach, then execute the plan under `docs/plans/`.
 - `/from-branch #123 implement the plan` — same thing (`implement` is a synonym and the trailing "the plan" is just filler).
-- `/from-branch #123 /finalize` — attach, then invoke `@.claude/skills/finalize/SKILL.md`.
-- `/from-branch feat/new-thing /sync-branch` — same idea with a raw branch name.
+- `/from-branch #123 finalize` — attach, then invoke `@.claude/skills/finalize/SKILL.md`.
+- `/from-branch feat/new-thing sync-branch` — same idea with a raw branch name.
 - `/from-branch https://github.com/<owner>/<repo>/pull/123#pullrequestreview-999` — a review deep link: parse `123` as the PR, attach to its branch, and treat that review's comments as the feedback to address.
 
 ## Environment note (read this before running gh)
@@ -116,7 +116,7 @@ State this explicitly in your turn output so the user can see the redirect took 
 - **Free-form follow-up** → load `@.claude/skills/go/SKILL.md` and follow it via its § "Planless entry", treating the follow-up text as the task. Two points are `/from-branch`-specific:
   - **A concrete request is not a plan cycle.** `/from-branch` is continued work (CLAUDE.md § "Plan mode & questions in web sessions"), so routing through `/go` is not an invitation to write a plan file first.
   - **The quality passes are diff-scoped, so they self-limit.** A follow-up that produced no code ("explain why X fails", "rerun CI") leaves them nothing to act on, and each says so in its own "When to use". That is a property of the passes — "the change was small" is not grounds to skip them.
-- **Slash-command follow-up** (e.g. `/finalize`, `/check-merge`, `/sync-branch`, or `/test-on-gh` where the project has hydrated it) → load `@.claude/skills/<name>/SKILL.md` and follow it. Do **not** inline-copy its steps; read and execute the actual file so updates to that skill flow through.
+- **Skill follow-up** (e.g. `finalize`, `check-merge`, `sync-branch`, or `test-on-gh` where the project has hydrated it) → load `@.claude/skills/<name>/SKILL.md` and follow it with the rest of the follow-up as its arguments. Do **not** inline-copy its steps; read and execute the actual file so updates to that skill flow through.
 
 ## Failure modes to call out
 

@@ -18,6 +18,20 @@
           {
             "type": "command",
             "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/operator-voice.sh"
+          },
+          {
+            "type": "command",
+            "command": "$CLAUDE_PROJECT_DIR/.claude/costs/hooks/start-telemetry-receiver.sh"
+          }
+        ]
+      },
+      {
+        "matcher": "startup",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "$CLAUDE_PROJECT_DIR/scripts/muthur-sync.sh nudge",
+            "timeout": 30
           }
         ]
       }
@@ -46,10 +60,31 @@
           {
             "type": "command",
             "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/prompt-route-notice.sh"
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/file-tools-nudge.py"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "$CLAUDE_PROJECT_DIR/.claude/context-budget/hooks/post-tool-context-budget.sh"
           },
           {
             "type": "command",
-            "command": "$CLAUDE_PROJECT_DIR/.claude/costs/hooks/prompt-session-name.sh"
+            "command": "$CLAUDE_PROJECT_DIR/.claude/costs/hooks/start-telemetry-receiver.sh"
           }
         ]
       }

@@ -39,8 +39,8 @@ row there before its first session can be priced.
 
 ## What names a session
 
-Nothing in the transcript is the title Claude Code shows. Four fields stand in
-for one, and only the last is not read out of the file:
+Nothing in the transcript is the title Claude Code shows. Three fields stand in
+for one, all read out of the file:
 
 - **`openingPrompt`** — the session's first prompt, unwrapped from the envelope a
   slash command arrives in, so it reads `/handle <branch>`.
@@ -51,11 +51,84 @@ for one, and only the last is not read out of the file:
   attribution reminder the harness re-sends on a remote session change. That one
   record is what is matched: a commit trailer quoted anywhere in a transcript
   carries a session URL too, usually another session's.
-- **`name`** — a few words from the agent whose session it is, which is the only
-  thing here that knows what the session turned out to be about. A row is written
-  with it null and `hooks/prompt-session-name.sh` asks for it on the next prompt
-  until it is set; each rewrite carries the existing name forward, since
-  re-reading the transcript could never produce one.
+
+**`operator`** is whose session it was: the GitHub handle
+`.claude/hooks/operator-voice.sh` resolved at startup, read off the record that
+hook leaves in the transcript. It is null wherever the hook named nobody — no
+`gh`, or a token that is a bot's — rather than guessed from the pusher, who is
+the token and so may be the agent's own account.
+
+## Orientation
+
+A row's `orientation` is what the session spent before it first **acted**, and
+each of its `compactions` carries the same measure from that boundary on, plus
+the re-reads the summary forced. They feed the call on whether a fresh session
+or a compact is the cheaper way to shed context. `lib/orientation.py` holds
+the definitions.
+
+- **Acting is a write into the repository or a handover to the operator** — an
+  `Edit`, `Write` or `NotebookEdit` under the directory the session started in
+  and outside its `tmp/`, an `AskUserQuestion` or `ExitPlanMode`, or the
+  session's own `end_turn`. A scratch write is how an agent finds its bearings,
+  not what it does with them. A subagent's `end_turn` only hands its result
+  back to whoever spawned it, but a subagent's edit counts: delegated work is
+  still the session starting work.
+- **The acting response is left out of the spend**, since its output is the
+  edit or the answer itself.
+- **Timestamps order the responses, not file position**, because a subagent's
+  spend sits in another file and its clock is what places it against the main
+  file's.
+- **Each phase stops at the next boundary**, so no response is counted in two.
+- **A re-read is an exact repeat of a call made before the latest boundary** —
+  a `Read` of the same path and range with no write to it since, or a `Grep`,
+  `Glob` or `Bash` with the same input bar its `description` — counted once per
+  boundary. Only the session's own calls count: a subagent starts with no
+  context the summary could have dropped. The estimate is an estimate because a
+  tool result has no `usage`: its tokens are its share, by characters, of the
+  cache write of the response it arrived in, and its dollars that write plus a
+  cache read on every later response before the next boundary.
+
+**What it misses.** An edit made through `Bash` is not seen as acting, so such a
+session's orientation runs long. Re-reads are a floor: a hole read around — a
+`cat` after a `Read`, a narrower grep — or one that shows as a wrong turn goes
+uncounted, while a repeat that was simply due, a `git status` before each
+commit, counts; `byTool` is what lets `Bash` be read apart. The compaction call
+itself has no `usage` to price. A resume in a fresh container reloads the
+transcript with no boundary to restart at, so what it spends getting its
+bearings lands in the work.
+
+## Telemetry
+
+`hooks/start-telemetry-receiver.sh` starts a receiver on `127.0.0.1:4318` at
+`SessionStart`, and each `api_request` event Claude Code exports to it lands in
+`tmp/telemetry/<session-id>.jsonl`, stripped to its numbers and a few named
+fields. `lib/billed.py` joins them to the priced responses by request id.
+
+**The events' worth is the calls the transcript never records.** Where a
+response and its event are both there, the table and the event price it alike,
+so the response keeps the table's price and the event checks it; the row warns
+when the two drift apart. An event no response matches is such a call — a
+prompt suggestion, a compaction — and goes into `total` and `byRate` at the
+event's price, and into `telemetry.unseen` by its `query_source`, which takes
+values the documentation does not list (`sdk` for a web session's main thread,
+`prompt_suggestion`, `compact`). A compaction's `billedUsd` is the
+`compact`-tagged call nearest its boundary. An event does not split its cache
+write by TTL, so an unseen call's write is filed under the 5-minute tokens.
+Events are only as complete as the receiver's uptime: what Claude Code sent
+before it started, or after the row was written, is in no row. The hook also
+runs after every tool call, silent there, and starts a receiver that is
+missing. That covers a session that checked out a branch carrying the hook,
+which registers it with `SessionStart` already past, and a receiver that died.
+
+**The export is the environment's to switch on, never the repository's.**
+Claude Code ignores its OpenTelemetry exporter variables in a project's
+`.claude/settings.json` (code.claude.com/docs/en/env-vars), reading them only
+from the process environment, user settings and managed settings — so, in a
+web session, the cloud environment's own variables. Where they do not point at
+the receiver, the hook starts nothing and prints a notice naming them; its list
+is the one home of what to set. Claude Code strips `OTEL_*` from every process
+it spawns, so the hook reads them from the `claude` process's own environment. `NO_PROXY` stays off it: the environment's own
+list already exempts `127.0.0.1`, and a value set beside the others replaces it.
 
 ## Checking the arithmetic
 
@@ -71,11 +144,12 @@ file the row was priced from — so it was written at or before the moment the r
 was. A row coming out **under** it has missed a source. A row coming out over it
 means only that the session kept going, which every row's last turn does.
 
-A couple of percent of slack covers what Claude Code counts and no row can: the
-background Haiku calls and each compact's own request, neither of which appears
-in the transcript as a response. Together they measured a fraction of a percent;
-reading a subagent's file short of its spend was seven, which is the failure
-this check exists to catch.
+Without events, a row misses what Claude Code counts and the transcript does
+not record as a response: prompt suggestions, which are full-context calls on
+the session's own model, and each compact's own request. They measured a few
+percent of a session's spend; reading a subagent's file short of its spend was
+seven, which is the failure this check exists to catch. A row with events has
+them in its total.
 
 **The usage panel is not a third opinion, and what breaks it is compaction.**
 Against a session that has never compacted it agrees to within 1%, and each
@@ -94,23 +168,31 @@ unclean, holds untracked files, or is ahead of its remote. **Hooks for one event
 run in parallel**, so writing and committing the row is work done while that
 check may be reading the tree.
 
-**The hook waits the check out.** That check leaves nothing on disk — it reads
-the tree and writes to stderr — so its process is the only thing there is to
-wait on, and the hook polls for it by name at the last moment before anything it
-does can touch the tree. A match that is an **ancestor** of the hook is not the
-check: the check is a sibling, and an ancestor carrying the name is a shell that
-merely mentions it, so waiting on one would outlast the turn. Whether the look
-ever lands while the check is running is unmeasured here.
+**The row never makes the tree look unfinished.** It is priced into `tmp/`,
+committed in a throwaway index, and pushed before the branch moves; only then do
+the branch, the index entry and the file follow. So the tree differs from `HEAD`
+only between the ref move and the rename, and is never ahead of `origin` while a
+push is in flight. `commit-tree` runs no commit hooks, which suits a file no
+formatter should rewrite, and signs only when asked, so the hook passes `-S`
+where `commit.gpgsign` is on.
 
-Every way the wait can fail — no `pgrep`, a renamed check, a look that lands
-before the process exists, a check still running after five seconds — falls back
-to racing, and so does a failed push, which leaves a commit the check will refuse
-on the _next_ turn, attributed to nobody. So the hook re-reads the same two
-conditions after its own work and, when they hold, exits 2 with one line naming
-the row — the only channel a `Stop` hook has to the agent, spent solely where a
-block is already happening. It bails on a re-fired `Stop` (`stop_hook_active`)
-exactly as the harness's check does: two hooks that can both block and neither
-bail would hold the turn open forever.
+**The hook also waits the check out**, which leaves it only those two steps to guard.
+That check leaves nothing on disk — it reads the tree and writes to stderr — so
+its process is the only thing there is to wait on, and the hook polls for it by
+name at the last moment before anything it does can touch the tree. A match that
+is an **ancestor** of the hook is not the check: the check is a sibling, and an
+ancestor carrying the name is a shell that merely mentions it, so waiting on one
+would outlast the turn.
+
+**What neither covers is a tree that was unclean before the hook started.** A
+hand run of `session_cost.py` rewrites the row in place, and a failed push
+leaves a commit the check will refuse on the _next_ turn, attributed to nobody.
+So the hook reads the tree after its own work and, where the row was part of what
+the check saw, exits 2 with one line naming it — the only channel a `Stop` hook
+has to the agent, spent solely where the check's own exit 2 is already
+continuing the turn. It bails on a re-fired `Stop` (`stop_hook_active`) exactly
+as the harness's check does: two hooks that can both block and neither bail
+would hold the turn open forever.
 
 **The arrangement is read from the launcher's config, not assumed.** All of the
 above holds only while `~/.claude/launcher-settings.json` registers that check;
@@ -121,40 +203,35 @@ adjusting quietly is what would leave the rest of this section false.
 
 ## The report
 
-`python3 .claude/costs/report.py` sums the rows four ways every run — by month,
-week and day, and by the branch that spent it with the pull requests it touched
-named beside it; `--json` prints the lot. The spend is the branch's rather than
-each PR's, since a session that touched two would otherwise be counted twice.
+`python3 .claude/costs/report.py` sums the rows five ways every run — by month,
+week and day, by the branch that spent it with the pull requests it touched
+named beside it, and by operator — then orientation's averages, and the calls
+only the events saw, by `query_source`, as a share of the spend of the rows
+priced with events; `--json` prints the lot. The spend is the
+branch's rather than each PR's, since a session that touched two would otherwise
+be counted twice.
 
-**Nothing is written to disk.** The totals are wholly derived from the rows, so a
-file of them committed beside its own sources would be a merge conflict on every
-branch that ran a session — and settling one by summing the two sides
+**The totals are never written to disk.** They are wholly derived from the rows,
+so a file of them committed beside its own sources would be a merge conflict on
+every branch that ran a session — and settling one by summing the two sides
 double-counts every session both of them saw. The rows themselves never collide:
 one file per session id.
 
+**The rows can be.** A row carrying a key the current shape no longer writes is
+rewritten without it as the report reads it, and the report names each one on
+stderr. Retiring a field is therefore a change to the shape alone: the first
+report in each repository clears it, and those rewrites are ordinary changes to
+commit.
+
 ## What the totals do not cover
 
-- **The last turn of a session.** The transcript is written asynchronously and
-  lags the live conversation, so each run rewrites the row from the whole file
-  and picks up what the previous run was too early to see. The final turn has no
-  successor to correct it, and **no turn can close that**: a step in `/finalize`
-  runs in the same session and is followed by the turns that invoked it, so it
-  moves the blind spot rather than removing it. What closes it is a read that is
-  not a turn. A **later session** re-prices the file, which needs the transcript
-  to outlive this one — true locally, false in a remote container, discarded
-  with `~/.claude/projects/` inside it unless something committed a copy first.
-  A **watcher on the transcript** sees the trailing appends, the container
-  outliving them by a wide margin, and costs the serialisation § "Running beside
-  the harness's Stop check" is built on: it would write and commit with no turn
-  in progress.
 - **The turn that merges.** `/finalize and merge` merges within its turn and the
   row lands after, on a branch already merged — so that turn's spend reaches
   neither the trunk nor any later merge.
-- **Each compact.** The transcript records the compaction call without its
-  `usage` — the boundary record carries `preTokens`, the summary arrives as a
-  `user` record — so there is nothing to price. Bounded rather than unknown: two
-  compacts of one measured session read 526k tokens between them, about $0.30 at
-  the cache-read rate a warm prefix gets.
+- **Each compact, without events.** The transcript records the compaction call
+  without its `usage` — the boundary record carries `preTokens`, the summary
+  arrives as a `user` record — so only the events price it. One compaction of a
+  230k-token context with a warm cache measured about $0.22, most of it output.
 - **A rate that changed after a row was written.** Each row records the
   `pricesAsOf` it was priced under and is never re-priced — its transcript is
   usually gone by then — so a table update applies forward only, and `report.py`
