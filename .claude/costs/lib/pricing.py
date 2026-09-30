@@ -8,6 +8,7 @@ leave out.
 from __future__ import annotations
 
 import json
+import re
 from dataclasses import dataclass, fields
 from typing import Any, Dict, List, Mapping, Optional, Sequence, Set, Tuple
 
@@ -52,11 +53,22 @@ class UnpricedError(ValueError):
 # --- The rate table -----------------------------------------------------------
 
 
+# A snapshot id's release-date suffix, as in `claude-haiku-4-5-20251001`.
+_DATED = re.compile(r"-\d{8}$")
+
+
 @dataclass(frozen=True)
 class PriceTable:
     as_of: str
     rates: Dict[str, Rates]
 
+    def rates_for(self, model: str, speed: Optional[str]) -> Optional[Rates]:
+        """A dated snapshot id with no row of its own is priced at its undated
+        alias's row; a dated row, where there is one, wins."""
+        rates = self.rates.get(rate_key(model, speed))
+        if rates is None and _DATED.search(model):
+            rates = self.rates.get(rate_key(_DATED.sub("", model), speed))
+        return rates
 
 
 def parse_prices(text: str) -> PriceTable:
@@ -301,8 +313,10 @@ def summarise_transcript(
                     )
                 continue
 
+            # `byRate` keeps the id the response named, as telemetry's own
+            # events do, whichever row priced it.
             key = rate_key(response.model, response.speed)
-            rates = prices.rates.get(key)
+            rates = prices.rates_for(response.model, response.speed)
             if rates is None:
                 unpriced.add(key)
                 continue
