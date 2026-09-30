@@ -41,11 +41,34 @@ def tool_result() -> dict:
     return {"type": "user", "isSidechain": False, "message": {"content": "ok"}}
 
 
+# Stands in for `gh api user`: the hook's one network call, so every run gets a
+# `gh` that answers from the environment rather than from GitHub.
+GH_STUB = """#!/bin/sh
+[ -n "$STUB_GH_USER" ] || exit 1
+printf '%s\\n' "$STUB_GH_USER"
+"""
+
+
 class Session:
     def __init__(self, root: Path) -> None:
         self.root = root
         self.transcript = root / "transcript.jsonl"
         self.transcript.write_text("")
+        self.bin = root / "bin"
+        self.bin.mkdir()
+        gh = self.bin / "gh"
+        gh.write_text(GH_STUB)
+        gh.chmod(0o755)
+        # No identity: `gh` fails, as it does with no token or no network.
+        self.identity: dict[str, str] | None = None
+
+    def signed_in_as(self, login: str, kind: str = "User") -> None:
+        self.identity = {"login": login, "type": kind}
+
+    def auto_relay(self, handle: str, setting: str) -> None:
+        path = self.root / ".claude" / "context-budget" / "auto-relay" / handle
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(setting)
 
     def append(self, *records: dict) -> None:
         with self.transcript.open("a") as f:
@@ -68,7 +91,12 @@ class Session:
             capture_output=True,
             text=True,
             check=True,
-            env={"PATH": "/usr/bin:/bin", "CLAUDE_PROJECT_DIR": str(self.root), **(env or {})},
+            env={
+                "PATH": f"{self.bin}:/usr/bin:/bin",
+                "CLAUDE_PROJECT_DIR": str(self.root),
+                "STUB_GH_USER": json.dumps(self.identity) if self.identity else "",
+                **(env or {}),
+            },
         )
 
     def notice(self, env: dict[str, str] | None = None, **payload: str) -> str | None:
@@ -86,6 +114,15 @@ class BudgetTestCase(unittest.TestCase):
         tmp = tempfile.TemporaryDirectory()
         self.addCleanup(tmp.cleanup)
         self.session = Session(Path(tmp.name))
+
+    def notices(self) -> tuple[str, str]:
+        """The warning, then the pause, from one climb past both lines."""
+        self.session.append(assistant(WARN + 1))
+        warning = self.session.notice()
+        self.session.append(assistant(PAUSE + 1))
+        pause = self.session.notice()
+        assert warning is not None and pause is not None
+        return warning, pause
 
 
 class WhenTheNoticesFire(BudgetTestCase):
@@ -137,38 +174,83 @@ class WhenTheNoticesFire(BudgetTestCase):
         assert notice is not None
         self.assertIn("50k warning line", notice)
 
-    def test_nearly_done_is_an_estimate_under_100k_with_the_gauge_at_the_warning(
-        self,
-    ) -> None:
-        # The half-of-the-session gauge matches 100k only at the warning line;
-        # at the pause line it would read 150k, so that notice carries none.
-        self.session.append(assistant(WARN + 1))
-        warning = self.session.notice()
-        self.session.append(assistant(PAUSE + 1))
-        pause = self.session.notice()
-        assert warning is not None and pause is not None
+    def test_the_warning_gives_the_work_the_room_up_to_the_pause_line(self) -> None:
+        # The half-of-the-session gauge matches that room only at the default
+        # lines, which is all it claims: "roughly".
+        warning, _ = self.notices()
         self.assertIn("under ~100k more tokens", warning)
         self.assertIn("less than half", warning)
-        self.assertIn("under ~100k more tokens", pause)
-        self.assertNotIn("less than half", pause)
+        self.assertIn("steer to a pause within that same ~100k", warning)
 
-    def test_nearly_done_judges_an_elephants_open_bite(self) -> None:
-        self.session.append(assistant(WARN + 1))
-        warning = self.session.notice()
-        self.session.append(assistant(PAUSE + 1))
-        pause = self.session.notice()
-        assert warning is not None and pause is not None
+    def test_the_room_follows_the_lines(self) -> None:
+        self.session.append(assistant(60_000))
+        notice = self.session.notice(
+            {"CONTEXT_BUDGET_WARN": "50000", "CONTEXT_BUDGET_PAUSE": "80000"}
+        )
+        assert notice is not None
+        self.assertIn("under ~30k more tokens", notice)
+
+    def test_the_pause_leaves_room_only_for_a_last_step(self) -> None:
+        _, pause = self.notices()
+        self.assertIn("Pause now, without asking, wherever the work stands", pause)
+        self.assertIn("under ~20k more tokens", pause)
+        self.assertNotIn("100k", pause)
+
+    def test_the_warning_judges_an_elephants_open_bite(self) -> None:
+        warning, _ = self.notices()
         self.assertIn("the open bite", warning)
-        self.assertIn("the open bite", pause)
 
     def test_both_notices_offer_relay_as_the_way_on(self) -> None:
-        self.session.append(assistant(WARN + 1))
-        warning = self.session.notice()
-        self.session.append(assistant(PAUSE + 1))
-        pause = self.session.notice()
-        assert warning is not None and pause is not None
+        warning, pause = self.notices()
         self.assertIn("offering `/relay`", warning)
         self.assertIn("offering `/relay`", pause)
+
+
+class WhetherThePauseRelaysOnItsOwn(BudgetTestCase):
+    OPT_IN = "has not said whether to relay on their own"
+
+    def test_an_operator_never_asked_is_offered_it_with_the_relay(self) -> None:
+        self.session.signed_in_as("Someone")
+        warning, pause = self.notices()
+        self.assertIn(self.OPT_IN, warning)
+        self.assertIn("@someone", pause)
+        self.assertIn("offering `/relay`", pause)
+
+    def test_on_makes_either_pause_relay_without_asking(self) -> None:
+        self.session.signed_in_as("Someone")
+        self.session.auto_relay("someone", "on\n")
+        for notice in self.notices():
+            self.assertIn("without asking and with no argument, run `/relay`", notice)
+            self.assertIn("auto-relay/someone", notice)
+            self.assertNotIn("offering `/relay`", notice)
+            self.assertNotIn(self.OPT_IN, notice)
+
+    def test_off_keeps_the_offer_and_asks_nothing(self) -> None:
+        self.session.signed_in_as("someone")
+        self.session.auto_relay("someone", "off")
+        warning, pause = self.notices()
+        self.assertIn("offering `/relay`", pause)
+        self.assertNotIn(self.OPT_IN, warning)
+        self.assertNotIn(self.OPT_IN, pause)
+
+    def test_a_setting_that_is_neither_reads_as_never_asked(self) -> None:
+        self.session.signed_in_as("someone")
+        self.session.auto_relay("someone", "yes please")
+        _, pause = self.notices()
+        self.assertIn(self.OPT_IN, pause)
+        self.assertNotIn("with no argument, run", pause)
+
+    def test_a_bot_token_has_no_operator_to_ask(self) -> None:
+        self.session.signed_in_as("claude[bot]", kind="Bot")
+        self.session.auto_relay("claude[bot]", "on")
+        _, pause = self.notices()
+        self.assertIn("offering `/relay`", pause)
+        self.assertNotIn(self.OPT_IN, pause)
+
+    def test_an_unanswering_gh_has_no_operator_to_ask(self) -> None:
+        _, pause = self.notices()
+        self.assertIn("offering `/relay`", pause)
+        self.assertNotIn(self.OPT_IN, pause)
 
 
 class WhichRecordsAreTheReading(BudgetTestCase):
