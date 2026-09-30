@@ -23,7 +23,8 @@ response time, since the cache also expires while the process lives.
 
 The guard prices with #126's .claude/costs/lib/restart.py, a fresh
 successor's reorientation taken from the ledger's fresh sessions rather
-than its relayed ones. It is catalog group G9, opt-in.
+than its relayed ones. It is catalog group G9, opt-in. Riding along:
+vzakharov's operator entry asks for «Вова» in Russian replies.
 
 Co-authored-by: Claude <noreply@anthropic.com>
 ```
