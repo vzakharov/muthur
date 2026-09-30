@@ -2,7 +2,10 @@
 
 `hooks/post-tool-context-budget.sh` tells the agent when its session's context
 crosses the warning line and the pause line, so work is left resumable
-before a compact or a dead session takes the choice away. What the agent does on
+before a compact or a dead session takes the choice away. The warning gives the
+work the room up to the pause line, to finish in or to steer to a good stopping
+point and pause there; the pause line is where that estimate missed, so it
+stops the work where it stands, a last step aside. What the agent does on
 each notice is `@.claude/skills/go/SKILL.md` § "Stopping partway releases the
 plan".
 
@@ -15,8 +18,7 @@ plan".
   `output_tokens` is left out — the next request carries it, and the next
   reading counts it then.
 - **Both lines are priced by what `/relay` saves over the next 100k tokens of
-  work** (`finish`, the slice "nearly done" is measured in, so the saving is a
-  floor whenever a notice fires): the warning where that saving reaches $0, the
+  work** (`finish`): the warning where that saving reaches $0, the
   pause where it reaches `CONTEXT_BUDGET_PAUSE_SAVING` percent (default 20) of
   what carrying on costs. The model is `.claude/costs/lib/restart.py`, via
   `hooks/priced_line.py`, and the notice carries the dollars.
@@ -45,6 +47,13 @@ plan".
   the highest level announced; a reading back under the warning line clears it,
   so a compact re-arms both. A notice that cannot be recorded is not sent, since
   it would otherwise repeat on every tool call.
+- **The operator is resolved only when a notice is about to fire**, with `gh api
+  user`, since it costs a network call and the ordinary tool call has no use for
+  it. Their `auto-relay/<handle>` decides how the pause ends, and
+  `@.claude/skills/relay/SKILL.md` § "Auto-relay" owns what it means and who
+  writes it. A `gh` that cannot answer, or a token that is not a `User`'s, reads
+  as `off` and asks nothing: there is no one to have opted in and nowhere to
+  record an answer.
 - **Anything unreadable is silence**, never an error: a missing notice costs a
   warning, a hook failing on every tool call costs the session.
 
