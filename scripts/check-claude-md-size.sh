@@ -2,10 +2,11 @@
 # Cap the root CLAUDE.md, with hysteresis: the file may grow to CEILING_CHARS,
 # but a branch that takes it past the ceiling lands it at TARGET_CHARS or under.
 # Every character in it is paid on every turn of every session, and nothing else
-# pushes back on growth: each addition passes its own test in CLAUDE.md § "About
-# this file", and the total drifts up unexamined. A single cap would be trimmed
-# back to just under itself, a few hundred characters per session, forever; the
-# gap between the two numbers is what makes one trim buy room for many additions.
+# pushes back on growth: each addition passes its own test in
+# CLAUDE.md § "About this file", and the total drifts up unexamined. A single
+# cap would be trimmed back to just under itself, a few hundred characters per
+# session, forever; the gap between the two numbers is what makes one trim buy
+# room for many additions.
 #
 # The file measured is the one the branch will land: the staged copy at
 # STAGED_COPY when there is one, else CLAUDE.md itself. Measuring only the real
