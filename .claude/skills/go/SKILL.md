@@ -90,7 +90,7 @@ Commit/push discipline is already governed by CLAUDE.md — don't reinvent it he
 
 **Work with no plan behind it gets one here**, written straight to `docs/plans/<slug>.paused.md`: the task as asked, what is done (with its commits), what is left, and the decisions a successor would otherwise re-litigate. There is no draft stage — the work is already under way on a go-ahead, and `*.paused.md` is the state Step 1 resumes from.
 
-A pause the operator did not ask for is reported, not just done: say that the budget notice triggered it, and end the turn with the `/go <branch>` handoff block `@.claude/skills/plan/SKILL.md` § "Handing off" formats.
+A pause the operator did not ask for is reported, not just done: say that the budget notice triggered it, and end the turn offering `/relay` (`@.claude/skills/relay/SKILL.md`), whose new session resumes the paused plan from a summary of this one.
 
 ## Step 3 — Mandatory quality passes
 
