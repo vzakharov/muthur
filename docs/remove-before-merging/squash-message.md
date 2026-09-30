@@ -10,15 +10,12 @@ its signs asked whether a step was irreversible. On a git branch nothing
 is: any commit reverts, so the sign never fired on what it was meant to
 catch.
 
-The sign now measures distance. Build the plan's choice, picture the
-operator reading the diff and asking for the next-best option, and
-count what that switch rewrites: a default value is a line apart, a
-data shape later files read is the whole branch apart, and the gap
-grows with each commit built on the choice before review. A step off
-the branch (a filed issue, a posted comment, a deploy) has nothing on
-the branch to rewrite and counts as farthest. The step's closing line
-says the gate is for what a diff review could only change by rewriting
-the diff.
+The sign now asks whether the alternatives land far apart: whether an
+operator who read the diff and asked for the next-best option would be
+asking for a rewrite rather than an amendment. How far counts as far
+is the agent's call on the task at hand. The step's closing line says
+the gate is for what a diff review could only change by rewriting the
+diff.
 
 Co-authored-by: Claude <noreply@anthropic.com>
 ```
