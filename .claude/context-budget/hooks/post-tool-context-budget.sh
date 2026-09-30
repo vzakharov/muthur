@@ -14,10 +14,18 @@ need_command jq "no context-budget reading this tool call."
 
 warn="${CONTEXT_BUDGET_WARN:-200000}"
 pause="${CONTEXT_BUDGET_PAUSE:-300000}"
-[[ "$warn" =~ ^[0-9]+$ && "$pause" =~ ^[0-9]+$ ]] || {
-  say "CONTEXT_BUDGET_WARN / CONTEXT_BUDGET_PAUSE must be whole token counts; no reading taken."
+pause_saving="${CONTEXT_BUDGET_PAUSE_SAVING:-20}"
+lines="${CONTEXT_BUDGET_LINES:-priced}"
+[[ "$warn" =~ ^[0-9]+$ && "$pause" =~ ^[0-9]+$ && "$pause_saving" =~ ^[0-9]+$ && "$pause_saving" -lt 100 ]] || {
+  say "CONTEXT_BUDGET_WARN / CONTEXT_BUDGET_PAUSE must be whole counts, CONTEXT_BUDGET_PAUSE_SAVING a percentage under 100; no reading taken."
   exit 0
 }
+[[ "$lines" == priced || "$lines" == fixed ]] || {
+  say "CONTEXT_BUDGET_LINES must be \`priced\` or \`fixed\`; no reading taken."
+  exit 0
+}
+# The slice of work a relay's saving is priced over.
+finish=100000
 
 root="$(project_root)"
 transcript="$(field transcript_path)"
@@ -40,6 +48,29 @@ reading="$(tac "$transcript" | grep -F '"type":"assistant"' | jq -rn '
 
 state_dir="$root/tmp/context-budget"
 state_file="$state_dir/$session"
+
+# Priced where the ledger's lib can price it, each line capped at its fixed one;
+# a hand-set line stays fixed. Cached as `<warn> <pause> <reading>`.
+hooks="$(dirname "${BASH_SOURCE[0]}")"
+priced=
+if [ "$lines" = priced ] && [ -z "${CONTEXT_BUDGET_WARN:-}" -o -z "${CONTEXT_BUDGET_PAUSE:-}" ] \
+  && [ -f "$hooks/../../costs/lib/restart.py" ] && command -v python3 >/dev/null; then
+  line_file="$state_dir/$session.line"
+  priced_warn= priced_pause= at=
+  [ ! -f "$line_file" ] || read -r priced_warn priced_pause at <"$line_file"
+  if ! [[ "$at" =~ ^[0-9]+$ && "$reading" -ge "$at" && "$reading" -lt $((at + 10000)) ]]; then
+    read -r priced_warn priced_pause < <(python3 "$hooks/priced_line.py" lines "$transcript" "$finish" "$pause_saving")
+    mkdir -p "$state_dir" && printf '%s %s %s\n' "${priced_warn:--}" "${priced_pause:--}" "$reading" >"$line_file"
+  fi
+  if [ -z "${CONTEXT_BUDGET_WARN:-}" ] && [[ "$priced_warn" =~ ^[0-9]+$ ]]; then
+    priced=1
+    [ "$priced_warn" -ge "$warn" ] || warn="$priced_warn"
+  fi
+  if [ -z "${CONTEXT_BUDGET_PAUSE:-}" ] && [[ "$priced_pause" =~ ^[0-9]+$ ]]; then
+    priced=1
+    [ "$priced_pause" -ge "$pause" ] || pause="$priced_pause"
+  fi
+fi
 
 # Under the warn line again means a compact landed, which re-arms both notices.
 if [ "$reading" -lt "$warn" ]; then
@@ -89,9 +120,13 @@ ends="tell the operator the session was paused for its context budget, and end t
 [ "$auto_relay" != on ] || ends="then, without asking and with no argument, run ${relay}. Do so because this operator turned auto-relay on (\`${setting}\`, ${auto}); its report tells the operator the session was paused for its context budget and relayed on its own"
 paused="follow ${stopping}. Push, ${ends}; the new session resumes the paused plan."
 
+saving=
+[ -z "$priced" ] || saving="$(python3 "$hooks/priced_line.py" notice "$transcript" "$reading" "$finish")"
+priced_past() { echo "$(past "$@")${saving:+ $saving Give the operator those figures when you offer the choice.}"; }
+
 case "$level" in
   warn)
-    notice="$(past "$warn" warning)
+    notice="$(priced_past "$warn" warning)
 
 Judge whether the work fits — the open bite, when the plan has a \`## This bite\` section: by your own estimate, under ~$(k "$room") more tokens of context to finish, roughly less than half of what this session has already carried. If it fits, carry on and finish it, and say in your report that the warning came and why you did not pause.
 
@@ -100,7 +135,7 @@ If it does not fit, steer to a pause within that same ~$(k "$room"): pick the be
 At $(k "$pause") this notice returns as the pause itself, which stops wherever the work stands."
     ;;
   pause)
-    notice="$(past "$pause" pause)
+    notice="$(priced_past "$pause" pause)
 
 Pause now, without asking, wherever the work stands: there is no room left to steer to a better stopping point. The one exception is work literally a step from done — under ~$(k "$last_step") more tokens of context — which you finish first, saying in your report why. Otherwise commit what is in hand, leave the branch just resumable rather than tidy, and ${paused}"
     ;;
