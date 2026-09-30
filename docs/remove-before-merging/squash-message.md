@@ -1,7 +1,7 @@
 Proposed squash title/body:
 
 ```
-feat: cold-cache guard, and a relay-priced context budget (pr #109)
+feat: cold-cache guard (pr #109)
 ```
 
 ```
@@ -21,14 +21,9 @@ model-driven built-ins such as /go or /btw are stopped like any prompt.
 Cold is read from SessionStart on resume and from the transcript's last
 response time, since the cache also expires while the process lives.
 
-The context budget's lines follow the same model: the warning where a
-relay starts saving over the next 100k tokens, the pause where it saves
-20% (CONTEXT_BUDGET_PAUSE_SAVING), each capped at the fixed 200k/300k,
-with the dollars in the notice. CONTEXT_BUDGET_LINES=fixed keeps the
-pure-bash lines. Both hooks price with .claude/costs/lib/restart.py,
-and a successor's reorientation is the ledger's own orientation
-measure: this session's when it started the same way, else the mean of
-the ledger's sessions that did, else this session's, else an estimate.
+The guard prices with #126's .claude/costs/lib/restart.py, a fresh
+successor's reorientation taken from the ledger's fresh sessions rather
+than its relayed ones. It is catalog group G9, opt-in.
 
 Co-authored-by: Claude <noreply@anthropic.com>
 ```
