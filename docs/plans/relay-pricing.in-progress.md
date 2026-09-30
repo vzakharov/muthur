@@ -1,5 +1,3 @@
-> ⛔ **DRAFT — DO NOT IMPLEMENT.** This plan is not approved. Do not edit source while this file is named `*.draft.do-not-implement.md` — prep and spikes go in `tmp/`. On an explicit operator go-ahead, `git mv` it to `*.in-progress.md` and delete this banner (quoting the go-ahead in the commit) *before* touching code.
-
 # Price `/relay` against carrying on, in both hooks
 
 Follows `cold-cache-guard.completed.md` on the same branch. It answers the review on #109: T01–T04 and the operator's note that the budget notice was uninformative. T05 is #122.
