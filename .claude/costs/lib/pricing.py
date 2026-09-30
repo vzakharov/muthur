@@ -10,6 +10,7 @@ from __future__ import annotations
 import json
 import re
 from dataclasses import dataclass, fields
+from pathlib import Path
 from typing import Any, Dict, List, Mapping, Optional, Sequence, Set, Tuple
 
 from lib.billed import Event, Telemetry, compaction_costs, disagreement
@@ -115,7 +116,7 @@ class Response:
     tokens: Tally
 
 
-def _is_response_record(record: Any) -> bool:
+def is_response_record(record: Any) -> bool:
     # Prompts, attachments and tool results share the file and carry no usage,
     # so only a record that looks like a billed response is held to the shape.
     if not isinstance(record, dict):
@@ -124,7 +125,7 @@ def _is_response_record(record: Any) -> bool:
     return isinstance(message, dict) and "usage" in message
 
 
-def _parse_response(record: Dict[str, Any], where: str, warnings: List[str]) -> Response:
+def parse_response(record: Dict[str, Any], where: str, warnings: List[str]) -> Response:
     message = required(read_object, record, "message", where)
     message_id = required(read_string, message, "id", where)
     usage = required(read_object, message, "usage", where)
@@ -182,6 +183,16 @@ class TranscriptSources:
 
     main: str
     subagents: Sequence[str] = ()
+
+
+def subagents_of(main: Path) -> List[str]:
+    """A subagent's responses are billed to this session and written to their own
+    file under `<transcript>/subagents/`, so the directory is read rather than
+    assumed empty. A session that spawned none has no directory at all."""
+    directory = main.parent / main.stem / "subagents"
+    if not directory.is_dir():
+        return []
+    return [path.read_text(encoding="utf-8") for path in sorted(directory.glob("*.jsonl"))]
 
 
 # Marks the warning `at_stop` raises, which is what lets a rewrite of the row
@@ -276,9 +287,9 @@ def summarise_transcript(
                         operator = operator_of(record)
                     continue
 
-            if not _is_response_record(record):
+            if not is_response_record(record):
                 continue
-            response = _parse_response(record, where, warnings)
+            response = parse_response(record, where, warnings)
             if not (delegated or response.is_sidechain or response.model == SYNTHETIC_MODEL):
                 last_own = response
             # One API response is written as one record per content block, each
