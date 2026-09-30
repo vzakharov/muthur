@@ -2,35 +2,35 @@
   "sessionId": "3e7aee4a-251a-5306-8246-3561e097b8c5",
   "branch": "claude/switch-distance-gate-vqoi2a",
   "cwd": "/home/user/muthur",
-  "name": null,
+  "name": "PR 103 review: drop far-apart heuristic",
   "openingPrompt": "/handle claude/switch-distance-gate-vqoi2a",
   "prs": [
     103
   ],
   "url": "https://claude.ai/code/session_01G7pCEm27BbxEGJeWMZdKwi",
   "firstResponseAt": "2026-09-30T17:19:59.198Z",
-  "lastResponseAt": "2026-09-30T17:22:36.267Z",
+  "lastResponseAt": "2026-09-30T17:29:44.922Z",
   "pricesAsOf": "2026-09-23",
   "claudeCodeTotalUsd": null,
   "total": {
-    "inputTokens": 40,
+    "inputTokens": 42,
     "cacheWrite5mTokens": 0,
-    "cacheWrite1hTokens": 88687,
-    "cacheReadTokens": 2106414,
-    "outputTokens": 7891,
+    "cacheWrite1hTokens": 89019,
+    "cacheReadTokens": 2237861,
+    "outputTokens": 8104,
     "thinkingTokens": 1405,
-    "responses": 20,
-    "costUsd": 1.2887587999999999
+    "responses": 21,
+    "costUsd": 1.3219721999999998
   },
   "ownTurns": {
-    "inputTokens": 40,
+    "inputTokens": 42,
     "cacheWrite5mTokens": 0,
-    "cacheWrite1hTokens": 88687,
-    "cacheReadTokens": 2106414,
-    "outputTokens": 7891,
+    "cacheWrite1hTokens": 89019,
+    "cacheReadTokens": 2237861,
+    "outputTokens": 8104,
     "thinkingTokens": 1405,
-    "responses": 20,
-    "costUsd": 1.2887587999999999
+    "responses": 21,
+    "costUsd": 1.3219721999999998
   },
   "subagents": {
     "inputTokens": 0,
@@ -44,14 +44,14 @@
   },
   "byRate": {
     "claude-opus-5-5/standard": {
-      "inputTokens": 40,
+      "inputTokens": 42,
       "cacheWrite5mTokens": 0,
-      "cacheWrite1hTokens": 88687,
-      "cacheReadTokens": 2106414,
-      "outputTokens": 7891,
+      "cacheWrite1hTokens": 89019,
+      "cacheReadTokens": 2237861,
+      "outputTokens": 8104,
       "thinkingTokens": 1405,
-      "responses": 20,
-      "costUsd": 1.2887587999999999
+      "responses": 21,
+      "costUsd": 1.3219721999999998
     }
   },
   "warnings": []
