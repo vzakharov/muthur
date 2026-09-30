@@ -125,7 +125,7 @@ This read-then-delete ordering is what routing through `/plan` buys.
 
 ## Step 3 — Derive the watermark, which git cannot give you
 
-`ADOPTING.md`'s recipe reads `lastSyncedSha` out of the clone you took. **A
+`docs/adopting/sync.md` reads `lastSyncedSha` out of the clone you took. **A
 template fork never made that clone**, and its single commit has no ancestry in
 the source, so there is no SHA in the tree to read. Derive it from the fork's
 creation time instead:
@@ -176,9 +176,8 @@ Ordering is load-bearing at exactly one point, and it is the first step:
    catalog's presence. Sweep it first and the G6 prune is enforced by the vet run
    instead of remembered.
 2. **The rest of the `never` rows**: `README.md` — replaced with the project's,
-   not merely deleted — `ADOPTING.md`, and **`docs/img/`** with it. That
-   directory is `ADOPTING.md`'s only asset, so a literal row-by-row sweep strands
-   it as an orphan.
+   not merely deleted — `ADOPTING.md`, and **`docs/adopting/`** with it: its
+   chapters, which a sweep of the one file strands as orphans.
 3. **Prune the groups**, applying the reverse-closure edits the plan recorded.
 4. **Fill `CLAUDE.md` § "About this project"'s stub** from the brief — which
    retires the standing notice in § "Recognizing an undetemplated fork" along
@@ -212,7 +211,7 @@ Ordering is load-bearing at exactly one point, and it is the first step:
 
 ## Step 6 — Hand back the setup script
 
-`ADOPTING.md` § "Hand the operator a setup script" is the one step no agent can
+`docs/adopting/web-remote.md` § "Hand the operator a setup script" is the one step no agent can
 apply: the environment setup script lives in Claude Code's environment settings,
 is set by a human in the web UI, and has no API, MCP tool or in-repo file behind
 it. Step 5 deletes that file, so the deliverable travels here instead — **text in
@@ -255,7 +254,11 @@ is — each records a trap that actually bit:
 6. **Prime the dependency cache last**, guarded, since the repo directory may be
    absent.
 
-Say plainly in the report that this is the one step you could not apply yourself.
+**If the fork kept `.claude/costs/`, the same settings take its telemetry
+variables** as environment variables, the list being the one
+`.claude/costs/hooks/start-telemetry-receiver.sh` prints.
+
+Say plainly in the report that these are the steps you could not apply yourself.
 
 ## Step 7 — Hand over the first build session
 

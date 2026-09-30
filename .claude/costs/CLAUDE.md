@@ -58,6 +58,78 @@ hook leaves in the transcript. It is null wherever the hook named nobody — no
 `gh`, or a token that is a bot's — rather than guessed from the pusher, who is
 the token and so may be the agent's own account.
 
+## Orientation
+
+A row's `orientation` is what the session spent before it first **acted**, and
+each of its `compactions` carries the same measure from that boundary on, plus
+the re-reads the summary forced. They feed the call on whether a fresh session
+or a compact is the cheaper way to shed context. `lib/orientation.py` holds
+the definitions.
+
+- **Acting is a write into the repository or a handover to the operator** — an
+  `Edit`, `Write` or `NotebookEdit` under the directory the session started in
+  and outside its `tmp/`, an `AskUserQuestion` or `ExitPlanMode`, or the
+  session's own `end_turn`. A scratch write is how an agent finds its bearings,
+  not what it does with them. A subagent's `end_turn` only hands its result
+  back to whoever spawned it, but a subagent's edit counts: delegated work is
+  still the session starting work.
+- **The acting response is left out of the spend**, since its output is the
+  edit or the answer itself.
+- **Timestamps order the responses, not file position**, because a subagent's
+  spend sits in another file and its clock is what places it against the main
+  file's.
+- **Each phase stops at the next boundary**, so no response is counted in two.
+- **A re-read is an exact repeat of a call made before the latest boundary** —
+  a `Read` of the same path and range with no write to it since, or a `Grep`,
+  `Glob` or `Bash` with the same input bar its `description` — counted once per
+  boundary. Only the session's own calls count: a subagent starts with no
+  context the summary could have dropped. The estimate is an estimate because a
+  tool result has no `usage`: its tokens are its share, by characters, of the
+  cache write of the response it arrived in, and its dollars that write plus a
+  cache read on every later response before the next boundary.
+
+**What it misses.** An edit made through `Bash` is not seen as acting, so such a
+session's orientation runs long. Re-reads are a floor: a hole read around — a
+`cat` after a `Read`, a narrower grep — or one that shows as a wrong turn goes
+uncounted, while a repeat that was simply due, a `git status` before each
+commit, counts; `byTool` is what lets `Bash` be read apart. The compaction call
+itself has no `usage` to price. A resume in a fresh container reloads the
+transcript with no boundary to restart at, so what it spends getting its
+bearings lands in the work.
+
+## Telemetry
+
+`hooks/start-telemetry-receiver.sh` starts a receiver on `127.0.0.1:4318` at
+`SessionStart`, and each `api_request` event Claude Code exports to it lands in
+`tmp/telemetry/<session-id>.jsonl`, stripped to its numbers and a few named
+fields. `lib/billed.py` joins them to the priced responses by request id.
+
+**The events' worth is the calls the transcript never records.** Where a
+response and its event are both there, the table and the event price it alike,
+so the response keeps the table's price and the event checks it; the row warns
+when the two drift apart. An event no response matches is such a call — a
+prompt suggestion, a compaction — and goes into `total` and `byRate` at the
+event's price, and into `telemetry.unseen` by its `query_source`, which takes
+values the documentation does not list (`sdk` for a web session's main thread,
+`prompt_suggestion`, `compact`). A compaction's `billedUsd` is the
+`compact`-tagged call nearest its boundary. An event does not split its cache
+write by TTL, so an unseen call's write is filed under the 5-minute tokens.
+Events are only as complete as the receiver's uptime: what Claude Code sent
+before it started, or after the row was written, is in no row. The hook also
+runs after every tool call, silent there, and starts a receiver that is
+missing. That covers a session that checked out a branch carrying the hook,
+which registers it with `SessionStart` already past, and a receiver that died.
+
+**The export is the environment's to switch on, never the repository's.**
+Claude Code ignores its OpenTelemetry exporter variables in a project's
+`.claude/settings.json` (code.claude.com/docs/en/env-vars), reading them only
+from the process environment, user settings and managed settings — so, in a
+web session, the cloud environment's own variables. Where they do not point at
+the receiver, the hook starts nothing and prints a notice naming them; its list
+is the one home of what to set. Claude Code strips `OTEL_*` from every process
+it spawns, so the hook reads them from the `claude` process's own environment. `NO_PROXY` stays off it: the environment's own
+list already exempts `127.0.0.1`, and a value set beside the others replaces it.
+
 ## Checking the arithmetic
 
 The table has no published source to check itself against, but the transcript
@@ -72,11 +144,12 @@ file the row was priced from — so it was written at or before the moment the r
 was. A row coming out **under** it has missed a source. A row coming out over it
 means only that the session kept going, which every row's last turn does.
 
-A couple of percent of slack covers what Claude Code counts and no row can: the
-background Haiku calls and each compact's own request, neither of which appears
-in the transcript as a response. Together they measured a fraction of a percent;
-reading a subagent's file short of its spend was seven, which is the failure
-this check exists to catch.
+Without events, a row misses what Claude Code counts and the transcript does
+not record as a response: prompt suggestions, which are full-context calls on
+the session's own model, and each compact's own request. They measured a few
+percent of a session's spend; reading a subagent's file short of its spend was
+seven, which is the failure this check exists to catch. A row with events has
+them in its total.
 
 **The usage panel is not a third opinion, and what breaks it is compaction.**
 Against a session that has never compacted it agrees to within 1%, and each
@@ -132,7 +205,9 @@ adjusting quietly is what would leave the rest of this section false.
 
 `python3 .claude/costs/report.py` sums the rows five ways every run — by month,
 week and day, by the branch that spent it with the pull requests it touched
-named beside it, and by operator; `--json` prints the lot. The spend is the
+named beside it, and by operator — then orientation's averages, and the calls
+only the events saw, by `query_source`, as a share of the spend of the rows
+priced with events; `--json` prints the lot. The spend is the
 branch's rather than each PR's, since a session that touched two would otherwise
 be counted twice.
 
@@ -153,11 +228,10 @@ commit.
 - **The turn that merges.** `/finalize and merge` merges within its turn and the
   row lands after, on a branch already merged — so that turn's spend reaches
   neither the trunk nor any later merge.
-- **Each compact.** The transcript records the compaction call without its
-  `usage` — the boundary record carries `preTokens`, the summary arrives as a
-  `user` record — so there is nothing to price. Bounded rather than unknown: two
-  compacts of one measured session read 526k tokens between them, about $0.30 at
-  the cache-read rate a warm prefix gets.
+- **Each compact, without events.** The transcript records the compaction call
+  without its `usage` — the boundary record carries `preTokens`, the summary
+  arrives as a `user` record — so only the events price it. One compaction of a
+  230k-token context with a warm cache measured about $0.22, most of it output.
 - **A rate that changed after a row was written.** Each row records the
   `pricesAsOf` it was priced under and is never re-priced — its transcript is
   usually gone by then — so a table update applies forward only, and `report.py`

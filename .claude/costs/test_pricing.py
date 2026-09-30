@@ -11,8 +11,9 @@ from __future__ import annotations
 
 import json
 import unittest
-from typing import Any, List, Optional, Sequence
+from typing import Any, Dict, List, Optional, Sequence
 
+from lib.billed import parse_events
 from lib.pricing import (
     TranscriptSources,
     UnpricedError,
@@ -62,6 +63,10 @@ def response(
     write_1h: int = 0,
     written: Optional[int] = None,
     stop: Optional[str] = None,
+    at: str = "2026-03-04T05:06:07.000Z",
+    cwd: Optional[str] = None,
+    calls: Sequence[Dict[str, Any]] = (),
+    request: Optional[str] = None,
 ) -> str:
     usage = {
         "input_tokens": input,
@@ -83,21 +88,33 @@ def response(
             "type": "assistant",
             "sessionId": "sess",
             "gitBranch": branch,
-            "timestamp": "2026-03-04T05:06:07.000Z",
+            "cwd": cwd,
+            "timestamp": at,
             "isSidechain": sidechain,
-            "message": {"id": id, "model": model, "usage": usage, "stop_reason": stop},
+            "requestId": request,
+            "message": {
+                "id": id,
+                "model": model,
+                "usage": usage,
+                "stop_reason": stop,
+                "content": list(calls),
+            },
         }
     )
 
 
 def summarise(
-    lines: Sequence[str], subagents: Sequence[Sequence[str]] = (), at_stop: bool = False
+    lines: Sequence[str],
+    subagents: Sequence[Sequence[str]] = (),
+    at_stop: bool = False,
+    events: Optional[Sequence[str]] = None,
 ):
     return summarise_transcript(
         TranscriptSources(main="\n".join(lines), subagents=["\n".join(s) for s in subagents]),
         PRICES,
         "fallback",
         at_stop=at_stop,
+        events=None if events is None else parse_events("\n".join(events), "events"),
     )
 
 
@@ -342,6 +359,202 @@ class WhatNamesASession(unittest.TestCase):
     def test_keeps_claude_code_s_own_last_word_on_what_the_session_cost(self) -> None:
         cost = summarise([cost_state(1.5), response(output=1), cost_state(2.25)])
         self.assertEqual(cost.claude_code_total_usd, 2.25)
+
+
+# --- Orientation --------------------------------------------------------------
+
+ROOT = "/repo"
+
+
+def t(second: int) -> str:
+    return f"2026-03-04T05:{second // 60:02d}:{second % 60:02d}.000Z"
+
+
+def call(name: str, id: str = "", **input: Any) -> Dict[str, Any]:
+    return {"type": "tool_use", "id": id or f"toolu_{name}_{sorted(input.items())}", "name": name, "input": input}
+
+
+def step(second: int, *calls: Dict[str, Any], **kwargs: Any) -> str:
+    """One response of the session's own, at `second`, costing $10 of output."""
+    return response(
+        id=kwargs.pop("id", f"msg_{second}"),
+        at=t(second),
+        cwd=ROOT,
+        output=kwargs.pop("output", 1_000_000),
+        calls=calls,
+        **kwargs,
+    )
+
+
+def result(tool_use_id: str, text: str) -> str:
+    content = [{"type": "tool_result", "tool_use_id": tool_use_id, "content": text}]
+    return json.dumps({"type": "user", "message": {"content": content}})
+
+
+def boundary(second: int, pre: int = 200_000, trigger: str = "manual") -> str:
+    # The shape a real compaction recorded.
+    return json.dumps(
+        {
+            "type": "system",
+            "subtype": "compact_boundary",
+            "timestamp": t(second),
+            "compactMetadata": {
+                "trigger": trigger,
+                "preTokens": pre,
+                "durationMs": 61234,
+                "preservedSegment": {"headUuid": "a", "anchorUuid": "b", "tailUuid": "c"},
+                "preservedMessages": 4,
+            },
+        }
+    )
+
+
+def summary(text: str) -> str:
+    return json.dumps(
+        {"type": "user", "isCompactSummary": True, "message": {"role": "user", "content": text}}
+    )
+
+
+EDIT = call("Edit", file_path=f"{ROOT}/lib/a.py", old_string="x", new_string="y")
+READ = call("Read", id="toolu_read", file_path=f"{ROOT}/lib/b.py")
+
+
+class WhereOrientationEnds(unittest.TestCase):
+    def test_leaves_the_acting_response_out_of_the_spend(self) -> None:
+        cost = summarise([step(1), step(2), step(3, EDIT), step(4)])
+        assert cost.orientation is not None
+        self.assertEqual(cost.orientation.ended_by, "Edit")
+        self.assertEqual(cost.orientation.ended_on, "lib/a.py")
+        self.assertEqual(cost.orientation.ended_at, t(3))
+        self.assertEqual(cost.orientation.spend.responses, 2)
+        self.assertEqual(cost.orientation.spend.cost_usd, 20)
+
+    def test_records_how_much_context_the_session_had_built_when_it_acted(self) -> None:
+        cost = summarise([step(1), step(2, EDIT, input=5, read=60_000, write_1h=1_000)])
+        assert cost.orientation is not None
+        self.assertEqual(cost.orientation.context_tokens, 61_005)
+
+    def test_ends_at_a_subagent_s_edit_that_comes_before_the_session_s_own(self) -> None:
+        # The subagent's file is read after the main one: only its clock puts
+        # its edit first.
+        cost = summarise(
+            [step(1), step(2), step(10, EDIT)],
+            [[response(id="msg_sub", at=t(5), cwd=ROOT, output=1_000_000, calls=[EDIT])]],
+        )
+        assert cost.orientation is not None
+        self.assertEqual(cost.orientation.ended_at, t(5))
+        self.assertEqual(cost.orientation.spend.responses, 2)
+
+    def test_finds_an_action_on_a_later_record_of_the_response(self) -> None:
+        thinking = step(2, id="msg_2")
+        editing = step(2, EDIT, id="msg_2")
+        cost = summarise([step(1), thinking, editing, step(3)])
+        assert cost.orientation is not None
+        self.assertEqual(cost.orientation.ended_at, t(2))
+        self.assertEqual(cost.orientation.spend.responses, 1)
+
+    def test_is_not_ended_by_a_subagent_s_end_turn_or_a_write_into_tmp(self) -> None:
+        scratch = call("Write", file_path=f"{ROOT}/tmp/probe.py", content="")
+        outside = call("Write", file_path="/elsewhere/notes.md", content="")
+        cost = summarise(
+            [step(1, scratch), step(2, outside), step(5, stop="end_turn")],
+            [[response(id="msg_sub", at=t(3), cwd=ROOT, stop="end_turn")]],
+        )
+        assert cost.orientation is not None
+        self.assertEqual(cost.orientation.ended_by, "end_turn")
+        self.assertEqual(cost.orientation.ended_at, t(5))
+        self.assertIsNone(cost.orientation.ended_on)
+
+    def test_is_ended_by_handing_the_turn_over_from_inside_it(self) -> None:
+        cost = summarise([step(1), step(2, call("AskUserQuestion", questions=[]))])
+        assert cost.orientation is not None
+        self.assertEqual(cost.orientation.ended_by, "AskUserQuestion")
+
+    def test_says_nothing_ended_it_when_nothing_did(self) -> None:
+        cost = summarise([step(1), step(2)])
+        assert cost.orientation is not None
+        self.assertIsNone(cost.orientation.ended_by)
+        self.assertIsNone(cost.orientation.context_tokens)
+        self.assertEqual(cost.orientation.spend.responses, 2)
+
+
+class WhatEachCompactionCost(unittest.TestCase):
+    def test_opens_a_re_orientation_at_each_boundary(self) -> None:
+        cost = summarise(
+            [
+                step(1, EDIT),
+                boundary(10, pre=230_043, trigger="auto"),
+                summary("s" * 1500),
+                step(11),
+                step(12, EDIT),
+                boundary(20),
+                summary("ss"),
+                step(21),
+                step(22),
+                step(23, stop="end_turn"),
+            ]
+        )
+        first, second = cost.compactions
+        self.assertEqual((first.at, first.trigger, first.compacted_from), (t(10), "auto", 230_043))
+        self.assertEqual(first.summary_chars, 1500)
+        self.assertEqual(first.reorientation.ended_at, t(12))
+        self.assertEqual(first.reorientation.spend.responses, 1)
+        self.assertEqual(second.reorientation.ended_by, "end_turn")
+        self.assertEqual(second.reorientation.spend.responses, 2)
+
+    def test_cuts_a_phase_that_never_acted_off_at_the_next_boundary(self) -> None:
+        cost = summarise([step(1), boundary(10), step(11), boundary(20), step(21, EDIT)])
+        assert cost.orientation is not None
+        self.assertEqual(cost.orientation.spend.responses, 1)
+        self.assertIsNone(cost.compactions[0].reorientation.ended_by)
+        self.assertEqual(cost.compactions[0].reorientation.spend.responses, 1)
+
+    def test_charges_a_re_read_to_the_latest_boundary_before_it(self) -> None:
+        cost = summarise(
+            [
+                step(1, READ),
+                boundary(10),
+                step(11, EDIT),
+                boundary(20),
+                step(21),
+                step(40, READ),
+            ]
+        )
+        first, second = cost.compactions
+        self.assertEqual(first.rereads.calls, 0)
+        self.assertEqual(second.rereads.calls, 1)
+        self.assertEqual(second.rereads.by_tool, {"Read": 1})
+
+    def test_counts_no_re_read_of_a_file_written_since_it_was_read(self) -> None:
+        edit_b = call("Edit", file_path=f"{ROOT}/lib/b.py", old_string="x", new_string="y")
+        cost = summarise([step(1, READ), step(2, edit_b), boundary(10), step(11, READ)])
+        self.assertEqual(cost.compactions[0].rereads.calls, 0)
+
+    def test_counts_a_repeated_command_once_per_boundary(self) -> None:
+        status = call("Bash", command="git status", description="Show the tree")
+        again = call("Bash", id="toolu_again", command="git status", description="Check again")
+        cost = summarise([step(1, status), boundary(10), step(11, again), step(12, again)])
+        self.assertEqual(cost.compactions[0].rereads.by_tool, {"Bash": 1})
+
+    def test_estimates_a_re_read_by_its_share_of_the_cache_write_it_arrived_in(self) -> None:
+        other = call("Grep", id="toolu_other", pattern="x")
+        cost = summarise(
+            [
+                step(1, READ),
+                boundary(10),
+                step(11, READ, other),
+                result("toolu_read", "r" * 300),
+                result("toolu_other", "g" * 100),
+                step(12, write_1h=1_000_000),
+                step(13),
+                step(14),
+            ]
+        )
+        rereads = cost.compactions[0].rereads
+        self.assertEqual(rereads.estimated_tokens, 750_000)
+        # One 1-hour write at $4/M, then a read at $0.5/M on each of two later
+        # responses.
+        self.assertAlmostEqual(rereads.estimated_usd, 0.75 * (4 + 2 * 0.5))
 
 
 if __name__ == "__main__":

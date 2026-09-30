@@ -56,6 +56,7 @@ mapfile -t sources < <(
     for f in CLAUDE.md README.md ADOPTING.md; do
       [ -f "$f" ] && printf '%s\n' "$f"
     done
+    [ -d docs/adopting ] && find docs/adopting -type f -name '*.md' -print
     [ -d scripts ] && find scripts -type f \( -name '*.sh' -o -name '*.py' \) -print
   } 2>/dev/null
 )

@@ -104,7 +104,7 @@ deploy/test surface.
 
 Either way, later changes here come forward with `/update-muthur`, whose
 shipped watermark already names this repo — you fill in the rest (see
-[`ADOPTING.md`](ADOPTING.md) § "Hydrate the sync stub"). The infrastructure is
+[`docs/adopting/sync.md`](docs/adopting/sync.md)). The infrastructure is
 adoptable **and** re-syncable; a fork is not a dead end.
 
 ## More

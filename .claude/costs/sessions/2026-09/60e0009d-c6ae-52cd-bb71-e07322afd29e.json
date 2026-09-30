@@ -1,0 +1,58 @@
+{
+  "sessionId": "60e0009d-c6ae-52cd-bb71-e07322afd29e",
+  "branch": "claude/split-adopting-x3mio3",
+  "cwd": "/home/user/muthur",
+  "openingPrompt": "давай делить ADOPTING.md на куски, неприлично разросся. нужно придумать как-то так, чтобы в основном файле осталось только то, что нужно всегда, а то, что завис…",
+  "prs": [
+    117
+  ],
+  "url": "https://claude.ai/code/session_01YW6jT2D2yELyMJmVke53MB",
+  "operator": "vzakharov",
+  "firstResponseAt": "2026-09-26T01:18:35.124Z",
+  "lastResponseAt": "2026-09-26T01:21:19.573Z",
+  "pricesAsOf": "2026-09-23",
+  "claudeCodeTotalUsd": null,
+  "total": {
+    "inputTokens": 34,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 94201,
+    "cacheReadTokens": 1818917,
+    "outputTokens": 13666,
+    "thinkingTokens": 5444,
+    "responses": 17,
+    "costUsd": 1.3908473999999997
+  },
+  "ownTurns": {
+    "inputTokens": 34,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 94201,
+    "cacheReadTokens": 1818917,
+    "outputTokens": 13666,
+    "thinkingTokens": 5444,
+    "responses": 17,
+    "costUsd": 1.3908473999999997
+  },
+  "subagents": {
+    "inputTokens": 0,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 0,
+    "cacheReadTokens": 0,
+    "outputTokens": 0,
+    "thinkingTokens": 0,
+    "responses": 0,
+    "costUsd": 0.0
+  },
+  "byRate": {
+    "claude-opus-5-5/standard": {
+      "inputTokens": 34,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 94201,
+      "cacheReadTokens": 1818917,
+      "outputTokens": 13666,
+      "thinkingTokens": 5444,
+      "responses": 17,
+      "costUsd": 1.3908473999999997
+    }
+  },
+  "warnings": []
+}

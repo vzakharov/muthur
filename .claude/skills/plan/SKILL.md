@@ -41,21 +41,29 @@ Do **exactly what you would do in plan mode** — same research, same rigor, sam
 - Then **commit it and publish it** (§ "Publishing the plan" below), **end the turn with the handoff block** (§ "Handing off") and stop — do not start implementing.
 - **The in-session path is the exception, not the default.** If a literal go-ahead token does arrive in _this_ session, "The approval gate" below governs it unchanged — and on approval you hand off to `@.claude/skills/go/SKILL.md`, whose Step 1 performs the flip that unlocks source edits (`git mv` the plan to `docs/plans/<branch-slug>.in-progress.md`, drop the draft banner, quote the go-ahead in the commit) as its first action, before any source edit. That flip is the on-record receipt that approval was given, so don't front-run it here; the mechanics live in `/go` to avoid two copies drifting apart. The gate is exactly as strict on this path as on any other; it just fires rarely.
 
-### Carving a task into issues
+### Splitting work across sessions
 
-Some work is too big for one PR, and the plan is where that gets decided — it is the first moment anyone has read the code. A carve produces two things: a plan file that specs one slice and describes the rest, and a list of issues the plan **proposes**. Nothing is filed here. `/go` files them on the go-ahead that flips the plan, so a plan turn that ends unapproved leaves the tracker exactly as it found it. The plan file is already the gate, which is what makes the carve's approval free rather than a second propose-and-stop layered inside the planning turn.
+Some work does not fit one session, and the plan is where that gets decided — it is the first moment anyone has read the code. Work that fits is taken whole. Work that doesn't is split in one of two shapes, and the plan names which, with a recommendation, so the choice is the operator's at review:
 
-**The bar is high.** Do **not** carve because:
+- **Elephant** — eaten a bite per session, in one PR. The plan is what is eaten so far and the rest of the elephant, both coarse, plus the open bite in detail; each session takes a bite, builds it, rewrites the plan and pauses, and the operator reviews before the next `/go`. The default.
+- **Pizza** — carved into slices that each ship as their own PR, tracked as issues the plan proposes. It takes a reason, and any one of these is enough:
+  - the slices are self-contained enough to land on the trunk separately;
+  - there is a boundary worth locking in — what is built so far merged before a riskier stretch starts;
+  - part of the task is needed by other, unrelated work — existing (found read-only with `/propose-issue` Steps 1–2) or likely (named in the plan for the operator to weigh).
+
+**Why an elephant, why a pizza.** An elephant is one animal: no bite of it is a meal on its own, so the bites share one PR, and the plan is what keeps them one job. A pizza is cut before anyone eats, into slices that are each whole — crust, cheese and topping — so a slice is eaten without waiting for the others, and slices go to different hands: an issue, a PR, a session apiece. That is the question to put to the work: is a piece of it only part of something, or whole enough to hand to someone?
+
+**A pizza's reasons have to be real.** None of these is one:
 
 - the task touches several files (most do)
 - you can imagine a "phase 1 / phase 2" framing (most things admit one)
 - decomposition feels tidy
 
-Default to taking the task whole. Carve only when the size is obviously beyond a single PR and the seams are real, not invented. **Genuinely large** means multiple unrelated subsystems, weeks of work, or distinct deliverables that ship independently — not "many files" or a tidy phase breakdown.
+**Either way, only the next slice is spelled out in full.** Give the rest a **coarse** view — smaller than the whole, but not fully decomposed: placeholders and ordering hints, not mini-specs. Nobody owes an implementation DAG or per-slice plans up front, because each slice ahead is planned when it is taken, with what the ones before it built already in the tree.
 
-Deciding **not** to carve is not a gate and never becomes one: say so in a line and write the plan. Do not ask whether the task looks big enough, and do not offer a carve you don't think is warranted — the operator disagrees in the plan review, which costs them a sentence, whereas a question here costs a round trip on every task.
+Deciding **not** to split is not a gate and never becomes one: say so in a line and write the plan. Do not ask whether the task looks big enough, and do not offer a split you don't think is warranted — the operator disagrees in the plan review, which costs them a sentence, whereas a question here costs a round trip on every task.
 
-**Carving → load `@.claude/skills/plan/carving.md`** and follow it: how coarse the parked slices may be, what the plan file names, and what `/go` files from that list. It sits beside this file rather than inside it because most plans take their task whole, and those should not carry a procedure in context to decide they don't need it.
+**Then load the shape's procedure:** `@.claude/skills/plan/elephant.md` for an elephant — the megaplan's sections, how a bite is taken and sized, and how the plan is kept — or `@.claude/skills/plan/carving.md` for a pizza — what the plan file names and what `/go` files from that list. Both sit beside this file rather than inside it because most plans take their task whole, and those should not carry a procedure in context to decide they don't need it.
 
 ### Publishing the plan
 
