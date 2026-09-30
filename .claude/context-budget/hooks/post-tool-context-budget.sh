@@ -59,12 +59,9 @@ mkdir -p "$state_dir" && printf '%s\n' "$level" >"$state_file" || {
   exit 0
 }
 
-# Whether the pause relays on its own is the operator's setting, so it is read
-# only here, with a notice about to go out — resolving the operator costs an API
-# call. The key is the one `.claude/hooks/operator-voice.sh` names voice entries
-# by, the lowercased login of a `User` token; any other token is the agent's own
-# identity, with no operator behind it to have opted in, and reads as
-# `unresolved` along with a `gh` that cannot answer.
+# The operator's auto-relay setting, keyed as `.claude/hooks/operator-voice.sh`
+# keys voice entries: the lowercased login of a `User` token. Read only here,
+# with a notice about to go out, since resolving the operator is an API call.
 auto_relay=unresolved
 handle="$(gh api user 2>/dev/null | jq -r 'select(.type == "User") | .login | ascii_downcase' 2>/dev/null)"
 if [[ "$handle" =~ ^[a-z0-9-]+$ ]]; then
