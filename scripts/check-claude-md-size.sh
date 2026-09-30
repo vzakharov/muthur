@@ -23,8 +23,8 @@
 # own reason to exist, and the cap is on the one file every addition defaults to.
 #
 # There is deliberately no env override, for `check-squash-message.sh`'s reason:
-# an adopter needing more room raises the constants in this copy, in a commit
-# that says why.
+# an adopter who puts the right size elsewhere, in either direction, changes the
+# constants in this copy, in a commit that says why.
 #
 # POSIX `/bin/sh` and `git`, for the floor `check-squash-message.sh` states.
 #

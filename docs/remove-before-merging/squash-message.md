@@ -18,9 +18,10 @@ is read off the branch's own commits since its merge-base, so no state
 is kept. The landing file is the staged copy where there is one, so a
 staged trim of an oversized file passes before /finalize swaps it in.
 
-Imports are not counted, the count is characters rather than bytes, and
-there is no env override. The failure message and the staging rule send
-the trim to a subagent: it is never the PR's own work, and its
+Imports are not counted, and the count is characters rather than bytes.
+There is no env override: an adopter who puts the right size elsewhere
+edits the two constants in its copy. The failure message and the staging
+rule send the trim to a subagent: it is never the PR's own work, and its
 cut-and-remeasure loop would spend the session's context.
 
 Co-authored-by: Claude <noreply@anthropic.com>
