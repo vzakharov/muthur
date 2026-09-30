@@ -12,7 +12,9 @@ they're relevant, without being permanently resident in context the way the root
 
 **Every `.md` under this directory is a rule, this README included.** One with no
 `paths:` loads into every session at launch, which is why this file scopes itself
-to the directory it describes.
+to the directory it describes. A `CLAUDE.md` here would be a rule too, so this
+is the one directory whose own conventions live in a scoped rule file rather
+than in its `CLAUDE.md`.
 
 **This directory ships with no rules on purpose.** Rules are inherently
 project-specific; the reusable part is the mechanism. Add rule files as your
