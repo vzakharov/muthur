@@ -50,9 +50,7 @@ state_dir="$root/tmp/context-budget"
 state_file="$state_dir/$session"
 
 # Priced where the ledger's lib can price it, each line capped at its fixed one;
-# a hand-set line stays fixed. Cached as `<warn> <pause> <reading>`, recomputed
-# per 10k of growth, since a Python start-up per tool call is what this bash hook
-# avoids.
+# a hand-set line stays fixed. Cached as `<warn> <pause> <reading>`.
 hooks="$(dirname "${BASH_SOURCE[0]}")"
 priced=
 if [ "$lines" = priced ] && [ -z "${CONTEXT_BUDGET_WARN:-}" -o -z "${CONTEXT_BUDGET_PAUSE:-}" ] \

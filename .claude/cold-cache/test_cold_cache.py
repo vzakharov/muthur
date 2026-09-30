@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Pins the relay cost model to the plan's worked example and its four
+"""Pins the relay cost model to a worked example and its four
 reorientation sources, and drives the hook
 as the harness does — a payload on stdin, a transcript on disk — for each rule
 that decides whether a prompt is stopped.
@@ -97,7 +97,7 @@ def prompt_record(text: str) -> Dict[str, Any]:
 
 
 def worked(context: int) -> Session:
-    """The plan's worked example: 37 requests per 100k of growth, a successor
+    """A long session's figures: 37 requests per 100k of growth, a successor
     reoriented at 97k for $0.57."""
     return Session(context, 41_000, 37 / 100_000, Reorientation(97_000, 0.57, "test"), OPUS, OPUS.cache_write_1h)
 
