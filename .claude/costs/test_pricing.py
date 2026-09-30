@@ -41,6 +41,13 @@ PRICE_TABLE = {
             "cache_write_1h": 8,
             "cache_read": 1,
         },
+        "test-model-20260201/standard": {
+            "input": 3,
+            "output": 30,
+            "cache_write_5m": 6,
+            "cache_write_1h": 12,
+            "cache_read": 1.5,
+        },
     },
 }
 PRICES = parse_prices(json.dumps(PRICE_TABLE))
@@ -165,6 +172,15 @@ class WhatAResponseCosts(unittest.TestCase):
         cost = summarise([response(output=1_000_000, speed=None)])
         self.assertIn("test-model/standard", cost.by_rate)
 
+    def test_prices_a_dated_id_at_its_undated_row(self) -> None:
+        cost = summarise([response(output=1_000_000, model="test-model-20260101")])
+        self.assertEqual(cost.total.cost_usd, 10)
+        self.assertIn("test-model-20260101/standard", cost.by_rate)
+
+    def test_prefers_a_dated_id_s_own_row(self) -> None:
+        cost = summarise([response(output=1_000_000, model="test-model-20260201")])
+        self.assertEqual(cost.total.cost_usd, 30)
+
     def test_reports_thinking_tokens_without_billing_them_twice(self) -> None:
         cost = summarise([response(output=1_000_000, thinking=400_000)])
         self.assertEqual(cost.total.thinking_tokens, 400_000)
@@ -260,6 +276,10 @@ class WhatItRefusesToGuess(unittest.TestCase):
     def test_fails_on_an_unpriced_pair_naming_it(self) -> None:
         with self.assertRaisesRegex(UnpricedError, "unheard-of/standard"):
             summarise([response(model="unheard-of")])
+
+    def test_fails_on_a_dated_id_with_no_row_either_way(self) -> None:
+        with self.assertRaisesRegex(UnpricedError, "unheard-of-20260101/standard"):
+            summarise([response(model="unheard-of-20260101")])
 
     def test_falls_back_to_the_5_minute_rate_when_the_split_does_not_add_up(self) -> None:
         cost = summarise([response(written=1_000_000, write_5m=0, write_1h=0)])
