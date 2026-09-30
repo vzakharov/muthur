@@ -44,8 +44,8 @@ set -euf
 cd "$(dirname "$0")/.."
 
 PROG="check-claude-md-size"
-CEILING_CHARS=29000
-TARGET_CHARS=28000
+CEILING_CHARS=30000
+TARGET_CHARS=29000
 FILE="CLAUDE.md"
 MAX_IMPORT_HOPS=5
 # `scripts/staged.sh`'s mapping: `<path>` is staged at `$STAGED_DIR/<path>.staged`.

@@ -1,7 +1,7 @@
 Proposed squash title/body:
 
 ```
-feat: cap CLAUDE.md and its imports with hysteresis at 29k/28k chars (pr #123)
+feat: cap CLAUDE.md and its imports with hysteresis at 30k/29k chars (pr #123)
 ```
 
 ```
@@ -11,8 +11,8 @@ own test while the total drifted up. Across the repos built on this
 template it had reached 24-61k characters before hand trims.
 
 vet now fails when the CLAUDE.md the branch will land, plus everything
-it @-imports, passes 29,000 characters, and a branch that took it past
-that must land it at 28,000 or under. The imports count because the
+it @-imports, passes 30,000 characters, and a branch that took it past
+that must land it at 29,000 or under. The imports count because the
 harness loads them into the same prefix, so moving text into one would
 cut nothing; backticked @-citations load nothing and are not counted,
 and .claude/rules/ is left for separate work. A single cap would be
