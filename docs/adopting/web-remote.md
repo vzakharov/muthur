@@ -110,14 +110,12 @@ paste into that setting. Three things make it worth the paragraph:
   sessions, and `scripts/vet.sh` running under the wrong one is a confusing
   failure.
 - **It is the only place auto mode can learn the container is disposable.** The
-  classifier's defaults assume a developer's own machine, so its "Irreversible
-  Local Destruction" rule blocks `rm -rf`, `git clean`, `git reset --hard` and
-  overwrites of files that predate the session; three blocks in a row pause auto
-  mode until a human answers, and an unattended session sits idle. It reads
-  `autoMode` only from user and managed settings, never from the repo's
-  `.claude/settings.json` — a repo could otherwise grant itself anything — and
-  the session runs with `HOME=/root`, so the container's own
-  `~/.claude/settings.json`, written here, is a user settings file it reads.
+  classifier's defaults assume a developer's own machine, so it blocks `rm -rf`,
+  `git clean`, `git reset --hard` and overwrites of pre-existing files, and three
+  blocks in a row leave an unattended session waiting on a human. It reads
+  `autoMode` from user and managed settings only, never the repo's
+  `.claude/settings.json`; the session runs with `HOME=/root`, so the container's
+  own `~/.claude/settings.json` is the user file it reads.
 
 ### Where it goes — tell the operator this, not just "the settings"
 
@@ -228,7 +226,7 @@ What carries over to any stack, and what to check before adapting it:
 6. **Prime the dependency cache last**, guarded, since the repo dir may be absent.
 7. **Check the `autoMode` block landed** from inside a session:
    `claude auto-mode config | grep "Ephemeral Container Files"` prints the rule
-   when the classifier has it, and nothing when it doesn't.
+   only if the classifier has it.
 
 Adapt it, fill in your pins, and hand the operator the finished text. Say plainly
 in your report that this is the one step you could not apply yourself.
