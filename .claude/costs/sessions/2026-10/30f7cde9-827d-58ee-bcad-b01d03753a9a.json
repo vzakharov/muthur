@@ -1,0 +1,115 @@
+{
+  "sessionId": "30f7cde9-827d-58ee-bcad-b01d03753a9a",
+  "branch": "claude/auto-mode-setup-script-sp2mbb",
+  "cwd": "/home/user/muthur",
+  "openingPrompt": "есть ли какой-то способ донастроить Auto мод -- допередать ему какие-то инструкции, например? Например, я не хочу чтобы он когда-либо блокировал какие-либо опер…",
+  "prs": [
+    131
+  ],
+  "url": "https://claude.ai/code/session_01NHs97ppJgcU5YAzx4ueFGE",
+  "operator": "vzakharov",
+  "firstResponseAt": "2026-10-01T03:51:24.079Z",
+  "lastResponseAt": "2026-10-01T04:24:18.352Z",
+  "pricesAsOf": "2026-09-23",
+  "claudeCodeTotalUsd": 0.8872196000000001,
+  "total": {
+    "inputTokens": 28893,
+    "cacheWrite5mTokens": 103185,
+    "cacheWrite1hTokens": 123909,
+    "cacheReadTokens": 6362289,
+    "outputTokens": 29302,
+    "thinkingTokens": 10867,
+    "responses": 55,
+    "costUsd": 3.0164288000000004
+  },
+  "ownTurns": {
+    "inputTokens": 84,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 123909,
+    "cacheReadTokens": 5327560,
+    "outputTokens": 28589,
+    "thinkingTokens": 10867,
+    "responses": 42,
+    "costUsd": 2.6289000000000002
+  },
+  "subagents": {
+    "inputTokens": 60,
+    "cacheWrite5mTokens": 96756,
+    "cacheWrite1hTokens": 0,
+    "cacheReadTokens": 325980,
+    "outputTokens": 14,
+    "thinkingTokens": 0,
+    "responses": 7,
+    "costUsd": 0.153673
+  },
+  "byRate": {
+    "claude-opus-5-5/standard": {
+      "inputTokens": 2614,
+      "cacheWrite5mTokens": 6429,
+      "cacheWrite1hTokens": 123909,
+      "cacheReadTokens": 6036309,
+      "outputTokens": 28645,
+      "thinkingTokens": 10867,
+      "responses": 47,
+      "costUsd": 2.8333218000000002
+    },
+    "claude-haiku-4-5-20251001/standard": {
+      "inputTokens": 26279,
+      "cacheWrite5mTokens": 96756,
+      "cacheWrite1hTokens": 0,
+      "cacheReadTokens": 325980,
+      "outputTokens": 657,
+      "thinkingTokens": 0,
+      "responses": 8,
+      "costUsd": 0.183107
+    }
+  },
+  "warnings": [
+    "prices.json priced the 49 responses the events also priced at $2.7826, against the events' $2.8226: a rate in the table is likely out of date"
+  ],
+  "orientation": {
+    "endedBy": "end_turn",
+    "endedOn": null,
+    "endedAt": "2026-10-01T03:54:14.956Z",
+    "contextTokens": 92855,
+    "spend": {
+      "inputTokens": 70,
+      "cacheWrite5mTokens": 96756,
+      "cacheWrite1hTokens": 46808,
+      "cacheReadTokens": 710557,
+      "outputTokens": 3974,
+      "thinkingTokens": 1689,
+      "responses": 12,
+      "costUsd": 0.6842924000000001
+    }
+  },
+  "compactions": [],
+  "telemetry": {
+    "events": 55,
+    "matched": 49,
+    "matchedTableUsd": 2.782573,
+    "matchedEventUsd": 2.822608,
+    "unseen": {
+      "web_fetch_apply": {
+        "inputTokens": 26219,
+        "cacheWrite5mTokens": 0,
+        "cacheWrite1hTokens": 0,
+        "cacheReadTokens": 0,
+        "outputTokens": 643,
+        "thinkingTokens": 0,
+        "responses": 1,
+        "costUsd": 0.029434
+      },
+      "prompt_suggestion": {
+        "inputTokens": 2530,
+        "cacheWrite5mTokens": 6429,
+        "cacheWrite1hTokens": 0,
+        "cacheReadTokens": 708749,
+        "outputTokens": 56,
+        "thinkingTokens": 0,
+        "responses": 5,
+        "costUsd": 0.20442180000000001
+      }
+    }
+  }
+}
