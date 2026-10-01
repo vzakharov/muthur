@@ -1,0 +1,82 @@
+{
+  "sessionId": "f0a2f239-100b-55bb-80d9-0691b3be6474",
+  "branch": "claude/elephant-plan-split-sf6afe",
+  "cwd": "/home/user/muthur",
+  "openingPrompt": "добавить в слона: **A plan past 450 lines splits into files beside it, down to under 400.** The gap between the two is the point: a single trigger line would ha…",
+  "prs": [
+    130
+  ],
+  "url": "https://claude.ai/code/session_01LPMUumQUm9VnkZpwGL3dG3",
+  "operator": "vzakharov",
+  "firstResponseAt": "2026-10-01T03:58:04.151Z",
+  "lastResponseAt": "2026-10-01T04:00:11.923Z",
+  "pricesAsOf": "2026-09-23",
+  "claudeCodeTotalUsd": null,
+  "total": {
+    "inputTokens": 36,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 73187,
+    "cacheReadTokens": 1690754,
+    "outputTokens": 8831,
+    "thinkingTokens": 2396,
+    "responses": 18,
+    "costUsd": 1.1004108
+  },
+  "ownTurns": {
+    "inputTokens": 36,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 73187,
+    "cacheReadTokens": 1690754,
+    "outputTokens": 8831,
+    "thinkingTokens": 2396,
+    "responses": 18,
+    "costUsd": 1.1004108
+  },
+  "subagents": {
+    "inputTokens": 0,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 0,
+    "cacheReadTokens": 0,
+    "outputTokens": 0,
+    "thinkingTokens": 0,
+    "responses": 0,
+    "costUsd": 0.0
+  },
+  "byRate": {
+    "claude-opus-5-5/standard": {
+      "inputTokens": 36,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 73187,
+      "cacheReadTokens": 1690754,
+      "outputTokens": 8831,
+      "thinkingTokens": 2396,
+      "responses": 18,
+      "costUsd": 1.1004108
+    }
+  },
+  "warnings": [],
+  "orientation": {
+    "endedBy": "Edit",
+    "endedOn": ".claude/skills/plan/elephant.md",
+    "endedAt": "2026-10-01T03:58:31.936Z",
+    "contextTokens": 89117,
+    "spend": {
+      "inputTokens": 8,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 43081,
+      "cacheReadTokens": 292822,
+      "outputTokens": 2014,
+      "thinkingTokens": 1270,
+      "responses": 4,
+      "costUsd": 0.44352440000000004
+    }
+  },
+  "compactions": [],
+  "telemetry": {
+    "events": 18,
+    "matched": 18,
+    "matchedTableUsd": 1.1004108,
+    "matchedEventUsd": 1.1004108,
+    "unseen": {}
+  }
+}
