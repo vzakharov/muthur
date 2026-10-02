@@ -96,12 +96,12 @@ Delete the auto-branch on `origin`, where an empty branch is clutter every later
 The delete is its own Bash call, with the branch name and the Step 2 SHA written out literally — never a variable, never chained after the checkout:
 
 ```bash
-git push --force-with-lease=refs/heads/claude/tender-cerf-b5p7pn:<step-2-sha> origin :refs/heads/claude/tender-cerf-b5p7pn
+git push --force-with-lease=refs/heads/<auto-branch>:<step-2-sha> origin :refs/heads/<auto-branch>
 ```
 
 The auto-mode classifier judges a command by its text, never by its output, so the Step 2 check proving the branch empty is invisible to it; a variable or a bare `--delete` reads as deleting a remote branch nobody named, which it blocks as Git Destructive. The lease is the proof it can read — git refuses with `stale info` unless the remote ref still sits on the SHA you checked — and a block on a separate call cannot take the attach down with it.
 
-Any refusal — `stale info`, a 403 from the session's git proxy, a classifier block, no such ref — is reported and left for the operator; the attach stands. Don't retry it by another route: a 403 and a block are both policy answers.
+Any refusal — `stale info`, a 403 from the session's git proxy, a classifier block — is reported and left for the operator; the attach stands. Don't retry it by another route: a 403 and a block are both policy answers.
 
 ## Step 5 — Update the development-branch contract
 
