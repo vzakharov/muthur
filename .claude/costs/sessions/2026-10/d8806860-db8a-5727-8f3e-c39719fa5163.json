@@ -1,34 +1,36 @@
 {
   "sessionId": "d8806860-db8a-5727-8f3e-c39719fa5163",
-  "branch": "claude/optimistic-feynman-2anh83",
+  "branch": "claude/legible-branch-deletes-2anh83",
   "cwd": "/home/user/muthur",
   "openingPrompt": "в последнее время (на другой репе) авто классификатор вот такую херню начал выдавать. Что нам нужно сделать чтобы это исправить? (cf. также последний коммит тут…",
-  "prs": [],
+  "prs": [
+    132
+  ],
   "url": "https://claude.ai/code/session_01XNuvScHuzf2V6b4zBCwMWD",
   "operator": "vzakharov",
   "firstResponseAt": "2026-10-02T06:43:38.838Z",
-  "lastResponseAt": "2026-10-02T06:45:04.601Z",
+  "lastResponseAt": "2026-10-02T07:19:01.591Z",
   "pricesAsOf": "2026-09-23",
-  "claudeCodeTotalUsd": null,
+  "claudeCodeTotalUsd": 0.7024036,
   "total": {
-    "inputTokens": 10,
-    "cacheWrite5mTokens": 0,
-    "cacheWrite1hTokens": 56469,
-    "cacheReadTokens": 391040,
-    "outputTokens": 7074,
-    "thinkingTokens": 5336,
-    "responses": 5,
-    "costUsd": 0.67148
+    "inputTokens": 574,
+    "cacheWrite5mTokens": 1054,
+    "cacheWrite1hTokens": 130011,
+    "cacheReadTokens": 4689994,
+    "outputTokens": 21962,
+    "thinkingTokens": 10788,
+    "responses": 35,
+    "costUsd": 2.4280547999999995
   },
   "ownTurns": {
-    "inputTokens": 10,
+    "inputTokens": 68,
     "cacheWrite5mTokens": 0,
-    "cacheWrite1hTokens": 56469,
-    "cacheReadTokens": 391040,
-    "outputTokens": 7074,
-    "thinkingTokens": 5336,
-    "responses": 5,
-    "costUsd": 0.67148
+    "cacheWrite1hTokens": 130011,
+    "cacheReadTokens": 4589256,
+    "outputTokens": 21946,
+    "thinkingTokens": 10788,
+    "responses": 34,
+    "costUsd": 2.3971311999999996
   },
   "subagents": {
     "inputTokens": 0,
@@ -42,14 +44,14 @@
   },
   "byRate": {
     "claude-opus-5-5/standard": {
-      "inputTokens": 10,
-      "cacheWrite5mTokens": 0,
-      "cacheWrite1hTokens": 56469,
-      "cacheReadTokens": 391040,
-      "outputTokens": 7074,
-      "thinkingTokens": 5336,
-      "responses": 5,
-      "costUsd": 0.67148
+      "inputTokens": 574,
+      "cacheWrite5mTokens": 1054,
+      "cacheWrite1hTokens": 130011,
+      "cacheReadTokens": 4689994,
+      "outputTokens": 21962,
+      "thinkingTokens": 10788,
+      "responses": 35,
+      "costUsd": 2.4280547999999995
     }
   },
   "warnings": [],
@@ -71,10 +73,21 @@
   },
   "compactions": [],
   "telemetry": {
-    "events": 5,
-    "matched": 5,
-    "matchedTableUsd": 0.67148,
-    "matchedEventUsd": 0.67148,
-    "unseen": {}
+    "events": 34,
+    "matched": 33,
+    "matchedTableUsd": 2.3394001999999996,
+    "matchedEventUsd": 2.3394001999999996,
+    "unseen": {
+      "prompt_suggestion": {
+        "inputTokens": 506,
+        "cacheWrite5mTokens": 1054,
+        "cacheWrite1hTokens": 0,
+        "cacheReadTokens": 100738,
+        "outputTokens": 16,
+        "thinkingTokens": 0,
+        "responses": 1,
+        "costUsd": 0.030923600000000002
+      }
+    }
   }
 }
