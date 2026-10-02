@@ -1,7 +1,7 @@
 Proposed squash title/body:
 
 ```
-fix: delete a session branch on origin in a shape auto mode can read (pr #132)
+fix: let auto mode delete a session's own branch on origin (pr #132)
 ```
 
 ```
@@ -20,6 +20,12 @@ refusal - a stale lease, a 403 from the session's git proxy, a
 classifier block - is reported and left for the operator, never retried
 by another route. /branch-rename deletes the old ref of a rename the
 same way, leased to the remote tip the renamed branch carries.
+
+The default rule exempts only the agent's own session branches, which
+the classifier cannot tell apart from anyone else's, so the adoption
+chapter's worked setup script gains a Session Branch Cleanup allow
+rule: a claude/* branch that is the session's own name may be deleted
+on origin when the command names it literally under such a lease.
 
 Co-authored-by: Claude <noreply@anthropic.com>
 ```
