@@ -145,7 +145,7 @@ stop and wonder "hmm, why this and not the obvious thing?"; leave it off where
 nobody would ask, because a citation on an unsurprising line is one more thing to
 chase.
 
-**Rule or README?** A rule — homes 3 and 4 alike — is what every edit in the
+**Rule or README?** A rule — homes 4 and 5 alike — is what every edit in the
 files it covers must respect _whether or not the editor went looking_ — an obligation you can violate without
 noticing. It loads automatically, so it must stay short and always-relevant. A
 README carries the part the code cannot: **why** the arrangement is this one,
