@@ -1,0 +1,103 @@
+{
+  "sessionId": "6a6f1163-02eb-5809-8381-eb5a2d29293d",
+  "branch": "claude/wonderful-albattani-z5lz0s",
+  "cwd": "/home/user/muthur",
+  "openingPrompt": "а у тебя есть какой-то хук на Blocked от авто классификатора? Хочу сделать что-то вроде \"скажи оператору что конкретно ему написать чтобы после этого автокласси…",
+  "prs": [],
+  "url": "https://claude.ai/code/session_015NPsjaFtggxtMrr1fJpKRQ",
+  "operator": "vzakharov",
+  "firstResponseAt": "2026-10-03T20:02:33.154Z",
+  "lastResponseAt": "2026-10-03T20:03:50.631Z",
+  "pricesAsOf": "2026-09-23",
+  "claudeCodeTotalUsd": null,
+  "total": {
+    "inputTokens": 91153,
+    "cacheWrite5mTokens": 39247,
+    "cacheWrite1hTokens": 38319,
+    "cacheReadTokens": 357015,
+    "outputTokens": 5080,
+    "thinkingTokens": 1038,
+    "responses": 15,
+    "costUsd": 0.56374175
+  },
+  "ownTurns": {
+    "inputTokens": 4,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 38319,
+    "cacheReadTokens": 123195,
+    "outputTokens": 2903,
+    "thinkingTokens": 1038,
+    "responses": 2,
+    "costUsd": 0.38926700000000003
+  },
+  "subagents": {
+    "inputTokens": 76,
+    "cacheWrite5mTokens": 39247,
+    "cacheWrite1hTokens": 0,
+    "cacheReadTokens": 233820,
+    "outputTokens": 23,
+    "thinkingTokens": 0,
+    "responses": 9,
+    "costUsd": 0.07263175000000001
+  },
+  "byRate": {
+    "claude-opus-5-5/standard": {
+      "inputTokens": 4,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 38319,
+      "cacheReadTokens": 123195,
+      "outputTokens": 2903,
+      "thinkingTokens": 1038,
+      "responses": 2,
+      "costUsd": 0.38926700000000003
+    },
+    "claude-haiku-4-5-20251001/standard": {
+      "inputTokens": 91149,
+      "cacheWrite5mTokens": 39247,
+      "cacheWrite1hTokens": 0,
+      "cacheReadTokens": 233820,
+      "outputTokens": 2177,
+      "thinkingTokens": 0,
+      "responses": 13,
+      "costUsd": 0.17447475
+    }
+  },
+  "warnings": [
+    "prices.json priced the 11 responses the events also priced at $0.4619, against the events' $0.4782: a rate in the table is likely out of date"
+  ],
+  "orientation": {
+    "endedBy": "end_turn",
+    "endedOn": null,
+    "endedAt": "2026-10-03T20:03:50.631Z",
+    "contextTokens": 82590,
+    "spend": {
+      "inputTokens": 78,
+      "cacheWrite5mTokens": 39247,
+      "cacheWrite1hTokens": 34657,
+      "cacheReadTokens": 278089,
+      "outputTokens": 1005,
+      "thinkingTokens": 421,
+      "responses": 10,
+      "costUsd": 0.3783895500000001
+    }
+  },
+  "compactions": [],
+  "telemetry": {
+    "events": 15,
+    "matched": 11,
+    "matchedTableUsd": 0.46189875,
+    "matchedEventUsd": 0.4781687500000001,
+    "unseen": {
+      "web_fetch_apply": {
+        "inputTokens": 91073,
+        "cacheWrite5mTokens": 0,
+        "cacheWrite1hTokens": 0,
+        "cacheReadTokens": 0,
+        "outputTokens": 2154,
+        "thinkingTokens": 0,
+        "responses": 4,
+        "costUsd": 0.101843
+      }
+    }
+  }
+}
