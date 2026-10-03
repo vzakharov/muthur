@@ -1,0 +1,82 @@
+{
+  "sessionId": "ed54835d-6b02-5049-a86e-84322aa6d75a",
+  "branch": "claude/relay-reads-transcript-hcl0vy",
+  "cwd": "/home/user/muthur",
+  "openingPrompt": "может ли одна сессия каким-то образом достучаться до вм-ки другой сессии? юс кейс: при relay, сделать, чтобы все raw-данные с этой сессии передавались новой, ка…",
+  "prs": [
+    135
+  ],
+  "url": "https://claude.ai/code/session_01KwkGR4WpHDyUn88kgLmY4M",
+  "operator": "vzakharov",
+  "firstResponseAt": "2026-10-03T09:48:42.399Z",
+  "lastResponseAt": "2026-10-03T19:52:15.202Z",
+  "pricesAsOf": "2026-09-23",
+  "claudeCodeTotalUsd": 0.5667874,
+  "total": {
+    "inputTokens": 50,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 151950,
+    "cacheReadTokens": 2739583,
+    "outputTokens": 11977,
+    "thinkingTokens": 4211,
+    "responses": 25,
+    "costUsd": 2.0032566000000003
+  },
+  "ownTurns": {
+    "inputTokens": 50,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 151950,
+    "cacheReadTokens": 2739583,
+    "outputTokens": 11977,
+    "thinkingTokens": 4211,
+    "responses": 25,
+    "costUsd": 2.0032566000000003
+  },
+  "subagents": {
+    "inputTokens": 0,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 0,
+    "cacheReadTokens": 0,
+    "outputTokens": 0,
+    "thinkingTokens": 0,
+    "responses": 0,
+    "costUsd": 0.0
+  },
+  "byRate": {
+    "claude-opus-5-5/standard": {
+      "inputTokens": 50,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 151950,
+      "cacheReadTokens": 2739583,
+      "outputTokens": 11977,
+      "thinkingTokens": 4211,
+      "responses": 25,
+      "costUsd": 2.0032566000000003
+    }
+  },
+  "warnings": [],
+  "orientation": {
+    "endedBy": "end_turn",
+    "endedOn": null,
+    "endedAt": "2026-10-03T09:49:19.998Z",
+    "contextTokens": 98971,
+    "spend": {
+      "inputTokens": 6,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 38333,
+      "cacheReadTokens": 203975,
+      "outputTokens": 1749,
+      "thinkingTokens": 1232,
+      "responses": 3,
+      "costUsd": 0.38246300000000005
+    }
+  },
+  "compactions": [],
+  "telemetry": {
+    "events": 24,
+    "matched": 24,
+    "matchedTableUsd": 1.9523736000000003,
+    "matchedEventUsd": 1.9523736000000003,
+    "unseen": {}
+  }
+}
