@@ -1,0 +1,80 @@
+{
+  "sessionId": "ed54835d-6b02-5049-a86e-84322aa6d75a",
+  "branch": "claude/dreamy-ramanujan-hcl0vy",
+  "cwd": "/home/user/muthur",
+  "openingPrompt": "может ли одна сессия каким-то образом достучаться до вм-ки другой сессии? юс кейс: при relay, сделать, чтобы все raw-данные с этой сессии передавались новой, ка…",
+  "prs": [],
+  "url": "https://claude.ai/code/session_01KwkGR4WpHDyUn88kgLmY4M",
+  "operator": "vzakharov",
+  "firstResponseAt": "2026-10-03T09:48:42.399Z",
+  "lastResponseAt": "2026-10-03T09:49:19.998Z",
+  "pricesAsOf": "2026-09-23",
+  "claudeCodeTotalUsd": null,
+  "total": {
+    "inputTokens": 8,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 54700,
+    "cacheReadTokens": 286577,
+    "outputTokens": 3592,
+    "thinkingTokens": 1944,
+    "responses": 4,
+    "costUsd": 0.5667874
+  },
+  "ownTurns": {
+    "inputTokens": 8,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 54700,
+    "cacheReadTokens": 286577,
+    "outputTokens": 3592,
+    "thinkingTokens": 1944,
+    "responses": 4,
+    "costUsd": 0.5667874
+  },
+  "subagents": {
+    "inputTokens": 0,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 0,
+    "cacheReadTokens": 0,
+    "outputTokens": 0,
+    "thinkingTokens": 0,
+    "responses": 0,
+    "costUsd": 0.0
+  },
+  "byRate": {
+    "claude-opus-5-5/standard": {
+      "inputTokens": 8,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 54700,
+      "cacheReadTokens": 286577,
+      "outputTokens": 3592,
+      "thinkingTokens": 1944,
+      "responses": 4,
+      "costUsd": 0.5667874
+    }
+  },
+  "warnings": [],
+  "orientation": {
+    "endedBy": "end_turn",
+    "endedOn": null,
+    "endedAt": "2026-10-03T09:49:19.998Z",
+    "contextTokens": 98971,
+    "spend": {
+      "inputTokens": 6,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 38333,
+      "cacheReadTokens": 203975,
+      "outputTokens": 1749,
+      "thinkingTokens": 1232,
+      "responses": 3,
+      "costUsd": 0.38246300000000005
+    }
+  },
+  "compactions": [],
+  "telemetry": {
+    "events": 4,
+    "matched": 4,
+    "matchedTableUsd": 0.5667874,
+    "matchedEventUsd": 0.5667874,
+    "unseen": {}
+  }
+}
