@@ -59,7 +59,7 @@ The successor's link — on the web `https://claude.ai/code/<session_id>` from t
 
 ## The predecessor's transcript
 
-`/compact` ends its summary with the path to the full transcript, for the rare detail the summary dropped; a relay's Pointers carry the same way back. Locally the successor runs on the same machine, so that is the path. On the web it is the predecessor's session id, from the link: `list_events` and `get_event` from the Claude Code Remote tools read that session's transcript from the server — every message, tool call and tool output, thinking redacted — whether or not its container still exists. The transcript is never committed, because it holds every tool output, secrets included.
+`/compact` ends its summary with the way back to the full transcript, for the rare detail the summary dropped, and so do a relay's Pointers. On the web that is the predecessor's session id, from its link: `list_events` and `get_event` from the Claude Code Remote tools read its transcript from the server — every message, tool call and tool output, thinking redacted — whether or not its container still exists. It is never committed, because it holds every tool output, secrets included.
 
 Reach for it only for a detail the summary dropped, and through a subagent that pages it into `tmp/` and searches it there: read inline, a long session's transcript costs the successor the context the relay was run to free.
 
