@@ -16,6 +16,9 @@
 # `retry: true` is deliberately not returned: a retry before the operator has
 # written that message meets the same verdict.
 #
+# The payload's `classifier_verdict` goes unread: the docs list it, but
+# classifier denials arrive without it, so it cannot tell them from rule denials.
+#
 # The marker is consumed on the block, so the continuation stops normally unless
 # it is itself denied something new.
 
@@ -38,13 +41,12 @@ case "${1:-}" in
     # and the agent needs only enough to name the action.
     jq -c '{
       tool: .tool_name,
-      input: (.tool_input | tojson | if length > 500 then .[:500] + "…" else . end),
-      verdict: (.classifier_verdict // "none")
+      input: (.tool_input | tojson | if length > 500 then .[:500] + "…" else . end)
     }' <<<"$payload" >>"$marker"
     ;;
   stop)
     [ -s "$marker" ] || exit 0
-    denials="$(jq -r '"- \(.tool) (classifier verdict: \(.verdict)): \(.input)"' "$marker")"
+    denials="$(jq -r '"- \(.tool): \(.input)"' "$marker")"
     rm -f "$marker"
     read -r -d '' reason <<REASON || true
 Auto mode denied these tool calls during this turn:
@@ -58,8 +60,9 @@ file, branch or target — while a general "go ahead" does not count. So:
 
 - name the action exactly as it is, never softened or reworded to slip past;
 - write it in the language the operator is talking to you in;
-- where a phrase cannot help — a verdict of "none" means a deny rule in the
-  settings, and some blocks are hard — say so and name what would, instead.
+- where a phrase cannot help — the denial message names a permission rule in
+  the settings rather than the classifier, or the block is a hard one — say so
+  and name what would, instead.
 
 If you already did this, or no longer need the call, say so in one line and stop.
 REASON
