@@ -1,7 +1,7 @@
 Proposed squash title/body:
 
 ```
-feat: #138 estimate comment justifies the team, not the work (pr #139)
+fix: #138 estimate comment justifies the team, not the work (pr #139)
 ```
 
 ```
@@ -20,7 +20,7 @@ CLAUDE.md section also records why: a reader can only check an estimate
 whose comment justifies each part. Otherwise they have to take it on
 trust.
 
-Closes #138
+Fixes #138
 
 Co-authored-by: Claude <noreply@anthropic.com>
 ```
