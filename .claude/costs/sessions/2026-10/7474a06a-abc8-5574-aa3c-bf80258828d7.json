@@ -1,0 +1,98 @@
+{
+  "sessionId": "7474a06a-abc8-5574-aa3c-bf80258828d7",
+  "branch": "claude/estimate-justifies-team-7qjkt5",
+  "cwd": "/home/user/muthur",
+  "openingPrompt": "Estimate comment should justify the team, not summarise the work #138",
+  "prs": [
+    139
+  ],
+  "url": "https://claude.ai/code/session_01RU5eA1Kv6RqYshBLwCJiPw",
+  "operator": "vzakharov",
+  "firstResponseAt": "2026-10-04T20:16:55.716Z",
+  "lastResponseAt": "2026-10-04T20:19:47.675Z",
+  "pricesAsOf": "2026-09-23",
+  "claudeCodeTotalUsd": null,
+  "total": {
+    "inputTokens": 68,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 96402,
+    "cacheReadTokens": 3712933,
+    "outputTokens": 12331,
+    "thinkingTokens": 2659,
+    "responses": 34,
+    "costUsd": 1.7606946
+  },
+  "ownTurns": {
+    "inputTokens": 68,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 96402,
+    "cacheReadTokens": 3712933,
+    "outputTokens": 12331,
+    "thinkingTokens": 2659,
+    "responses": 34,
+    "costUsd": 1.7606946
+  },
+  "subagents": {
+    "inputTokens": 0,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 0,
+    "cacheReadTokens": 0,
+    "outputTokens": 0,
+    "thinkingTokens": 0,
+    "responses": 0,
+    "costUsd": 0.0
+  },
+  "byRate": {
+    "claude-opus-5-5/standard": {
+      "inputTokens": 68,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 96402,
+      "cacheReadTokens": 3712933,
+      "outputTokens": 12331,
+      "thinkingTokens": 2659,
+      "responses": 34,
+      "costUsd": 1.7606946
+    }
+  },
+  "warnings": [],
+  "orientation": {
+    "endedBy": "Edit",
+    "endedOn": ".claude/costs/hooks/estimate-notice.sh",
+    "endedAt": "2026-10-04T20:17:38.353Z",
+    "contextTokens": 103633,
+    "spend": {
+      "inputTokens": 22,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 59130,
+      "cacheReadTokens": 939088,
+      "outputTokens": 2424,
+      "thinkingTokens": 540,
+      "responses": 11,
+      "costUsd": 0.7094256
+    }
+  },
+  "compactions": [],
+  "telemetry": {
+    "events": 34,
+    "matched": 34,
+    "matchedTableUsd": 1.7606946,
+    "matchedEventUsd": 1.7606946,
+    "unseen": {}
+  },
+  "estimate": {
+    "at": "2026-10-04T20:18:18.397Z",
+    "parts": [
+      {
+        "hours": 0.5,
+        "grade": "middle",
+        "role": "editor"
+      },
+      {
+        "hours": 0.75,
+        "grade": "senior",
+        "role": "developer"
+      }
+    ],
+    "comment": "middle editor: rewording four short texts to one stated rule, no judgement of voice beyond the house style; senior developer: the notice is agent-facing behaviour, so phrasing it so models comply takes knowing how they read it"
+  }
+}
