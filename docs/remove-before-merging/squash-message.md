@@ -20,11 +20,12 @@ never the agent's own detours. `.claude/costs/estimate.py` sets it,
 the Stop hook folds it into the row, and a prompt hook keeps the
 current figure in front of the agent.
 
-`rates.json` turns each part into junior-hours at read time, by a
-role and a grade multiplier, so a retuned multiplier re-rates the
-whole history alike. `report.py` reports API dollars per junior-hour
-by month, ISO week, day and model, the figure that shows whether the
-same amount of work started costing more.
+`rates.json` turns each part into senior-hours at read time, by a
+role and a grade multiplier against a senior developer at 1, so a
+retuned multiplier re-rates the whole history alike. `report.py`
+reports API dollars per senior-hour by month, ISO week, day and
+model, the figure that shows whether the same amount of work started
+costing more.
 
 Co-authored-by: Claude <noreply@anthropic.com>
 ```
