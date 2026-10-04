@@ -210,8 +210,8 @@ split into parts, each the hours one role at one grade would spend on it, with
 one reason for the whole. A revision replaces it, so its history is git's.
 `hooks/estimate-notice.sh` is the agent-facing home of when and how to set one.
 
-- **The unit is a senior-hour** of the role `rates.json` rates at 1, a
-  developer, at the grade it rates at 1, senior. The table holds a multiplier per role and per grade, a part being worth hours × both,
+- **The unit is a senior-hour**: an hour of a senior developer, the role and
+  grade `rates.json` rates at 1. The table holds a multiplier per role and per grade, a part being worth hours × both,
   and is applied when the report reads a row, so retuning one re-rates the
   whole history alike and the trend stays comparable with itself.
 - **Of the row's copy and a running session's pending one, the later wins.**
