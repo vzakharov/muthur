@@ -210,8 +210,8 @@ split into parts, each the hours one role at one grade would spend on it, with
 one reason for the whole. A revision replaces it, so its history is git's.
 `hooks/estimate-notice.sh` is the agent-facing home of when and how to set one.
 
-- **The unit is a junior-hour** of the role `rates.json` rates at 1. The table
-  holds a multiplier per role and per grade, a part being worth hours × both,
+- **The unit is a senior-hour** of the role `rates.json` rates at 1, a
+  developer, at the grade it rates at 1, senior. The table holds a multiplier per role and per grade, a part being worth hours × both,
   and is applied when the report reads a row, so retuning one re-rates the
   whole history alike and the trend stays comparable with itself.
 - **Of the row's copy and a running session's pending one, the later wins.**
@@ -226,7 +226,7 @@ one reason for the whole. A revision replaces it, so its history is git's.
 measurement, so a changed model may estimate differently too — a person's
 `--session` revision is the check, and the row's history in git shows which
 figures one touched; and a heavier `CLAUDE.md` or a new mandatory pass raises the dollars
-per junior-hour with no change to the model at all.
+per senior-hour with no change to the model at all.
 
 ## The report
 
@@ -234,7 +234,7 @@ per junior-hour with no change to the model at all.
 week and day, by the branch that spent it with the pull requests it touched
 named beside it, and by operator — then orientation's averages, the calls only
 the events saw, by `query_source`, as a share of the spend of the rows priced
-with events, and the dollars per junior-hour over the estimated rows, by month,
+with events, and the dollars per senior-hour over the estimated rows, by month,
 week, day and model; `--json` prints the lot. The spend is the
 branch's rather than each PR's, since a session that touched two would otherwise
 be counted twice.

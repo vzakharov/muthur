@@ -18,13 +18,13 @@ import unittest
 from dataclasses import replace
 from pathlib import Path
 
-from lib.estimate import Estimate, Part, Rates, checked, junior_hours, latest, parse_estimate, parse_rates
+from lib.estimate import Estimate, Part, Rates, checked, latest, parse_estimate, parse_rates, senior_hours
 from lib.rows import ROOT, SessionCost, parse_session_cost, pending_estimate_path, row_text
 from lib.shape import ShapeError, to_json
 from lib.tally import Tally
 from lib.totals import effort_of, main_model
 
-RATES = Rates(roles={"copywriter": 1, "developer": 2}, grades={"junior": 1, "senior": 2.5})
+RATES = Rates(roles={"copywriter": 0.5, "developer": 1}, grades={"junior": 0.4, "senior": 1})
 COSTS = Path(__file__).resolve().parent
 
 
@@ -75,9 +75,9 @@ class WhatAnEstimateMayHold(unittest.TestCase):
             with self.assertRaises(ShapeError):
                 checked(estimate_of("t", comment=comment), RATES, "e")
 
-    def test_adds_its_parts_up_in_junior_hours_by_role_and_grade(self) -> None:
+    def test_adds_its_parts_up_in_senior_hours_by_role_and_grade(self) -> None:
         mixed = estimate_of("t", Part(2, "senior", "developer"), Part(3, "junior", "copywriter"))
-        self.assertEqual(junior_hours(mixed, RATES), 2 * 2 * 2.5 + 3)
+        self.assertEqual(senior_hours(mixed, RATES), 2 + 3 * 0.5 * 0.4)
 
     def test_refuses_a_rate_table_with_a_non_positive_multiplier_or_a_missing_half(self) -> None:
         for text in ('{"roles": {"a": 1}, "grades": {"b": 0}}', '{"roles": {"a": 1}}'):
@@ -116,8 +116,8 @@ class TheReportsRatio(unittest.TestCase):
         )
         big = replace(ROW, estimate=estimate_of("a", Part(4, "senior", "copywriter")))
         summary = effort_of([tiny, big], RATES)
-        # $15 over 10.1 junior-hours; a mean of the two ratios would be $26.
-        self.assertEqual(summary.overall.usd_per_junior_hour, round(15 / 10.1, 4))
+        # $15 over 2.02 senior-hours; a mean of the two ratios would be $127.50.
+        self.assertEqual(summary.overall.usd_per_senior_hour, round(15 / 2.02, 4))
 
     def test_counts_rows_with_no_estimate_without_rating_them(self) -> None:
         summary = effort_of([ROW, replace(ROW, estimate=estimate_of("a"))], RATES)
@@ -132,7 +132,7 @@ class TheReportsRatio(unittest.TestCase):
 
     def test_has_no_ratio_where_the_estimate_adds_up_to_no_hours(self) -> None:
         summary = effort_of([replace(ROW, estimate=estimate_of("a", Part(0, "senior", "developer")))], RATES)
-        self.assertIsNone(summary.overall.usd_per_junior_hour)
+        self.assertIsNone(summary.overall.usd_per_senior_hour)
 
     def test_raises_on_an_estimate_the_rate_table_refuses(self) -> None:
         with self.assertRaises(ShapeError):

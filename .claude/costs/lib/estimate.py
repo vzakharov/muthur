@@ -1,5 +1,5 @@
 """A session's human-hour estimate: the task broken into parts, each hours of one
-role at one grade, with one reason for the whole, converted to junior-hours only
+role at one grade, with one reason for the whole, converted to senior-hours only
 when read. `.claude/costs/CLAUDE.md` § "Human-hour estimates" carries why, and
 what the figure measures.
 """
@@ -32,8 +32,8 @@ class Estimate:
 
 @dataclass(frozen=True)
 class Rates:
-    """Multipliers against an hour of the reference role at the lowest grade —
-    each table's `1` — which is what a junior-hour is."""
+    """Multipliers against an hour of the reference role at the reference
+    grade — each table's `1` — which is what a senior-hour is."""
 
     roles: Dict[str, float]
     grades: Dict[str, float]
@@ -113,5 +113,5 @@ def latest(*estimates: Optional[Estimate]) -> Optional[Estimate]:
     return max(present, key=lambda estimate: estimate.at) if present else None
 
 
-def junior_hours(estimate: Estimate, rates: Rates) -> float:
+def senior_hours(estimate: Estimate, rates: Rates) -> float:
     return sum(part.hours * rates.roles[part.role] * rates.grades[part.grade] for part in estimate.parts)

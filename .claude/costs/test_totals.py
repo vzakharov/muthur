@@ -29,7 +29,7 @@ def tally(cost_usd: float) -> Tally:
     return Tally(responses=1, cost_usd=cost_usd)
 
 
-RATES = Rates(roles={"developer": 1}, grades={"junior": 1})
+RATES = Rates(roles={"developer": 1}, grades={"senior": 1})
 
 
 ROW = SessionCost(

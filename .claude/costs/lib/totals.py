@@ -15,7 +15,7 @@ from datetime import date
 from statistics import mean, median
 from typing import Callable, Dict, Iterable, List, Optional, Sequence, Tuple
 
-from lib.estimate import Rates, checked, junior_hours
+from lib.estimate import Rates, checked, senior_hours
 from lib.orientation import Phase
 from lib.rows import SessionCost
 from lib.tally import Tally
@@ -55,20 +55,20 @@ class Rate:
     divide by."""
 
     sessions: int = 0
-    junior_hours: float = 0.0
+    senior_hours: float = 0.0
     cost_usd: float = 0.0
     # Null where the bucket's estimates add up to no hours.
-    usd_per_junior_hour: Optional[float] = None
+    usd_per_senior_hour: Optional[float] = None
 
-    def count(self, junior_hours: float, cost_usd: float) -> None:
+    def count(self, senior_hours: float, cost_usd: float) -> None:
         self.sessions += 1
-        self.junior_hours += junior_hours
+        self.senior_hours += senior_hours
         self.cost_usd += cost_usd
 
 
 @dataclass
 class EffortSummary:
-    """What a junior-hour of work cost at API rates, over the rows carrying an
+    """What a senior-hour of work cost at API rates, over the rows carrying an
     estimate. By model as well as by period, so a change of model is not read as
     a change in the model."""
 
@@ -265,9 +265,9 @@ def main_model(row: SessionCost) -> str:
 def _rated(rate: Rate) -> Rate:
     return Rate(
         rate.sessions,
-        round(rate.junior_hours, 2),
+        round(rate.senior_hours, 2),
         round(rate.cost_usd, 4),
-        round(rate.cost_usd / rate.junior_hours, 4) if rate.junior_hours > 0 else None,
+        round(rate.cost_usd / rate.senior_hours, 4) if rate.senior_hours > 0 else None,
     )
 
 
@@ -286,7 +286,7 @@ def effort_of(rows: Sequence[SessionCost], rates: Rates) -> EffortSummary:
         if row.estimate is None:
             continue
         estimated += 1
-        hours = junior_hours(checked(row.estimate, rates, f"{row.session_id} estimate"), rates)
+        hours = senior_hours(checked(row.estimate, rates, f"{row.session_id} estimate"), rates)
         overall.count(hours, row.total.cost_usd)
         started_at = row.first_response_at
         if started_at is None:

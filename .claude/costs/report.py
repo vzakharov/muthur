@@ -145,10 +145,10 @@ def rate_table(title: str, rates: Dict[str, Rate]) -> None:
     width = max(len(key) for key in rates)
     print(f"\n{title}")
     for key, rate in rates.items():
-        per_hour = "—" if rate.usd_per_junior_hour is None else usd(rate.usd_per_junior_hour)
+        per_hour = "—" if rate.usd_per_senior_hour is None else usd(rate.usd_per_senior_hour)
         print(
-            f"  {key.ljust(width)}  {per_hour:>8} per junior-hour"
-            f"  {rate.junior_hours:>7.1f} h  {usd(rate.cost_usd):>10}"
+            f"  {key.ljust(width)}  {per_hour:>8} per senior-hour"
+            f"  {rate.senior_hours:>7.1f} h  {usd(rate.cost_usd):>10}"
             f"  {count(rate.sessions, 'session'):>12}"
         )
 
@@ -157,11 +157,11 @@ def effort(summary: EffortSummary) -> None:
     print(f"\nestimated: {summary.estimated} of {count(summary.rows, 'row')}")
     if summary.estimated == 0:
         return
-    rate_table("per junior-hour", {"all": summary.overall})
-    rate_table("per junior-hour by month", summary.by_month)
-    rate_table("per junior-hour by week", summary.by_week)
-    rate_table("per junior-hour by day", summary.by_day)
-    rate_table("per junior-hour by model", summary.by_model_month)
+    rate_table("per senior-hour", {"all": summary.overall})
+    rate_table("per senior-hour by month", summary.by_month)
+    rate_table("per senior-hour by week", summary.by_week)
+    rate_table("per senior-hour by day", summary.by_day)
+    rate_table("per senior-hour by model", summary.by_model_month)
 
 
 def main() -> int:
