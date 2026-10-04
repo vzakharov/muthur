@@ -1,0 +1,93 @@
+{
+  "sessionId": "51974fd7-c20f-5b0b-809e-1f901bf608f6",
+  "branch": "claude/human-hour-estimates-832s9l",
+  "cwd": "/home/user/muthur",
+  "openingPrompt": "/relay take claude/human-hour-estimates-832s9l",
+  "prs": [
+    137
+  ],
+  "url": "https://claude.ai/code/session_01TupPLyPvBC3TKNzbq8ko4u",
+  "operator": "vzakharov",
+  "firstResponseAt": "2026-10-04T05:49:06.864Z",
+  "lastResponseAt": "2026-10-04T05:55:08.435Z",
+  "pricesAsOf": "2026-09-23",
+  "claudeCodeTotalUsd": null,
+  "total": {
+    "inputTokens": 94,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 148071,
+    "cacheReadTokens": 6797936,
+    "outputTokens": 35042,
+    "thinkingTokens": 6227,
+    "responses": 47,
+    "costUsd": 3.245371200000001
+  },
+  "ownTurns": {
+    "inputTokens": 94,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 148071,
+    "cacheReadTokens": 6797936,
+    "outputTokens": 35042,
+    "thinkingTokens": 6227,
+    "responses": 47,
+    "costUsd": 3.245371200000001
+  },
+  "subagents": {
+    "inputTokens": 0,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 0,
+    "cacheReadTokens": 0,
+    "outputTokens": 0,
+    "thinkingTokens": 0,
+    "responses": 0,
+    "costUsd": 0.0
+  },
+  "byRate": {
+    "claude-opus-5-5/standard": {
+      "inputTokens": 94,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 148071,
+      "cacheReadTokens": 6797936,
+      "outputTokens": 35042,
+      "thinkingTokens": 6227,
+      "responses": 47,
+      "costUsd": 3.245371200000001
+    }
+  },
+  "warnings": [],
+  "orientation": {
+    "endedBy": "Write",
+    "endedOn": ".claude/costs/lib/estimate.py",
+    "endedAt": "2026-10-04T05:50:21.611Z",
+    "contextTokens": 125918,
+    "spend": {
+      "inputTokens": 22,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 80270,
+      "cacheReadTokens": 1064204,
+      "outputTokens": 5983,
+      "thinkingTokens": 3905,
+      "responses": 11,
+      "costUsd": 0.9747488
+    }
+  },
+  "compactions": [],
+  "telemetry": {
+    "events": 47,
+    "matched": 47,
+    "matchedTableUsd": 3.245371200000001,
+    "matchedEventUsd": 3.2453712000000006,
+    "unseen": {}
+  },
+  "estimate": {
+    "at": "2026-10-04T05:52:43.113Z",
+    "parts": [
+      {
+        "hours": 3.0,
+        "grade": "senior",
+        "role": "developer"
+      }
+    ],
+    "comment": "Ledger estimates reshaped into parts by role and grade: rate table for roles, one estimate per row, daily report buckets, CLI, hook text, docs and tests to match."
+  }
+}
