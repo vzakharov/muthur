@@ -211,9 +211,10 @@ one reason for the whole. A revision replaces it, so its history is git's.
 `hooks/estimate-notice.sh` is the agent-facing home of when and how to set one.
 
 - **The unit is a senior-hour**: an hour of a senior developer, the role and
-  grade `rates.json` rates at 1. The table holds a multiplier per role and per grade, a part being worth hours × both,
-  and is applied when the report reads a row, so retuning one re-rates the
-  whole history alike and the trend stays comparable with itself.
+  grade `rates.json` rates at 1. The table holds a multiplier per role and
+  per grade, a part being worth hours × both, and is applied when the report
+  reads a row, so retuning one re-rates the whole history alike and the trend
+  stays comparable with itself.
 - **Of the row's copy and a running session's pending one, the later wins.**
   That is how a `--session` edit to a running session's row survives its next
   `Stop`, and how the session's own later `set` overrides that edit.
