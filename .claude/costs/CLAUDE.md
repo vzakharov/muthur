@@ -207,7 +207,7 @@ A row's `estimate` says how much work the session's spend bought, so the
 ledger can price a unit of human work done by an agent and watch that price
 move — including whether the same work started costing more. It is the task
 split into parts, each the hours one role at one grade would spend on it, with
-one reason for the whole. A revision replaces it, so its history is git's.
+a comment justifying them. A revision replaces it, so its history is git's.
 `hooks/estimate-notice.sh` is the agent-facing home of when and how to set one.
 
 - **The unit is a senior-hour**: an hour of a senior developer, the role and
@@ -222,6 +222,10 @@ one reason for the whole. A revision replaces it, so its history is git's.
   does — scope added, a difficulty no estimator would have foreseen, a relay
   handing the rest on. A model that booked its own detours as extra hours would
   hide exactly the regression the figure exists to show.
+- **The comment is the case for the team, not a summary of the work.** What
+  was done is already in the row and the commits; what nothing else carries is
+  why each part is that role, at that grade, for those hours — and only that
+  lets a reader check the figure rather than take it.
 
 **What the figure cannot tell apart:** the estimator is the model under
 measurement, so a changed model may estimate differently too — a person's

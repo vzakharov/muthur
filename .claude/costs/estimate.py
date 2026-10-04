@@ -57,7 +57,7 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
     commands = parser.add_subparsers(dest="command", required=True)
     setting = commands.add_parser("set")
-    setting.add_argument("comment")
+    setting.add_argument("comment", help="why each part's role, grade and hours; not a summary of the work")
     setting.add_argument(
         "--part", nargs=3, action="append", required=True, metavar=("HOURS", "GRADE", "ROLE")
     )
