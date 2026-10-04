@@ -1,0 +1,90 @@
+{
+  "sessionId": "d485bcaf-8154-5e6d-8004-092fa88c8ad9",
+  "branch": "claude/human-hour-estimates-832s9l",
+  "cwd": "/home/user/muthur",
+  "openingPrompt": "давай для каждой сессии делать оценку человекочасов, тогда мы сможем (а) мерить сколько \"человекочас\" обходится в контексте API costs, (б) смотреть динамику и в…",
+  "prs": [
+    137
+  ],
+  "url": "https://claude.ai/code/session_01637Cbn1ie9ZHp359TP13QU",
+  "operator": "vzakharov",
+  "firstResponseAt": "2026-10-04T05:36:03.622Z",
+  "lastResponseAt": "2026-10-04T05:47:02.054Z",
+  "pricesAsOf": "2026-09-23",
+  "claudeCodeTotalUsd": null,
+  "total": {
+    "inputTokens": 130,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 194206,
+    "cacheReadTokens": 11283660,
+    "outputTokens": 58221,
+    "thinkingTokens": 19872,
+    "responses": 65,
+    "costUsd": 4.975319999999999
+  },
+  "ownTurns": {
+    "inputTokens": 130,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 194206,
+    "cacheReadTokens": 11283660,
+    "outputTokens": 58221,
+    "thinkingTokens": 19872,
+    "responses": 65,
+    "costUsd": 4.975319999999999
+  },
+  "subagents": {
+    "inputTokens": 0,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 0,
+    "cacheReadTokens": 0,
+    "outputTokens": 0,
+    "thinkingTokens": 0,
+    "responses": 0,
+    "costUsd": 0.0
+  },
+  "byRate": {
+    "claude-opus-5-5/standard": {
+      "inputTokens": 130,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 194206,
+      "cacheReadTokens": 11283660,
+      "outputTokens": 58221,
+      "thinkingTokens": 19872,
+      "responses": 65,
+      "costUsd": 4.975319999999999
+    }
+  },
+  "warnings": [],
+  "orientation": {
+    "endedBy": "Write",
+    "endedOn": "docs/plans/human-hour-estimates.draft.do-not-implement.md",
+    "endedAt": "2026-10-04T05:38:14.213Z",
+    "contextTokens": 133798,
+    "spend": {
+      "inputTokens": 22,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 88678,
+      "cacheReadTokens": 1090894,
+      "outputTokens": 10625,
+      "thinkingTokens": 8430,
+      "responses": 11,
+      "costUsd": 1.1401908
+    }
+  },
+  "compactions": [],
+  "telemetry": {
+    "events": 65,
+    "matched": 65,
+    "matchedTableUsd": 4.975319999999999,
+    "matchedEventUsd": 4.97532,
+    "unseen": {}
+  },
+  "estimates": [
+    {
+      "at": "2026-10-04T05:41:53.381Z",
+      "hours": 6.0,
+      "grade": "senior",
+      "comment": "Ledger feature: CLI, row merge, prompt hook, report section, relay hand-over, tests — a senior's day on a codebase they know."
+    }
+  ]
+}
