@@ -10,6 +10,7 @@ from pathlib import Path
 from typing import Any, Dict, List, Mapping, Optional, Tuple
 
 from lib.billed import Telemetry, parse_telemetry
+from lib.estimate import Estimate, parse_estimate
 from lib.orientation import Compaction, Phase, parse_compaction, parse_phase
 from lib.shape import ShapeError, read_number, read_object, read_string, required, to_json
 from lib.tally import Tally, parse_tally
@@ -50,6 +51,8 @@ class SessionCost:
     compactions: List[Compaction] = field(default_factory=list)
     # Null where the session left no events to read.
     telemetry: Optional[Telemetry] = None
+    # Null until the session sets one.
+    estimate: Optional[Estimate] = None
 
 
 def _list_of(obj: Mapping[str, Any], key: str, where: str, kind: type) -> List[Any]:
@@ -65,7 +68,7 @@ def _list_of(obj: Mapping[str, Any], key: str, where: str, kind: type) -> List[A
 
 def parse_session_cost(text: str, where: str = "row") -> SessionCost:
     """Rows are read back in a later process, so they are parsed rather than
-    trusted. The naming, orientation and telemetry fields default when absent,
+    trusted. The naming, orientation, telemetry and estimate fields default when absent,
     so a row written before they existed still parses."""
     row = json.loads(text)
     if not isinstance(row, dict):
@@ -104,11 +107,16 @@ def parse_session_cost(text: str, where: str = "row") -> SessionCost:
             if row.get("telemetry") is None
             else parse_telemetry(row["telemetry"], f"{where} telemetry")
         ),
+        estimate=parse_estimate(row.get("estimate"), f"{where} estimate"),
     )
 
 
+def json_text(value: Any) -> str:
+    return json.dumps(to_json(value), indent=2, ensure_ascii=False) + "\n"
+
+
 def row_text(cost: SessionCost) -> str:
-    return json.dumps(to_json(cost), indent=2, ensure_ascii=False) + "\n"
+    return json_text(cost)
 
 
 def write_atomic(out: Path, contents: str) -> None:
@@ -121,6 +129,24 @@ def write_atomic(out: Path, contents: str) -> None:
     out.parent.mkdir(parents=True, exist_ok=True)
     staged.write_text(contents, encoding="utf-8")
     os.replace(staged, out)
+
+
+def pending_estimate_path(session_id: str) -> Path:
+    """Where `estimate.py` leaves a running session's estimate for the next row
+    write to fold in. Under `tmp/`, so nothing lands in the tree mid-turn for the
+    harness's `Stop` check to find."""
+    return ROOT / "tmp" / "estimates" / f"{session_id}.json"
+
+
+def read_pending_estimate(session_id: str) -> Optional[Estimate]:
+    path = pending_estimate_path(session_id)
+    if not path.exists():
+        return None
+    return parse_estimate(json.loads(path.read_text(encoding="utf-8")), str(path))
+
+
+def write_pending_estimate(session_id: str, estimate: Estimate) -> None:
+    write_atomic(pending_estimate_path(session_id), json_text(estimate))
 
 
 def read_row(path: Path) -> Tuple[SessionCost, List[str]]:

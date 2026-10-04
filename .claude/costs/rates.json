@@ -1,0 +1,17 @@
+{
+  "roles": {
+    "copywriter": 0.67,
+    "editor": 0.73,
+    "qa": 0.8,
+    "designer": 0.87,
+    "analyst": 0.93,
+    "developer": 1,
+    "architect": 1.2
+  },
+  "grades": {
+    "junior": 0.4,
+    "middle": 0.64,
+    "senior": 1,
+    "staff": 1.4
+  }
+}

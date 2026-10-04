@@ -1,6 +1,6 @@
 #!/bin/bash
 # Sourced by the `UserPromptSubmit` hooks beside it and by
-# `permission-denied-phrase.sh`, by the two under `.claude/costs/hooks/` — the
+# `permission-denied-phrase.sh`, by the three under `.claude/costs/hooks/` — the
 # `Stop` ones among these take everything here but `emit_context` — and by the
 # `PostToolUse` hook under
 # `.claude/context-budget/hooks/`: the payload read, the context-injecting JSON

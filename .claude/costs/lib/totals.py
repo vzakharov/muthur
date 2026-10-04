@@ -1,7 +1,7 @@
 """Sums the session rows for `report.py` — the same spend by month, by ISO week,
 by day, by the branch that spent it, and by the operator whose session it was —
-averages what the rows measured of orientation, and sums the calls only the
-events saw.
+averages what the rows measured of orientation, sums the calls only the events
+saw, and divides the spend by the estimated work.
 
 Nothing here is written to disk: the totals are wholly derived from the rows,
 and a derived file committed beside its own sources is a merge conflict every
@@ -15,6 +15,7 @@ from datetime import date
 from statistics import mean, median
 from typing import Callable, Dict, Iterable, List, Optional, Sequence, Tuple
 
+from lib.estimate import Rates, checked, senior_hours
 from lib.orientation import Phase
 from lib.rows import SessionCost
 from lib.tally import Tally
@@ -45,6 +46,40 @@ class Totals:
     by_operator: Dict[str, Bucket] = field(default_factory=dict)
     orientation: Optional[OrientationSummary] = None
     telemetry: Optional[TelemetrySummary] = None
+    effort: Optional[EffortSummary] = None
+
+
+@dataclass
+class Rate:
+    """Spend over estimated work — not a `Bucket`, whose lines have no hours to
+    divide by."""
+
+    sessions: int = 0
+    senior_hours: float = 0.0
+    cost_usd: float = 0.0
+    # Null where the bucket's estimates add up to no hours.
+    usd_per_senior_hour: Optional[float] = None
+
+    def count(self, senior_hours: float, cost_usd: float) -> None:
+        self.sessions += 1
+        self.senior_hours += senior_hours
+        self.cost_usd += cost_usd
+
+
+@dataclass
+class EffortSummary:
+    """What a senior-hour of work cost at API rates, over the rows carrying an
+    estimate. By model as well as by period, so a change of model is not read as
+    a change in the model."""
+
+    estimated: int
+    rows: int
+    overall: Rate
+    by_month: Dict[str, Rate]
+    by_week: Dict[str, Rate]
+    by_day: Dict[str, Rate]
+    # Keyed `<model> <month>`, so one model's months sort together.
+    by_model_month: Dict[str, Rate]
 
 
 @dataclass
@@ -218,7 +253,65 @@ def telemetry_of(rows: Sequence[SessionCost]) -> TelemetrySummary:
     )
 
 
-def totals_of(rows: Iterable[SessionCost]) -> Totals:
+def main_model(row: SessionCost) -> str:
+    """The model that spent most of the session: the subagents and background
+    calls a session makes on cheaper models are not what it ran on."""
+    if not row.by_rate:
+        return "(none)"
+    rate_key = max(row.by_rate.items(), key=lambda item: item[1].cost_usd)[0]
+    return rate_key.split("/", 1)[0]
+
+
+def _rated(rate: Rate) -> Rate:
+    return Rate(
+        rate.sessions,
+        round(rate.senior_hours, 2),
+        round(rate.cost_usd, 4),
+        round(rate.cost_usd / rate.senior_hours, 4) if rate.senior_hours > 0 else None,
+    )
+
+
+def effort_of(rows: Sequence[SessionCost], rates: Rates) -> EffortSummary:
+    """A ratio of sums per bucket, never a mean of each session's own ratio: one
+    session estimated at a few minutes would otherwise swamp the mean. A row
+    whose estimate fails the rate table raises, since quietly leaving
+    it out would move every figure it belongs to."""
+    overall = Rate()
+    by_month: Dict[str, Rate] = {}
+    by_week: Dict[str, Rate] = {}
+    by_day: Dict[str, Rate] = {}
+    by_model_month: Dict[str, Rate] = {}
+    estimated = 0
+    for row in rows:
+        if row.estimate is None:
+            continue
+        estimated += 1
+        hours = senior_hours(checked(row.estimate, rates, f"{row.session_id} estimate"), rates)
+        overall.count(hours, row.total.cost_usd)
+        started_at = row.first_response_at
+        if started_at is None:
+            continue
+        month = started_at[:7]
+        by_month.setdefault(month, Rate()).count(hours, row.total.cost_usd)
+        by_week.setdefault(iso_week(date.fromisoformat(started_at[:10])), Rate()).count(
+            hours, row.total.cost_usd
+        )
+        by_day.setdefault(started_at[:10], Rate()).count(hours, row.total.cost_usd)
+        by_model_month.setdefault(f"{main_model(row)} {month}", Rate()).count(
+            hours, row.total.cost_usd
+        )
+    return EffortSummary(
+        estimated=estimated,
+        rows=len(rows),
+        overall=_rated(overall),
+        by_month={key: _rated(rate) for key, rate in sorted(by_month.items())},
+        by_week={key: _rated(rate) for key, rate in sorted(by_week.items())},
+        by_day={key: _rated(rate) for key, rate in sorted(by_day.items())},
+        by_model_month={key: _rated(rate) for key, rate in sorted(by_model_month.items())},
+    )
+
+
+def totals_of(rows: Iterable[SessionCost], rates: Rates) -> Totals:
     """A session is filed under where it **started**, the rule that already picks
     its row's month, so one running past midnight stays whole. A row with no
     priced response has no day to file under and lands in the grand total, its
@@ -253,4 +346,5 @@ def totals_of(rows: Iterable[SessionCost]) -> Totals:
         by_operator=_rounded(by_operator),
         orientation=orientation_of(rows),
         telemetry=telemetry_of(rows),
+        effort=effort_of(rows, rates),
     )
