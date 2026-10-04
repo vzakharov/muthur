@@ -1,10 +1,6 @@
-"""A session's human-hour estimate: hours at a grade with a reason, revised as
-the size of the task becomes known.
-
-A revision stores the grade and that grade's hours, never junior-hours:
-`grades.json` converts at read time, so a retuned multiplier re-rates the whole
-history alike. `.claude/costs/CLAUDE.md` § "Human-hour estimates" carries what
-the figure measures.
+"""A session's human-hour estimate: hours at a grade with a reason, converted to
+junior-hours only when read. `.claude/costs/CLAUDE.md` § "Human-hour estimates"
+carries why, and what the figure measures.
 """
 
 from __future__ import annotations
@@ -38,8 +34,8 @@ def parse_grades(text: str, where: str = "grades.json") -> Dict[str, float]:
 
 
 def checked(revision: Revision, grades: Mapping[str, float], where: str) -> Revision:
-    """Holds at both ends: `estimate.py` refuses to write a bad revision, and a
-    row edited by hand is refused when it is read."""
+    """Holds at both ends: `estimate.py` refuses to write a bad revision, and the
+    report refuses a row edited by hand into one."""
     if revision.hours < 0:
         raise ShapeError(f"{where}: hours are {revision.hours}, below zero")
     if revision.grade not in grades:

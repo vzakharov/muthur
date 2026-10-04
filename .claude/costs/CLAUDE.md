@@ -216,10 +216,6 @@ is the agent-facing home of when and how to set one.
   does — scope added, a difficulty no estimator would have foreseen, a relay
   handing the rest on. A model that booked its own detours as extra hours would
   hide exactly the regression the figure exists to show.
-- **A running session's revisions wait in `tmp/estimates/`** and the row write
-  at `Stop` folds them in, merged with the previous row's — which is what keeps
-  them through a resume in a fresh container. Where both hold the same moment
-  the row's wins, since only a person edits one.
 
 **What the figure cannot tell apart:** the estimator is the model under
 measurement, so a changed model may estimate differently too — a person's
@@ -234,8 +230,7 @@ week and day, by the branch that spent it with the pull requests it touched
 named beside it, and by operator — then orientation's averages, the calls only
 the events saw, by `query_source`, as a share of the spend of the rows priced
 with events, and the dollars per junior-hour over the estimated rows, by month,
-week and model; `--json` prints the lot. The last is a ratio of sums per bucket,
-since one session estimated at minutes would swamp a mean of ratios. The spend is the
+week and model; `--json` prints the lot. The spend is the
 branch's rather than each PR's, since a session that touched two would otherwise
 be counted twice.
 

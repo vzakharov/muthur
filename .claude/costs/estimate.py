@@ -63,8 +63,6 @@ def main() -> int:
         print("estimate: no CLAUDE_CODE_SESSION_ID; name the session with --session", file=sys.stderr)
         return 1
     grades = parse_grades((COSTS / "grades.json").read_text(encoding="utf-8"))
-    # The running session's row is rewritten at every `Stop`, so its revisions go
-    # where that rewrite reads them; a finished session's row is edited directly.
     running = session_id == current
     path = row_path(session_id)
     if not running and path is None:

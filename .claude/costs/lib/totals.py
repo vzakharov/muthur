@@ -51,8 +51,8 @@ class Totals:
 
 @dataclass
 class Rate:
-    """Spend over estimated work. Not a `Bucket`: its denominator is hours, and
-    the month, branch and operator lines that show a `Bucket` have none."""
+    """Spend over estimated work — not a `Bucket`, whose lines have no hours to
+    divide by."""
 
     sessions: int = 0
     junior_hours: float = 0.0
