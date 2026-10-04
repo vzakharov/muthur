@@ -6,9 +6,7 @@ Usage:
   python3 .claude/costs/estimate.py show [--session <id>]
 
 Each `--part` is the hours one role at one grade would spend on the task; the
-parts add up to the estimate, and `set` replaces the whole of it. The comment
-justifies the parts — why each role, at that grade, for those hours — rather
-than describing the work, which the row and the commits already carry. Without
+parts add up to the estimate, and `set` replaces the whole of it. Without
 `--session` the session is this one, read off `CLAUDE_CODE_SESSION_ID`: the
 estimate goes to `tmp/estimates/<id>.json`, and the row folds it in when the
 turn ends. Another session's id edits that session's committed row in place,
