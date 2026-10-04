@@ -112,8 +112,12 @@ def parse_session_cost(text: str, where: str = "row") -> SessionCost:
     )
 
 
+def json_text(value: Any) -> str:
+    return json.dumps(to_json(value), indent=2, ensure_ascii=False) + "\n"
+
+
 def row_text(cost: SessionCost) -> str:
-    return json.dumps(to_json(cost), indent=2, ensure_ascii=False) + "\n"
+    return json_text(cost)
 
 
 def write_atomic(out: Path, contents: str) -> None:
@@ -140,6 +144,10 @@ def read_pending_estimates(session_id: str) -> List[Revision]:
     if not path.exists():
         return []
     return parse_revisions(json.loads(path.read_text(encoding="utf-8")), str(path))
+
+
+def write_pending_estimates(session_id: str, revisions: List[Revision]) -> None:
+    write_atomic(pending_estimates_path(session_id), json_text(revisions))
 
 
 def read_row(path: Path) -> Tuple[SessionCost, List[str]]:

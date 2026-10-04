@@ -17,7 +17,6 @@ Stdlib only — Python 3.9+.
 from __future__ import annotations
 
 import argparse
-import json
 import os
 import sys
 from datetime import datetime, timezone
@@ -25,14 +24,8 @@ from pathlib import Path
 from typing import Dict, List, Optional
 
 from lib.estimate import Revision, checked, junior_hours, merged, parse_grades
-from lib.rows import (
-    pending_estimates_path,
-    read_pending_estimates,
-    read_row,
-    row_text,
-    write_atomic,
-)
-from lib.shape import ShapeError, to_json
+from lib.rows import read_pending_estimates, read_row, row_text, write_atomic, write_pending_estimates
+from lib.shape import ShapeError
 
 COSTS = Path(__file__).resolve().parent
 
@@ -94,10 +87,7 @@ def main() -> int:
             )
             if running:
                 pending.append(revision)
-                write_atomic(
-                    pending_estimates_path(session_id),
-                    json.dumps(to_json(pending), indent=2, ensure_ascii=False) + "\n",
-                )
+                write_pending_estimates(session_id, pending)
             else:
                 assert row is not None and path is not None
                 row.estimates = merged(row.estimates, [revision])
