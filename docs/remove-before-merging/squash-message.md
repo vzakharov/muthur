@@ -10,20 +10,21 @@ and nothing about how much work that bought, so a costly week could
 not be told from a wasteful one, nor a model regression from a harder
 backlog.
 
-Every session's row now carries an estimate of its work: hours at a
-grade (junior, middle, senior, staff), with a comment of at most 280
-characters saying why. The row keeps every revision, so the estimate
-goes down on a relay, which hands the remainder to the successor, and
-up when the task itself grows; it measures the task, never the
-agent's own detours. `.claude/costs/estimate.py` sets it, the Stop
-hook folds it into the row, and a prompt hook keeps the current figure
-in front of the agent.
+Every session's row now carries an estimate of its work: the task
+split into parts, each the hours one role (developer, designer,
+editor, …) at one grade (junior to staff) would spend on it, with one
+comment of at most 280 characters saying why. A revision replaces the
+estimate, so it goes down on a relay, which hands the remainder to the
+successor, and up when the task itself grows; it measures the task,
+never the agent's own detours. `.claude/costs/estimate.py` sets it,
+the Stop hook folds it into the row, and a prompt hook keeps the
+current figure in front of the agent.
 
-`grades.json` turns grades into junior-hours at read time, so a
-retuned multiplier re-rates the whole history alike. `report.py`
-reports API dollars per junior-hour by month, ISO week and model, the
-figure that shows whether the same amount of work started costing
-more.
+`rates.json` turns each part into junior-hours at read time, by a
+role and a grade multiplier, so a retuned multiplier re-rates the
+whole history alike. `report.py` reports API dollars per junior-hour
+by month, ISO week, day and model, the figure that shows whether the
+same amount of work started costing more.
 
 Co-authored-by: Claude <noreply@anthropic.com>
 ```
