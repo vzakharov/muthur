@@ -1,0 +1,109 @@
+{
+  "sessionId": "6402ba50-6f8c-5b5d-bcfe-9b6dd19ac9bd",
+  "branch": "claude/human-hour-estimates-832s9l",
+  "cwd": "/home/user/muthur",
+  "openingPrompt": "/handle claude/human-hour-estimates-832s9l",
+  "prs": [
+    137
+  ],
+  "url": "https://claude.ai/code/session_018yZiNuuoyEX45GJHDFwaN6",
+  "operator": "vzakharov",
+  "firstResponseAt": "2026-10-04T08:22:38.276Z",
+  "lastResponseAt": "2026-10-04T08:34:51.304Z",
+  "pricesAsOf": "2026-09-23",
+  "claudeCodeTotalUsd": null,
+  "total": {
+    "inputTokens": 1126,
+    "cacheWrite5mTokens": 355,
+    "cacheWrite1hTokens": 141962,
+    "cacheReadTokens": 8331426,
+    "outputTokens": 23594,
+    "thinkingTokens": 4515,
+    "responses": 59,
+    "costUsd": 3.2812052
+  },
+  "ownTurns": {
+    "inputTokens": 114,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 141962,
+    "cacheReadTokens": 7997827,
+    "outputTokens": 23582,
+    "thinkingTokens": 4515,
+    "responses": 57,
+    "costUsd": 3.2073574000000002
+  },
+  "subagents": {
+    "inputTokens": 0,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 0,
+    "cacheReadTokens": 0,
+    "outputTokens": 0,
+    "thinkingTokens": 0,
+    "responses": 0,
+    "costUsd": 0.0
+  },
+  "byRate": {
+    "claude-opus-5-5/standard": {
+      "inputTokens": 1126,
+      "cacheWrite5mTokens": 355,
+      "cacheWrite1hTokens": 141962,
+      "cacheReadTokens": 8331426,
+      "outputTokens": 23594,
+      "thinkingTokens": 4515,
+      "responses": 59,
+      "costUsd": 3.2812052
+    }
+  },
+  "warnings": [],
+  "orientation": {
+    "endedBy": "Write",
+    "endedOn": ".claude/costs/rates.json",
+    "endedAt": "2026-10-04T08:23:21.768Z",
+    "contextTokens": 108599,
+    "spend": {
+      "inputTokens": 16,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 59744,
+      "cacheReadTokens": 697485,
+      "outputTokens": 2399,
+      "thinkingTokens": 659,
+      "responses": 8,
+      "costUsd": 0.665493
+    }
+  },
+  "compactions": [],
+  "telemetry": {
+    "events": 59,
+    "matched": 57,
+    "matchedTableUsd": 3.2073574000000002,
+    "matchedEventUsd": 3.2073574000000002,
+    "unseen": {
+      "prompt_suggestion": {
+        "inputTokens": 1012,
+        "cacheWrite5mTokens": 355,
+        "cacheWrite1hTokens": 0,
+        "cacheReadTokens": 333599,
+        "outputTokens": 12,
+        "thinkingTokens": 0,
+        "responses": 2,
+        "costUsd": 0.0738478
+      }
+    }
+  },
+  "estimate": {
+    "at": "2026-10-04T08:27:25.327Z",
+    "parts": [
+      {
+        "hours": 1.0,
+        "grade": "middle",
+        "role": "developer"
+      },
+      {
+        "hours": 0.25,
+        "grade": "middle",
+        "role": "editor"
+      }
+    ],
+    "comment": "Rebase the rate table onto a senior developer as the unit, rename junior-hours to senior-hours across code, report, tests and docs, then reply on the two review threads and refresh the PR text."
+  }
+}

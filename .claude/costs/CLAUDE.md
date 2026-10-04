@@ -201,13 +201,42 @@ never runs, and every paragraph here describing a race that is over. So the hook
 reads that registration each turn and writes to stderr when the entry is gone:
 adjusting quietly is what would leave the rest of this section false.
 
+## Human-hour estimates
+
+A row's `estimate` says how much work the session's spend bought, so the
+ledger can price a unit of human work done by an agent and watch that price
+move — including whether the same work started costing more. It is the task
+split into parts, each the hours one role at one grade would spend on it, with
+one reason for the whole. A revision replaces it, so its history is git's.
+`hooks/estimate-notice.sh` is the agent-facing home of when and how to set one.
+
+- **The unit is a senior-hour**: an hour of a senior developer, the role and
+  grade `rates.json` rates at 1. The table holds a multiplier per role and
+  per grade, a part being worth hours × both, and is applied when the report
+  reads a row, so retuning one re-rates the whole history alike and the trend
+  stays comparable with itself.
+- **Of the row's copy and a running session's pending one, the later wins.**
+  That is how a `--session` edit to a running session's row survives its next
+  `Stop`, and how the session's own later `set` overrides that edit.
+- **It sizes the task, never the session's pace.** It moves when the task
+  does — scope added, a difficulty no estimator would have foreseen, a relay
+  handing the rest on. A model that booked its own detours as extra hours would
+  hide exactly the regression the figure exists to show.
+
+**What the figure cannot tell apart:** the estimator is the model under
+measurement, so a changed model may estimate differently too — a person's
+`--session` revision is the check, and the row's history in git shows which
+figures one touched; and a heavier `CLAUDE.md` or a new mandatory pass raises the dollars
+per senior-hour with no change to the model at all.
+
 ## The report
 
 `python3 .claude/costs/report.py` sums the rows five ways every run — by month,
 week and day, by the branch that spent it with the pull requests it touched
-named beside it, and by operator — then orientation's averages, and the calls
-only the events saw, by `query_source`, as a share of the spend of the rows
-priced with events; `--json` prints the lot. The spend is the
+named beside it, and by operator — then orientation's averages, the calls only
+the events saw, by `query_source`, as a share of the spend of the rows priced
+with events, and the dollars per senior-hour over the estimated rows, by month,
+week, day and model; `--json` prints the lot. The spend is the
 branch's rather than each PR's, since a session that touched two would otherwise
 be counted twice.
 

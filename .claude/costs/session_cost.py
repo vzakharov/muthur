@@ -35,15 +35,23 @@ from lib.pricing import (
     subagents_of,
     summarise_transcript,
 )
-from lib.rows import ROOT, SessionCost, parse_session_cost, row_text, write_atomic
+from lib.estimate import latest
+from lib.rows import (
+    ROOT,
+    SessionCost,
+    parse_session_cost,
+    read_pending_estimate,
+    row_text,
+    write_atomic,
+)
 from lib.shape import ShapeError
 
 COSTS = Path(__file__).resolve().parent
 
 
 def previous(row: Path) -> Optional[SessionCost]:
-    """An unwritten-tail warning is what no run can recompute from the
-    transcript, so a rewrite reads it back from the last one. An unreadable row
+    """An unwritten-tail warning and the estimate are what no run can recompute
+    from the transcript, so a rewrite reads them back from the last one. An unreadable row
     loses it rather than failing the write — the rewrite is what repairs it —
     and says so."""
     if not row.exists():
@@ -101,6 +109,12 @@ def main() -> int:
     if before is not None:
         carried = [w for w in before.warnings if is_unwritten_tail(w) and w not in cost.warnings]
         cost.warnings = carried + cost.warnings
+    # The previous row is what keeps the estimate through a resume in a fresh
+    # container, whose `tmp/` starts empty.
+    cost.estimate = latest(
+        before.estimate if before is not None else None,
+        read_pending_estimate(cost.session_id),
+    )
     row = row_text(cost)
     if args.out is not None:
         args.out.write_text(row, encoding="utf-8")

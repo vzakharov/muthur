@@ -17,6 +17,7 @@ from datetime import date
 from pathlib import Path
 
 from lib.billed import Telemetry
+from lib.estimate import Rates
 from lib.orientation import Compaction, Phase, Rereads
 from lib.rows import ROOT, SessionCost, parse_session_cost, read_row, row_text
 from lib.shape import to_json
@@ -26,6 +27,9 @@ from lib.totals import Bucket, branch_label, iso_week, opening_command, operator
 
 def tally(cost_usd: float) -> Tally:
     return Tally(responses=1, cost_usd=cost_usd)
+
+
+RATES = Rates(roles={"developer": 1}, grades={"senior": 1})
 
 
 ROW = SessionCost(
@@ -50,7 +54,7 @@ ROW = SessionCost(
 
 class WhereASessionIsCounted(unittest.TestCase):
     def test_files_a_session_under_the_day_week_and_month_it_started_in(self) -> None:
-        totals = totals_of([ROW])
+        totals = totals_of([ROW], RATES)
         self.assertEqual(totals.by_day["2026-03-04"].cost_usd, 1)
         self.assertEqual(totals.by_month["2026-03"].cost_usd, 1)
         self.assertEqual(totals.by_week["2026-W10"].cost_usd, 1)
@@ -63,19 +67,20 @@ class WhereASessionIsCounted(unittest.TestCase):
                     first_response_at="2026-03-04T23:50:00.000Z",
                     last_response_at="2026-03-05T00:30:00.000Z",
                 )
-            ]
+            ],
+            RATES,
         )
         self.assertEqual(totals.by_day["2026-03-04"].sessions, 1)
         self.assertNotIn("2026-03-05", totals.by_day)
 
     def test_counts_a_row_with_no_priced_response_in_the_total_and_branch_alone(self) -> None:
-        totals = totals_of([replace(ROW, first_response_at=None, total=tally(0))])
+        totals = totals_of([replace(ROW, first_response_at=None, total=tally(0))], RATES)
         self.assertEqual(totals.sessions, 1)
         self.assertEqual(totals.by_branch["a-branch"].sessions, 1)
         self.assertEqual(totals.by_month, {})
 
     def test_sums_sessions_that_share_a_bucket(self) -> None:
-        totals = totals_of([ROW, replace(ROW, total=tally(2.5))])
+        totals = totals_of([ROW, replace(ROW, total=tally(2.5))], RATES)
         self.assertEqual(totals.cost_usd, 3.5)
         self.assertEqual(totals.by_month["2026-03"].sessions, 2)
 
@@ -85,7 +90,7 @@ class HowABranchIsLabelled(unittest.TestCase):
         self.assertEqual(branch_label(replace(ROW, prs=[70, 71])), "a-branch #70 #71")
 
     def test_counts_a_session_touching_two_prs_once_under_its_branch(self) -> None:
-        totals = totals_of([replace(ROW, prs=[70, 71])])
+        totals = totals_of([replace(ROW, prs=[70, 71])], RATES)
         self.assertEqual(totals.by_branch["a-branch #70 #71"].sessions, 1)
         self.assertEqual(totals.cost_usd, 1)
 
@@ -95,7 +100,7 @@ class HowABranchIsLabelled(unittest.TestCase):
 
 class WhoseSessionItWas(unittest.TestCase):
     def test_files_a_session_under_its_operator_s_handle(self) -> None:
-        totals = totals_of([replace(ROW, operator="vzakharov"), replace(ROW, total=tally(2))])
+        totals = totals_of([replace(ROW, operator="vzakharov"), replace(ROW, total=tally(2))], RATES)
         self.assertEqual(totals.by_operator["@vzakharov"].cost_usd, 1)
         self.assertEqual(totals.by_operator["(unknown)"].cost_usd, 2)
 
@@ -159,21 +164,21 @@ MEASURED = replace(
 
 class WhatOrientationAverages(unittest.TestCase):
     def test_skips_a_row_written_before_orientation_was_measured(self) -> None:
-        summary = totals_of([ROW, MEASURED]).orientation
+        summary = totals_of([ROW, MEASURED], RATES).orientation
         assert summary is not None and summary.orientation is not None
         self.assertEqual((summary.measured, summary.rows), (1, 2))
         self.assertEqual(summary.orientation.phases, 1)
         self.assertEqual(summary.orientation.share_of_session.mean, 0.25)
 
     def test_has_nothing_to_average_over_unmeasured_rows(self) -> None:
-        summary = totals_of([ROW]).orientation
+        summary = totals_of([ROW], RATES).orientation
         assert summary is not None
         self.assertIsNone(summary.orientation)
         self.assertIsNone(summary.compactions)
 
     def test_groups_by_what_ended_it_and_by_the_opening_command(self) -> None:
         other = replace(MEASURED, opening_prompt="fix the thing", orientation=phase(3, "end_turn"))
-        summary = totals_of([MEASURED, other]).orientation
+        summary = totals_of([MEASURED, other], RATES).orientation
         assert summary is not None and summary.orientation is not None
         self.assertEqual(summary.orientation.usd.mean, 2)
         self.assertEqual(sorted(summary.by_ended_by), ["Edit", "end_turn"])
@@ -181,7 +186,7 @@ class WhatOrientationAverages(unittest.TestCase):
         self.assertEqual(summary.by_opening_command["(none)"].usd.mean, 3)
 
     def test_averages_the_compactions_and_sums_the_re_reads_by_tool(self) -> None:
-        summary = totals_of([MEASURED, MEASURED]).orientation
+        summary = totals_of([MEASURED, MEASURED], RATES).orientation
         assert summary is not None and summary.compactions is not None
         self.assertEqual(summary.compactions.compactions, 2)
         self.assertEqual(summary.compactions.reorientation.usd.median, 0.5)
@@ -206,7 +211,7 @@ def events(**unseen: float) -> Telemetry:
 class WhatTheEventsAddUp(unittest.TestCase):
     def test_takes_the_share_of_the_rows_priced_with_events_alone(self) -> None:
         priced = replace(ROW, total=tally(4), telemetry=events(prompt_suggestion=0.2, compact=0.3))
-        summary = totals_of([ROW, priced]).telemetry
+        summary = totals_of([ROW, priced], RATES).telemetry
         assert summary is not None
         self.assertEqual((summary.priced, summary.rows, summary.priced_usd), (1, 2, 4))
         self.assertEqual(summary.unseen["compact"].cost_usd, 0.3)
@@ -216,7 +221,8 @@ class WhatTheEventsAddUp(unittest.TestCase):
             [
                 replace(ROW, telemetry=events(prompt_suggestion=0.2)),
                 replace(ROW, telemetry=events(prompt_suggestion=0.1, compact=0.3)),
-            ]
+            ],
+            RATES,
         ).telemetry
         assert summary is not None
         self.assertEqual(sorted(summary.unseen), ["compact", "prompt_suggestion"])
@@ -224,7 +230,7 @@ class WhatTheEventsAddUp(unittest.TestCase):
         self.assertEqual(summary.unseen["compact"].sessions, 1)
 
     def test_has_no_unseen_calls_over_rows_without_events(self) -> None:
-        summary = totals_of([ROW]).telemetry
+        summary = totals_of([ROW], RATES).telemetry
         assert summary is not None
         self.assertEqual((summary.priced, summary.priced_usd, summary.unseen), (0, 0, {}))
 

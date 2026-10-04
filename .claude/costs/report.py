@@ -24,10 +24,20 @@ from datetime import date, datetime, timezone
 from pathlib import Path
 from typing import Dict, List, Optional
 
+from lib.estimate import parse_rates
 from lib.pricing import parse_prices
 from lib.rows import SessionCost, read_row
 from lib.shape import to_json
-from lib.totals import Bucket, OrientationSummary, PhaseStats, Spread, TelemetrySummary, totals_of
+from lib.totals import (
+    Bucket,
+    EffortSummary,
+    OrientationSummary,
+    PhaseStats,
+    Rate,
+    Spread,
+    TelemetrySummary,
+    totals_of,
+)
 
 COSTS = Path(__file__).resolve().parent
 SESSIONS = COSTS / "sessions"
@@ -129,6 +139,31 @@ def telemetry(summary: TelemetrySummary) -> None:
         )
 
 
+def rate_table(title: str, rates: Dict[str, Rate]) -> None:
+    if not rates:
+        return
+    width = max(len(key) for key in rates)
+    print(f"\n{title}")
+    for key, rate in rates.items():
+        per_hour = "—" if rate.usd_per_senior_hour is None else usd(rate.usd_per_senior_hour)
+        print(
+            f"  {key.ljust(width)}  {per_hour:>8} per senior-hour"
+            f"  {rate.senior_hours:>7.1f} h  {usd(rate.cost_usd):>10}"
+            f"  {count(rate.sessions, 'session'):>12}"
+        )
+
+
+def effort(summary: EffortSummary) -> None:
+    print(f"\nestimated: {summary.estimated} of {count(summary.rows, 'row')}")
+    if summary.estimated == 0:
+        return
+    rate_table("per senior-hour", {"all": summary.overall})
+    rate_table("per senior-hour by month", summary.by_month)
+    rate_table("per senior-hour by week", summary.by_week)
+    rate_table("per senior-hour by day", summary.by_day)
+    rate_table("per senior-hour by model", summary.by_model_month)
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
     parser.add_argument("--month", help="YYYY-MM")
@@ -142,7 +177,7 @@ def main() -> int:
         return 0
 
     rows = [row for month in shown for row in rows_in(month)]
-    totals = totals_of(rows)
+    totals = totals_of(rows, parse_rates((COSTS / "rates.json").read_text(encoding="utf-8")))
 
     if args.json:
         print(json.dumps(to_json(totals), indent=2, ensure_ascii=False))
@@ -167,6 +202,8 @@ def main() -> int:
         orientation(totals.orientation)
     if totals.telemetry is not None:
         telemetry(totals.telemetry)
+    if totals.effort is not None:
+        effort(totals.effort)
 
     # The hand-kept rate table has no published source to check itself against,
     # so the report states its age, and checks the arithmetic against the only
