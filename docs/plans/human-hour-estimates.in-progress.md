@@ -1,5 +1,3 @@
-> ⛔ **DRAFT — DO NOT IMPLEMENT.** This plan is not approved. Do not edit source while this file is named `*.draft.do-not-implement.md` — prep and spikes go in `tmp/`. On an explicit operator go-ahead, `git mv` it to `*.in-progress.md` and delete this banner (quoting the go-ahead in the commit) *before* touching code.
-
 # A human-hour estimate on every session's cost row
 
 The cost ledger (`.claude/costs/`) knows what each session would have cost at API rates, and nothing about how much work that bought. A dollar figure alone cannot tell a hard week from a wasteful one. Pairing every row with an estimate of the work in **junior-hours** gives two numbers the ledger cannot produce today:
