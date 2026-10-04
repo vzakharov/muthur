@@ -55,10 +55,11 @@ If resolution fails (PR not found, branch doesn't exist on the remote), **stop a
 
 ## Step 2 — Record the auto-branch and sanity-check it
 
-`/from-branch` is meant to be the **first** message of a session, so the branch you're currently on is essentially always the harness-created auto-branch — empty, unpushed work, exists only because the harness needed something to check out. Capture its name so Step 4 can clean it up:
+`/from-branch` is meant to be the **first** message of a session, so the branch you're currently on is essentially always the harness-created auto-branch — empty, unpushed work, exists only because the harness needed something to check out. Note its name and tip, which Step 4 writes into its command literally:
 
 ```bash
-AUTO_BRANCH="$(git branch --show-current)"
+git branch --show-current
+git rev-parse HEAD
 ```
 
 **Sanity check** (don't trust the assumption blindly — verify there's no work to lose):
@@ -90,14 +91,17 @@ Verify the result with `git branch --show-current` and `git log --oneline -3` �
 
 ## Step 4 — Clean up the auto-branch
 
-Delete the auto-branch both locally and on `origin` — a local-only delete leaves the empty branch lingering remotely, which is exactly the clutter this step exists to prevent.
+Delete the auto-branch on `origin`, where an empty branch is clutter every later branch list carries. The local ref needs nothing: it dies with the container.
+
+The delete is its own Bash call, with the branch name and the Step 2 SHA written out literally — never a variable, never chained after the checkout:
 
 ```bash
-git branch -D "$AUTO_BRANCH"
-git push origin --delete "$AUTO_BRANCH"     # ok if the remote ref doesn't exist; the command will just fail harmlessly
+git push --force-with-lease=refs/heads/<auto-branch>:<step-2-sha> origin :refs/heads/<auto-branch>
 ```
 
-If the remote delete fails because the branch was never pushed, that's fine — ignore the error and move on. If it fails for any other reason (protected branch, permission issue), report it but don't block; the local cleanup is the important half.
+The auto-mode classifier judges a command by its text, never by its output, so the Step 2 check proving the branch empty is invisible to it; a variable or a bare `--delete` reads as deleting a remote branch nobody named, which it blocks as Git Destructive. The lease is the proof it can read — git refuses with `stale info` unless the remote ref still sits on the SHA you checked — and a block on a separate call cannot take the attach down with it.
+
+Any refusal — `stale info`, a 403 from the session's git proxy, a classifier block — is reported and left for the operator; the attach stands. Don't retry it by another route: a 403 and a block are both policy answers.
 
 ## Step 5 — Update the development-branch contract
 

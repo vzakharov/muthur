@@ -115,7 +115,11 @@ paste into that setting. Three things make it worth the paragraph:
   blocks in a row leave an unattended session waiting on a human. It reads
   `autoMode` from user and managed settings only, never the repo's
   `.claude/settings.json`; the session runs with `HOME=/root`, so the container's
-  own `~/.claude/settings.json` is the user file it reads.
+  own `~/.claude/settings.json` is the user file it reads. The same file is where
+  it learns which remote branches are the session's own: it sees commands, never
+  their output, so the check `/from-branch` and `/branch-rename` run before
+  deleting an abandoned branch name on origin is invisible to it, and the delete
+  reads as Git Destructive.
 
 ### Where it goes — tell the operator this, not just "the settings"
 
@@ -193,8 +197,9 @@ done
 
 apt-get install -y gh jq
 
-# Tell the auto-mode classifier the whole container is disposable. Merged rather
-# than written over, so any user settings already in the file survive.
+# Tell the auto-mode classifier the whole container is disposable, and which
+# remote branches are the session's own. Merged rather than written over, so any
+# user settings already in the file survive.
 mkdir -p ~/.claude
 [ -f ~/.claude/settings.json ] || echo '{}' > ~/.claude/settings.json
 jq -s '.[0] * .[1]' ~/.claude/settings.json - > /tmp/claude-settings.json <<'EOF'
@@ -203,7 +208,8 @@ jq -s '.[0] * .[1]' ~/.claude/settings.json - > /tmp/claude-settings.json <<'EOF
     "environment": ["$defaults",
       "Host containment: Claude Code runs in an ephemeral claude.ai cloud container rebuilt for each session; the repository is a fresh clone, and nothing on the container's filesystem outlives the session except what is pushed."],
     "allow": ["$defaults",
-      "Ephemeral Container Files: deleting, truncating or overwriting files anywhere on this container's filesystem (the clone, tmp/, ~/, /tmp, caches, toolchains), including files that predate the session (rm -rf, git clean, git reset --hard, git checkout --, git stash drop, overwriting untracked files), is not Irreversible Local Destruction, because the container is disposable. This covers local files only; remote state (pushes, GitHub, external services) is judged as usual."]
+      "Ephemeral Container Files: deleting, truncating or overwriting files anywhere on this container's filesystem (the clone, tmp/, ~/, /tmp, caches, toolchains), including files that predate the session (rm -rf, git clean, git reset --hard, git checkout --, git stash drop, overwriting untracked files), is not Irreversible Local Destruction, because the container is disposable. This covers local files only; remote state (pushes, GitHub, external services) is judged as usual.",
+      "Session Branch Cleanup: deleting a claude/* branch on origin is not Git Destructive when it is this session's own branch name - the auto-branch the harness created and checked out at session start, abandoned for an existing branch the session attached to, or the old name of a branch the session renamed - and the command names the branch literally and carries --force-with-lease pinned to a literal SHA, so git refuses if any commit has landed on it since the session checked it. Deleting any other branch, or without that lease, is judged as usual."]
   }
 }
 EOF
@@ -225,8 +231,8 @@ What carries over to any stack, and what to check before adapting it:
 5. **`apt-get install -y gh`** — see above; without it the shim never installs.
 6. **Prime the dependency cache last**, guarded, since the repo dir may be absent.
 7. **Check the `autoMode` block landed** from inside a session:
-   `claude auto-mode config | grep "Ephemeral Container Files"` prints the rule
-   only if the classifier has it.
+   `claude auto-mode config | grep -E "Ephemeral Container Files|Session Branch Cleanup"`
+   prints both rules only if the classifier has them.
 
 Adapt it, fill in your pins, and hand the operator the finished text. Say plainly
 in your report that this is the one step you could not apply yourself.
