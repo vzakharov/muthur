@@ -10,7 +10,7 @@ from pathlib import Path
 from typing import Any, Dict, List, Mapping, Optional, Tuple
 
 from lib.billed import Telemetry, parse_telemetry
-from lib.estimate import Revision, parse_revisions
+from lib.estimate import Estimate, parse_estimate
 from lib.orientation import Compaction, Phase, parse_compaction, parse_phase
 from lib.shape import ShapeError, read_number, read_object, read_string, required, to_json
 from lib.tally import Tally, parse_tally
@@ -51,9 +51,8 @@ class SessionCost:
     compactions: List[Compaction] = field(default_factory=list)
     # Null where the session left no events to read.
     telemetry: Optional[Telemetry] = None
-    # Every revision of the session's human-hour estimate, oldest first; the
-    # last is the current one.
-    estimates: List[Revision] = field(default_factory=list)
+    # Null until the session sets one.
+    estimate: Optional[Estimate] = None
 
 
 def _list_of(obj: Mapping[str, Any], key: str, where: str, kind: type) -> List[Any]:
@@ -108,7 +107,7 @@ def parse_session_cost(text: str, where: str = "row") -> SessionCost:
             if row.get("telemetry") is None
             else parse_telemetry(row["telemetry"], f"{where} telemetry")
         ),
-        estimates=parse_revisions(row.get("estimates"), f"{where} estimates"),
+        estimate=parse_estimate(row.get("estimate"), f"{where} estimate"),
     )
 
 
@@ -132,22 +131,22 @@ def write_atomic(out: Path, contents: str) -> None:
     os.replace(staged, out)
 
 
-def pending_estimates_path(session_id: str) -> Path:
-    """Where `estimate.py` leaves a running session's revisions for the next row
+def pending_estimate_path(session_id: str) -> Path:
+    """Where `estimate.py` leaves a running session's estimate for the next row
     write to fold in. Under `tmp/`, so nothing lands in the tree mid-turn for the
     harness's `Stop` check to find."""
     return ROOT / "tmp" / "estimates" / f"{session_id}.json"
 
 
-def read_pending_estimates(session_id: str) -> List[Revision]:
-    path = pending_estimates_path(session_id)
+def read_pending_estimate(session_id: str) -> Optional[Estimate]:
+    path = pending_estimate_path(session_id)
     if not path.exists():
-        return []
-    return parse_revisions(json.loads(path.read_text(encoding="utf-8")), str(path))
+        return None
+    return parse_estimate(json.loads(path.read_text(encoding="utf-8")), str(path))
 
 
-def write_pending_estimates(session_id: str, revisions: List[Revision]) -> None:
-    write_atomic(pending_estimates_path(session_id), json_text(revisions))
+def write_pending_estimate(session_id: str, estimate: Estimate) -> None:
+    write_atomic(pending_estimate_path(session_id), json_text(estimate))
 
 
 def read_row(path: Path) -> Tuple[SessionCost, List[str]]:

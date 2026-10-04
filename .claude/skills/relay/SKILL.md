@@ -44,7 +44,7 @@ The sections, in this order:
 3. **Intent** — what the operator is after, including what they ruled out.
 4. **Decisions** — each with the alternative it beat and why, and every term coined in the conversation with its meaning: what a successor would otherwise re-litigate or misread.
 5. **Errors and dead ends** — what was tried and failed, and the operator's feedback on it.
-6. **State** — branch, PR, last pushed commit, the plan file by its current name, and anything running or waiting: CI, a PR subscription, a scheduled check-in. Where Step 1 revised an estimate, this session's figure and the remainder handed on, each in hours at a grade.
+6. **State** — branch, PR, last pushed commit, the plan file by its current name, and anything running or waiting: CI, a PR subscription, a scheduled check-in. Where Step 1 revised an estimate, this session's figure and the remainder handed on, each as its parts — hours, grade, role.
 7. **Pointers** — the files that matter, and the re-fetch commands above. The way back to the transcript too (§ "The predecessor's transcript"): on the web this session's link, `https://claude.ai/code/<session_id>` from the id `get_session` returns when called with none; locally the transcript path.
 8. **Next step** — the to-be first message, verbatim, when `/relay` was given one. Otherwise only what is in line with the operator's most recent request, with their words quoted, and nothing from an old or finished thread without asking; then anything else asked and not yet done. "Wait for the operator" when nothing is pending. A draft plan's go-ahead given in this session is quoted here, since it is what the successor's `/go` records when it flips the plan.
 

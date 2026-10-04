@@ -24,7 +24,7 @@ from datetime import date, datetime, timezone
 from pathlib import Path
 from typing import Dict, List, Optional
 
-from lib.estimate import parse_grades
+from lib.estimate import parse_rates
 from lib.pricing import parse_prices
 from lib.rows import SessionCost, read_row
 from lib.shape import to_json
@@ -160,6 +160,7 @@ def effort(summary: EffortSummary) -> None:
     rate_table("per junior-hour", {"all": summary.overall})
     rate_table("per junior-hour by month", summary.by_month)
     rate_table("per junior-hour by week", summary.by_week)
+    rate_table("per junior-hour by day", summary.by_day)
     rate_table("per junior-hour by model", summary.by_model_month)
 
 
@@ -176,7 +177,7 @@ def main() -> int:
         return 0
 
     rows = [row for month in shown for row in rows_in(month)]
-    totals = totals_of(rows, parse_grades((COSTS / "grades.json").read_text(encoding="utf-8")))
+    totals = totals_of(rows, parse_rates((COSTS / "rates.json").read_text(encoding="utf-8")))
 
     if args.json:
         print(json.dumps(to_json(totals), indent=2, ensure_ascii=False))

@@ -13,9 +13,9 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from datetime import date
 from statistics import mean, median
-from typing import Callable, Dict, Iterable, List, Mapping, Optional, Sequence, Tuple
+from typing import Callable, Dict, Iterable, List, Optional, Sequence, Tuple
 
-from lib.estimate import checked, junior_hours
+from lib.estimate import Rates, checked, junior_hours
 from lib.orientation import Phase
 from lib.rows import SessionCost
 from lib.tally import Tally
@@ -77,6 +77,7 @@ class EffortSummary:
     overall: Rate
     by_month: Dict[str, Rate]
     by_week: Dict[str, Rate]
+    by_day: Dict[str, Rate]
     # Keyed `<model> <month>`, so one model's months sort together.
     by_model_month: Dict[str, Rate]
 
@@ -270,22 +271,22 @@ def _rated(rate: Rate) -> Rate:
     )
 
 
-def effort_of(rows: Sequence[SessionCost], grades: Mapping[str, float]) -> EffortSummary:
+def effort_of(rows: Sequence[SessionCost], rates: Rates) -> EffortSummary:
     """A ratio of sums per bucket, never a mean of each session's own ratio: one
     session estimated at a few minutes would otherwise swamp the mean. A row
-    whose current estimate fails the grade table raises, since quietly leaving
+    whose estimate fails the rate table raises, since quietly leaving
     it out would move every figure it belongs to."""
     overall = Rate()
     by_month: Dict[str, Rate] = {}
     by_week: Dict[str, Rate] = {}
+    by_day: Dict[str, Rate] = {}
     by_model_month: Dict[str, Rate] = {}
     estimated = 0
     for row in rows:
-        if not row.estimates:
+        if row.estimate is None:
             continue
         estimated += 1
-        current = checked(row.estimates[-1], grades, f"{row.session_id} estimate")
-        hours = junior_hours(current, grades)
+        hours = junior_hours(checked(row.estimate, rates, f"{row.session_id} estimate"), rates)
         overall.count(hours, row.total.cost_usd)
         started_at = row.first_response_at
         if started_at is None:
@@ -295,6 +296,7 @@ def effort_of(rows: Sequence[SessionCost], grades: Mapping[str, float]) -> Effor
         by_week.setdefault(iso_week(date.fromisoformat(started_at[:10])), Rate()).count(
             hours, row.total.cost_usd
         )
+        by_day.setdefault(started_at[:10], Rate()).count(hours, row.total.cost_usd)
         by_model_month.setdefault(f"{main_model(row)} {month}", Rate()).count(
             hours, row.total.cost_usd
         )
@@ -304,11 +306,12 @@ def effort_of(rows: Sequence[SessionCost], grades: Mapping[str, float]) -> Effor
         overall=_rated(overall),
         by_month={key: _rated(rate) for key, rate in sorted(by_month.items())},
         by_week={key: _rated(rate) for key, rate in sorted(by_week.items())},
+        by_day={key: _rated(rate) for key, rate in sorted(by_day.items())},
         by_model_month={key: _rated(rate) for key, rate in sorted(by_model_month.items())},
     )
 
 
-def totals_of(rows: Iterable[SessionCost], grades: Mapping[str, float]) -> Totals:
+def totals_of(rows: Iterable[SessionCost], rates: Rates) -> Totals:
     """A session is filed under where it **started**, the rule that already picks
     its row's month, so one running past midnight stays whole. A row with no
     priced response has no day to file under and lands in the grand total, its
@@ -343,5 +346,5 @@ def totals_of(rows: Iterable[SessionCost], grades: Mapping[str, float]) -> Total
         by_operator=_rounded(by_operator),
         orientation=orientation_of(rows),
         telemetry=telemetry_of(rows),
-        effort=effort_of(rows, grades),
+        effort=effort_of(rows, rates),
     )

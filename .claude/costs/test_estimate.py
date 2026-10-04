@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
-"""The human-hour estimate: what a revision may hold, how a row's revisions and
-a running session's pending ones merge, what `estimate.py` writes where, and the
+"""The human-hour estimate: what one may hold, which of a row's copy and a
+running session's pending one wins, what `estimate.py` writes where, and the
 ratio the report draws from them.
 
 Run by path (`python3 .claude/costs/test_estimate.py`), as `scripts/vet.sh`
@@ -18,18 +18,18 @@ import unittest
 from dataclasses import replace
 from pathlib import Path
 
-from lib.estimate import Revision, checked, junior_hours, merged, parse_grades, parse_revisions
-from lib.rows import ROOT, SessionCost, parse_session_cost, pending_estimates_path, row_text
+from lib.estimate import Estimate, Part, Rates, checked, junior_hours, latest, parse_estimate, parse_rates
+from lib.rows import ROOT, SessionCost, parse_session_cost, pending_estimate_path, row_text
 from lib.shape import ShapeError, to_json
 from lib.tally import Tally
 from lib.totals import effort_of, main_model
 
-GRADES = {"junior": 1, "senior": 2.5}
+RATES = Rates(roles={"copywriter": 1, "developer": 2}, grades={"junior": 1, "senior": 2.5})
 COSTS = Path(__file__).resolve().parent
 
 
-def revision(at: str, hours: float = 2, grade: str = "senior", comment: str = "why") -> Revision:
-    return Revision(at, hours, grade, comment)
+def estimate_of(at: str, *parts: Part, comment: str = "why") -> Estimate:
+    return Estimate(at, list(parts) or [Part(2, "senior", "copywriter")], comment)
 
 
 ROW = SessionCost(
@@ -55,90 +55,88 @@ ROW = SessionCost(
 )
 
 
-class WhatARevisionMayHold(unittest.TestCase):
-    def test_takes_a_grade_the_table_names_and_a_tweet_sized_comment(self) -> None:
-        self.assertEqual(checked(revision("t"), GRADES, "r"), revision("t"))
+class WhatAnEstimateMayHold(unittest.TestCase):
+    def test_takes_roles_and_grades_the_table_names_and_a_tweet_sized_comment(self) -> None:
+        self.assertEqual(checked(estimate_of("t"), RATES, "e"), estimate_of("t"))
 
-    def test_refuses_a_grade_the_table_does_not_name(self) -> None:
-        with self.assertRaisesRegex(ShapeError, "wizard"):
-            checked(revision("t", grade="wizard"), GRADES, "r")
+    def test_refuses_a_role_or_grade_the_table_does_not_name(self) -> None:
+        for part in (Part(1, "wizard", "developer"), Part(1, "senior", "wizard")):
+            with self.assertRaisesRegex(ShapeError, "wizard"):
+                checked(estimate_of("t", part), RATES, "e")
 
-    def test_refuses_negative_hours(self) -> None:
-        with self.assertRaises(ShapeError):
-            checked(revision("t", hours=-1), GRADES, "r")
+    def test_refuses_negative_hours_and_an_estimate_of_no_parts(self) -> None:
+        for bad in (estimate_of("t", Part(-1, "senior", "developer")), Estimate("t", [], "why")):
+            with self.assertRaises(ShapeError):
+                checked(bad, RATES, "e")
 
     def test_refuses_a_comment_past_280_characters_or_an_empty_one(self) -> None:
-        checked(revision("t", comment="x" * 280), GRADES, "r")
+        checked(estimate_of("t", comment="x" * 280), RATES, "e")
         for comment in ("x" * 281, ""):
             with self.assertRaises(ShapeError):
-                checked(revision("t", comment=comment), GRADES, "r")
+                checked(estimate_of("t", comment=comment), RATES, "e")
 
-    def test_converts_to_junior_hours_by_the_grade_s_multiplier(self) -> None:
-        self.assertEqual(junior_hours(revision("t", hours=2), GRADES), 5)
+    def test_adds_its_parts_up_in_junior_hours_by_role_and_grade(self) -> None:
+        mixed = estimate_of("t", Part(2, "senior", "developer"), Part(3, "junior", "copywriter"))
+        self.assertEqual(junior_hours(mixed, RATES), 2 * 2 * 2.5 + 3)
 
-    def test_refuses_a_grade_table_with_a_non_positive_multiplier(self) -> None:
-        with self.assertRaises(ShapeError):
-            parse_grades('{"junior": 0}')
-
-
-class HowHistoriesMerge(unittest.TestCase):
-    def test_keeps_every_revision_oldest_first(self) -> None:
-        self.assertEqual(
-            merged([revision("b")], [revision("c"), revision("a")]),
-            [revision("a"), revision("b"), revision("c")],
-        )
-
-    def test_the_row_wins_a_moment_both_carry_since_only_a_person_edits_it(self) -> None:
-        edited = revision("a", hours=9)
-        self.assertEqual(merged([edited], [revision("a")]), [edited])
+    def test_refuses_a_rate_table_with_a_non_positive_multiplier_or_a_missing_half(self) -> None:
+        for text in ('{"roles": {"a": 1}, "grades": {"b": 0}}', '{"roles": {"a": 1}}'):
+            with self.assertRaises(ShapeError):
+                parse_rates(text)
 
 
-class RowsCarryTheirEstimates(unittest.TestCase):
-    def test_a_row_with_estimates_parses_back_to_itself(self) -> None:
-        row = replace(ROW, estimates=[revision("a"), revision("b")])
+class WhichCopyWins(unittest.TestCase):
+    def test_the_one_set_last(self) -> None:
+        self.assertEqual(latest(estimate_of("b"), estimate_of("a")), estimate_of("b"))
+        self.assertEqual(latest(None, estimate_of("a")), estimate_of("a"))
+        self.assertIsNone(latest(None, None))
+
+
+class RowsCarryTheirEstimate(unittest.TestCase):
+    def test_a_row_with_an_estimate_parses_back_to_itself(self) -> None:
+        row = replace(ROW, estimate=estimate_of("a", Part(1, "junior", "developer"), Part(2, "senior", "copywriter")))
         self.assertEqual(parse_session_cost(json.dumps(to_json(row))), row)
 
     def test_a_row_from_before_estimates_reads_as_having_none(self) -> None:
         row = to_json(ROW)
-        del row["estimates"]
-        self.assertEqual(parse_session_cost(json.dumps(row)).estimates, [])
+        del row["estimate"]
+        self.assertIsNone(parse_session_cost(json.dumps(row)).estimate)
 
-    def test_a_revision_missing_its_comment_is_refused(self) -> None:
-        with self.assertRaisesRegex(ShapeError, "comment"):
-            parse_revisions([{"at": "a", "hours": 1, "grade": "junior"}], "row")
+    def test_a_part_missing_its_role_is_refused(self) -> None:
+        with self.assertRaisesRegex(ShapeError, "role"):
+            parse_estimate({"at": "a", "comment": "c", "parts": [{"hours": 1, "grade": "junior"}]}, "row")
 
 
 class TheReportsRatio(unittest.TestCase):
     def test_divides_summed_spend_by_summed_hours_rather_than_averaging_ratios(self) -> None:
         tiny = replace(
-            ROW, total=Tally(responses=1, cost_usd=5), estimates=[revision("a", 0.1, "junior")]
+            ROW,
+            total=Tally(responses=1, cost_usd=5),
+            estimate=estimate_of("a", Part(0.1, "junior", "copywriter")),
         )
-        big = replace(ROW, estimates=[revision("a", 4, "senior")])
-        summary = effort_of([tiny, big], GRADES)
+        big = replace(ROW, estimate=estimate_of("a", Part(4, "senior", "copywriter")))
+        summary = effort_of([tiny, big], RATES)
         # $15 over 10.1 junior-hours; a mean of the two ratios would be $26.
         self.assertEqual(summary.overall.usd_per_junior_hour, round(15 / 10.1, 4))
 
-    def test_rates_a_session_by_its_current_estimate_alone(self) -> None:
-        row = replace(ROW, estimates=[revision("a", 100), revision("b", 2, "junior")])
-        self.assertEqual(effort_of([row], GRADES).overall.junior_hours, 2)
-
     def test_counts_rows_with_no_estimate_without_rating_them(self) -> None:
-        summary = effort_of([ROW, replace(ROW, estimates=[revision("a")])], GRADES)
+        summary = effort_of([ROW, replace(ROW, estimate=estimate_of("a"))], RATES)
         self.assertEqual((summary.estimated, summary.rows, summary.overall.cost_usd), (1, 2, 10))
 
-    def test_files_a_session_under_the_model_that_spent_most_of_it(self) -> None:
+    def test_files_a_session_by_week_day_and_the_model_that_spent_most_of_it(self) -> None:
         self.assertEqual(main_model(ROW), "claude-opus-5-5")
-        summary = effort_of([replace(ROW, estimates=[revision("a")])], GRADES)
+        summary = effort_of([replace(ROW, estimate=estimate_of("a"))], RATES)
         self.assertEqual(list(summary.by_model_month), ["claude-opus-5-5 2026-03"])
         self.assertEqual(list(summary.by_week), ["2026-W10"])
+        self.assertEqual(list(summary.by_day), ["2026-03-04"])
 
-    def test_has_no_ratio_where_the_estimates_add_up_to_no_hours(self) -> None:
-        summary = effort_of([replace(ROW, estimates=[revision("a", 0)])], GRADES)
+    def test_has_no_ratio_where_the_estimate_adds_up_to_no_hours(self) -> None:
+        summary = effort_of([replace(ROW, estimate=estimate_of("a", Part(0, "senior", "developer")))], RATES)
         self.assertIsNone(summary.overall.usd_per_junior_hour)
 
-    def test_raises_on_a_current_estimate_the_grade_table_refuses(self) -> None:
+    def test_raises_on_an_estimate_the_rate_table_refuses(self) -> None:
         with self.assertRaises(ShapeError):
-            effort_of([replace(ROW, estimates=[revision("a", grade="wizard")])], GRADES)
+            effort_of([replace(ROW, estimate=estimate_of("a", Part(1, "wizard", "developer")))], RATES)
 
 
 def estimate(*args: str, session: str) -> subprocess.CompletedProcess[str]:
@@ -162,28 +160,44 @@ class TheCommand(unittest.TestCase):
     def tearDown(self) -> None:
         self.row.unlink(missing_ok=True)
         self.month.rmdir()
-        pending_estimates_path(self.running).unlink(missing_ok=True)
+        pending_estimate_path(self.running).unlink(missing_ok=True)
 
-    def test_a_running_session_s_revision_waits_under_tmp_for_its_row(self) -> None:
-        done = estimate("set", "3", "senior", "a reason", session=self.running)
+    def test_a_running_session_s_estimate_waits_under_tmp_for_its_row(self) -> None:
+        done = estimate(
+            "set", "a reason", "--part", "3", "senior", "developer", "--part", "1", "junior", "editor",
+            session=self.running,
+        )
         self.assertEqual(done.returncode, 0, done.stderr)
-        pending = pending_estimates_path(self.running)
+        pending = pending_estimate_path(self.running)
         self.assertTrue(pending.is_relative_to(ROOT / "tmp"))
-        written = parse_revisions(json.loads(pending.read_text(encoding="utf-8")), "pending")
-        self.assertEqual([(r.hours, r.grade, r.comment) for r in written], [(3, "senior", "a reason")])
+        written = parse_estimate(json.loads(pending.read_text(encoding="utf-8")), "pending")
+        assert written is not None
+        self.assertEqual(written.parts, [Part(3, "senior", "developer"), Part(1, "junior", "editor")])
+        self.assertEqual(written.comment, "a reason")
 
-    def test_another_session_s_revision_lands_in_its_committed_row(self) -> None:
-        done = estimate("set", "1", "junior", "after the fact", "--session", self.finished, session=self.running)
+    def test_a_later_set_replaces_the_estimate_whole(self) -> None:
+        for hours in ("3", "5"):
+            estimate("set", "why", "--part", hours, "senior", "developer", session=self.running)
+        written = parse_estimate(json.loads(pending_estimate_path(self.running).read_text(encoding="utf-8")), "p")
+        assert written is not None
+        self.assertEqual(written.parts, [Part(5, "senior", "developer")])
+
+    def test_another_session_s_estimate_lands_in_its_committed_row(self) -> None:
+        done = estimate(
+            "set", "after the fact", "--part", "1", "junior", "developer", "--session", self.finished,
+            session=self.running,
+        )
         self.assertEqual(done.returncode, 0, done.stderr)
         row = parse_session_cost(self.row.read_text(encoding="utf-8"))
-        self.assertEqual([r.comment for r in row.estimates], ["after the fact"])
-        self.assertFalse(pending_estimates_path(self.running).exists())
+        assert row.estimate is not None
+        self.assertEqual(row.estimate.comment, "after the fact")
+        self.assertFalse(pending_estimate_path(self.running).exists())
 
-    def test_a_refused_revision_writes_nothing(self) -> None:
-        done = estimate("set", "1", "wizard", "x", session=self.running)
+    def test_a_refused_estimate_writes_nothing(self) -> None:
+        done = estimate("set", "x", "--part", "1", "wizard", "developer", session=self.running)
         self.assertEqual(done.returncode, 1)
         self.assertIn("wizard", done.stderr)
-        self.assertFalse(pending_estimates_path(self.running).exists())
+        self.assertFalse(pending_estimate_path(self.running).exists())
 
     def test_a_session_with_no_row_is_refused_rather_than_guessed_at(self) -> None:
         done = estimate("show", "--session", "no-such-session", session=self.running)

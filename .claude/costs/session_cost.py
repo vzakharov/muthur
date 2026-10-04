@@ -35,12 +35,12 @@ from lib.pricing import (
     subagents_of,
     summarise_transcript,
 )
-from lib.estimate import merged
+from lib.estimate import latest
 from lib.rows import (
     ROOT,
     SessionCost,
     parse_session_cost,
-    read_pending_estimates,
+    read_pending_estimate,
     row_text,
     write_atomic,
 )
@@ -111,9 +111,9 @@ def main() -> int:
         cost.warnings = carried + cost.warnings
     # The previous row is what keeps the estimate through a resume in a fresh
     # container, whose `tmp/` starts empty.
-    cost.estimates = merged(
-        before.estimates if before is not None else [],
-        read_pending_estimates(cost.session_id),
+    cost.estimate = latest(
+        before.estimate if before is not None else None,
+        read_pending_estimate(cost.session_id),
     )
     row = row_text(cost)
     if args.out is not None:

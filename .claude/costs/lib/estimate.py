@@ -1,83 +1,117 @@
-"""A session's human-hour estimate: hours at a grade with a reason, converted to
-junior-hours only when read. `.claude/costs/CLAUDE.md` § "Human-hour estimates"
-carries why, and what the figure measures.
+"""A session's human-hour estimate: the task broken into parts, each hours of one
+role at one grade, with one reason for the whole, converted to junior-hours only
+when read. `.claude/costs/CLAUDE.md` § "Human-hour estimates" carries why, and
+what the figure measures.
 """
 
 from __future__ import annotations
 
 import json
 from dataclasses import dataclass
-from typing import Any, Dict, Iterable, List, Mapping
+from typing import Any, Dict, List, Mapping, Optional
 
-from lib.shape import ShapeError, is_number, read_number, read_string, required
+from lib.shape import ShapeError, is_number, read_number, read_object, read_string, required
 
 COMMENT_LIMIT = 280
 
 
 @dataclass(frozen=True)
-class Revision:
-    # UTC, ISO 8601. It is the revision's identity when two histories merge.
-    at: str
+class Part:
     hours: float
     grade: str
+    role: str
+
+
+@dataclass
+class Estimate:
+    # UTC, ISO 8601: when it was last set, which decides between two copies of it.
+    at: str
+    parts: List[Part]
     comment: str
 
 
-def parse_grades(text: str, where: str = "grades.json") -> Dict[str, float]:
-    grades = json.loads(text)
-    if not isinstance(grades, dict) or not grades:
+@dataclass(frozen=True)
+class Rates:
+    """Multipliers against an hour of the reference role at the lowest grade —
+    each table's `1` — which is what a junior-hour is."""
+
+    roles: Dict[str, float]
+    grades: Dict[str, float]
+
+
+def _multipliers(table: Optional[Dict[str, Any]], where: str) -> Dict[str, float]:
+    if not table:
         raise ShapeError(f"{where}: not a non-empty object")
-    for grade, multiplier in grades.items():
+    for name, multiplier in table.items():
         if not is_number(multiplier) or multiplier <= 0:
-            raise ShapeError(f"{where}: `{grade}` is not a positive multiplier")
-    return grades
+            raise ShapeError(f"{where}: `{name}` is not a positive multiplier")
+    return table
 
 
-def checked(revision: Revision, grades: Mapping[str, float], where: str) -> Revision:
-    """Holds at both ends: `estimate.py` refuses to write a bad revision, and the
+def parse_rates(text: str, where: str = "rates.json") -> Rates:
+    rates = json.loads(text)
+    if not isinstance(rates, dict):
+        raise ShapeError(f"{where}: not an object")
+    return Rates(
+        roles=_multipliers(read_object(rates, "roles", where), f"{where} roles"),
+        grades=_multipliers(read_object(rates, "grades", where), f"{where} grades"),
+    )
+
+
+def checked(estimate: Estimate, rates: Rates, where: str) -> Estimate:
+    """Holds at both ends: `estimate.py` refuses to write a bad estimate, and the
     report refuses a row edited by hand into one."""
-    if revision.hours < 0:
-        raise ShapeError(f"{where}: hours are {revision.hours}, below zero")
-    if revision.grade not in grades:
+    if not estimate.parts:
+        raise ShapeError(f"{where}: no parts")
+    for index, part in enumerate(estimate.parts):
+        at = f"{where} part {index + 1}"
+        if part.hours < 0:
+            raise ShapeError(f"{at}: hours are {part.hours:g}, below zero")
+        if part.role not in rates.roles:
+            raise ShapeError(f"{at}: role `{part.role}` is not one of {', '.join(rates.roles)} (rates.json)")
+        if part.grade not in rates.grades:
+            raise ShapeError(f"{at}: grade `{part.grade}` is not one of {', '.join(rates.grades)} (rates.json)")
+    if not 0 < len(estimate.comment) <= COMMENT_LIMIT:
         raise ShapeError(
-            f"{where}: grade `{revision.grade}` is not one of {', '.join(grades)} (grades.json)"
+            f"{where}: the comment is {len(estimate.comment)} characters, not 1–{COMMENT_LIMIT}"
         )
-    if not 0 < len(revision.comment) <= COMMENT_LIMIT:
-        raise ShapeError(
-            f"{where}: the comment is {len(revision.comment)} characters, not 1–{COMMENT_LIMIT}"
-        )
-    return revision
+    return estimate
 
 
-def parse_revisions(value: Any, where: str) -> List[Revision]:
+def parse_estimate(value: Any, where: str) -> Optional[Estimate]:
     if value is None:
-        return []
-    if not isinstance(value, list):
-        raise ShapeError(f"{where}: not a list")
-    revisions = []
-    for index, item in enumerate(value):
-        at = f"{where}[{index}]"
-        if not isinstance(item, dict):
+        return None
+    if not isinstance(value, dict):
+        raise ShapeError(f"{where}: not an object")
+    parts = value.get("parts")
+    if not isinstance(parts, list):
+        raise ShapeError(f"{where}: `parts` is not a list")
+    read = []
+    for index, part in enumerate(parts):
+        at = f"{where} parts[{index}]"
+        if not isinstance(part, dict):
             raise ShapeError(f"{at}: not an object")
-        revisions.append(
-            Revision(
-                at=required(read_string, item, "at", at),
-                hours=required(read_number, item, "hours", at),
-                grade=required(read_string, item, "grade", at),
-                comment=required(read_string, item, "comment", at),
+        read.append(
+            Part(
+                hours=required(read_number, part, "hours", at),
+                grade=required(read_string, part, "grade", at),
+                role=required(read_string, part, "role", at),
             )
         )
-    return revisions
+    return Estimate(
+        at=required(read_string, value, "at", where),
+        parts=read,
+        comment=required(read_string, value, "comment", where),
+    )
 
 
-def merged(row: Iterable[Revision], pending: Iterable[Revision]) -> List[Revision]:
-    """The union of the row's revisions and the ones `estimate.py` left for it,
-    oldest first. Where both carry the same moment the row's wins: the script
-    only ever appends, so a difference there is a person's edit to the row."""
-    by_moment = {revision.at: revision for revision in pending}
-    by_moment.update({revision.at: revision for revision in row})
-    return sorted(by_moment.values(), key=lambda revision: revision.at)
+def latest(*estimates: Optional[Estimate]) -> Optional[Estimate]:
+    """The copy set last. A row and a running session's pending file can each
+    carry one — the file from `estimate.py`, the row from a `--session` edit — and
+    whichever was set later is the estimate."""
+    present = [estimate for estimate in estimates if estimate is not None]
+    return max(present, key=lambda estimate: estimate.at) if present else None
 
 
-def junior_hours(revision: Revision, grades: Mapping[str, float]) -> float:
-    return revision.hours * grades[revision.grade]
+def junior_hours(estimate: Estimate, rates: Rates) -> float:
+    return sum(part.hours * rates.roles[part.role] * rates.grades[part.grade] for part in estimate.parts)

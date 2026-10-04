@@ -79,12 +79,15 @@
     "matchedEventUsd": 4.97532,
     "unseen": {}
   },
-  "estimates": [
-    {
-      "at": "2026-10-04T05:41:53.381Z",
-      "hours": 6.0,
-      "grade": "senior",
-      "comment": "Ledger feature: CLI, row merge, prompt hook, report section, relay hand-over, tests — a senior's day on a codebase they know."
-    }
-  ]
+  "estimate": {
+    "at": "2026-10-04T05:52:43.182Z",
+    "parts": [
+      {
+        "hours": 5.0,
+        "grade": "senior",
+        "role": "developer"
+      }
+    ],
+    "comment": "Human-hour estimates for the cost ledger: CLI, row field and Stop-time fold, prompt notice hook, report section, relay hand-over, docs and tests — a senior's day on a codebase they know."
+  }
 }
