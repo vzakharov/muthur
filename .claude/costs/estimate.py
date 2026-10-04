@@ -6,7 +6,9 @@ Usage:
   python3 .claude/costs/estimate.py show [--session <id>]
 
 Each `--part` is the hours one role at one grade would spend on the task; the
-parts add up to the estimate, and `set` replaces the whole of it. Without
+parts add up to the estimate, and `set` replaces the whole of it. The comment
+justifies the parts — why each role, at that grade, for those hours — rather
+than describing the work, which the row and the commits already carry. Without
 `--session` the session is this one, read off `CLAUDE_CODE_SESSION_ID`: the
 estimate goes to `tmp/estimates/<id>.json`, and the row folds it in when the
 turn ends. Another session's id edits that session's committed row in place,
@@ -57,7 +59,7 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
     commands = parser.add_subparsers(dest="command", required=True)
     setting = commands.add_parser("set")
-    setting.add_argument("comment")
+    setting.add_argument("comment", help="why each part's role, grade and hours; not a summary of the work")
     setting.add_argument(
         "--part", nargs=3, action="append", required=True, metavar=("HOURS", "GRADE", "ROLE")
     )

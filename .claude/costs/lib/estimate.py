@@ -1,5 +1,5 @@
 """A session's human-hour estimate: the task broken into parts, each hours of one
-role at one grade, with one reason for the whole, converted to senior-hours only
+role at one grade, with a comment justifying them, converted to senior-hours only
 when read. `.claude/costs/CLAUDE.md` § "Human-hour estimates" carries why, and
 what the figure measures.
 """
