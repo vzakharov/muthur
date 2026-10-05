@@ -4,6 +4,7 @@
     "editor": 0.73,
     "qa": 0.8,
     "designer": 0.87,
+    "prompter": 0.9,
     "analyst": 0.93,
     "developer": 1,
     "architect": 1.2
