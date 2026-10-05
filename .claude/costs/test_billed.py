@@ -72,6 +72,17 @@ class WhatTheEventsAdd(unittest.TestCase):
         self.assertEqual(row.telemetry.matched_table_usd, row.telemetry.matched_event_usd)
         self.assertEqual(row.warnings, [])
 
+    def test_takes_a_subagent_response_s_output_from_its_event(self) -> None:
+        # No `stop` and a partial `output`, as a subagent's record is written.
+        row = summarise(
+            [step(1, request="req_1", stop="tool_use")],
+            [[response(id="msg_sub", output=16, request="req_sub", at=t(2))]],
+            events=[event("req_1"), event("req_sub")],
+        )
+        self.assertEqual(row.subagents.output_tokens, 1_000_000)
+        self.assertEqual(row.subagents.cost_usd, 10.0)
+        self.assertEqual(row.warnings, [])
+
     def test_warns_when_the_table_and_the_events_disagree(self) -> None:
         row = summarise([step(1, request="req_1")], events=[event("req_1", cost=12.0)])
         self.assertEqual(len(row.warnings), 1)
@@ -102,6 +113,16 @@ class WithoutEvents(unittest.TestCase):
         row = summarise([step(1, request="req_1")], events=None)
         self.assertIsNone(row.telemetry)
         self.assertEqual(row.total.cost_usd, 10.0)
+
+    def test_warns_that_an_unfinished_response_s_output_is_a_floor(self) -> None:
+        row = summarise(
+            [step(1, stop="tool_use")],
+            [[response(id="msg_sub", output=16, at=t(2))]],
+            events=None,
+        )
+        [warning] = row.warnings
+        self.assertIn("1 responses", warning)
+        self.assertIn("a floor", warning)
 
     def test_round_trips_a_row_with_telemetry_and_parses_one_without(self) -> None:
         row = summarise([step(1, request="req_1")], events=[event("req_1"), event("req_2")])

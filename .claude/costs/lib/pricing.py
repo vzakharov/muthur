@@ -245,6 +245,7 @@ def summarise_transcript(
     matched: Set[str] = set()
     matched_event_usd = 0.0
     matched_table_usd = 0.0
+    unfinished = 0
 
     # `delegated` forces the bucket for a subagent's own file. Its records carry
     # `isSidechain` too, but the file they are in is the fact that does not
@@ -252,6 +253,7 @@ def summarise_transcript(
     def scan(jsonl: str, label: str, delegated: bool) -> None:
         nonlocal session_id, branch, cwd, opening_prompt, url, operator
         nonlocal claude_code_total_usd, last_own, matched_event_usd, matched_table_usd
+        nonlocal unfinished
         for where, line, record in json_lines(jsonl, label):
             kind = kind_of(record)
             # The session's own identity, which only its own file describes.
@@ -332,9 +334,15 @@ def summarise_transcript(
                 unpriced.add(key)
                 continue
 
+            event = events.get(response.request_id or "") if events else None
+            # A record with no `stop_reason` carries the usage the stream
+            # started with, its output a partial count; the event has the final.
+            if event is not None:
+                tokens.output_tokens = event.tokens.output_tokens
+            elif response.stop_reason is None:
+                unfinished += 1
             tokens.responses = 1
             tokens.cost_usd = cost_of(tokens, rates)
-            event = events.get(response.request_id or "") if events else None
             if event is not None:
                 matched.add(event.request_id)
                 matched_event_usd += event.tokens.cost_usd
@@ -374,6 +382,13 @@ def summarise_transcript(
             f"{last_own.message_id}: the session's last response stopped on"
             f" `{last_own.stop_reason}` rather than `end_turn` — the turn's tail was"
             f" {UNWRITTEN_TAIL}"
+        )
+
+    if unfinished:
+        warnings.append(
+            f"{unfinished} responses were written with the usage their stream started"
+            " with — no `stop_reason`, as a subagent's transcript writes each one —"
+            " and no event to correct it, so their output tokens are a floor"
         )
 
     telemetry: Optional[Telemetry] = None
