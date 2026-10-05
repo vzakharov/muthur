@@ -40,10 +40,8 @@ def row_path(session_id: str) -> Optional[Path]:
 def describe(estimate: Optional[Estimate], rates: Rates) -> str:
     if estimate is None:
         return "no estimate yet"
-    parts = " + ".join(f"{part.hours:g} h {part.grade} {part.role}" for part in estimate.parts)
-    reasons = estimate.comment or "; ".join(
-        f"{part.grade} {part.role}: {part.comment}" for part in estimate.parts
-    )
+    parts = " + ".join(f"{part.hours:g} h {part.label}" for part in estimate.parts)
+    reasons = estimate.comment or "; ".join(f"{part.label}: {part.comment}" for part in estimate.parts)
     return f"{parts} = {senior_hours(estimate, rates):g} senior-hours — {reasons}"
 
 

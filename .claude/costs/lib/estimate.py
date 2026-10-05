@@ -25,6 +25,11 @@ class Part:
     # estimate that carries one comment for the whole.
     comment: Optional[str] = None
 
+    @property
+    def label(self) -> str:
+        """How a comment for the whole names this part, before its reason."""
+        return f"{self.grade} {self.role}"
+
 
 @dataclass
 class Estimate:
@@ -130,7 +135,7 @@ def split_comment(estimate: Estimate) -> Optional[Estimate]:
     part no label names, two parts sharing a label."""
     if estimate.comment is None:
         return None
-    labels = [f"{part.grade} {part.role}" for part in estimate.parts]
+    labels = [part.label for part in estimate.parts]
     if len(set(labels)) != len(labels):
         return None
     # A `;` inside a reason stays in it unless what follows reads as a label,
