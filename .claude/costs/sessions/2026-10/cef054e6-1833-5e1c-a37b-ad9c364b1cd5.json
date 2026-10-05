@@ -96,9 +96,10 @@
       {
         "hours": 0.75,
         "grade": "junior",
-        "role": "developer"
+        "role": "developer",
+        "comment": "wording in one skill plus its catalog row — numbered summary files and the pickup rule for finding the current one; no code, the shape set by the operator's two asks, the rest is checking every place that names the file."
       }
     ],
-    "comment": "junior developer: wording in one skill plus its catalog row — numbered summary files and the pickup rule for finding the current one; no code, the shape set by the operator's two asks, the rest is checking every place that names the file."
+    "comment": null
   }
 }

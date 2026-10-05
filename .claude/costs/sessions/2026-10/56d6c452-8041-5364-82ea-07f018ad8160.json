@@ -96,9 +96,10 @@
       {
         "hours": 1.0,
         "grade": "senior",
-        "role": "prompter"
+        "role": "prompter",
+        "comment": "one rule in an always-loaded file an agent must follow without a skill loaded; choosing its single home and wording it to hold under shared-identity posting is instruction design, not editing"
       }
     ],
-    "comment": "senior prompter: one rule in an always-loaded file an agent must follow without a skill loaded; choosing its single home and wording it to hold under shared-identity posting is instruction design, not editing"
+    "comment": null
   }
 }

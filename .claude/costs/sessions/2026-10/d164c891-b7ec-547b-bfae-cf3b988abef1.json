@@ -85,14 +85,16 @@
       {
         "hours": 2.0,
         "grade": "senior",
-        "role": "analyst"
+        "role": "analyst",
+        "comment": "tracing a cost drift to stream-start usage in subagent transcripts needs a per-request join across two data sources"
       },
       {
         "hours": 1.5,
         "grade": "middle",
-        "role": "developer"
+        "role": "developer",
+        "comment": "the fix is one branch in the pricer plus two tests and a doc paragraph"
       }
     ],
-    "comment": "senior analyst: tracing a cost drift to stream-start usage in subagent transcripts needs a per-request join across two data sources; middle developer: the fix is one branch in the pricer plus two tests and a doc paragraph"
+    "comment": null
   }
 }
