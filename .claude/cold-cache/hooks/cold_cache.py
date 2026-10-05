@@ -135,6 +135,12 @@ def price(transcript: Path, history: History, context: int, project: Path) -> Op
     return session_of(transcript, history, context, prices, project, relay=False)
 
 
+def outclassed(s: Session) -> bool:
+    """A fresh session that costs at least the re-cache up front and carries no
+    smaller context after never comes out ahead, so the stop has nothing to offer."""
+    return s.reorientation.cost_usd >= recache(s) and s.reorientation.context >= s.context
+
+
 @dataclass(frozen=True)
 class Verdict:
     """What the hook prints: a block's reason, or context for a prompt it passes."""
@@ -184,7 +190,7 @@ def on_prompt(event: Dict[str, Any], state: State, min_usd: float, project: Path
     priced = price(transcript, history, context, project)
     claude_code_usd = flag.get("estimated_cache_write_usd") if flag else None
     cost = recache(priced) if priced else claude_code_usd
-    if cost is not None and cost < min_usd:
+    if (cost is not None and cost < min_usd) or (priced is not None and outclassed(priced)):
         return Verdict()
 
     state.dir.mkdir(parents=True, exist_ok=True)
