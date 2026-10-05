@@ -13,6 +13,9 @@ is visible rather than a matter of taste:
   a sequence with no *because* in it is a list, not an explanation.
 - **Length is not thoroughness.** A report that takes five screens to reach its
   point has failed even when every line in it is true.
+- **Report what happened, never a rule that had nothing to act on.** A
+  convention whose case did not come up is not news; naming it puts in the
+  reader's head a thing that is not there.
 - **Frustration is a signal, and it is about you.** Repeated punctuation, caps,
   a re-asked question, "just tell me" — read it as a report that the last answer
   did not land. Do not answer it with more detail. Answer the question that was
