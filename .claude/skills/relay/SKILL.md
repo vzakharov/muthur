@@ -86,6 +86,6 @@ A pause the context budget calls for (`.claude/context-budget/`, at either of it
    - a paused plan, or a draft carrying a quoted go-ahead → `@.claude/skills/go/SKILL.md` from its Step 1;
    - any other change → `/go` § "Planless entry", with that step as the task;
    - "wait" → report the relay landed and the branch's state in a few lines, and stop.
-4. **A cross-session message from the predecessor, or the operator asking whether one came** → load `@.claude/skills/relay/after-handoff.md` § "In the successor" before answering or acting.
+4. **A cross-session message from the predecessor, or any operator question about the predecessor** — what it sent, said or did → load `@.claude/skills/relay/after-handoff.md` § "In the successor" before answering or acting: a forward can be waiting unseen.
 
 A relayed session is continued work (CLAUDE.md § "Plan mode & questions in web sessions"): its operator's follow-ups are handled directly, with no plan cycle opened for them.
