@@ -232,8 +232,8 @@ the reason for them. A revision replaces it, so its history is git's.
   What was done is already in the row and the commits; what nothing else
   carries is why that part is that role, at that grade, for those hours — and
   only that lets a reader check the figure rather than take it. It sits on the
-  part it justifies, so the one is never read without the other. A row from
-  before carries one comment for the whole; where it names each part as
+  part it justifies, so the one is never read without the other. An older row
+  carries one comment for the whole; where it names each part as
   `<grade> <role>: <reason>`, the report moves it onto the parts, and where it
   does not, it stays as written, since placing it would be a guess.
 

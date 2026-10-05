@@ -36,8 +36,8 @@ class Estimate:
     # UTC, ISO 8601: when it was last set, which decides between two copies of it.
     at: str
     parts: List[Part]
-    # One reason for the whole, as rows were written before each part carried
-    # its own. It survives only where `split_comment` cannot place it.
+    # One reason for the whole, the older shape: `estimate.py` never writes it,
+    # and it stays on a row only where `split_comment` cannot place it.
     comment: Optional[str] = None
 
 
