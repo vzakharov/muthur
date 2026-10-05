@@ -1,0 +1,100 @@
+{
+  "sessionId": "fb8b2b92-04e4-5a77-9d8c-b757385fb797",
+  "branch": "claude/cold-cache-outclassed-fresh-3ueviu",
+  "cwd": "/home/user/muthur",
+  "openingPrompt": "новая сессия после релея в адоптере успела сделать очень малое, и кажется, что хук заблокировал то, что, согласно его же тексту, было более выгодно чем начинать…",
+  "prs": [
+    146
+  ],
+  "url": "https://claude.ai/code/session_019xEQFa9tBMtQENykENPAXn",
+  "operator": "vzakharov",
+  "firstResponseAt": "2026-10-05T15:47:21.720Z",
+  "lastResponseAt": "2026-10-05T15:50:32.209Z",
+  "pricesAsOf": "2026-09-23",
+  "claudeCodeTotalUsd": null,
+  "total": {
+    "inputTokens": 66,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 101540,
+    "cacheReadTokens": 3796833,
+    "outputTokens": 14869,
+    "thinkingTokens": 5123,
+    "responses": 33,
+    "costUsd": 1.8693305999999998
+  },
+  "ownTurns": {
+    "inputTokens": 66,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 101540,
+    "cacheReadTokens": 3796833,
+    "outputTokens": 14869,
+    "thinkingTokens": 5123,
+    "responses": 33,
+    "costUsd": 1.8693305999999998
+  },
+  "subagents": {
+    "inputTokens": 0,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 0,
+    "cacheReadTokens": 0,
+    "outputTokens": 0,
+    "thinkingTokens": 0,
+    "responses": 0,
+    "costUsd": 0.0
+  },
+  "byRate": {
+    "claude-opus-5-5/standard": {
+      "inputTokens": 66,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 101540,
+      "cacheReadTokens": 3796833,
+      "outputTokens": 14869,
+      "thinkingTokens": 5123,
+      "responses": 33,
+      "costUsd": 1.8693305999999998
+    }
+  },
+  "warnings": [],
+  "orientation": {
+    "endedBy": "Edit",
+    "endedOn": ".claude/cold-cache/hooks/cold_cache.py",
+    "endedAt": "2026-10-05T15:48:02.552Z",
+    "contextTokens": 108588,
+    "spend": {
+      "inputTokens": 14,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 62702,
+      "cacheReadTokens": 590766,
+      "outputTokens": 2847,
+      "thinkingTokens": 1797,
+      "responses": 7,
+      "costUsd": 0.6767652
+    }
+  },
+  "compactions": [],
+  "telemetry": {
+    "events": 33,
+    "matched": 33,
+    "matchedTableUsd": 1.8693305999999998,
+    "matchedEventUsd": 1.8693305999999998,
+    "unseen": {}
+  },
+  "estimate": {
+    "at": "2026-10-05T15:49:21.643Z",
+    "parts": [
+      {
+        "hours": 1.5,
+        "grade": "middle",
+        "role": "developer",
+        "comment": "a dominance check in an existing hook plus fixtures that keep the threshold test honest; the cost model is already there"
+      },
+      {
+        "hours": 0.5,
+        "grade": "senior",
+        "role": "analyst",
+        "comment": "seeing that the stop's only value is the choice it offers, and when that choice is empty, takes reading the pricing model"
+      }
+    ],
+    "comment": null
+  }
+}
