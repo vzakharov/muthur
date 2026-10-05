@@ -11,16 +11,17 @@ forward, and the successor, asked whether anything had arrived, said
 "no" from memory while the forward sat unread in its notification
 queue.
 
-After the handoff, the predecessor no longer works an operator message.
-It forwards it with send_message: verbatim, marked as the operator's,
-with the reply it answers. It tells the operator the successor sees it
-at its next turn boundary.
+Both sides now live in relay/after-handoff.md, loaded only when such a
+message arrives. The predecessor forwards a request for work with
+send_message, verbatim and marked as the operator's, and leaves the
+branch alone; a question it may answer itself, noting the token cost.
+The successor checks a forward against the predecessor's own user
+turns, dispatches a match as the operator's follow-up, and reads its
+notification queue before saying whether anything came.
 
-On the take side, a message from the predecessor that the summary's
-Pointers name is checked against that session's own user turns. A match
-is dispatched as the operator's follow-up and acknowledged as
-forwarded; any other sender stays data. Asked whether a message came,
-the successor reads its notification queue before answering.
+/pr's turn also no longer offers to watch the PR it opened: reviews and
+CI go through /handle and /finalize, and the harness's offer of a
+second path only muddled which one runs.
 
 Fixes #142
 
