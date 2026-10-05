@@ -1,7 +1,7 @@
 Proposed squash title/body:
 
 ```
-fix: cold-cache guard passes when a fresh session can't win (pr #146)
+fix: cold-cache guard passes when a fresh session isn't a choice (pr #146)
 ```
 
 ```
@@ -13,9 +13,11 @@ choice and only costs a round trip. An adopter session was stopped at
 "carry on ~$0.33" against "new session ~$1.19, ~132k per request
 instead of ~94k".
 
-Such a prompt now passes, beside the COLD_CACHE_MIN_USD pass. A fresh
-session that costs more up front but carries less context is still
-offered, since it can win over a long enough tail.
+Such a prompt now passes, beside the COLD_CACHE_MIN_USD pass, and so
+does one whose fresh session is ahead by less than COLD_CACHE_MARGIN
+(default 0.10) both on up-front cost and on context, a near-tie being
+no more a choice than a loss. A fresh session clearly ahead on either
+count is still offered.
 
 Co-authored-by: Claude <noreply@anthropic.com>
 ```
