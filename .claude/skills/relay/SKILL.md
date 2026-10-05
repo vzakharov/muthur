@@ -26,7 +26,7 @@ Where the cost ledger ships (`.claude/costs/`), revise this session's human-hour
 
 ### Step 2 — Write the summary
 
-Walk the conversation in order first, then write `docs/remove-before-merging/relay.md`, and commit and push it. An earlier relay's `relay.md` is first `git mv`'d to `relay-<N>.md`, `<N>` one past the highest already beside it, starting at 1 — so `relay.md` is always the summary `/relay take` reads and the numbered ones are its predecessors, oldest first. `/finalize` sweeps that directory.
+Walk the conversation in order first. Then `git mv` an earlier relay's `docs/remove-before-merging/relay.md` to `relay-<N>.md` beside it, `<N>` one past the highest there or else 1, write the new `relay.md`, and commit and push. `relay.md` is always the summary `/relay take` reads; `/finalize` sweeps the directory.
 
 - **English**, being agent-facing, with the operator's words quoted in their own language.
 - **A `Compact Instructions` section in context** steers what the summary dwells on: whoever wrote one wrote it for this.
@@ -63,7 +63,7 @@ The successor's link — on the web `https://claude.ai/code/<session_id>` from t
 
 `/compact` ends its summary with the way back to the full transcript, for the rare detail the summary dropped, and so do a relay's Pointers. On the web that is the predecessor's session id, from its link: `list_events` and `get_event` from the Claude Code Remote tools read its transcript from the server — every message, tool call and tool output, thinking redacted — whether or not its container still exists. It is never committed, because it holds every tool output, secrets included.
 
-Reach for it only for a detail the summary dropped, after the earlier relays' `relay-<N>.md`, which may hold it for far less, and through a subagent that pages it into `tmp/` and searches it there: read inline, a long session's transcript costs the successor the context the relay was run to free.
+Reach for it only for a detail the summary dropped and no earlier `relay-<N>.md` holds, and through a subagent that pages it into `tmp/` and searches it there: read inline, a long session's transcript costs the successor the context the relay was run to free.
 
 ## Auto-relay
 
