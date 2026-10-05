@@ -20,6 +20,11 @@ confidently incorrect rather than absent.
   a turn that thought and called two tools writes three — and each carries that
   response's _whole_ `usage`. Records are deduplicated by `message.id`; summing
   them triples the bill.
+- **A subagent's records carry the usage the stream started with.** Their
+  `stop_reason` is null and their `output_tokens` a partial count — 16 of a
+  response's final 112, 24 of 1,289 — while input and cache counts are already
+  final. A matched event supplies the output; without one, the row warns that
+  those responses' output is a floor.
 - **A response is billed at the rates for its `(model, speed)` pair.** Fast mode
   doubles the rates, so `usage.speed` is read rather than assumed.
 - **Cache writes are billed by TTL.** `usage.cache_creation` splits into
@@ -107,7 +112,8 @@ fields. `lib/billed.py` joins them to the priced responses by request id.
 **The events' worth is the calls the transcript never records.** Where a
 response and its event are both there, the table and the event price it alike,
 so the response keeps the table's price and the event checks it; the row warns
-when the two drift apart. An event no response matches is such a call — a
+when the two drift apart. The event's output count replaces the record's, which
+for a subagent is a partial one, so what is left to drift is a rate. An event no response matches is such a call — a
 prompt suggestion, a compaction — and goes into `total` and `byRate` at the
 event's price, and into `telemetry.unseen` by its `query_source`, which takes
 values the documentation does not list (`sdk` for a web session's main thread,
