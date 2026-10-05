@@ -1,7 +1,7 @@
 Proposed squash title/body:
 
 ```
-feat: keep earlier relay summaries as relay-<N>.md (pr #140)
+feat: number relay summaries as relay-<N>.md (pr #140)
 ```
 
 ```
@@ -9,11 +9,12 @@ A branch relayed more than once kept only its latest summary on disk:
 each /relay overwrote docs/remove-before-merging/relay.md, leaving the
 earlier ones reachable only through git history.
 
-The handoff now git-mv's an existing relay.md to relay-<N>.md, N one
-past the highest present or else 1, before writing the new summary. So
-relay.md is always the file /relay take reads, and its predecessors sit
-beside it in order. The transcript fallback points at them first, being
-far cheaper to search than a session transcript.
+Each relay now writes relay-<N>.md, N one past the highest present or
+else 1, and never renames it, so git records every relay as one added
+file rather than a rewrite of a fixed path. /relay take reads the
+highest-numbered summary (sort -V, so relay-10 follows relay-9), and the
+transcript fallback looks in the lower-numbered ones first, being far
+cheaper to search than a session transcript.
 
 Co-authored-by: Claude <noreply@anthropic.com>
 ```
