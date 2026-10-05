@@ -136,8 +136,7 @@ def price(transcript: Path, history: History, context: int, project: Path) -> Op
 
 
 def outclassed(s: Session) -> bool:
-    """A fresh session that costs at least the re-cache up front and carries no
-    smaller context after never comes out ahead, so the stop has nothing to offer."""
+    """The fresh session never comes out ahead, so the stop has no choice to offer."""
     return s.reorientation.cost_usd >= recache(s) and s.reorientation.context >= s.context
 
 
