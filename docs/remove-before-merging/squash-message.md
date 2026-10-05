@@ -12,9 +12,10 @@ session, so the comment answered something nobody there had asked.
 
 CLAUDE.md § "GitHub comments" now has such a reply open with the
 operator's in-session words, quoted when short and paraphrased in a
-line otherwise, before the answer. The rule lives in CLAUDE.md rather
-than in /handle because the operator talks in chat outside any skill
-run too.
+line otherwise, behind a lead-in in the thread's language, before the
+answer. The rule lives in CLAUDE.md rather than in /handle because the
+operator talks in chat outside any skill run too. voice.md adds that a
+report names what happened, never a rule that had nothing to act on.
 
 The human-hour estimates gain a prompter role at 0.9, between editor
 and developer: work on the instructions an LLM follows was booked as
