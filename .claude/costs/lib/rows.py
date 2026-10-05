@@ -10,7 +10,7 @@ from pathlib import Path
 from typing import Any, Dict, List, Mapping, Optional, Tuple
 
 from lib.billed import Telemetry, parse_telemetry
-from lib.estimate import Estimate, parse_estimate
+from lib.estimate import Estimate, parse_estimate, split_comment
 from lib.orientation import Compaction, Phase, parse_compaction, parse_phase
 from lib.shape import ShapeError, read_number, read_object, read_string, required, to_json
 from lib.tally import Tally, parse_tally
@@ -150,13 +150,18 @@ def write_pending_estimate(session_id: str, estimate: Estimate) -> None:
 
 
 def read_row(path: Path) -> Tuple[SessionCost, List[str]]:
-    """A row carrying keys the current shape does not write is rewritten in
-    that shape as it is read, and the keys it lost are returned. That is how a
-    retired field leaves the ledger — in every repository it runs in, on the
-    first report there — with no migration for anyone to remember to run."""
+    """A row in an older shape is rewritten in the current one as it is read,
+    and what changed is returned: the keys it lost, and an estimate comment
+    `split_comment` moved onto the parts. That is how a retired shape leaves the
+    ledger — in every repository it runs in, on the first report there — with no
+    migration for anyone to remember to run."""
     text = path.read_text(encoding="utf-8")
     row = parse_session_cost(text, str(path))
-    dropped = sorted(set(json.loads(text)) - set(to_json(row)))
-    if dropped:
+    changes = [f"dropped {key}" for key in sorted(set(json.loads(text)) - set(to_json(row)))]
+    split = split_comment(row.estimate) if row.estimate is not None else None
+    if split is not None:
+        row.estimate = split
+        changes.append("split the estimate's comment onto its parts")
+    if changes:
         write_atomic(path, row_text(row))
-    return row, dropped
+    return row, changes
