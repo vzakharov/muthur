@@ -291,6 +291,11 @@ class TheCommand(unittest.TestCase):
         self.assertIn("wizard", done.stderr)
         self.assertFalse(pending_estimate_path(self.running).exists())
 
+    def test_a_part_without_its_reason_is_refused_whatever_else_is_given(self) -> None:
+        done = estimate("set", "a reason for the whole", "--part", "1", "senior", "developer", session=self.running)
+        self.assertEqual(done.returncode, 2)
+        self.assertFalse(pending_estimate_path(self.running).exists())
+
     def test_a_session_with_no_row_is_refused_rather_than_guessed_at(self) -> None:
         done = estimate("show", "--session", "no-such-session", session=self.running)
         self.assertEqual(done.returncode, 1)
