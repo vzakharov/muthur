@@ -59,6 +59,10 @@ Its prompt is one line, `/relay take <branch>`. The summary is not passed in the
 
 The successor's link — on the web `https://claude.ai/code/<session_id>` from the id `create_session` returned, written bare so the operator clicks through to it — or the local recipe, and the summary's size in characters with a rough token count at four characters a token — the context the successor starts with on top of its baseline. Leave this session open: archiving it is the operator's call.
 
+### After the handoff
+
+An operator message that lands here once the successor is running → load `@.claude/skills/relay/after-handoff.md` § "In the predecessor" before acting on it.
+
 ## The predecessor's transcript
 
 `/compact` ends its summary with the way back to the full transcript, for the rare detail the summary dropped, and so do a relay's Pointers. On the web that is the predecessor's session id, from its link: `list_events` and `get_event` from the Claude Code Remote tools read its transcript from the server — every message, tool call and tool output, thinking redacted — whether or not its container still exists. It is never committed, because it holds every tool output, secrets included.
@@ -82,5 +86,6 @@ A pause the context budget calls for (`.claude/context-budget/`, at either of it
    - a paused plan, or a draft carrying a quoted go-ahead → `@.claude/skills/go/SKILL.md` from its Step 1;
    - any other change → `/go` § "Planless entry", with that step as the task;
    - "wait" → report the relay landed and the branch's state in a few lines, and stop.
+4. **A cross-session message from the predecessor, or any operator question about the predecessor** — what it sent, said or did → load `@.claude/skills/relay/after-handoff.md` § "In the successor" before answering or acting: a forward can be waiting unseen.
 
 A relayed session is continued work (CLAUDE.md § "Plan mode & questions in web sessions"): its operator's follow-ups are handled directly, with no plan cycle opened for them.
