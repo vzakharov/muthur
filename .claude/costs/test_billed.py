@@ -73,8 +73,7 @@ class WhatTheEventsAdd(unittest.TestCase):
         self.assertEqual(row.warnings, [])
 
     def test_takes_a_subagent_response_s_output_from_its_event(self) -> None:
-        # A subagent's record keeps the usage its stream started with: a few
-        # output tokens of the response's final count, and no `stop_reason`.
+        # No `stop` and a partial `output`, as a subagent's record is written.
         row = summarise(
             [step(1, request="req_1", stop="tool_use")],
             [[response(id="msg_sub", output=16, request="req_sub", at=t(2))]],

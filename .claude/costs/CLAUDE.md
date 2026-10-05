@@ -110,10 +110,10 @@ bearings lands in the work.
 fields. `lib/billed.py` joins them to the priced responses by request id.
 
 **The events' worth is the calls the transcript never records.** Where a
-response and its event are both there, the table and the event price it alike,
-so the response keeps the table's price and the event checks it; the row warns
-when the two drift apart. The event's output count replaces the record's, which
-for a subagent is a partial one, so what is left to drift is a rate. An event no response matches is such a call — a
+response and its event are both there, the table and the event price it alike
+once the event's output count stands in for the record's, so the response keeps
+the table's price and the event checks it; the row warns when the two drift
+apart. An event no response matches is such a call — a
 prompt suggestion, a compaction — and goes into `total` and `byRate` at the
 event's price, and into `telemetry.unseen` by its `query_source`, which takes
 values the documentation does not list (`sdk` for a web session's main thread,
