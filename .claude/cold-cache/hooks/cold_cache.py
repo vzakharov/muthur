@@ -27,6 +27,7 @@ from lib.restart import History, Session, context_of, epoch, read_history, recac
 PRICES = ROOT / ".claude" / "costs" / "prices.json"
 RESEND = "!"
 DEFAULT_MIN_USD = 0.30
+DEFAULT_MARGIN = 0.10
 
 # The commands a cold cache lets through: the ways on that shed context, and the
 # built-ins that make no model request over this session's context, aliases
@@ -135,6 +136,13 @@ def price(transcript: Path, history: History, context: int, project: Path) -> Op
     return session_of(transcript, history, context, prices, project, relay=False)
 
 
+def outclassed(s: Session, margin: float) -> bool:
+    """The fresh session beats carrying on by less than `margin` on both counts,
+    so the stop has no real choice to offer."""
+    keep = 1 - margin
+    return s.reorientation.cost_usd >= keep * recache(s) and s.reorientation.context >= keep * s.context
+
+
 @dataclass(frozen=True)
 class Verdict:
     """What the hook prints: a block's reason, or context for a prompt it passes."""
@@ -156,7 +164,7 @@ def resent(state: State) -> Verdict:
     )
 
 
-def on_prompt(event: Dict[str, Any], state: State, min_usd: float, project: Path) -> Verdict:
+def on_prompt(event: Dict[str, Any], state: State, min_usd: float, margin: float, project: Path) -> Verdict:
     prompt = event.get("prompt") or ""
     if prompt.strip() == RESEND:
         return resent(state)
@@ -184,7 +192,7 @@ def on_prompt(event: Dict[str, Any], state: State, min_usd: float, project: Path
     priced = price(transcript, history, context, project)
     claude_code_usd = flag.get("estimated_cache_write_usd") if flag else None
     cost = recache(priced) if priced else claude_code_usd
-    if cost is not None and cost < min_usd:
+    if (cost is not None and cost < min_usd) or (priced is not None and outclassed(priced, margin)):
         return Verdict()
 
     state.dir.mkdir(parents=True, exist_ok=True)
@@ -200,6 +208,11 @@ def main() -> None:
     except ValueError:
         print("cold-cache: COLD_CACHE_MIN_USD must be a number of dollars; no check made.", file=sys.stderr)
         return
+    try:
+        margin = float(os.environ.get("COLD_CACHE_MARGIN", DEFAULT_MARGIN))
+    except ValueError:
+        print("cold-cache: COLD_CACHE_MARGIN must be a fraction, e.g. 0.10; no check made.", file=sys.stderr)
+        return
     event = json.load(sys.stdin)
     session = event.get("session_id") or ""
     if not session or "/" in session or session.startswith("."):
@@ -210,7 +223,7 @@ def main() -> None:
     if kind == "SessionStart":
         on_session_start(event, state)
     elif kind == "UserPromptSubmit":
-        verdict = on_prompt(event, state, min_usd, project)
+        verdict = on_prompt(event, state, min_usd, margin, project)
         if verdict.block is not None:
             print(json.dumps({"decision": "block", "reason": verdict.block}))
         elif verdict.context is not None:

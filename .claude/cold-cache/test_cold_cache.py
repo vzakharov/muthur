@@ -23,7 +23,7 @@ HOOK = HERE / "hooks" / "cold_cache.py"
 # The ledger's directory, for its lib and its test's record builders.
 sys.path.insert(0, str(HERE.parent / "costs"))
 
-from test_restart import HOUR, opening, response
+from test_restart import HOUR, opening, response, row
 
 
 def latest(message_id: str = "last", ago: float = 2 * HOUR, context: int = 174_000, **kw: Any) -> Dict[str, Any]:
@@ -70,6 +70,12 @@ class HookCase(unittest.TestCase):
         decision = json.loads(out)
         self.assertEqual(decision["decision"], "block")
         return decision["reason"]
+
+    def fresh_sessions(self, context: int, cost: float) -> None:
+        """A ledger whose fresh sessions oriented at `context` for `cost`."""
+        month = self.root / ".claude" / "costs" / "sessions" / "2026-09"
+        month.mkdir(parents=True)
+        (month / "0.json").write_text(json.dumps(row("/go x", context, cost)))
 
     def resume(self, **fields: Any) -> None:
         self.run_hook("SessionStart", source="resume", **fields)
@@ -134,9 +140,27 @@ class WhenAPromptIsStopped(HookCase):
         self.assertIsNotNone(self.prompt("go on !pass"))
 
     def test_a_cheap_recache_passes(self) -> None:
+        self.fresh_sessions(20_000, 0.05)
         self.append(opening(), latest(context=45_000))
         self.assertIsNone(self.prompt())
         self.assertIsNotNone(self.prompt(env={"COLD_CACHE_MIN_USD": "0.01"}))
+
+    def test_a_fresh_session_that_cannot_come_out_ahead_passes(self) -> None:
+        self.fresh_sessions(132_000, 1.19)
+        self.append(opening(), latest(context=94_000))
+        self.assertIsNone(self.prompt())
+
+    def test_a_fresh_session_ahead_by_less_than_the_margin_passes(self) -> None:
+        # Against a $0.43 re-cache at 94k: under 10% better on both counts.
+        self.fresh_sessions(90_000, 0.40)
+        self.append(opening(), latest(context=94_000))
+        self.assertIsNone(self.prompt())
+        self.assertIsNotNone(self.prompt(env={"COLD_CACHE_MARGIN": "0"}))
+
+    def test_a_fresh_session_that_carries_less_is_still_offered(self) -> None:
+        self.fresh_sessions(60_000, 1.19)
+        self.append(opening(), latest(context=94_000))
+        self.assertIsNotNone(self.prompt())
 
     def test_an_unpriced_model_is_stopped_without_dollars(self) -> None:
         self.append(opening(model="claude-x"), latest(model="claude-x"))
@@ -165,6 +189,7 @@ class WhenAPromptIsStopped(HookCase):
 class TheResumeFlag(HookCase):
     def test_a_resume_the_client_calls_expired_is_stopped_on_its_figures(self) -> None:
         # Warm by the transcript; only the resume says otherwise.
+        self.fresh_sessions(60_000, 0.30)
         self.append(opening(), latest(ago=600))
         self.resume(
             prompt_cache_likely_expired=True,
