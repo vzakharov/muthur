@@ -21,14 +21,14 @@ shown="$(CLAUDE_CODE_SESSION_ID="$session_id" python3 "$root/$script" show)" || 
 current="${shown#*: }"
 roles="$(jq -r '.roles | keys_unsorted | join(", ")' "$root/.claude/costs/rates.json")"
 grades="$(jq -r '.grades | keys_unsorted | join(", ")' "$root/.claude/costs/rates.json")"
-usage="python3 $script set \"<why these parts, at most 280 characters>\" --part <hours> <grade> <role> [--part ...]"
+usage="python3 $script set --part <hours> <grade> <role> \"<why, at most 280 characters>\" [--part ...]"
 
 # One line per paragraph: the agent reads it unwrapped, and a hard break inside
 # the command would split it.
 if [ "$current" = "no estimate yet" ]; then
-  notice="This session has no human-hour estimate yet. Once the size of the work is known, set one: \`$usage\` — one part per role and grade the task would take in a team, each the hours that person would spend on it (roles: $roles; grades: $grades). A session that only answers a question gets one too. It sizes the task, never the session's own pace: revise it when the task grows or shrinks — scope added, a difficulty no estimator would have foreseen, a relay handing the rest on — and never because the work went slowly. The comment is the case for the team: for each part, why that role at that grade for those hours — e.g. \"middle developer: the code is a routine component slot; senior copywriter: the prose needs judgement of voice\" — never a summary of the work, which the row and the commits already carry. A revision replaces the whole estimate, and git keeps the old one, so its comment justifies the parts as they stand, never how the figure moved."
+  notice="This session has no human-hour estimate yet. Once the size of the work is known, set one: \`$usage\` — one part per role and grade the task would take in a team, each the hours that person would spend on it (roles: $roles; grades: $grades). A session that only answers a question gets one too. It sizes the task, never the session's own pace: revise it when the task grows or shrinks — scope added, a difficulty no estimator would have foreseen, a relay handing the rest on — and never because the work went slowly. Each part's reason is the case for the team: why that role at that grade for those hours — e.g. \`--part 2 middle developer \"the code is a routine component slot\" --part 1 senior copywriter \"the prose needs judgement of voice\"\` — never a summary of the work, which the row and the commits already carry. A revision replaces the whole estimate, and git keeps the old one, so its reasons justify the parts as they stand, never how the figure moved."
 else
-  notice="This session's human-hour estimate: $current. If this prompt changes the size of the task — never the pace of the work — revise it with \`$usage\`, the comment justifying each part's role, grade and hours as they now stand — never a summary of the work, nor how the figure moved."
+  notice="This session's human-hour estimate: $current. If this prompt changes the size of the task — never the pace of the work — revise it with \`$usage\`, each part's reason justifying its role, grade and hours as they now stand — never a summary of the work, nor how the figure moved."
 fi
 
 emit_context "$notice"

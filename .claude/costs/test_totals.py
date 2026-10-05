@@ -246,7 +246,7 @@ class RetiredFields(unittest.TestCase):
 
     def test_a_row_carrying_a_retired_key_is_rewritten_without_it(self) -> None:
         self.path.write_text(json.dumps({**to_json(ROW), "name": "a named session"}))
-        self.assertEqual(read_row(self.path), (ROW, ["name"]))
+        self.assertEqual(read_row(self.path), (ROW, ["dropped name"]))
         self.assertEqual(self.path.read_text(), row_text(ROW))
 
     def test_a_row_in_the_current_shape_is_left_untouched(self) -> None:

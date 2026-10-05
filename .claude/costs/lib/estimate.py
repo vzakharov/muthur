@@ -1,13 +1,14 @@
 """A session's human-hour estimate: the task broken into parts, each hours of one
-role at one grade, with a comment justifying them, converted to senior-hours only
-when read. `.claude/costs/CLAUDE.md` § "Human-hour estimates" carries why, and
-what the figure measures.
+role at one grade with the reason for them, converted to senior-hours only when
+read. `.claude/costs/CLAUDE.md` § "Human-hour estimates" carries why, and what
+the figure measures.
 """
 
 from __future__ import annotations
 
 import json
-from dataclasses import dataclass
+import re
+from dataclasses import dataclass, replace
 from typing import Any, Dict, List, Mapping, Optional
 
 from lib.shape import ShapeError, is_number, read_number, read_object, read_string, required
@@ -20,6 +21,14 @@ class Part:
     hours: float
     grade: str
     role: str
+    # Why this role, at this grade, for these hours. Null only on a part of an
+    # estimate that carries one comment for the whole.
+    comment: Optional[str] = None
+
+    @property
+    def label(self) -> str:
+        """How a comment for the whole names this part, before its reason."""
+        return f"{self.grade} {self.role}"
 
 
 @dataclass
@@ -27,7 +36,9 @@ class Estimate:
     # UTC, ISO 8601: when it was last set, which decides between two copies of it.
     at: str
     parts: List[Part]
-    comment: str
+    # One reason for the whole, the older shape: `estimate.py` never writes it,
+    # and it stays on a row only where `split_comment` cannot place it.
+    comment: Optional[str] = None
 
 
 @dataclass(frozen=True)
@@ -71,11 +82,20 @@ def checked(estimate: Estimate, rates: Rates, where: str) -> Estimate:
             raise ShapeError(f"{at}: role `{part.role}` is not one of {', '.join(rates.roles)} (rates.json)")
         if part.grade not in rates.grades:
             raise ShapeError(f"{at}: grade `{part.grade}` is not one of {', '.join(rates.grades)} (rates.json)")
-    if not 0 < len(estimate.comment) <= COMMENT_LIMIT:
-        raise ShapeError(
-            f"{where}: the comment is {len(estimate.comment)} characters, not 1–{COMMENT_LIMIT}"
-        )
+        if estimate.comment is None:
+            _check_comment(part.comment, at)
+        elif part.comment is not None:
+            raise ShapeError(f"{at}: a comment of its own beside the estimate's comment for the whole")
+    if estimate.comment is not None:
+        _check_comment(estimate.comment, where)
     return estimate
+
+
+def _check_comment(comment: Optional[str], where: str) -> None:
+    if comment is None:
+        raise ShapeError(f"{where}: no comment")
+    if not 0 < len(comment) <= COMMENT_LIMIT:
+        raise ShapeError(f"{where}: the comment is {len(comment)} characters, not 1–{COMMENT_LIMIT}")
 
 
 def parse_estimate(value: Any, where: str) -> Optional[Estimate]:
@@ -96,12 +116,43 @@ def parse_estimate(value: Any, where: str) -> Optional[Estimate]:
                 hours=required(read_number, part, "hours", at),
                 grade=required(read_string, part, "grade", at),
                 role=required(read_string, part, "role", at),
+                comment=read_string(part, "comment", at),
             )
         )
     return Estimate(
         at=required(read_string, value, "at", where),
         parts=read,
-        comment=required(read_string, value, "comment", where),
+        comment=read_string(value, "comment", where),
+    )
+
+
+def split_comment(estimate: Estimate) -> Optional[Estimate]:
+    """The estimate with its comment for the whole moved onto its parts, where
+    that comment reads `<grade> <role>: <reason>; <grade> <role>: <reason>` —
+    the shape the estimate notice asked for — naming each part exactly once.
+    None where there is nothing to split, or anything about the split would be a
+    guess: an unlabelled comment, a label matching no part or one part twice, a
+    part no label names, two parts sharing a label."""
+    if estimate.comment is None:
+        return None
+    labels = [part.label for part in estimate.parts]
+    if len(set(labels)) != len(labels):
+        return None
+    # A `;` inside a reason stays in it unless what follows reads as a label,
+    # and then the split refuses rather than guess which it was.
+    pieces = re.split(r";\s+(?=[\w-]+ [\w-]+:)", estimate.comment.strip())
+    reasons: Dict[str, str] = {}
+    for piece in pieces:
+        labelled = re.fullmatch(r"([\w-]+ [\w-]+):\s*(\S.*)", piece, re.DOTALL)
+        if labelled is None or labelled[1] not in labels or labelled[1] in reasons:
+            return None
+        reasons[labelled[1]] = labelled[2].rstrip()
+    if len(reasons) != len(labels):
+        return None
+    return replace(
+        estimate,
+        parts=[replace(part, comment=reasons[label]) for part, label in zip(estimate.parts, labels)],
+        comment=None,
     )
 
 

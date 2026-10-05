@@ -116,14 +116,16 @@
       {
         "hours": 0.5,
         "grade": "junior",
-        "role": "qa"
+        "role": "qa",
+        "comment": "re-running vet, merge check and attestation is routine"
       },
       {
         "hours": 0.5,
         "grade": "middle",
-        "role": "prompter"
+        "role": "prompter",
+        "comment": "two clauses in the relay skill, each needing a judgement of where the rule's exception or tell belongs"
       }
     ],
-    "comment": "junior qa: re-running vet, merge check and attestation is routine; middle prompter: two clauses in the relay skill, each needing a judgement of where the rule's exception or tell belongs"
+    "comment": null
   }
 }

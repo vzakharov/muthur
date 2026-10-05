@@ -96,14 +96,16 @@
       {
         "hours": 3.0,
         "grade": "senior",
-        "role": "prompter"
+        "role": "prompter",
+        "comment": "two halves of one cross-session protocol with a trust boundary, a lazy-loaded split, and a rule that suppresses a harness prompt without naming it to the operator — each needs judgement on harness semantics"
       },
       {
         "hours": 0.5,
         "grade": "junior",
-        "role": "qa"
+        "role": "qa",
+        "comment": "reading the rules cold for gaps."
       }
     ],
-    "comment": "senior prompter: two halves of one cross-session protocol with a trust boundary, a lazy-loaded split, and a rule that suppresses a harness prompt without naming it to the operator — each needs judgement on harness semantics; junior qa: reading the rules cold for gaps."
+    "comment": null
   }
 }

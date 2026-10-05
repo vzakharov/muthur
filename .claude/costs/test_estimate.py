@@ -18,8 +18,18 @@ import unittest
 from dataclasses import replace
 from pathlib import Path
 
-from lib.estimate import Estimate, Part, Rates, checked, latest, parse_estimate, parse_rates, senior_hours
-from lib.rows import ROOT, SessionCost, parse_session_cost, pending_estimate_path, row_text
+from lib.estimate import (
+    Estimate,
+    Part,
+    Rates,
+    checked,
+    latest,
+    parse_estimate,
+    parse_rates,
+    senior_hours,
+    split_comment,
+)
+from lib.rows import ROOT, SessionCost, parse_session_cost, pending_estimate_path, read_row, row_text
 from lib.shape import ShapeError, to_json
 from lib.tally import Tally
 from lib.totals import effort_of, main_model
@@ -28,8 +38,15 @@ RATES = Rates(roles={"copywriter": 0.5, "developer": 1}, grades={"junior": 0.4, 
 COSTS = Path(__file__).resolve().parent
 
 
-def estimate_of(at: str, *parts: Part, comment: str = "why") -> Estimate:
-    return Estimate(at, list(parts) or [Part(2, "senior", "copywriter")], comment)
+def estimate_of(at: str, *parts: Part) -> Estimate:
+    """Each part given without a reason gets one."""
+    given = [part if part.comment is not None else replace(part, comment="why") for part in parts]
+    return Estimate(at, given or [Part(2, "senior", "copywriter", "why")])
+
+
+def legacy(comment: str, *parts: Part) -> Estimate:
+    """An estimate as rows were written before parts carried their reasons."""
+    return Estimate("a", list(parts), comment)
 
 
 ROW = SessionCost(
@@ -56,7 +73,7 @@ ROW = SessionCost(
 
 
 class WhatAnEstimateMayHold(unittest.TestCase):
-    def test_takes_roles_and_grades_the_table_names_and_a_tweet_sized_comment(self) -> None:
+    def test_takes_roles_and_grades_the_table_names_and_a_tweet_sized_reason_on_each(self) -> None:
         self.assertEqual(checked(estimate_of("t"), RATES, "e"), estimate_of("t"))
 
     def test_refuses_a_role_or_grade_the_table_does_not_name(self) -> None:
@@ -65,15 +82,26 @@ class WhatAnEstimateMayHold(unittest.TestCase):
                 checked(estimate_of("t", part), RATES, "e")
 
     def test_refuses_negative_hours_and_an_estimate_of_no_parts(self) -> None:
-        for bad in (estimate_of("t", Part(-1, "senior", "developer")), Estimate("t", [], "why")):
+        for bad in (estimate_of("t", Part(-1, "senior", "developer")), Estimate("t", [])):
             with self.assertRaises(ShapeError):
                 checked(bad, RATES, "e")
 
-    def test_refuses_a_comment_past_280_characters_or_an_empty_one(self) -> None:
-        checked(estimate_of("t", comment="x" * 280), RATES, "e")
+    def test_refuses_a_reason_past_280_characters_or_an_empty_one(self) -> None:
+        checked(estimate_of("t", Part(1, "senior", "developer", "x" * 280)), RATES, "e")
         for comment in ("x" * 281, ""):
             with self.assertRaises(ShapeError):
-                checked(estimate_of("t", comment=comment), RATES, "e")
+                checked(estimate_of("t", Part(1, "senior", "developer", comment)), RATES, "e")
+
+    def test_refuses_a_part_with_no_reason(self) -> None:
+        with self.assertRaisesRegex(ShapeError, "part 2: no comment"):
+            checked(Estimate("t", [Part(1, "senior", "developer", "why"), Part(1, "junior", "developer")]), RATES, "e")
+
+    def test_takes_a_comment_for_the_whole_from_before_but_never_beside_reasons_on_parts(self) -> None:
+        checked(legacy("why", Part(1, "senior", "developer")), RATES, "e")
+        with self.assertRaisesRegex(ShapeError, "beside"):
+            checked(legacy("why", Part(1, "senior", "developer", "why")), RATES, "e")
+        with self.assertRaises(ShapeError):
+            checked(legacy("x" * 281, Part(1, "senior", "developer")), RATES, "e")
 
     def test_adds_its_parts_up_in_senior_hours_by_role_and_grade(self) -> None:
         mixed = estimate_of("t", Part(2, "senior", "developer"), Part(3, "junior", "copywriter"))
@@ -104,7 +132,69 @@ class RowsCarryTheirEstimate(unittest.TestCase):
 
     def test_a_part_missing_its_role_is_refused(self) -> None:
         with self.assertRaisesRegex(ShapeError, "role"):
-            parse_estimate({"at": "a", "comment": "c", "parts": [{"hours": 1, "grade": "junior"}]}, "row")
+            parse_estimate({"at": "a", "parts": [{"hours": 1, "grade": "junior", "comment": "c"}]}, "row")
+
+    def test_a_row_from_before_reasons_on_parts_reads_with_its_comment_for_the_whole(self) -> None:
+        old = {"at": "a", "parts": [{"hours": 1, "grade": "junior", "role": "qa"}], "comment": "why"}
+        self.assertEqual(parse_estimate(old, "row"), legacy("why", Part(1, "junior", "qa")))
+
+
+class SplittingACommentFromBefore(unittest.TestCase):
+    QA = Part(0.5, "junior", "qa")
+    PROMPTER = Part(1, "middle", "prompter")
+
+    def test_moves_each_labelled_reason_onto_its_part_in_any_order(self) -> None:
+        split = split_comment(
+            legacy("middle prompter: two clauses; each a judgement; junior qa: routine re-runs.", self.QA, self.PROMPTER)
+        )
+        self.assertEqual(
+            split,
+            Estimate(
+                "a",
+                [replace(self.QA, comment="routine re-runs."), replace(self.PROMPTER, comment="two clauses; each a judgement")],
+            ),
+        )
+
+    def test_leaves_a_comment_whose_placing_would_be_a_guess(self) -> None:
+        for comment, parts in (
+            ("Ledger reshaped into parts: rate table, CLI, docs.", (self.QA,)),
+            ("junior qa: re-runs", (self.QA, self.PROMPTER)),
+            ("junior qa: re-runs; senior qa: more re-runs", (self.QA,)),
+            ("junior qa: one; junior qa: two", (self.QA, replace(self.QA, hours=2))),
+            ("junior qa:", (self.QA,)),
+        ):
+            with self.subTest(comment):
+                self.assertIsNone(split_comment(legacy(comment, *parts)))
+
+    def test_has_nothing_to_split_where_the_parts_carry_their_reasons(self) -> None:
+        self.assertIsNone(split_comment(estimate_of("a")))
+
+
+class TheReportsRead(unittest.TestCase):
+    def setUp(self) -> None:
+        # Under the repo's `tmp/`, where `write_atomic` stages, as in test_totals.
+        (ROOT / "tmp").mkdir(exist_ok=True)
+        base = tempfile.TemporaryDirectory(dir=ROOT / "tmp")
+        self.addCleanup(base.cleanup)
+        self.row = Path(base.name) / "row.json"
+
+    def written(self, estimate: Estimate) -> str:
+        self.row.write_text(row_text(replace(ROW, estimate=estimate)), encoding="utf-8")
+        return self.row.read_text(encoding="utf-8")
+
+    def test_rewrites_a_row_whose_comment_splits_and_says_so(self) -> None:
+        self.written(legacy("junior qa: routine", Part(1, "junior", "qa")))
+        row, changes = read_row(self.row)
+        self.assertEqual(changes, ["split the estimate's comment onto its parts"])
+        on_disk = parse_session_cost(self.row.read_text(encoding="utf-8"))
+        self.assertEqual(on_disk, row)
+        self.assertEqual(on_disk.estimate, Estimate("a", [Part(1, "junior", "qa", "routine")]))
+
+    def test_leaves_a_row_whose_comment_does_not_split_as_it_was(self) -> None:
+        before = self.written(legacy("a summary of the work", Part(1, "junior", "qa")))
+        _, changes = read_row(self.row)
+        self.assertEqual(changes, [])
+        self.assertEqual(self.row.read_text(encoding="utf-8"), before)
 
 
 class TheReportsRatio(unittest.TestCase):
@@ -164,7 +254,7 @@ class TheCommand(unittest.TestCase):
 
     def test_a_running_session_s_estimate_waits_under_tmp_for_its_row(self) -> None:
         done = estimate(
-            "set", "a reason", "--part", "3", "senior", "developer", "--part", "1", "junior", "editor",
+            "set", "--part", "3", "senior", "developer", "a reason", "--part", "1", "junior", "editor", " another ",
             session=self.running,
         )
         self.assertEqual(done.returncode, 0, done.stderr)
@@ -172,31 +262,38 @@ class TheCommand(unittest.TestCase):
         self.assertTrue(pending.is_relative_to(ROOT / "tmp"))
         written = parse_estimate(json.loads(pending.read_text(encoding="utf-8")), "pending")
         assert written is not None
-        self.assertEqual(written.parts, [Part(3, "senior", "developer"), Part(1, "junior", "editor")])
-        self.assertEqual(written.comment, "a reason")
+        self.assertEqual(
+            written,
+            Estimate(written.at, [Part(3, "senior", "developer", "a reason"), Part(1, "junior", "editor", "another")]),
+        )
 
     def test_a_later_set_replaces_the_estimate_whole(self) -> None:
         for hours in ("3", "5"):
-            estimate("set", "why", "--part", hours, "senior", "developer", session=self.running)
+            estimate("set", "--part", hours, "senior", "developer", "why", session=self.running)
         written = parse_estimate(json.loads(pending_estimate_path(self.running).read_text(encoding="utf-8")), "p")
         assert written is not None
-        self.assertEqual(written.parts, [Part(5, "senior", "developer")])
+        self.assertEqual(written.parts, [Part(5, "senior", "developer", "why")])
 
     def test_another_session_s_estimate_lands_in_its_committed_row(self) -> None:
         done = estimate(
-            "set", "after the fact", "--part", "1", "junior", "developer", "--session", self.finished,
+            "set", "--part", "1", "junior", "developer", "after the fact", "--session", self.finished,
             session=self.running,
         )
         self.assertEqual(done.returncode, 0, done.stderr)
         row = parse_session_cost(self.row.read_text(encoding="utf-8"))
         assert row.estimate is not None
-        self.assertEqual(row.estimate.comment, "after the fact")
+        self.assertEqual(row.estimate.parts, [Part(1, "junior", "developer", "after the fact")])
         self.assertFalse(pending_estimate_path(self.running).exists())
 
     def test_a_refused_estimate_writes_nothing(self) -> None:
-        done = estimate("set", "x", "--part", "1", "wizard", "developer", session=self.running)
+        done = estimate("set", "--part", "1", "wizard", "developer", "x", session=self.running)
         self.assertEqual(done.returncode, 1)
         self.assertIn("wizard", done.stderr)
+        self.assertFalse(pending_estimate_path(self.running).exists())
+
+    def test_a_part_without_its_reason_is_refused_whatever_else_is_given(self) -> None:
+        done = estimate("set", "a reason for the whole", "--part", "1", "senior", "developer", session=self.running)
+        self.assertEqual(done.returncode, 2)
         self.assertFalse(pending_estimate_path(self.running).exists())
 
     def test_a_session_with_no_row_is_refused_rather_than_guessed_at(self) -> None:

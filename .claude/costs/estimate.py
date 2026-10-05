@@ -2,11 +2,12 @@
 """Set or show a session's human-hour estimate.
 
 Usage:
-  python3 .claude/costs/estimate.py set <comment> --part <hours> <grade> <role> [--part ...] [--session <id>]
+  python3 .claude/costs/estimate.py set --part <hours> <grade> <role> <why> [--part ...] [--session <id>]
   python3 .claude/costs/estimate.py show [--session <id>]
 
-Each `--part` is the hours one role at one grade would spend on the task; the
-parts add up to the estimate, and `set` replaces the whole of it. Without
+Each `--part` is the hours one role at one grade would spend on the task, and
+why that role, at that grade, for those hours; the parts add up to the
+estimate, and `set` replaces the whole of it. Without
 `--session` the session is this one, read off `CLAUDE_CODE_SESSION_ID`: the
 estimate goes to `tmp/estimates/<id>.json`, and the row folds it in when the
 turn ends. Another session's id edits that session's committed row in place,
@@ -39,15 +40,16 @@ def row_path(session_id: str) -> Optional[Path]:
 def describe(estimate: Optional[Estimate], rates: Rates) -> str:
     if estimate is None:
         return "no estimate yet"
-    parts = " + ".join(f"{part.hours:g} h {part.grade} {part.role}" for part in estimate.parts)
-    return f"{parts} = {senior_hours(estimate, rates):g} senior-hours — {estimate.comment}"
+    parts = " + ".join(f"{part.hours:g} h {part.label}" for part in estimate.parts)
+    reasons = estimate.comment or "; ".join(f"{part.label}: {part.comment}" for part in estimate.parts)
+    return f"{parts} = {senior_hours(estimate, rates):g} senior-hours — {reasons}"
 
 
 def parts_of(raw: List[List[str]]) -> List[Part]:
     parts = []
-    for hours, grade, role in raw:
+    for hours, grade, role, why in raw:
         try:
-            parts.append(Part(hours=float(hours), grade=grade, role=role))
+            parts.append(Part(hours=float(hours), grade=grade, role=role, comment=why.strip()))
         except ValueError as error:
             raise ShapeError(f"`--part {hours} {grade} {role}`: hours are not a number") from error
     return parts
@@ -57,9 +59,13 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
     commands = parser.add_subparsers(dest="command", required=True)
     setting = commands.add_parser("set")
-    setting.add_argument("comment", help="why each part's role, grade and hours; not a summary of the work")
     setting.add_argument(
-        "--part", nargs=3, action="append", required=True, metavar=("HOURS", "GRADE", "ROLE")
+        "--part",
+        nargs=4,
+        action="append",
+        required=True,
+        metavar=("HOURS", "GRADE", "ROLE", "WHY"),
+        help="WHY: why this role, at this grade, for these hours; not a summary of the work",
     )
     showing = commands.add_parser("show")
     for command in (setting, showing):
@@ -86,7 +92,6 @@ def main() -> int:
                 Estimate(
                     at=datetime.now(timezone.utc).isoformat(timespec="milliseconds").replace("+00:00", "Z"),
                     parts=parts_of(args.part),
-                    comment=args.comment.strip(),
                 ),
                 rates,
                 "the estimate",

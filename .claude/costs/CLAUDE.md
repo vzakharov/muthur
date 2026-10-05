@@ -212,8 +212,8 @@ adjusting quietly is what would leave the rest of this section false.
 A row's `estimate` says how much work the session's spend bought, so the
 ledger can price a unit of human work done by an agent and watch that price
 move — including whether the same work started costing more. It is the task
-split into parts, each the hours one role at one grade would spend on it, with
-a comment justifying them. A revision replaces it, so its history is git's.
+split into parts, each the hours one role at one grade would spend on it and
+the reason for them. A revision replaces it, so its history is git's.
 `hooks/estimate-notice.sh` is the agent-facing home of when and how to set one.
 
 - **The unit is a senior-hour**: an hour of a senior developer, the role and
@@ -228,10 +228,14 @@ a comment justifying them. A revision replaces it, so its history is git's.
   does — scope added, a difficulty no estimator would have foreseen, a relay
   handing the rest on. A model that booked its own detours as extra hours would
   hide exactly the regression the figure exists to show.
-- **The comment is the case for the team, not a summary of the work.** What
-  was done is already in the row and the commits; what nothing else carries is
-  why each part is that role, at that grade, for those hours — and only that
-  lets a reader check the figure rather than take it.
+- **A part's reason is the case for the team, not a summary of the work.**
+  What was done is already in the row and the commits; what nothing else
+  carries is why that part is that role, at that grade, for those hours — and
+  only that lets a reader check the figure rather than take it. It sits on the
+  part it justifies, so the one is never read without the other. An older row
+  carries one comment for the whole; where it names each part as
+  `<grade> <role>: <reason>`, the report moves it onto the parts, and where it
+  does not, it stays as written, since placing it would be a guess.
 
 **What the figure cannot tell apart:** the estimator is the model under
 measurement, so a changed model may estimate differently too — a person's
@@ -256,11 +260,11 @@ every branch that ran a session — and settling one by summing the two sides
 double-counts every session both of them saw. The rows themselves never collide:
 one file per session id.
 
-**The rows can be.** A row carrying a key the current shape no longer writes is
-rewritten without it as the report reads it, and the report names each one on
-stderr. Retiring a field is therefore a change to the shape alone: the first
-report in each repository clears it, and those rewrites are ordinary changes to
-commit.
+**The rows can be.** A row in a shape the ledger no longer writes — a key it
+dropped, an estimate comment its parts now carry — is rewritten in the current
+one as the report reads it, and the report names each one on stderr. Retiring a
+shape is therefore a change to the reader alone: the first report in each
+repository clears it, and those rewrites are ordinary changes to commit.
 
 ## What the totals do not cover
 

@@ -85,14 +85,16 @@
       {
         "hours": 0.5,
         "grade": "middle",
-        "role": "editor"
+        "role": "editor",
+        "comment": "rewording four short texts to one stated rule, no judgement of voice beyond the house style"
       },
       {
         "hours": 0.75,
         "grade": "senior",
-        "role": "developer"
+        "role": "developer",
+        "comment": "the notice is agent-facing behaviour, so phrasing it so models comply takes knowing how they read it"
       }
     ],
-    "comment": "middle editor: rewording four short texts to one stated rule, no judgement of voice beyond the house style; senior developer: the notice is agent-facing behaviour, so phrasing it so models comply takes knowing how they read it"
+    "comment": null
   }
 }
