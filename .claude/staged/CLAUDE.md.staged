@@ -94,7 +94,7 @@ Universal guidance regardless of stack:
 
 When the user points you at GitHub comments — a review, a review comment, an issue thread, a PR conversation — **reply on GitHub to each one**, including one you agreed with and silently fixed: a reviewer can't see "silently fixed" in a diff, and the thread is the record. One sentence plus the commit SHA is plenty. **Write every SHA in a GitHub comment bare, never in backticks**, so GitHub links it to its commit.
 
-**A thread reply prompted by the session opens with what the session said.** When the operator raises in chat a point a GitHub thread already carries and the answer goes there, start the comment with their words — quoted when short, paraphrased in a line otherwise ("In the session: «…»") — then the answer: the thread's readers never see the session, so the reply otherwise answers a question nobody there asked.
+**A thread reply prompted by the session opens with what the session said.** When the operator raises in chat a point a GitHub thread already carries and the answer goes there, start the comment with their words — quoted when short, paraphrased in a line otherwise, behind a lead-in in the thread's language ("In the session: …", «В сессии: …») — then the answer: the thread's readers never see the session, so the reply otherwise answers a question nobody there asked.
 
 **Post a body, never a path to one** — GitHub does not expand `@<path>`. Draft into a file and post its contents: `gh pr comment <n> --body-file <f>`, or `gh api repos/<owner>/<repo>/pulls/<n>/comments/<comment-id>/replies -F body=@<f>` for a review-thread reply, where `-f` would post the path as a literal string.
 

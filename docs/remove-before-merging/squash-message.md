@@ -16,7 +16,7 @@ line otherwise, before the answer. The rule lives in CLAUDE.md rather
 than in /handle because the operator talks in chat outside any skill
 run too.
 
-The human-hour estimates gain a prompter role at 0.93, between editor
+The human-hour estimates gain a prompter role at 0.9, between editor
 and developer: work on the instructions an LLM follows was booked as
 one or the other and is neither.
 
