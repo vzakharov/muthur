@@ -150,6 +150,13 @@ class WhenAPromptIsStopped(HookCase):
         self.append(opening(), latest(context=94_000))
         self.assertIsNone(self.prompt())
 
+    def test_a_fresh_session_ahead_by_less_than_the_margin_passes(self) -> None:
+        # Against a $0.43 re-cache at 94k: under 10% better on both counts.
+        self.fresh_sessions(90_000, 0.40)
+        self.append(opening(), latest(context=94_000))
+        self.assertIsNone(self.prompt())
+        self.assertIsNotNone(self.prompt(env={"COLD_CACHE_MARGIN": "0"}))
+
     def test_a_fresh_session_that_carries_less_is_still_offered(self) -> None:
         self.fresh_sessions(60_000, 1.19)
         self.append(opening(), latest(context=94_000))
@@ -182,6 +189,7 @@ class WhenAPromptIsStopped(HookCase):
 class TheResumeFlag(HookCase):
     def test_a_resume_the_client_calls_expired_is_stopped_on_its_figures(self) -> None:
         # Warm by the transcript; only the resume says otherwise.
+        self.fresh_sessions(60_000, 0.30)
         self.append(opening(), latest(ago=600))
         self.resume(
             prompt_cache_likely_expired=True,

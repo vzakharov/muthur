@@ -43,10 +43,10 @@ model.
   model (`/go`, `/btw`, `/init`, `/plan`) are prompts like any other. Also
   passing: a session whose re-cache costs under `COLD_CACHE_MIN_USD` (default
   `0.30`), where the stop costs more attention than it saves; and one whose
-  fresh session costs at least the re-cache up front and carries no smaller
-  context after, so it never comes out ahead and the stop has no choice to
-  offer. An unpriced model is still stopped, with the times and token counts and
-  no dollars.
+  fresh session beats carrying on by less than `COLD_CACHE_MARGIN` (default
+  `0.10`) both on its up-front cost against the re-cache and on the context it
+  carries after, where the stop has no real choice to offer. An unpriced model
+  is still stopped, with the times and token counts and no dollars.
 
 `COLD_CACHE_GUARD=off` in `.claude/settings.local.json`'s `env` disables both
 halves.
