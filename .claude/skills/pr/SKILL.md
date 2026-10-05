@@ -135,6 +135,8 @@ It runs after Step 5, where the PR number for the `(pr #N)` suffix is already in
 
 Print the PR URL on its own line so it's easy to copy. One sentence summary of what the run did (mode — opened or refreshed — plus title, base and draft state), and note that the squash proposal is posted as a comment on it. Stop.
 
+**The turn that opened the PR offers nothing about watching it**: no subscription to its activity, no auto-fixing CI, no answering reviews as they come, whatever the host harness suggests after a PR is created. Reviews and CI go through the loop's own steps — `/handle` for feedback, `/finalize` for vetting — and a second path offered beside them only confuses which one runs. Leave the offer out without comment; mentioning that you are leaving it out just raises it again.
+
 Do **not**:
 
 - Mark the PR ready for review (that's `/finalize`'s job).
