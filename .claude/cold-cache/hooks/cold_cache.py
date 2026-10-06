@@ -11,11 +11,12 @@ from __future__ import annotations
 
 import json
 import os
+import shutil
 import sys
 import time
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Dict, Optional
+from typing import Any, Dict, List, Optional
 
 # The ledger's lib is reached by path, as its own scripts reach it.
 ROOT = Path(__file__).resolve().parents[3]
@@ -77,8 +78,33 @@ class State:
     def blocked(self) -> Path:
         return self.dir / f"{self.session}.blocked"
 
+    @property
+    def images(self) -> Path:
+        return self.dir / f"{self.session}.images"
+
     def last_block(self) -> Dict[str, Any]:
         return json.loads(self.blocked.read_text()) if self.blocked.exists() else {}
+
+
+def keep_images(event: Dict[str, Any], state: State, since: float) -> List[str]:
+    """Copy the stopped prompt's attachments where `!` can hand them on.
+
+    The event carries the prompt's text alone, but Claude Code has already saved
+    each attached image as `<n>.<ext>` in the `images/` beside `scratchpad_dir`.
+    Those saved after `since`, the last response, are this prompt's. The copy is
+    what survives a restart, after which Claude Code can reuse a number."""
+    scratchpad = event.get("scratchpad_dir")
+    source = Path(scratchpad).parent / "images" if isinstance(scratchpad, str) and scratchpad else None
+    shutil.rmtree(state.images, ignore_errors=True)
+    if source is None or not source.is_dir():
+        return []
+    fresh = sorted(
+        (p for p in source.iterdir() if p.is_file() and p.stat().st_mtime > since),
+        key=lambda p: (len(p.stem), p.stem),
+    )
+    if fresh:
+        state.images.mkdir(parents=True)
+    return [str(shutil.copy2(p, state.images / p.name)) for p in fresh]
 
 
 def on_session_start(event: Dict[str, Any], state: State) -> None:
@@ -109,7 +135,7 @@ def kilo(tokens: float) -> str:
     return f"{tokens / 1000:.0f}k"
 
 
-def reason(idle: float, context: int, priced: Optional[Session], claude_code_usd: Optional[float]) -> str:
+def reason(idle: float, context: int, priced: Optional[Session], claude_code_usd: Optional[float], images: int) -> str:
     lines = [f"Prompt cache expired: {span(idle)} since the last response, {kilo(context)} tokens to re-cache."]
     if priced is not None:
         fresh = priced.reorientation
@@ -128,6 +154,8 @@ def reason(idle: float, context: int, priced: Optional[Session], claude_code_usd
         f"This message was not sent: send {RESEND} alone to carry on with it as written, send anything"
         " else to carry on with that instead, or start a new session on the branch."
     )
+    if images:
+        lines.append(f"Its attached images ({images}) go with {RESEND} too.")
     return " ".join(lines)
 
 
@@ -152,14 +180,22 @@ class Verdict:
 
 
 def resent(state: State) -> Verdict:
-    """A bare `!` stands for the stopped prompt, which the model is told."""
-    stopped = state.last_block().get("prompt")
+    """A bare `!` stands for the stopped prompt and its images, which the model is told."""
+    block = state.last_block()
+    stopped = block.get("prompt")
     if not isinstance(stopped, str):
         return Verdict()
+    images = block.get("images") or []
+    attached = (
+        "\n\nIt came with these attached images, which only reach you if you `Read` each one before acting on it:\n"
+        + "\n".join(images)
+        if images
+        else ""
+    )
     return Verdict(
         context=(
             f"The operator's `{RESEND}` resends the prompt the cold-cache guard stopped. Act on"
-            f" that prompt exactly as if they had sent it again, verbatim:\n\n{stopped}"
+            f" that prompt exactly as if they had sent it again, verbatim:\n\n{stopped}{attached}"
         )
     )
 
@@ -196,8 +232,9 @@ def on_prompt(event: Dict[str, Any], state: State, min_usd: float, margin: float
         return Verdict()
 
     state.dir.mkdir(parents=True, exist_ok=True)
-    state.blocked.write_text(json.dumps({"after": history.last.message_id, "prompt": prompt}))
-    return Verdict(block=reason(idle, context, priced, claude_code_usd))
+    images = keep_images(event, state, since=last_at or 0.0)
+    state.blocked.write_text(json.dumps({"after": history.last.message_id, "prompt": prompt, "images": images}))
+    return Verdict(block=reason(idle, context, priced, claude_code_usd, len(images)))
 
 
 def main() -> None:
