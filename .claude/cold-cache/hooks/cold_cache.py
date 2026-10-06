@@ -87,15 +87,13 @@ class State:
 
 
 def keep_images(event: Dict[str, Any], state: State, since: float) -> List[str]:
-    """Copy the stopped prompt's attachments where `!` can hand them on.
-
-    The event carries the prompt's text alone, but Claude Code has already saved
-    each attached image as `<n>.<ext>` in the `images/` beside `scratchpad_dir`.
-    Those saved after `since`, the last response, are this prompt's. The copy is
-    what survives a restart, after which Claude Code can reuse a number."""
+    """Copy the stopped prompt's attachments where `!` can hand them on: the
+    images Claude Code saved beside `scratchpad_dir` after `since`, the last
+    response."""
     scratchpad = event.get("scratchpad_dir")
     source = Path(scratchpad).parent / "images" if isinstance(scratchpad, str) and scratchpad else None
-    shutil.rmtree(state.images, ignore_errors=True)
+    if state.images.exists():
+        shutil.rmtree(state.images)
     if source is None or not source.is_dir():
         return []
     fresh = sorted(
