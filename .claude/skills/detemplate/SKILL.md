@@ -23,8 +23,8 @@ deliberately writes no source. With no brief, ask for it before anything else.
 
 **A fresh fork is the one place `gh` may genuinely be absent** — the rest of what
 `/override-gh` says about `gh` and `GH_TOKEN` holds here unchanged. The fork
-arrives before the operator has set an environment setup script, and `apt-get
-install -y gh` lives in that script (Step 6), so `.claude/hooks/gh-shim.sh`
+can arrive before the operator has set an environment setup script, and on a base
+image that does not ship `gh` its install lives in that script (Step 6), so `.claude/hooks/gh-shim.sh`
 finds nothing to shim and says so on startup — `/override-gh` owns that signal
 and what it means. Take it at face value rather than re-deriving it; to probe by
 hand, use `gh api repos/{owner}/{repo} --jq .visibility` rather than `gh auth
@@ -219,7 +219,9 @@ the report** the operator pastes into the setting.
 
 Two reasons it matters:
 
-- **It is where `gh` comes from.** `apt-get install -y gh` belongs in it. Without
+- **It is where `gh` comes from when the base image lacks it.** The image ships
+  `gh` and `jq` with no apt package lists, so a bare `apt-get install -y gh`
+  fails the whole script with exit 100; install guarded, as item 5 below. Without
   `gh` on `PATH` there is nothing for the proxy shim to wrap, and every
   `gh`-dependent skill fails later, far from the cause — so
   `.claude/hooks/gh-shim.sh` reports the missing install into the session
@@ -250,7 +252,8 @@ is — each records a trap that actually bit:
    carry their own toolchain directories, and some sort *earlier* than
    `/usr/local/bin` — so `which` keeps resolving a stale binary past a correct
    symlink. Look for that shape before assuming yours won.
-5. **`apt-get install -y gh`** — per above.
+5. **`gh` and `jq`, guarded** — per above:
+   `command -v gh >/dev/null && command -v jq >/dev/null || { apt-get update && apt-get install -y gh jq; }`.
 6. **Prime the dependency cache last**, guarded, since the repo directory may be
    absent.
 
