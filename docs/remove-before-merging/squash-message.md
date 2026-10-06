@@ -14,10 +14,10 @@ one that died waiting, found Step 1 stopping on it.
 A turn blocked on an operator decision is now a third trigger. The plan
 is renamed to *.paused.md with the open question recorded beside what
 is done and what is left, and the answer resumes it through Step 1's
-paused case, in the same session or another. An elephant blocked
-mid-bite takes the existing mid-bite path; planless work holds no
-claim, so a blocked turn there writes no file; the /relay offer stays
-with budget pauses.
+paused case, in the same session or another. Planless work blocked
+this way writes its paused plan too, so the question is on the branch
+for whoever answers. An elephant blocked mid-bite takes the existing
+mid-bite path, and the /relay offer stays with budget pauses.
 
 Fixes #149
 
