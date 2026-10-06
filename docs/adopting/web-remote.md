@@ -270,9 +270,9 @@ does. The base image ships its own `gh` set up for the proxy, so the proxied pat
 is the supported one; if the gateway starts enforcing the same policy, every `gh`
 call through the shim fails at once, and the tell is the shim failing where the
 binary on its `exec` line, called directly with the proxy in place, succeeds.
-The shim's founding reason, the proxy cutting off `gh run watch`, is also
-unchecked against today's proxy: this repo has no workflows, so it has no run to
-watch.
+The shim's founding case, the proxy cutting off `gh run watch`, is unverified
+against the proxy that enforces repo binding: this repo has no workflows, so it
+has no run to watch.
 
 Note what is *not* on this list: `gh pr ready` and the `search/*` block are not
 gaps in the infrastructure. Both work once the shim is in, so they are costs of
