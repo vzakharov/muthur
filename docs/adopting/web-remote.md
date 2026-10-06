@@ -101,7 +101,10 @@ session start rather than trusting the snapshot.
 So the deliverable for this step is **text in your report** that the operator can
 paste into that setting. Three things make it worth the paragraph:
 
-- **It is where `gh` comes from.** `apt-get install -y gh` belongs in it. Without
+- **It is where `gh` comes from when the base image lacks it.** The image ships
+  `gh` and `jq` but no apt package lists, so a bare `apt-get install -y gh`
+  fails the script with exit 100; the guarded line in the example below
+  installs only what is missing, after an `apt-get update`. Without
   `gh` on `PATH`, G4's hook cannot install the shim, and every `gh`-dependent
   skill fails later, far from the cause — so the hook reports the absence into
   the session context, which is the litmus test for a setup script that is unset
@@ -195,7 +198,9 @@ for bin in pnpm pnpx; do
   done
 done
 
-apt-get install -y gh jq
+# The base image ships gh and jq with empty apt lists, so install only what is
+# missing, and refresh the lists first when something is.
+command -v gh >/dev/null && command -v jq >/dev/null || { apt-get update && apt-get install -y gh jq; }
 
 # Tell the auto-mode classifier the whole container is disposable, and which
 # remote branches are the session's own. Merged rather than written over, so any
@@ -228,7 +233,8 @@ What carries over to any stack, and what to check before adapting it:
    `/opt/nodeNN` loop exists because those directories sort *earlier* than
    `/usr/local/bin`, so `which` kept resolving a stale binary. Whatever your
    toolchain, look for the same shape before assuming your symlink won.
-5. **`apt-get install -y gh`** — see above; without it the shim never installs.
+5. **`gh` and `jq`, guarded** — see above; without `gh` the shim never
+   installs, and an unguarded `apt-get install` fails on the empty apt lists.
 6. **Prime the dependency cache last**, guarded, since the repo dir may be absent.
 7. **Check the `autoMode` block landed** from inside a session:
    `claude auto-mode config | grep -E "Ephemeral Container Files|Session Branch Cleanup"`
@@ -252,6 +258,18 @@ thread that will say whether the gap is still open. If it has closed by the time
 you read this, the shim is no longer load-bearing and the G4 decision above is
 moot — check it before you weigh the tradeoff, and don't copy the link into your
 own tree, where it would read as an issue of yours.
+
+**The shim leans on an egress path Anthropic does not document.** With
+`HTTPS_PROXY` stripped, `gh` still leaves through a transparent egress gateway
+(its TLS chain names `Egress Gateway SDS Issuing CA`), and that path applies none
+of the proxy's policy: through the proxy, a GitHub API path outside the session's
+configured repositories is refused ("sessions are bound to their configured
+repositories"), and around it the same call succeeds. `/override-gh`'s "try `gh`
+before calling it inaccessible" rests on that gap as much as the long-poll fix
+does. The base image ships its own `gh` set up for the proxy, so the proxied path
+is the supported one; if the gateway starts enforcing the same policy, every `gh`
+call through the shim fails at once, and the tell is the shim failing where the
+binary on its `exec` line, called directly with the proxy in place, succeeds.
 
 Note what is *not* on this list: `gh pr ready` and the `search/*` block are not
 gaps in the infrastructure. Both work once the shim is in, so they are costs of

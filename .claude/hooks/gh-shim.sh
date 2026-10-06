@@ -7,6 +7,8 @@
 # gh-based skills (/watch-ci, /check-merge, /finalize, …) stall. gh talks only to
 # GitHub hosts and works fine connecting directly, so the proxy is stripped for
 # gh alone. Everything else that legitimately needs the proxy is untouched.
+# The unproxied path is undocumented and may close; docs/adopting/web-remote.md
+# § "Known gaps" holds that risk.
 #
 # Remote-only: it no-ops when $CLAUDE_CODE_REMOTE is unset, so running `claude`
 # against your own working tree does not shadow the `gh` you installed yourself.
@@ -41,12 +43,13 @@ if [ -z "$real_gh" ]; then
 session-start: `gh` is not on PATH, so the proxy shim was not installed.
 
 Agent: relay this to the operator before running anything that needs `gh`
-(most of the PR loop does). The environment setup script for this Claude Code
-environment is either unset or does not install the GitHub CLI. They set it in
-the session composer: the environment picker -> Cloud -> the environment's gear
-icon. It needs at least:
+(most of the PR loop does). The base image did not ship the GitHub CLI, and the
+environment setup script for this Claude Code environment is either unset or
+does not install it. They set it in the session composer: the environment
+picker -> Cloud -> the environment's gear icon. It needs at least this line;
+the image's apt lists are empty, so a bare `apt-get install` fails the script:
 
-    apt-get install -y gh
+    command -v gh >/dev/null && command -v jq >/dev/null || { apt-get update && apt-get install -y gh jq; }
 
 The script runs once when the environment snapshot is built, so the session has
 to be restarted for it to take effect.
