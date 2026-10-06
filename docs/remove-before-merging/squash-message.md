@@ -5,22 +5,24 @@ fix: open the PR export on a verdict of what awaits an answer (pr #148)
 ```
 
 ```
-A /handle run could finalize over unanswered review threads: the PR
-export put its thread index below the PR body and every comment body,
-so a reader that took only the first screen saw no feedback to answer.
+Agents kept missing review feedback: a /handle run finalized over two
+unanswered threads whose index sat below the first screen of the PR
+export, and a session told "I left comments" filtered them by
+created_at - when each was drafted, not when its review went out - and
+lost five of six.
 
-The export now runs /handle Step 2's tail and recency tests itself and
-opens, under the header, on `## Awaiting an answer: <count>` - one
-linked row per unresolved thread whose newest post is a human's, and
-per human review or comment posted after the head commit. A zero
-prints as `none`, and with no head-commit date every human post
-counts. A thread's newest post is the one that went out last: a
-comment counts from its review's submission, not its created_at,
-which predates it for anything drafted in a pending review.
+The export now opens, under its header, on `## Awaiting an answer:
+<count>` (`none` at zero): one linked row per unresolved thread whose
+newest post is a human's, ordered by when each post went out, and per
+human review body or comment the agent has not seen - the export the
+branch last committed does not carry it - or has seen with no agent
+post since.
 
 The /handle hook carries that section into the turn's context
 verbatim; /handle treats its count as the review lane's verdict, and
 /finalize's `and merge` stand-down reads it off a fresh export.
+/handle also fires on the operator saying they left feedback, in any
+words, so it is never collected by an ad-hoc query.
 
 Co-authored-by: Claude <noreply@anthropic.com>
 ```
