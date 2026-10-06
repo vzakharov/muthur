@@ -11,7 +11,7 @@ keeps them.
 from __future__ import annotations
 
 import re
-from typing import Any
+from typing import Any, Callable
 
 from gh_export.attachments import rewrite_attachment_refs
 from gh_export.authorship import attribution, split_agent_footer
@@ -23,8 +23,32 @@ CONTEXT_LINE_CHARS = 200
 _HUNK_HEADER = re.compile(r"^@@ -(\d+)(?:,\d+)? \+(\d+)(?:,\d+)? @@")
 
 
-def review_threads(comments: list[dict[str, Any]]) -> list[list[dict[str, Any]]]:
-    """Group inline review comments into reply chains, oldest root first."""
+def posted_at(reviews: list[dict[str, Any]]) -> Callable[[dict[str, Any]], str]:
+    """When an inline review comment became visible.
+
+    A comment's `created_at` is when it was written into its review, not when
+    the review went out: a follow-up drafted in a pending review before the
+    agent's reply and submitted after it carries the earlier stamp, and judged
+    on that alone it would hide under the reply it answers.
+
+    Every stamp here is GitHub's fixed-width UTC ISO form, so comparing the
+    strings is comparing the instants."""
+    submitted = {r.get("id"): r.get("submitted_at") or "" for r in reviews}
+
+    def posted(comment: dict[str, Any]) -> str:
+        written = comment.get("created_at") or ""
+        return max(written, submitted.get(comment.get("pull_request_review_id"), ""))
+
+    return posted
+
+
+def review_threads(
+    comments: list[dict[str, Any]], reviews: list[dict[str, Any]]
+) -> list[list[dict[str, Any]]]:
+    """Group inline review comments into reply chains, oldest root first, each
+    chain in the order its posts became visible — which is what makes the last
+    one the tail `/handle`'s tail test reads."""
+    posted = posted_at(reviews)
     by_id = {c["id"]: c for c in comments if c.get("id") is not None}
 
     def root_of(comment: dict[str, Any]) -> dict[str, Any]:
@@ -42,9 +66,9 @@ def review_threads(comments: list[dict[str, Any]]) -> list[list[dict[str, Any]]]
         threads.setdefault(root_of(comment)["id"], []).append(comment)
 
     for chain in threads.values():
-        chain.sort(key=lambda c: c.get("created_at") or "")
+        chain.sort(key=posted)
 
-    return sorted(threads.values(), key=lambda chain: chain[0].get("created_at") or "")
+    return sorted(threads.values(), key=lambda chain: posted(chain[0]))
 
 
 def resolution_label(
@@ -156,6 +180,30 @@ def thread_summary(
     )
 
 
+def exported_threads(
+    comments: list[dict[str, Any]],
+    reviews: list[dict[str, Any]],
+    resolved_by_comment_id: dict[int, bool],
+    include_resolved: bool,
+) -> tuple[list[list[dict[str, Any]]], int]:
+    """The threads the export renders, in `T01`… order, and how many resolved
+    ones it dropped. The one numbering every `T<nn>` reference shares."""
+    threads = review_threads(comments, reviews)
+    if include_resolved:
+        return threads, 0
+    kept = [
+        chain
+        for chain in threads
+        if resolution_label(chain, resolved_by_comment_id) != "resolved"
+    ]
+    return kept, len(threads) - len(kept)
+
+
+def bodied_reviews(reviews: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """The reviews that render a body, in `R01`… order."""
+    return [r for r in reviews if (r.get("body") or "").strip()]
+
+
 def review_parts(
     reviews: list[dict[str, Any]],
     comments: list[dict[str, Any]],
@@ -173,30 +221,27 @@ def review_parts(
     reads as "N omitted", not as no review at all. `resolution unknown` and
     `unresolved` are kept: only the state the reviewer explicitly closed goes.
     """
-    bodied = [r for r in reviews if (r.get("body") or "").strip()]
-    threads = review_threads(comments)
-    if not include_resolved:
-        kept = [
-            chain
-            for chain in threads
-            if resolution_label(chain, resolved_by_comment_id) != "resolved"
-        ]
-        omitted = len(threads) - len(kept)
-        threads = kept
-    else:
-        omitted = 0
+    bodied = bodied_reviews(reviews)
+    threads, omitted = exported_threads(
+        comments, reviews, resolved_by_comment_id, include_resolved
+    )
     if not bodied and not threads and not omitted:
         return "", []
 
     chunks = ["## Review threads", ""]
-    for review in bodied:
+    for number, review in enumerate(bodied, start=1):
         state = (review.get("state") or "COMMENTED").upper()
         by_agent, body = split_agent_footer(review["body"])
         chunks.extend(
             [
-                f"### Review by {attribution(review.get('user'), by_agent)} — {state}",
+                anchor_tag(f"r{number:02d}"),
+                "",
+                f"### R{number:02d} — Review by "
+                f"{attribution(review.get('user'), by_agent)} — {state}",
                 "",
                 f"_{review.get('submitted_at', '')}_",
+                "",
+                f"[{review.get('html_url', '')}]({review.get('html_url', '')})",
                 "",
                 rewrite_attachment_refs(body or "_empty_", url_to_relative),
                 "",

@@ -1,0 +1,94 @@
+{
+  "sessionId": "b0a1d8fa-6c86-581d-99a2-5cac2af7b42f",
+  "branch": "claude/pr-export-awaiting-answer",
+  "cwd": "/home/user/muthur",
+  "openingPrompt": "/handle claude/pr-export-awaiting-answer",
+  "prs": [
+    148
+  ],
+  "url": "https://claude.ai/code/session_01QWCAV4AATcgfmXQDhTkk5m",
+  "operator": "vzakharov",
+  "firstResponseAt": "2026-10-06T09:03:49.533Z",
+  "lastResponseAt": "2026-10-06T09:20:21.456Z",
+  "pricesAsOf": "2026-09-23",
+  "claudeCodeTotalUsd": null,
+  "total": {
+    "inputTokens": 160,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 163367,
+    "cacheReadTokens": 12170770,
+    "outputTokens": 53670,
+    "thinkingTokens": 21127,
+    "responses": 80,
+    "costUsd": 4.815130000000002
+  },
+  "ownTurns": {
+    "inputTokens": 160,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 163367,
+    "cacheReadTokens": 12170770,
+    "outputTokens": 53670,
+    "thinkingTokens": 21127,
+    "responses": 80,
+    "costUsd": 4.815130000000002
+  },
+  "subagents": {
+    "inputTokens": 0,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 0,
+    "cacheReadTokens": 0,
+    "outputTokens": 0,
+    "thinkingTokens": 0,
+    "responses": 0,
+    "costUsd": 0.0
+  },
+  "byRate": {
+    "claude-opus-5-5/standard": {
+      "inputTokens": 160,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 163367,
+      "cacheReadTokens": 12170770,
+      "outputTokens": 53670,
+      "thinkingTokens": 21127,
+      "responses": 80,
+      "costUsd": 4.815130000000002
+    }
+  },
+  "warnings": [],
+  "orientation": {
+    "endedBy": "Edit",
+    "endedOn": "docs/remove-before-merging/squash-message.md",
+    "endedAt": "2026-10-06T09:05:08.512Z",
+    "contextTokens": 116235,
+    "spend": {
+      "inputTokens": 24,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 71227,
+      "cacheReadTokens": 1104842,
+      "outputTokens": 3777,
+      "thinkingTokens": 1856,
+      "responses": 12,
+      "costUsd": 0.8664204000000001
+    }
+  },
+  "compactions": [],
+  "telemetry": null,
+  "estimate": {
+    "at": "2026-10-06T09:20:15.250Z",
+    "parts": [
+      {
+        "hours": 4.0,
+        "grade": "senior",
+        "role": "developer",
+        "comment": "the seen-set design needs judgement across a hook, an exporter and a skill contract, two fetch routes for the previous export, and red-first tests over subtle timing cases"
+      },
+      {
+        "hours": 0.5,
+        "grade": "middle",
+        "role": "developer",
+        "comment": "two routine review replies and a squash-title retype"
+      }
+    ],
+    "comment": null
+  }
+}

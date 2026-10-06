@@ -120,9 +120,17 @@ if [ -f "$export_path" ]; then
     context+=$'arrived on the PR since. That is the answer to "has anything changed?" — do not '
     context+=$'reach it any other way.'
   fi
+  # The verdict rides in verbatim: it is the review lane's whole input, and one
+  # read off the file depends on the reader opening it at the top.
+  awaiting="$(awk '/^## Awaiting an answer/ { on = 1 } on && /^---$/ { exit } on' "$export_path")"
+  if [ -n "$awaiting" ]; then
+    context+=$'\n\nThe export\'s verdict on unanswered feedback, as it opens the file:\n\n'
+    context+="$awaiting"
+  fi
   context+=$'\n\nSo `/handle` Step 2\'s export is done, but its commit is still yours: commit the '
   context+=$'export before working the lane, so the next turn diffs against what you read. '
-  context+=$'Nothing here decides which lane runs.'
+  context+=$'The verdict settles whether the review lane fires; whether a plan lane does is '
+  context+=$'still Step 2\'s to read off `docs/plans/`.'
 elif [ -n "$failure" ]; then
   context+="This PR export failed ahead of the turn — \`#$number\` on \`$branch\`: $failure"
   context+=$'\n\nRun `scripts/export-github-item.py` yourself per `/handle` Step 2, and stop and '
