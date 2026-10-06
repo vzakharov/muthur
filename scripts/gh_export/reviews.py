@@ -156,6 +156,29 @@ def thread_summary(
     )
 
 
+def exported_threads(
+    comments: list[dict[str, Any]],
+    resolved_by_comment_id: dict[int, bool],
+    include_resolved: bool,
+) -> tuple[list[list[dict[str, Any]]], int]:
+    """The threads the export renders, in `T01`… order, and how many resolved
+    ones it dropped. The one numbering every `T<nn>` reference shares."""
+    threads = review_threads(comments)
+    if include_resolved:
+        return threads, 0
+    kept = [
+        chain
+        for chain in threads
+        if resolution_label(chain, resolved_by_comment_id) != "resolved"
+    ]
+    return kept, len(threads) - len(kept)
+
+
+def bodied_reviews(reviews: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """The reviews that render a body, in `R01`… order."""
+    return [r for r in reviews if (r.get("body") or "").strip()]
+
+
 def review_parts(
     reviews: list[dict[str, Any]],
     comments: list[dict[str, Any]],
@@ -173,28 +196,23 @@ def review_parts(
     reads as "N omitted", not as no review at all. `resolution unknown` and
     `unresolved` are kept: only the state the reviewer explicitly closed goes.
     """
-    bodied = [r for r in reviews if (r.get("body") or "").strip()]
-    threads = review_threads(comments)
-    if not include_resolved:
-        kept = [
-            chain
-            for chain in threads
-            if resolution_label(chain, resolved_by_comment_id) != "resolved"
-        ]
-        omitted = len(threads) - len(kept)
-        threads = kept
-    else:
-        omitted = 0
+    bodied = bodied_reviews(reviews)
+    threads, omitted = exported_threads(
+        comments, resolved_by_comment_id, include_resolved
+    )
     if not bodied and not threads and not omitted:
         return "", []
 
     chunks = ["## Review threads", ""]
-    for review in bodied:
+    for number, review in enumerate(bodied, start=1):
         state = (review.get("state") or "COMMENTED").upper()
         by_agent, body = split_agent_footer(review["body"])
         chunks.extend(
             [
-                f"### Review by {attribution(review.get('user'), by_agent)} — {state}",
+                anchor_tag(f"r{number:02d}"),
+                "",
+                f"### R{number:02d} — Review by "
+                f"{attribution(review.get('user'), by_agent)} — {state}",
                 "",
                 f"_{review.get('submitted_at', '')}_",
                 "",

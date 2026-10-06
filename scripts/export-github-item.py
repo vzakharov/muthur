@@ -17,6 +17,8 @@ review section marking how many; `--include-resolved` keeps them.
 Conversation comments and review threads are always indexed — one row each,
 carrying who posted last, when, and the thread's resolved state — so a consumer
 reads the index and follows a link to the body rather than the whole document.
+A PR export opens, right under its header, on `## Awaiting an answer`: `/handle`
+Step 2's tail and recency tests already run, so the work is the first thing read.
 
 Exit status is non-zero when any attachment fails to download; the Markdown is
 still written, with the failed attachments still linked remotely.
@@ -54,6 +56,7 @@ from gh_export.attachments import (
 )
 from gh_export.cli import parse_args
 from gh_export.authorship import split_agent_footer
+from gh_export.awaiting import awaiting_section
 from gh_export.index import indexed_section
 from gh_export.markdown import comments_parts, header_section
 from gh_export.reviews import review_parts
@@ -139,13 +142,29 @@ def main() -> None:
 
     # An empty section is left out rather than joined as "" — an empty element
     # would leave a stray blank line in every export that lacks it.
-    parts: list[str] = [
-        header_section(item, pr, body_by_agent),
-        body_md,
-        "",
-        "---",
-        "",
-    ]
+    parts: list[str] = [header_section(item, pr, body_by_agent)]
+    if pr:
+        parts.append(
+            awaiting_section(
+                pr,
+                timeline,
+                comments,
+                reviews,
+                review_comments,
+                resolved_by_comment_id,
+                include_resolved,
+            )
+        )
+    parts.extend(
+        [
+            "## Body",
+            "",
+            body_md,
+            "",
+            "---",
+            "",
+        ]
+    )
     if comment_items:
         parts.extend([comments_heading, indexed_section(comment_items)])
     if review_prelude:

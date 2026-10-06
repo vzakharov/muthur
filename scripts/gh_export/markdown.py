@@ -56,11 +56,16 @@ def header_section(
             "",
             "---",
             "",
-            "## Body",
-            "",
         ]
     )
     return "\n".join(lines)
+
+
+def comment_summary(number: int, comment: dict[str, Any]) -> str:
+    """The `C<nn>` index row, without the link `indexed_section` appends."""
+    by_agent, body = split_agent_footer(comment.get("body") or "")
+    who = attribution(comment.get("user"), by_agent)
+    return f"- **C{number:02d}** {who} — {comment.get('created_at', '')} — {preview(body)}"
 
 
 def comments_parts(
@@ -80,7 +85,7 @@ def comments_parts(
         items.append(
             Indexed(
                 anchor=anchor,
-                summary=f"- **C{number:02d}** {who} — {created} — {preview(body)}",
+                summary=comment_summary(number, c),
                 body="\n".join(
                     [
                         anchor_tag(anchor),
