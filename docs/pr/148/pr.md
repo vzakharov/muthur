@@ -7,7 +7,7 @@
 - **Draft:** yes
 - **Merged:** _not merged_
 - **Created:** 2026-10-06T08:50:59Z
-- **Updated:** 2026-10-06T09:05:59Z
+- **Updated:** 2026-10-06T09:12:35Z
 - **Closed:** _not closed_
 - **Labels:** _none_
 
@@ -15,7 +15,7 @@
 
 ## Awaiting an answer: none
 
-_Unresolved threads whose newest post is a human's, and human reviews and comments posted after the head commit (e79fb1c, 2026-10-06T09:05:56Z). Resolved threads never count; an `(agent)` tail is a reply already given._
+_Unresolved threads whose newest post is a human's, and human reviews and comments that are new since the last export or that no agent post has followed (the export committed at a2b210b). Resolved threads never count; an `(agent)` tail is a reply already given._
 
 ---
 
@@ -24,7 +24,7 @@ _Unresolved threads whose newest post is a human's, and human reviews and commen
 ## Summary
 
 - On #147, a `/handle and finalize` run read its PR export through `sed -n 1,60p`. That window held only the PR body and the agent's own sticky comments, so the run finalized over a review with two unanswered inline threads. The `## Review threads` index sat at line ~101, below every comment body.
-- The export now runs `/handle` Step 2's two tests itself. Right under its header, above the PR body, it opens on `## Awaiting an answer: <count>`, with one linked row for each unresolved thread whose newest post is a human's, and for each human review or comment posted after the head commit. When the count is zero the section prints `none`, so the verdict never disappears silently. If the timeline has no head-commit date, every human post counts.
+- The export now runs `/handle` Step 2's two tests itself. Right under its header, above the PR body, it opens on `## Awaiting an answer: <count>`, with one linked row for each unresolved thread whose newest post is a human's, and for each human review or comment posted after the head commit. When the count is zero the section prints `none`, so the verdict never disappears silently. If the timeline has no head-commit date, every human post counts. A thread's newest post is the one that went out last: a comment counts from its review's submission time, since its own `created_at` is when it was drafted into a pending review.
 - `.claude/hooks/prompt-handle-pr-export.sh` puts that section into the turn's context word for word. `/handle` Step 2 now treats its count as the review lane's verdict, and the `and merge` stand-down in `/finalize` reads it off a fresh export. Review bodies get `R<nn>` anchors so the section can link to them.
 - Two other fixes were considered and not taken. Exporting less, by dropping the agent's sticky comment bodies, still leaves the order to chance on a PR with long human comments. Diffing against the last committed export shows what changed, not what is still unanswered: a thread left open across two exports produces no diff at all.
 
@@ -70,7 +70,9 @@ opens, under the header, on `## Awaiting an answer: <count>` - one
 linked row per unresolved thread whose newest post is a human's, and
 per human review or comment posted after the head commit. A zero
 prints as `none`, and with no head-commit date every human post
-counts.
+counts. A thread's newest post is the one that went out last: a
+comment counts from its review's submission, not its created_at,
+which predates it for anything drafted in a pending review.
 
 The /handle hook carries that section into the turn's context
 verbatim; /handle treats its count as the review lane's verdict, and
