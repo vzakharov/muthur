@@ -81,7 +81,13 @@ Commit/push discipline is already governed by CLAUDE.md — don't reinvent it he
 - Conventional-commit subjects; descriptive bodies.
 - **Do not** run `./scripts/vet.sh` per commit on a feature branch — that's `/finalize`'s job once the operator has reviewed.
 
-**Stopping partway releases the plan.** Three things call for it: the operator asking you to stop where you've reached; the context budget hook (`.claude/context-budget/`) — at its warning, at the best stopping point the work can reach before the pause line; at its pause, wherever the work stands; and a turn that ends blocked on an operator decision — a question the work cannot proceed past without their answer. Record in the plan file what is done and what is left, and the open question when there is one, `git mv` it to `docs/plans/<slug>.paused.md`, commit and push. No format is prescribed for that record — a next session only has to be able to tell finished work from remaining work. The rename is what makes the work resumable: left as `*.in-progress.md` it still reads as claimed, and Step 1 stops on it — in the fresh session an operator answers from, as in the successor of one that died waiting.
+**Stopping partway releases the plan.** Three things call for it:
+
+- the operator asking you to stop where you've reached;
+- the context budget hook (`.claude/context-budget/`) — at its warning, at the best stopping point the work can reach before the pause line; at its pause, wherever the work stands;
+- a turn that ends blocked on an operator decision — a question the work cannot proceed past without their answer.
+
+Record in the plan file what is done and what is left, and the open question when there is one, `git mv` it to `docs/plans/<slug>.paused.md`, commit and push. No format is prescribed for that record — a next session only has to be able to tell finished work from remaining work. The rename is what makes the work resumable: left as `*.in-progress.md` it still reads as claimed, and Step 1 stops on it.
 
 **The answer resumes a blocked plan through Step 1's `*.paused.md` case**, in this session as in any other: `git mv` it back to `*.in-progress.md` and record the answer before building on it.
 
