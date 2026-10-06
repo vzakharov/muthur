@@ -1,4 +1,4 @@
-# PR #148: feat: open the PR export on a verdict of what awaits an answer
+# PR #148: fix: open the PR export on a verdict of what awaits an answer
 
 - **State:** open
 - **URL:** https://github.com/vzakharov/muthur/pull/148
@@ -7,18 +7,15 @@
 - **Draft:** yes
 - **Merged:** _not merged_
 - **Created:** 2026-10-06T08:50:59Z
-- **Updated:** 2026-10-06T09:03:12Z
+- **Updated:** 2026-10-06T09:05:59Z
 - **Closed:** _not closed_
 - **Labels:** _none_
 
 ---
 
-## Awaiting an answer: 2
+## Awaiting an answer: none
 
-_Unresolved threads whose newest post is a human's, and human reviews and comments posted after the head commit (9b701a6, 2026-10-06T08:51:32Z). Resolved threads never count; an `(agent)` tail is a reply already given._
-
-- **T01** `.claude/hooks/prompt-handle-pr-export.sh`:129 — unresolved — last: @vzakharov (human) 2026-10-06T09:02:10Z — "ну давай задогфудим. работает? :)" → [↓](#t01)
-- **T02** `docs/remove-before-merging/squash-message.md`:4 — unresolved — last: @vzakharov (human) 2026-10-06T09:02:43Z — "fix?" → [↓](#t02)
+_Unresolved threads whose newest post is a human's, and human reviews and comments posted after the head commit (e79fb1c, 2026-10-06T09:05:56Z). Resolved threads never count; an `(agent)` tail is a reply already given._
 
 ---
 
@@ -49,7 +46,7 @@ _Unresolved threads whose newest post is a human's, and human reviews and commen
 
 ## Comments
 
-- **C01** @vzakharov (agent) — 2026-10-06T08:51:14Z — "Proposed squash title/body: ``` feat: open the PR export on…" → [↓](#c01)
+- **C01** @vzakharov (agent) — 2026-10-06T08:51:14Z — "Proposed squash title/body: ``` fix: open the PR export on a…" → [↓](#c01)
 
 <a id="c01"></a>
 
@@ -60,7 +57,7 @@ _Unresolved threads whose newest post is a human's, and human reviews and commen
 Proposed squash title/body:
 
 ```
-feat: open the PR export on a verdict of what awaits an answer (pr #148)
+fix: open the PR export on a verdict of what awaits an answer (pr #148)
 ```
 
 ```
@@ -86,8 +83,8 @@ Co-authored-by: Claude <noreply@anthropic.com>
 
 ## Review threads
 
-- **T01** `.claude/hooks/prompt-handle-pr-export.sh`:129 — unresolved — last: @vzakharov (human) 2026-10-06T09:02:10Z — "ну давай задогфудим. работает? :)" → [↓](#t01)
-- **T02** `docs/remove-before-merging/squash-message.md`:4 — unresolved — last: @vzakharov (human) 2026-10-06T09:02:43Z — "fix?" → [↓](#t02)
+- **T01** `.claude/hooks/prompt-handle-pr-export.sh`:129 — unresolved — last: @vzakharov (agent) 2026-10-06T09:05:41Z — "Работает, с одной оговоркой. Экспорт с этой ветки открылся н…" → [↓](#t01)
+- **T02** `docs/remove-before-merging/squash-message.md`:4 — unresolved — last: @vzakharov (agent) 2026-10-06T09:05:43Z — "Yes — the change repairs a defect (a `/handle` run finalized…" → [↓](#t02)
 
 <a id="t01"></a>
 
@@ -111,6 +108,12 @@ Co-authored-by: Claude <noreply@anthropic.com>
 
 ну давай задогфудим. работает? :)
 
+**@vzakharov (agent)** — 2026-10-06T09:05:41Z
+
+Работает, с одной оговоркой. Экспорт с этой ветки открылся на `## Awaiting an answer: 2`, и в нём оба треда, этот и «fix?» (закоммичено в d2f32f1). Хук, запущенный вручную на этой ветке с промптом `/handle`, кладёт эту секцию в контекст дословно.
+
+Оговорка: в этой сессии хук сработал до attach, на авто-ветке от `main`, то есть со старым экспортёром — и настоящий контекст хода вердикта не содержал. Это бутстрап, а не баг: хук берёт скрипт с той ветки, где стоит HEAD, так что после мержа свежая сессия получит вердикт с первого промпта.
+
 ---
 
 <a id="t02"></a>
@@ -129,8 +132,13 @@ Co-authored-by: Claude <noreply@anthropic.com>
 
 fix?
 
+**@vzakharov (agent)** — 2026-10-06T09:05:43Z
+
+Yes — the change repairs a defect (a `/handle` run finalized over unanswered threads), so it's `fix:`. Squash proposal in aa16730; the comment above and the PR title now match.
+
 ---
 
 ## Timeline (status, references, and other events)
 
 - **2026-10-06T09:03:12Z** @vzakharov reviewed (COMMENTED): https://github.com/vzakharov/muthur/pull/148#pullrequestreview-5426103397.
+- **2026-10-06T09:05:27Z** @vzakharov renamed from «feat: open the PR export on a verdict of what awaits an answer» to «fix: open the PR export on a verdict of what awaits an answer».
