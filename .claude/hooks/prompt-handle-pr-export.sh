@@ -120,8 +120,8 @@ if [ -f "$export_path" ]; then
     context+=$'arrived on the PR since. That is the answer to "has anything changed?" — do not '
     context+=$'reach it any other way.'
   fi
-  # The verdict rides in verbatim: it is the review lane's whole input, and a
-  # reader who stops at a page of the file is how it got missed.
+  # The verdict rides in verbatim: it is the review lane's whole input, and one
+  # read off the file depends on the reader opening it at the top.
   awaiting="$(awk '/^## Awaiting an answer/ { on = 1 } on && /^---$/ { exit } on' "$export_path")"
   if [ -n "$awaiting" ]; then
     context+=$'\n\nThe export\'s verdict on unanswered feedback, as it opens the file:\n\n'
