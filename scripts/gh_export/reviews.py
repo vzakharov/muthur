@@ -11,7 +11,7 @@ keeps them.
 from __future__ import annotations
 
 import re
-from typing import Any
+from typing import Any, Callable
 
 from gh_export.attachments import rewrite_attachment_refs
 from gh_export.authorship import attribution, split_agent_footer
@@ -23,25 +23,32 @@ CONTEXT_LINE_CHARS = 200
 _HUNK_HEADER = re.compile(r"^@@ -(\d+)(?:,\d+)? \+(\d+)(?:,\d+)? @@")
 
 
+def posted_at(reviews: list[dict[str, Any]]) -> Callable[[dict[str, Any]], str]:
+    """When an inline review comment became visible.
+
+    A comment's `created_at` is when it was written into its review, not when
+    the review went out: a follow-up drafted in a pending review before the
+    agent's reply and submitted after it carries the earlier stamp, and judged
+    on that alone it would hide under the reply it answers.
+
+    Every stamp here is GitHub's fixed-width UTC ISO form, so comparing the
+    strings is comparing the instants."""
+    submitted = {r.get("id"): r.get("submitted_at") or "" for r in reviews}
+
+    def posted(comment: dict[str, Any]) -> str:
+        written = comment.get("created_at") or ""
+        return max(written, submitted.get(comment.get("pull_request_review_id"), ""))
+
+    return posted
+
+
 def review_threads(
     comments: list[dict[str, Any]], reviews: list[dict[str, Any]]
 ) -> list[list[dict[str, Any]]]:
     """Group inline review comments into reply chains, oldest root first, each
     chain in the order its posts became visible — which is what makes the last
-    one the tail `/handle`'s tail test reads.
-
-    A comment's `created_at` is when it was written into its review, not when
-    the review went out: a follow-up drafted in a pending review before the
-    agent's reply and submitted after it carries the earlier stamp, and sorted
-    on that alone it would hide under the reply it answers."""
-    submitted = {r.get("id"): r.get("submitted_at") or "" for r in reviews}
-
-    def posted(comment: dict[str, Any]) -> str:
-        # Both stamps are GitHub's fixed-width UTC ISO form, so `max` on the
-        # strings is chronological.
-        written = comment.get("created_at") or ""
-        return max(written, submitted.get(comment.get("pull_request_review_id"), ""))
-
+    one the tail `/handle`'s tail test reads."""
+    posted = posted_at(reviews)
     by_id = {c["id"]: c for c in comments if c.get("id") is not None}
 
     def root_of(comment: dict[str, Any]) -> dict[str, Any]:
@@ -233,6 +240,8 @@ def review_parts(
                 f"{attribution(review.get('user'), by_agent)} — {state}",
                 "",
                 f"_{review.get('submitted_at', '')}_",
+                "",
+                f"[{review.get('html_url', '')}]({review.get('html_url', '')})",
                 "",
                 rewrite_attachment_refs(body or "_empty_", url_to_relative),
                 "",
