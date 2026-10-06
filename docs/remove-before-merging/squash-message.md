@@ -14,7 +14,9 @@ opens, under the header, on `## Awaiting an answer: <count>` - one
 linked row per unresolved thread whose newest post is a human's, and
 per human review or comment posted after the head commit. A zero
 prints as `none`, and with no head-commit date every human post
-counts.
+counts. A thread's newest post is the one that went out last: a
+comment counts from its review's submission, not its created_at,
+which predates it for anything drafted in a pending review.
 
 The /handle hook carries that section into the turn's context
 verbatim; /handle treats its count as the review lane's verdict, and
