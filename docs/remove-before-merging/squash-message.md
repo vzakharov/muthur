@@ -1,7 +1,7 @@
 Proposed squash title/body:
 
 ```
-feat: open the PR export on a verdict of what awaits an answer (pr #148)
+fix: open the PR export on a verdict of what awaits an answer (pr #148)
 ```
 
 ```
