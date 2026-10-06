@@ -52,7 +52,8 @@ The sections, in this order:
 
 Its prompt is one line, `/relay take <branch>`. The summary is not passed in the prompt: a tool call's argument is model output, so writing the file and then sending its text bills it twice.
 
-- **Web/remote**: `create_session` from the Claude Code Remote tools, with `source_url` the `origin` URL, `source_revision` the branch, and model and permission mode inherited by omitting them. Confirm with `get_session` that it did not fail at start.
+- **Web/remote**: `create_session` from the Claude Code Remote tools, with `source_url` the `origin` URL, `source_revision` the branch, a `title` per below, and model and permission mode inherited by omitting them. Confirm with `get_session` that it did not fail at start.
+- **The title names the work**, because it is what the operator finds the session by in their list days later: a few words saying what the branch changes, in the human-facing language (CLAUDE.md § "Language"), then ` · relay <N>` with the summary's `<N>`. A PR or issue number, a branch name or the `/relay take` line is not a title — nobody remembers what `pr #104` was. This session's own title, from `get_session` with no id, is the starting point when it already names the work.
 - **Local CLI**, where no such tool exists: the report gives the line to type after `/clear`, or `claude "/relay take <branch>"` in a new terminal on the same checkout.
 
 ### Step 4 — Report and stop
