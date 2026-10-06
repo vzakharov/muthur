@@ -23,9 +23,10 @@ deliberately writes no source. With no brief, ask for it before anything else.
 
 **A fresh fork is the one place `gh` may genuinely be absent** — the rest of what
 `/override-gh` says about `gh` and `GH_TOKEN` holds here unchanged. The fork
-can arrive before the operator has set an environment setup script, and on a base
-image that does not ship `gh` its install lives in that script (Step 6), so `.claude/hooks/gh-shim.sh`
-finds nothing to shim and says so on startup — `/override-gh` owns that signal
+can arrive before the operator has set an environment setup script, and on a
+base image that does not ship `gh` its install lives in that script (Step 6), so
+`.claude/hooks/gh-shim.sh` finds nothing to shim and says so on startup —
+`/override-gh` owns that signal
 and what it means. Take it at face value rather than re-deriving it; to probe by
 hand, use `gh api repos/{owner}/{repo} --jq .visibility` rather than `gh auth
 status`, which reports a bogus failure in a working session. Finding no `gh`,
