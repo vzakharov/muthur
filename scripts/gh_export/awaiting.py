@@ -67,23 +67,20 @@ def awaiting_section(
     for number, chain in enumerate(threads, start=1):
         if resolution_label(chain, resolved_by_comment_id) == "resolved":
             continue
-        tail_by_agent, _ = split_agent_footer(chain[-1].get("body") or "")
-        if not tail_by_agent:
+        if not _by_agent(chain[-1]):
             summary = thread_summary(chain, f"T{number:02d}", resolved_by_comment_id)
             rows.append(f"{summary} → [↓](#t{number:02d})")
     for number, review in enumerate(bodied_reviews(reviews), start=1):
-        by_agent, _ = split_agent_footer(review["body"])
         key = f"pullrequestreview-{review.get('id')}"
-        if not by_agent and awaits(key, review.get("submitted_at")):
-            who = attribution(review.get("user"), by_agent)
+        if not _by_agent(review) and awaits(key, review.get("submitted_at")):
+            who = attribution(review.get("user"), False)
             rows.append(
                 f"- **R{number:02d}** review by {who} — "
                 f"{review.get('submitted_at', '')} → [↓](#r{number:02d})"
             )
     for number, comment in enumerate(comments, start=1):
-        by_agent, _ = split_agent_footer(comment.get("body") or "")
         key = f"issuecomment-{comment.get('id')}"
-        if not by_agent and awaits(key, comment.get("created_at")):
+        if not _by_agent(comment) and awaits(key, comment.get("created_at")):
             rows.append(f"{comment_summary(number, comment)} → [↓](#c{number:02d})")
 
     against = (
