@@ -23,8 +23,25 @@ CONTEXT_LINE_CHARS = 200
 _HUNK_HEADER = re.compile(r"^@@ -(\d+)(?:,\d+)? \+(\d+)(?:,\d+)? @@")
 
 
-def review_threads(comments: list[dict[str, Any]]) -> list[list[dict[str, Any]]]:
-    """Group inline review comments into reply chains, oldest root first."""
+def review_threads(
+    comments: list[dict[str, Any]], reviews: list[dict[str, Any]]
+) -> list[list[dict[str, Any]]]:
+    """Group inline review comments into reply chains, oldest root first, each
+    chain in the order its posts became visible — which is what makes the last
+    one the tail `/handle`'s tail test reads.
+
+    A comment's `created_at` is when it was written into its review, not when
+    the review went out: a follow-up drafted in a pending review before the
+    agent's reply and submitted after it carries the earlier stamp, and sorted
+    on that alone it would hide under the reply it answers."""
+    submitted = {r.get("id"): r.get("submitted_at") or "" for r in reviews}
+
+    def posted(comment: dict[str, Any]) -> str:
+        # Both stamps are GitHub's fixed-width UTC ISO form, so `max` on the
+        # strings is chronological.
+        written = comment.get("created_at") or ""
+        return max(written, submitted.get(comment.get("pull_request_review_id"), ""))
+
     by_id = {c["id"]: c for c in comments if c.get("id") is not None}
 
     def root_of(comment: dict[str, Any]) -> dict[str, Any]:
@@ -42,9 +59,9 @@ def review_threads(comments: list[dict[str, Any]]) -> list[list[dict[str, Any]]]
         threads.setdefault(root_of(comment)["id"], []).append(comment)
 
     for chain in threads.values():
-        chain.sort(key=lambda c: c.get("created_at") or "")
+        chain.sort(key=posted)
 
-    return sorted(threads.values(), key=lambda chain: chain[0].get("created_at") or "")
+    return sorted(threads.values(), key=lambda chain: posted(chain[0]))
 
 
 def resolution_label(
@@ -158,12 +175,13 @@ def thread_summary(
 
 def exported_threads(
     comments: list[dict[str, Any]],
+    reviews: list[dict[str, Any]],
     resolved_by_comment_id: dict[int, bool],
     include_resolved: bool,
 ) -> tuple[list[list[dict[str, Any]]], int]:
     """The threads the export renders, in `T01`… order, and how many resolved
     ones it dropped. The one numbering every `T<nn>` reference shares."""
-    threads = review_threads(comments)
+    threads = review_threads(comments, reviews)
     if include_resolved:
         return threads, 0
     kept = [
@@ -198,7 +216,7 @@ def review_parts(
     """
     bodied = bodied_reviews(reviews)
     threads, omitted = exported_threads(
-        comments, resolved_by_comment_id, include_resolved
+        comments, reviews, resolved_by_comment_id, include_resolved
     )
     if not bodied and not threads and not omitted:
         return "", []

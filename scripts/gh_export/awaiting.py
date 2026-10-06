@@ -61,7 +61,7 @@ def awaiting_section(
 
     rows: list[str] = []
     threads, _ = exported_threads(
-        review_comments, resolved_by_comment_id, include_resolved
+        review_comments, reviews, resolved_by_comment_id, include_resolved
     )
     for number, chain in enumerate(threads, start=1):
         if resolution_label(chain, resolved_by_comment_id) == "resolved":

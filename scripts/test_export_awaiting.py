@@ -23,10 +23,17 @@ TIMELINE = [
 ME = {"login": "vzakharov"}
 
 
-def thread_post(cid: int, body: str, at: str, reply_to: int | None = None) -> dict:
+def thread_post(
+    cid: int,
+    body: str,
+    at: str,
+    reply_to: int | None = None,
+    review_id: int | None = None,
+) -> dict:
     return {
         "id": cid,
         "in_reply_to_id": reply_to,
+        "pull_request_review_id": review_id,
         "path": "docs/x.md",
         "line": 3,
         "user": ME,
@@ -80,6 +87,20 @@ class Threads(unittest.TestCase):
                 thread_post(2, "because" + FOOTER, "2026-10-01T01:00:00Z", reply_to=1),
                 thread_post(3, "not convinced", "2026-10-01T02:00:00Z", reply_to=1),
             ],
+            resolved={1: False},
+        )
+        self.assertIn('"not convinced"', out)
+
+    def test_a_follow_up_submitted_after_the_answer_counts(self) -> None:
+        # Written into a pending review before the agent replied, submitted
+        # after: its `created_at` is older than the reply it comes back on.
+        out = section(
+            review_comments=[
+                thread_post(1, "why?", "2026-10-01T00:00:00Z"),
+                thread_post(3, "not convinced", "2026-10-01T01:30:00Z", 1, review_id=9),
+                thread_post(2, "because" + FOOTER, "2026-10-01T02:00:00Z", reply_to=1),
+            ],
+            reviews=[{"id": 9, "user": ME, "submitted_at": "2026-10-01T03:00:00Z", "body": ""}],
             resolved={1: False},
         )
         self.assertIn('"not convinced"', out)
