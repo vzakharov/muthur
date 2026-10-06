@@ -1,0 +1,86 @@
+{
+  "sessionId": "c70a4b8e-de06-5328-8023-da0b364ffeee",
+  "branch": "claude/modest-cerf-jx6nzh",
+  "cwd": "/home/user/muthur",
+  "openingPrompt": "блок-хук по контексту не пересылает приложенные картинки при !, нужно подумать что можно сделать",
+  "prs": [],
+  "url": "https://claude.ai/code/session_01P2SrDxjCW1rBjWxSP6Ftgv",
+  "operator": "vzakharov",
+  "firstResponseAt": "2026-10-06T10:01:56.564Z",
+  "lastResponseAt": "2026-10-06T10:03:45.803Z",
+  "pricesAsOf": "2026-09-23",
+  "claudeCodeTotalUsd": null,
+  "total": {
+    "inputTokens": 28,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 72746,
+    "cacheReadTokens": 1371447,
+    "outputTokens": 8366,
+    "thinkingTokens": 3889,
+    "responses": 14,
+    "costUsd": 1.0236894000000003
+  },
+  "ownTurns": {
+    "inputTokens": 28,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 72746,
+    "cacheReadTokens": 1371447,
+    "outputTokens": 8366,
+    "thinkingTokens": 3889,
+    "responses": 14,
+    "costUsd": 1.0236894000000003
+  },
+  "subagents": {
+    "inputTokens": 0,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 0,
+    "cacheReadTokens": 0,
+    "outputTokens": 0,
+    "thinkingTokens": 0,
+    "responses": 0,
+    "costUsd": 0.0
+  },
+  "byRate": {
+    "claude-opus-5-5/standard": {
+      "inputTokens": 28,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 72746,
+      "cacheReadTokens": 1371447,
+      "outputTokens": 8366,
+      "thinkingTokens": 3889,
+      "responses": 14,
+      "costUsd": 1.0236894000000003
+    }
+  },
+  "warnings": [],
+  "orientation": {
+    "endedBy": "end_turn",
+    "endedOn": null,
+    "endedAt": "2026-10-06T10:03:45.803Z",
+    "contextTokens": 117197,
+    "spend": {
+      "inputTokens": 26,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 71072,
+      "cacheReadTokens": 1255926,
+      "outputTokens": 7416,
+      "thinkingTokens": 3835,
+      "responses": 13,
+      "costUsd": 0.9681852000000002
+    }
+  },
+  "compactions": [],
+  "telemetry": null,
+  "estimate": {
+    "at": "2026-10-06T10:03:38.670Z",
+    "parts": [
+      {
+        "hours": 2.0,
+        "grade": "senior",
+        "role": "developer",
+        "comment": "finding the cause means reverse-engineering what Claude Code hands a UserPromptSubmit hook and probing a blocked image prompt live; a middle developer would likely stop at the hook's own code"
+      }
+    ],
+    "comment": null
+  }
+}
