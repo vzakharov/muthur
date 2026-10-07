@@ -1,0 +1,88 @@
+{
+  "estimate": {
+    "at": "2026-10-07T06:16:52.447Z",
+    "parts": [
+      {
+        "hours": 0.5,
+        "grade": "middle",
+        "role": "developer",
+        "comment": "a one-function serialization reorder with a round-trip test; any mid-level developer who knows the ledger does it without design calls"
+      }
+    ],
+    "comment": null
+  },
+  "sessionId": "ca0d0726-70d8-5658-b004-61302931058e",
+  "branch": "claude/estimate-first-in-row-hzlq4k",
+  "cwd": "/home/user/muthur",
+  "openingPrompt": "давай estimate совать в начало json-а сессии, а не в конец, так удобнее смотреть в диффах пиара",
+  "prs": [
+    155
+  ],
+  "url": "https://claude.ai/code/session_01SKVL5wXJj2VvLh8Y7hKnC9",
+  "operator": "vzakharov",
+  "firstResponseAt": "2026-10-07T06:16:06.948Z",
+  "lastResponseAt": "2026-10-07T06:17:59.791Z",
+  "pricesAsOf": "2026-09-23",
+  "claudeCodeTotalUsd": null,
+  "total": {
+    "inputTokens": 50,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 87457,
+    "cacheReadTokens": 2702417,
+    "outputTokens": 7623,
+    "thinkingTokens": 1786,
+    "responses": 25,
+    "costUsd": 1.3927994000000001
+  },
+  "ownTurns": {
+    "inputTokens": 50,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 87457,
+    "cacheReadTokens": 2702417,
+    "outputTokens": 7623,
+    "thinkingTokens": 1786,
+    "responses": 25,
+    "costUsd": 1.3927994000000001
+  },
+  "subagents": {
+    "inputTokens": 0,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 0,
+    "cacheReadTokens": 0,
+    "outputTokens": 0,
+    "thinkingTokens": 0,
+    "responses": 0,
+    "costUsd": 0.0
+  },
+  "byRate": {
+    "claude-opus-5-5/standard": {
+      "inputTokens": 50,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 87457,
+      "cacheReadTokens": 2702417,
+      "outputTokens": 7623,
+      "thinkingTokens": 1786,
+      "responses": 25,
+      "costUsd": 1.3927994000000001
+    }
+  },
+  "warnings": [],
+  "orientation": {
+    "endedBy": "Edit",
+    "endedOn": ".claude/costs/lib/rows.py",
+    "endedAt": "2026-10-07T06:16:32.178Z",
+    "contextTokens": 106835,
+    "spend": {
+      "inputTokens": 14,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 60067,
+      "cacheReadTokens": 588297,
+      "outputTokens": 1848,
+      "thinkingTokens": 879,
+      "responses": 7,
+      "costUsd": 0.6352114
+    }
+  },
+  "compactions": [],
+  "telemetry": null
+}
