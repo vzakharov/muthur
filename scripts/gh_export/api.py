@@ -101,9 +101,10 @@ class GraphqlError(Exception):
 
 
 def api_graphql(query: str, variables: dict[str, Any], token: str) -> Any:
-    """Goes through `lib.github.fetch` rather than `gh api graphql`: the
-    remote-session proxy blocks most of `gh`'s GraphQL surface, while the
-    ladder's direct rung reaches `api.github.com`.
+    """Goes through `lib.github.fetch` rather than `gh api graphql`: a
+    remote-session proxy can refuse `gh`'s GraphQL calls, depending on how the
+    environment is set up, while the ladder's direct rung reaches
+    `api.github.com` either way.
     """
     body, _ = request(
         "https://api.github.com/graphql",

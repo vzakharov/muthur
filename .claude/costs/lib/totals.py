@@ -13,10 +13,12 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from datetime import date
 from statistics import mean, median
-from typing import Callable, Dict, Iterable, List, Optional, Sequence, Tuple
+from typing import Callable, Dict, Iterable, List, Mapping, Optional, Sequence, Tuple
 
 from lib.estimate import Rates, checked, senior_hours
+from lib.hours import HoursTable, hours_of
 from lib.orientation import Phase
+from lib.period import Period, iso_week
 from lib.rows import SessionCost
 from lib.tally import Tally
 
@@ -47,6 +49,7 @@ class Totals:
     orientation: Optional[OrientationSummary] = None
     telemetry: Optional[TelemetrySummary] = None
     effort: Optional[EffortSummary] = None
+    hours: Optional[HoursTable] = None
 
 
 @dataclass
@@ -133,21 +136,17 @@ class TelemetrySummary:
     unseen: Dict[str, Bucket]
 
 
-def iso_week(day: date) -> str:
-    """The ISO-8601 week a day falls in, `<year>-W<nn>`. The year is the one
-    owning that week's Thursday, so the last days of December can read as week
-    01 of the next year — the scheme working, not a rounding error."""
-    year, week, _ = day.isocalendar()
-    return f"{year}-W{week:02d}"
-
-
-def branch_label(row: SessionCost) -> str:
+def branch_label(row: SessionCost, repo: Optional[str] = None) -> str:
     """The branch a session's spend is filed under, with the pull requests it
     touched named beside it: the branch says roughly what the work was, the
     numbers are what a reader clicks through to. The spend is the branch's
     rather than each PR's, since a session that touched two would otherwise be
-    counted twice."""
-    return " ".join([row.branch or "(no branch)", *(f"#{pr}" for pr in row.prs)])
+    counted twice. Across repositories the branch is prefixed with its repo,
+    since the same branch name recurs in several."""
+    branch = row.branch or "(no branch)"
+    return " ".join(
+        [branch if repo is None else f"{repo}:{branch}", *(f"#{pr}" for pr in row.prs)]
+    )
 
 
 def operator_label(row: SessionCost) -> str:
@@ -311,7 +310,21 @@ def effort_of(rows: Sequence[SessionCost], rates: Rates) -> EffortSummary:
     )
 
 
-def totals_of(rows: Iterable[SessionCost], rates: Rates) -> Totals:
+def by_repo(rows: Iterable[SessionCost], repo_of: Mapping[str, str]) -> Dict[str, Bucket]:
+    """`repo_of` maps a session id to the `owner/name` its row was read from:
+    where a row was read is not something the row records."""
+    buckets: Dict[str, Bucket] = {}
+    for row in rows:
+        buckets.setdefault(repo_of[row.session_id], Bucket()).count(row.total)
+    return _rounded(buckets)
+
+
+def totals_of(
+    rows: Iterable[SessionCost],
+    rates: Rates,
+    repo_of: Optional[Mapping[str, str]] = None,
+    hours_period: Optional[Period] = None,
+) -> Totals:
     """A session is filed under where it **started**, the rule that already picks
     its row's month, so one running past midnight stays whole. A row with no
     priced response has no day to file under and lands in the grand total, its
@@ -326,7 +339,8 @@ def totals_of(rows: Iterable[SessionCost], rates: Rates) -> Totals:
 
     for row in rows:
         grand.count(row.total)
-        by_branch.setdefault(branch_label(row), Bucket()).count(row.total)
+        repo = None if repo_of is None else repo_of[row.session_id]
+        by_branch.setdefault(branch_label(row, repo), Bucket()).count(row.total)
         by_operator.setdefault(operator_label(row), Bucket()).count(row.total)
         started_at = row.first_response_at
         if started_at is None:
@@ -347,4 +361,5 @@ def totals_of(rows: Iterable[SessionCost], rates: Rates) -> Totals:
         orientation=orientation_of(rows),
         telemetry=telemetry_of(rows),
         effort=effort_of(rows, rates),
+        hours=None if hours_period is None else hours_of(rows, rates, hours_period),
     )

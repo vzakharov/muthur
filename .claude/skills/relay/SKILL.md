@@ -20,7 +20,9 @@ The argument is the message the operator would have sent first after a compact, 
 
 ### Step 1 — Leave the branch resumable
 
-Commit and push everything. A plan named `*.in-progress.md` is released per `@.claude/skills/go/SKILL.md` § "Stopping partway releases the plan": the successor cannot pick up a plan this session still claims. No uncommitted state survives a relay, because on the web the successor's container is not this one.
+**An opaque auto-branch is renamed first**, per `@.claude/skills/branch-rename/SKILL.md`, unless a PR is open on it — renaming a PR's head closes the PR. A session that only talked never reached `/pr`, where the rename usually happens; with no diff to derive a slug from, pass one taken from the conversation as the skill's argument. Renamed any later, the summary's State, the successor's `/relay take <branch>` and the pushed ref all name a branch that is gone.
+
+Then commit and push everything. A plan named `*.in-progress.md` is released per `@.claude/skills/go/SKILL.md` § "Stopping partway releases the plan": the successor cannot pick up a plan this session still claims. No uncommitted state survives a relay, because on the web the successor's container is not this one.
 
 Where the cost ledger ships (`.claude/costs/`), revise this session's human-hour estimate down to the work done here, with `python3 .claude/costs/estimate.py set`: the rest is the successor's, and two sessions each claiming the whole job would count it twice.
 
@@ -52,12 +54,17 @@ The sections, in this order:
 
 Its prompt is one line, `/relay take <branch>`. The summary is not passed in the prompt: a tool call's argument is model output, so writing the file and then sending its text bills it twice.
 
-- **Web/remote**: `create_session` from the Claude Code Remote tools, with `source_url` the `origin` URL, `source_revision` the branch, and model and permission mode inherited by omitting them. Confirm with `get_session` that it did not fail at start.
+- **Web/remote**: `create_session` from the Claude Code Remote tools, with `source_url` the `origin` URL, `source_revision` the branch, a `title` per below, and model and permission mode inherited by omitting them. Confirm with `get_session` that it did not fail at start.
+- **The title names the work**, because it is what the operator finds the session by in their list days later: a few words saying what the branch changes, in the human-facing language (CLAUDE.md § "Language"), then ` · relay <N>` with the summary's `<N>`. A PR or issue number, a branch name or the `/relay take` line is not a title — nobody remembers what `pr #104` was. This session's own title, from `get_session` with no id, is the starting point when it already names the work.
 - **Local CLI**, where no such tool exists: the report gives the line to type after `/clear`, or `claude "/relay take <branch>"` in a new terminal on the same checkout.
 
 ### Step 4 — Report and stop
 
-The successor's link — on the web `https://claude.ai/code/<session_id>` from the id `create_session` returned, written bare so the operator clicks through to it — or the local recipe, and the summary's size in characters with a rough token count at four characters a token — the context the successor starts with on top of its baseline. Leave this session open: archiving it is the operator's call.
+The successor's link — on the web `https://claude.ai/code/<session_id>` from the id `create_session` returned, written bare so the operator clicks through to it — or the local recipe, and the summary's size in characters with a rough token count at four characters a token — the context the successor starts with on top of its baseline.
+
+### Without a successor
+
+The cache keepalive's last wake (`.claude/keepalive/`) relays this way: the session has idled for hours, so a successor started now is a session nobody is waiting for. Steps 1–2 as written, then no Step 3: the report gives the line the operator starts a new session with — `/relay take <branch>` in a fenced block holding only it — and the summary's size as Step 4 gives it.
 
 ### After the handoff
 

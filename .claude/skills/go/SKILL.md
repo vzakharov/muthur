@@ -81,16 +81,24 @@ Commit/push discipline is already governed by CLAUDE.md — don't reinvent it he
 - Conventional-commit subjects; descriptive bodies.
 - **Do not** run `./scripts/vet.sh` per commit on a feature branch — that's `/finalize`'s job once the operator has reviewed.
 
-**Stopping partway releases the plan.** Two things call for it: the operator asking you to stop where you've reached, and the context budget hook (`.claude/context-budget/`) — at its warning, at the best stopping point the work can reach before the pause line; at its pause, wherever the work stands. Record in the plan file what is done and what is left, `git mv` it to `docs/plans/<slug>.paused.md`, commit and push. No format is prescribed for that record — a next session only has to be able to tell finished work from remaining work. The rename is what makes the work resumable: left as `*.in-progress.md` it still reads as claimed, and Step 1 stops on it.
+**Stopping partway releases the plan.** Three things call for it:
+
+- the operator asking you to stop where you've reached;
+- the context budget hook (`.claude/context-budget/`) — at its warning, at the best stopping point the work can reach before the pause line; at its pause, wherever the work stands;
+- a turn that ends blocked on an operator decision — a question the work cannot proceed past without their answer.
+
+Record in the plan file what is done and what is left, and the open question when there is one, `git mv` it to `docs/plans/<slug>.paused.md`, commit and push. No format is prescribed for that record — a next session only has to be able to tell finished work from remaining work. The rename is what makes the work resumable: left as `*.in-progress.md` it still reads as claimed, and Step 1 stops on it.
+
+**The answer resumes a blocked plan through Step 1's `*.paused.md` case**, in this session as in any other: `git mv` it back to `*.in-progress.md` and record the answer before building on it.
 
 **An elephant pauses at every bite's end, and the record is the plan's own sections** (`@.claude/skills/plan/elephant.md` § "The plan's shape"). Two ways to get there:
 
 - **The bite is done** — fold `## This bite` into `## Eaten so far`, at that section's altitude, and reword `## Rest of the elephant` where the work found it wrong or learned what it needs, while this session still holds that context; then run Step 3 and Step 4, which leave the plan `*.paused.md`. Stop there, budget left or not — the operator reviews between bites — and end the turn with the handoff block below.
-- **A stop mid-bite** — the budget notice or the operator: fold what is built into `## Eaten so far`, rename `## This bite` to `## Rest of the bite` and leave the rest as written, then the `git mv`, commit and push above. Skip Step 3: `/polish` scopes itself from the last `polish:` commit, so the next bite's end covers this half too.
+- **A stop mid-bite** — the budget notice, the operator, or a question that blocks the turn: fold what is built into `## Eaten so far`, rename `## This bite` to `## Rest of the bite` and leave the rest as written, then the `git mv`, commit and push above. Skip Step 3: `/polish` scopes itself from the last `polish:` commit, so the next bite's end covers this half too.
 
 **Work with no plan behind it gets one here**, written straight to `docs/plans/<slug>.paused.md`: the task as asked, what is done (with its commits), what is left, and the decisions a successor would otherwise re-litigate. There is no draft stage — the work is already under way on a go-ahead, and `*.paused.md` is the state Step 1 resumes from.
 
-A pause the operator did not ask for is reported, not just done: say that the budget notice triggered it, and end the turn offering `/relay` (`@.claude/skills/relay/SKILL.md`), whose new session resumes the paused plan from a summary of this one — or run it unasked, when the notice says the operator turned that on (`@.claude/skills/relay/SKILL.md` § "Auto-relay").
+A pause the budget notice triggered is reported, not just done: say so, and end the turn offering `/relay` (`@.claude/skills/relay/SKILL.md`), whose new session resumes the paused plan from a summary of this one — or run it unasked, when the notice says the operator turned that on (`@.claude/skills/relay/SKILL.md` § "Auto-relay").
 
 ## Step 3 — Mandatory quality passes
 

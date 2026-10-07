@@ -76,6 +76,10 @@
           {
             "type": "command",
             "command": "$CLAUDE_PROJECT_DIR/.claude/cold-cache/hooks/cold_cache.py"
+          },
+          {
+            "type": "command",
+            "command": "$CLAUDE_PROJECT_DIR/.claude/keepalive/hooks/keepalive.py"
           }
         ]
       }

@@ -1,0 +1,88 @@
+{
+  "sessionId": "8305fa71-bb32-5550-9a2b-965ade714ef7",
+  "branch": "claude/pause-on-question-snf6z4",
+  "cwd": "/home/user/muthur",
+  "openingPrompt": "in /go, a turn blocked on an operator decision should pause the plan #149",
+  "prs": [
+    152
+  ],
+  "url": "https://claude.ai/code/session_01SobKqCH27C377H23jjJVM1",
+  "operator": "vzakharov",
+  "firstResponseAt": "2026-10-06T12:11:16.467Z",
+  "lastResponseAt": "2026-10-06T13:01:43.815Z",
+  "pricesAsOf": "2026-09-23",
+  "claudeCodeTotalUsd": 1.7167729999999997,
+  "total": {
+    "inputTokens": 78,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 119254,
+    "cacheReadTokens": 4805592,
+    "outputTokens": 18660,
+    "thinkingTokens": 5910,
+    "responses": 39,
+    "costUsd": 2.2886623999999998
+  },
+  "ownTurns": {
+    "inputTokens": 78,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 119254,
+    "cacheReadTokens": 4805592,
+    "outputTokens": 18660,
+    "thinkingTokens": 5910,
+    "responses": 39,
+    "costUsd": 2.2886623999999998
+  },
+  "subagents": {
+    "inputTokens": 0,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 0,
+    "cacheReadTokens": 0,
+    "outputTokens": 0,
+    "thinkingTokens": 0,
+    "responses": 0,
+    "costUsd": 0.0
+  },
+  "byRate": {
+    "claude-opus-5-5/standard": {
+      "inputTokens": 78,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 119254,
+      "cacheReadTokens": 4805592,
+      "outputTokens": 18660,
+      "thinkingTokens": 5910,
+      "responses": 39,
+      "costUsd": 2.2886623999999998
+    }
+  },
+  "warnings": [],
+  "orientation": {
+    "endedBy": "Edit",
+    "endedOn": ".claude/skills/go/SKILL.md",
+    "endedAt": "2026-10-06T12:12:18.747Z",
+    "contextTokens": 105154,
+    "spend": {
+      "inputTokens": 16,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 58766,
+      "cacheReadTokens": 693869,
+      "outputTokens": 4127,
+      "thinkingTokens": 2952,
+      "responses": 8,
+      "costUsd": 0.6915058000000001
+    }
+  },
+  "compactions": [],
+  "telemetry": null,
+  "estimate": {
+    "at": "2026-10-06T12:12:06.732Z",
+    "parts": [
+      {
+        "hours": 1.0,
+        "grade": "senior",
+        "role": "prompter",
+        "comment": "a release rule in the loop's own procedure has to fit the existing pause triggers, elephants and resume path without contradicting them, which takes someone who knows the loop's lifecycle"
+      }
+    ],
+    "comment": null
+  }
+}
