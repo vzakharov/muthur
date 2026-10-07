@@ -72,8 +72,8 @@ def gh_transport(query: str, variables: Mapping[str, Any]) -> Dict[str, Any]:
 def call(
     transport: Transport, query: str, variables: Mapping[str, Any], sleep: Sleep
 ) -> Dict[str, Any]:
-    """The response's `data`. A GraphQL error raises rather than leaving a
-    repository out, since a missing one understates every total it belongs to."""
+    """A GraphQL error raises rather than leaving a repository out, since a
+    missing one understates every total it belongs to."""
     attempt = 0
     while True:
         try:
@@ -271,7 +271,6 @@ def remote_ledger(
     session id in two repositories — a fork carries its source's rows — is
     counted in the first, by name."""
     found = discover(transport, only, sleep)
-    # Only the months asked for are ever requested.
     wanted = [
         Candidate(c.repo, [m for m in c.months if month is None or m == month])
         for c in found.ledgers

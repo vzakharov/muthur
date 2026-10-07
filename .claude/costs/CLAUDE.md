@@ -267,16 +267,12 @@ shape is therefore a change to the reader alone: the first report in each
 repository clears it, and those rewrites are ordinary changes to commit.
 
 **Across repositories, the rows are read off GitHub.** `--all-repos` reads the
-ledger on the default branch of every repository the `gh` user owns,
-collaborates on or reaches through an organization, through the GraphQL API,
-so nothing needs cloning; `--repo` reads just the ones named. It adds a table
-by repository and labels each branch with its repo, the same branch name
-recurring across them. A repository counts by its ledger, not muthur's
-watermark: the ledger is opt-in, so a watermark alone has nothing to count, and
-those adopters are named in one line. A session id in two repositories — a fork
-carries its source's rows — is counted once, and a row GitHub truncates stops
-the run, since a missing one understates every total it belongs to. These rows
-are reshaped in memory and never written: they are another branch's to change.
+ledger on the default branch of every repository the `gh` user can reach, and
+`--repo` just the ones named, so nothing needs cloning. A repository counts by
+its ledger, not muthur's watermark: the ledger is opt-in, so a watermark alone
+has nothing to count. A row GitHub truncates stops the run, since a missing one
+understates every total it belongs to, and these rows are never written back:
+they are another branch's to change.
 
 ## What the totals do not cover
 

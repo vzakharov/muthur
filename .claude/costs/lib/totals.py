@@ -330,8 +330,7 @@ def totals_of(
     """A session is filed under where it **started**, the rule that already picks
     its row's month, so one running past midnight stays whole. A row with no
     priced response has no day to file under and lands in the grand total, its
-    branch and its operator alone. With `repo_of`, as in `by_repo`, branches are
-    labelled with their repo."""
+    branch and its operator alone."""
     grand = Bucket()
     by_month: Dict[str, Bucket] = {}
     by_week: Dict[str, Bucket] = {}
