@@ -37,10 +37,13 @@ not count as session activity; a background Bash task does (relay-1: two
 2. `settings.json`'s `Stop` entry dropped; tests rewritten; `.claude/keepalive/CLAUDE.md`
    rewritten; CLAUDE.md's `run_in_background` exception staged.
 
-**Left.**
-1. Refresh the PR body and the squash proposal; `/polish`.
-2. Live check with `tmp/keepalive/period`: a wake arrives, the wake turn
-   restarts the watcher.
+3. PR body, title and squash proposal refreshed; `/polish` run (bd69b74, 61ca46f).
+4. Live check: with the period knob at 60 s the first wake came a minute later;
+   with the knob removed, wakes 2–5 came about 55 min apart (09:51, 10:46,
+   11:41, 12:37 UTC), the container alive through four hours of idle, and the
+   fifth relayed without a successor (relay-3).
+
+**Left.** Nothing in the plan; the branch waits on `/finalize`.
 
 Operator, on the condition: «давай так, запускать фоновую задачу только тогда,
 когда сессия не в "готовом к запуску с новой сессии" состоянии, т.е. не на
