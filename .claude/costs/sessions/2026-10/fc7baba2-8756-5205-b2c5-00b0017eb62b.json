@@ -1,0 +1,86 @@
+{
+  "sessionId": "fc7baba2-8756-5205-b2c5-00b0017eb62b",
+  "branch": "claude/costs-siblings-8f5s0a",
+  "cwd": "/home/user/muthur",
+  "openingPrompt": "/relay take claude/costs-siblings-8f5s0a",
+  "prs": [],
+  "url": "https://claude.ai/code/session_01BRSonGg6pkyCEBB7r5Z5Pv",
+  "operator": "vzakharov",
+  "firstResponseAt": "2026-10-07T08:53:22.255Z",
+  "lastResponseAt": "2026-10-07T08:53:39.846Z",
+  "pricesAsOf": "2026-09-23",
+  "claudeCodeTotalUsd": null,
+  "total": {
+    "inputTokens": 8,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 41719,
+    "cacheReadTokens": 330449,
+    "outputTokens": 1284,
+    "thinkingTokens": 199,
+    "responses": 4,
+    "costUsd": 0.4255538000000001
+  },
+  "ownTurns": {
+    "inputTokens": 8,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 41719,
+    "cacheReadTokens": 330449,
+    "outputTokens": 1284,
+    "thinkingTokens": 199,
+    "responses": 4,
+    "costUsd": 0.4255538000000001
+  },
+  "subagents": {
+    "inputTokens": 0,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 0,
+    "cacheReadTokens": 0,
+    "outputTokens": 0,
+    "thinkingTokens": 0,
+    "responses": 0,
+    "costUsd": 0.0
+  },
+  "byRate": {
+    "claude-opus-5-5/standard": {
+      "inputTokens": 8,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 41719,
+      "cacheReadTokens": 330449,
+      "outputTokens": 1284,
+      "thinkingTokens": 199,
+      "responses": 4,
+      "costUsd": 0.4255538000000001
+    }
+  },
+  "warnings": [],
+  "orientation": {
+    "endedBy": "end_turn",
+    "endedOn": null,
+    "endedAt": "2026-10-07T08:53:39.846Z",
+    "contextTokens": 96372,
+    "spend": {
+      "inputTokens": 6,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 41275,
+      "cacheReadTokens": 234523,
+      "outputTokens": 763,
+      "thinkingTokens": 199,
+      "responses": 3,
+      "costUsd": 0.3923886000000001
+    }
+  },
+  "compactions": [],
+  "telemetry": null,
+  "estimate": {
+    "at": "2026-10-07T08:53:33.865Z",
+    "parts": [
+      {
+        "hours": 0.1,
+        "grade": "middle",
+        "role": "developer",
+        "comment": "picking up a relayed branch and reporting its state is a few minutes of orientation, nothing to build"
+      }
+    ],
+    "comment": null
+  }
+}
