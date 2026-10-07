@@ -11,9 +11,11 @@ Run by path (`python3 .claude/cold-cache/test_cold_cache.py`), as
 from __future__ import annotations
 
 import json
+import os
 import subprocess
 import sys
 import tempfile
+import time
 import unittest
 from pathlib import Path
 from typing import Any, Dict, Optional
@@ -63,8 +65,8 @@ class HookCase(unittest.TestCase):
             env={"PATH": "/usr/bin:/bin", "CLAUDE_PROJECT_DIR": str(self.root), **(env or {})},
         ).stdout
 
-    def prompt(self, text: str = "carry on", env: Optional[Dict[str, str]] = None) -> Optional[str]:
-        out = self.run_hook("UserPromptSubmit", env, prompt=text)
+    def prompt(self, text: str = "carry on", env: Optional[Dict[str, str]] = None, **payload: Any) -> Optional[str]:
+        out = self.run_hook("UserPromptSubmit", env, prompt=text, **payload)
         if not out.strip():
             return None
         decision = json.loads(out)
@@ -130,6 +132,35 @@ class WhenAPromptIsStopped(HookCase):
         out = json.loads(self.run_hook("UserPromptSubmit", prompt=" ! "))["hookSpecificOutput"]
         self.assertEqual(out["hookEventName"], "UserPromptSubmit")
         self.assertTrue(out["additionalContext"].endswith("verbatim:\n\nfix the flaky test"))
+
+    def test_a_bare_bang_hands_on_the_stopped_prompts_images(self) -> None:
+        # Claude Code saves attachments beside the scratchpad before the hook runs.
+        images = self.root / "claude" / "images"
+        images.mkdir(parents=True)
+        (images / "1.png").write_bytes(b"delivered earlier")
+        os.utime(images / "1.png", (time.time() - 3 * HOUR,) * 2)
+        (images / "10.png").write_bytes(b"second")
+        (images / "2.png").write_bytes(b"first")
+        scratchpad = str(self.root / "claude" / "scratchpad")
+        self.append(opening(), latest())
+
+        reason = self.prompt("what is this?", scratchpad_dir=scratchpad)
+        assert reason is not None
+        self.assertIn("Its attached images (2) go with ! too.", reason)
+        (images / "2.png").write_bytes(b"overwritten after a restart")
+
+        context = json.loads(self.run_hook("UserPromptSubmit", prompt="!"))["hookSpecificOutput"]["additionalContext"]
+        kept = self.root / "tmp" / "cold-cache" / "sess.images"
+        self.assertTrue(context.endswith(f"what is this?\n\nIt came with these attached images, which only reach you if you `Read` each one before acting on it:\n{kept / '2.png'}\n{kept / '10.png'}"))
+        self.assertEqual((kept / "2.png").read_bytes(), b"first")
+
+    def test_a_stop_with_no_images_mentions_none(self) -> None:
+        self.append(opening(), latest())
+        reason = self.prompt("fix it", scratchpad_dir=str(self.root / "nowhere" / "scratchpad"))
+        assert reason is not None
+        self.assertNotIn("image", reason)
+        context = json.loads(self.run_hook("UserPromptSubmit", prompt="!"))["hookSpecificOutput"]["additionalContext"]
+        self.assertTrue(context.endswith("verbatim:\n\nfix it"))
 
     def test_a_bare_bang_with_nothing_stopped_passes_as_it_is(self) -> None:
         self.append(opening(), latest(ago=600))
