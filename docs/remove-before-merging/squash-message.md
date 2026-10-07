@@ -1,7 +1,7 @@
 Proposed squash title/body:
 
 ```
-feat: rename an opaque auto-branch before relaying (pr #154)
+fix: rename an opaque auto-branch before relaying (pr #154)
 ```
 
 ```
