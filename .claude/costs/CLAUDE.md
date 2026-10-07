@@ -200,6 +200,12 @@ continuing the turn. It bails on a re-fired `Stop` (`stop_hook_active`) exactly
 as the harness's check does: two hooks that can both block and neither bail
 would hold the turn open forever.
 
+**A turn that cannot be priced blocks the stop once**, with the pricing error's
+last line — the missing `(model, speed)` pair, as a row to add to `prices.json`.
+Anything quieter loses the session from the ledger without anyone knowing. The
+same `stop_hook_active` bail applies, and the next turn's row prices the whole
+transcript, so nothing is lost by stopping.
+
 **The arrangement is read from the launcher's config, not assumed.** All of the
 above holds only while `~/.claude/launcher-settings.json` registers that check;
 a harness that renames or drops it leaves this hook waiting on a process that
