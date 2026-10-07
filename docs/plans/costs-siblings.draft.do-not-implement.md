@@ -1,15 +1,20 @@
 > ⛔ **DRAFT — DO NOT IMPLEMENT.** This plan is not approved. Do not edit source while this file is named `*.draft.do-not-implement.md` — prep and spikes go in `tmp/`. On an explicit operator go-ahead, `git mv` it to `*.in-progress.md` and delete this banner (quoting the go-ahead in the commit) *before* touching code.
 
-# `report.py --github`: one cost report across every repo you can see
+# `report.py --all-repos`: one cost report across every repo you can see
 
 ## Goal
 
-`python3 .claude/costs/report.py --github` finds every repository the `gh`
+`python3 .claude/costs/report.py --all-repos` finds every repository the `gh`
 user owns, collaborates on or reaches as an organization member, keeps the
 ones whose default branch carries `.claude/costs/sessions/`, and sums their
 ledgers in one report: every existing table as today, plus a `repo` table.
-`--repo <owner/name>` (repeatable) narrows it to named repos; `--month` and
-`--json` work alongside.
+`--repo <owner/name>` (repeatable) reads just the named repos instead, so the
+two flags are alternatives, never combined; `--month` and `--json` work
+alongside either.
+
+The flags name the scope of the report, not where its rows come from:
+GitHub is how the repos are reached, and the reader of the command wants to
+know which repos it covers.
 
 It needs no clone of anything, so it runs the same on a laptop, in a cloud
 session (whose `gh` carries the operator's token) or in a scheduled routine.
@@ -80,7 +85,8 @@ until the token is authorized for it, and any work not yet on a trunk.
    fills a new `by_repo` and labels branches `<owner/name>:<branch>`, since the
    same branch name recurs across repos. Absent, nothing changes: the
    single-repo report is byte-identical.
-4. **`report.py`** — `--github` and `--repo`. The warnings and the "muthur, no
+4. **`report.py`** — `--all-repos` and `--repo`, in a mutually exclusive
+   argparse group. The warnings and the "muthur, no
    ledger" line print first; the `repo` table prints before `month`. `--json`
    gains a `repos` array: name, months, rows, warnings. The repo-reading lives
    in `lib/github.py` so `report.py` stays under ~450 lines.
@@ -96,7 +102,7 @@ until the token is authorized for it, and any work not yet on a trunk.
    - branch labels are repo-prefixed only under `repo_of`.
    `scripts/vet.sh` already runs every `.claude/costs/test_*.py`.
 6. **Docs.** `.claude/costs/CLAUDE.md`: § "The report" gains a short paragraph
-   — what `--github` reads, why the ledger and not the watermark qualifies a
+   — what `--all-repos` reads, why the ledger and not the watermark qualifies a
    repo, the SSO blind spot; the "Other repositories" bullet in § "What the
    totals do not cover" narrows to that blind spot. The `report.py` usage
    docstring names both flags; the catalog row in
@@ -105,7 +111,7 @@ until the token is authorized for it, and any work not yet on a trunk.
 
 ## Not in this PR
 
-- **A scheduled routine** that runs `--github --json` weekly and publishes the
+- **A scheduled routine** that runs `--all-repos --json` weekly and publishes the
   result as a private artifact page: the cross-repo view with no machine
   involved. It needs nothing from the report beyond this PR's `--json`.
 

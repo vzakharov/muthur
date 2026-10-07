@@ -1,7 +1,7 @@
 Proposed squash title/body:
 
 ```
-feat: report.py --github, one cost report across all your repos (pr #160)
+feat: report.py --all-repos, one cost report across all your repos (pr #160)
 ```
 
 ```
@@ -9,7 +9,7 @@ The cost ledger's totals stopped at the repository they were read in,
 so seeing the work across all of an operator's repos meant running the
 report in each and adding the numbers by hand.
 
-`report.py --github` lists every repository the `gh` user owns,
+`report.py --all-repos` lists every repository the `gh` user owns,
 collaborates on or reaches through an organization, keeps those whose
 default branch carries a ledger, and prints the usual tables over all
 of them plus a per-repo table. It reads each trunk through GitHub's
