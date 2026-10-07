@@ -1,0 +1,86 @@
+{
+  "estimate": {
+    "at": "2026-10-07T13:12:49.222Z",
+    "parts": [
+      {
+        "hours": 0.1,
+        "grade": "middle",
+        "role": "developer",
+        "comment": "a factual GitHub question any middle developer answers from experience in minutes"
+      }
+    ],
+    "comment": null
+  },
+  "sessionId": "f778c2e6-cb10-5a91-9336-ef6c9250418b",
+  "branch": "claude/sweet-dijkstra-dyz95n",
+  "cwd": "/home/user/muthur",
+  "openingPrompt": "вопрос, можно ли оставить пиар, удалив его бранч? или пиар уходит вместе с бранчем?",
+  "prs": [],
+  "url": "https://claude.ai/code/session_016v5J9Dz6FC9HHXtJwLRbbm",
+  "operator": "vzakharov",
+  "firstResponseAt": "2026-10-07T13:12:46.220Z",
+  "lastResponseAt": "2026-10-07T13:12:56.144Z",
+  "pricesAsOf": "2026-09-23",
+  "claudeCodeTotalUsd": null,
+  "total": {
+    "inputTokens": 4,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 38163,
+    "cacheReadTokens": 126581,
+    "outputTokens": 1190,
+    "thinkingTokens": 568,
+    "responses": 2,
+    "costUsd": 0.3544362
+  },
+  "ownTurns": {
+    "inputTokens": 4,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 38163,
+    "cacheReadTokens": 126581,
+    "outputTokens": 1190,
+    "thinkingTokens": 568,
+    "responses": 2,
+    "costUsd": 0.3544362
+  },
+  "subagents": {
+    "inputTokens": 0,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 0,
+    "cacheReadTokens": 0,
+    "outputTokens": 0,
+    "thinkingTokens": 0,
+    "responses": 0,
+    "costUsd": 0.0
+  },
+  "byRate": {
+    "claude-opus-5-5/standard": {
+      "inputTokens": 4,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 38163,
+      "cacheReadTokens": 126581,
+      "outputTokens": 1190,
+      "thinkingTokens": 568,
+      "responses": 2,
+      "costUsd": 0.3544362
+    }
+  },
+  "warnings": [],
+  "orientation": {
+    "endedBy": "end_turn",
+    "endedOn": null,
+    "endedAt": "2026-10-07T13:12:56.144Z",
+    "contextTokens": 82757,
+    "spend": {
+      "inputTokens": 2,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 37397,
+      "cacheReadTokens": 44592,
+      "outputTokens": 657,
+      "thinkingTokens": 504,
+      "responses": 1,
+      "costUsd": 0.3212424
+    }
+  },
+  "compactions": [],
+  "telemetry": null
+}
