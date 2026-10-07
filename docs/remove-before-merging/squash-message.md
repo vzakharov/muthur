@@ -1,7 +1,7 @@
 Proposed squash title/body:
 
 ```
-feat: report.py --siblings, one cost report across local clones (pr #160)
+feat: report.py --github, one cost report across all your repos (pr #160)
 ```
 
 ```
@@ -9,18 +9,18 @@ The cost ledger's totals stopped at the repository they were read in,
 so seeing the work across all of an operator's repos meant running the
 report in each and adding the numbers by hand.
 
-`report.py --siblings` reads every git repository cloned next to this
-one and prints the usual tables over all of them, plus a per-repo
-table; branch labels carry the repo's name. Each sibling is read from
-its fetched `origin/<default-branch>` through git's object store, never
-from its working tree, so a sibling on a feature branch, behind or
-dirty still contributes exactly its trunk ledger. A failed fetch is
-warned about with the age of the ref read instead; a repo cloned twice
-is read once, and a session id found in two repos is counted once.
+`report.py --github` lists every repository the `gh` user owns,
+collaborates on or reaches through an organization, keeps those whose
+default branch carries a ledger, and prints the usual tables over all
+of them plus a per-repo table. It reads each trunk through GitHub's
+GraphQL API, so it needs no clone and runs the same on a laptop, in a
+cloud session or in a routine. The ledger, not the muthur watermark,
+qualifies a repo; adopters that opted out of it are named in one line.
 
-The report never writes into a sibling: a row in a retired shape is
-reshaped in memory only, with the parse split out of `read_row` so the
-single-repo report keeps rewriting its own rows as before.
+A session id found in two repos is counted once, and a row GitHub
+truncates stops the run rather than going missing. Rows are reshaped in
+memory only, the parse split out of `read_row` so the single-repo
+report keeps rewriting its own rows as before.
 
 Co-authored-by: Claude <noreply@anthropic.com>
 ```
