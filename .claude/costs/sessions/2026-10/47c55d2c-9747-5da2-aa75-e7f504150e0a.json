@@ -1,0 +1,88 @@
+{
+  "sessionId": "47c55d2c-9747-5da2-aa75-e7f504150e0a",
+  "branch": "claude/costs-siblings-8f5s0a",
+  "cwd": "/home/user/muthur",
+  "openingPrompt": "/from-branch claude/costs-siblings-8f5s0a",
+  "prs": [
+    160
+  ],
+  "url": "https://claude.ai/code/session_01R4hTJ7dd89fFhJ32NzFtXG",
+  "operator": "vzakharov",
+  "firstResponseAt": "2026-10-07T08:06:16.811Z",
+  "lastResponseAt": "2026-10-07T08:07:23.644Z",
+  "pricesAsOf": "2026-09-23",
+  "claudeCodeTotalUsd": null,
+  "total": {
+    "inputTokens": 24,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 56666,
+    "cacheReadTokens": 1085100,
+    "outputTokens": 5521,
+    "thinkingTokens": 1222,
+    "responses": 12,
+    "costUsd": 0.7808640000000001
+  },
+  "ownTurns": {
+    "inputTokens": 24,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 56666,
+    "cacheReadTokens": 1085100,
+    "outputTokens": 5521,
+    "thinkingTokens": 1222,
+    "responses": 12,
+    "costUsd": 0.7808640000000001
+  },
+  "subagents": {
+    "inputTokens": 0,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 0,
+    "cacheReadTokens": 0,
+    "outputTokens": 0,
+    "thinkingTokens": 0,
+    "responses": 0,
+    "costUsd": 0.0
+  },
+  "byRate": {
+    "claude-opus-5-5/standard": {
+      "inputTokens": 24,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 56666,
+      "cacheReadTokens": 1085100,
+      "outputTokens": 5521,
+      "thinkingTokens": 1222,
+      "responses": 12,
+      "costUsd": 0.7808640000000001
+    }
+  },
+  "warnings": [],
+  "orientation": {
+    "endedBy": "Edit",
+    "endedOn": "docs/plans/costs-siblings.draft.do-not-implement.md",
+    "endedAt": "2026-10-07T08:06:46.571Z",
+    "contextTokens": 95588,
+    "spend": {
+      "inputTokens": 10,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 47088,
+      "cacheReadTokens": 402674,
+      "outputTokens": 1293,
+      "thinkingTokens": 193,
+      "responses": 5,
+      "costUsd": 0.4831388
+    }
+  },
+  "compactions": [],
+  "telemetry": null,
+  "estimate": {
+    "at": "2026-10-07T08:06:55.475Z",
+    "parts": [
+      {
+        "hours": 0.5,
+        "grade": "senior",
+        "role": "developer",
+        "comment": "naming a CLI flag for how its users read the command, and keeping plan, PR and squash text consistent, takes someone who owns the tool's interface"
+      }
+    ],
+    "comment": null
+  }
+}
