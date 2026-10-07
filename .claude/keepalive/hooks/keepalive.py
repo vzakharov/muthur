@@ -3,10 +3,8 @@
 session's one-hour prompt cache warm by waking the model shortly before it
 expires. `.claude/keepalive/CLAUDE.md` carries the contract.
 
-On `Stop` it arms, sleeps until `lead` seconds before the cache expires, and
-exits 2 with the wake's instruction on stderr, which the harness hands the
-model as a system reminder; any other exit wakes nothing. On `UserPromptSubmit`
-it resets the idle spell. Stdlib only — Python 3.9+.
+Exit 2 is the wake, its stderr the model's instruction; any other exit wakes
+nothing. Stdlib only — Python 3.9+.
 """
 
 from __future__ import annotations
@@ -34,8 +32,7 @@ DEFAULT_LEAD = 300
 @dataclass(frozen=True)
 class State:
     """`tmp/keepalive/` under the project: the wakes spent this idle spell, and
-    the token of the one sleeper still entitled to fire — every later `Stop` or
-    prompt replaces it, which is how an older sleeper learns to stand down."""
+    the token of the one sleeper still entitled to fire."""
 
     dir: Path
     session: str
