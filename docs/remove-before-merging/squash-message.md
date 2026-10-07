@@ -27,8 +27,8 @@ so tens of seconds of listing do not look like a hang.
 
 Every report also prints a period's estimated hours by role and grade,
 in plain hours. `--month`, `--week` and `--day`, each named or `cur` /
-`prev` in any case, narrow the whole report to the sessions that started in that
-period; without one, the hours cover the current month.
+`prev` in any case, narrow the whole report to the sessions that
+started in that period; without one, the hours cover the current month.
 
 Co-authored-by: Claude <noreply@anthropic.com>
 ```
