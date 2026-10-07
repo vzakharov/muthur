@@ -266,6 +266,18 @@ one as the report reads it, and the report names each one on stderr. Retiring a
 shape is therefore a change to the reader alone: the first report in each
 repository clears it, and those rewrites are ordinary changes to commit.
 
+**Across repositories, the rows are read off GitHub.** `--all-repos` reads the
+ledger on the default branch of every repository the `gh` user owns,
+collaborates on or reaches through an organization, through the GraphQL API,
+so nothing needs cloning; `--repo` reads just the ones named. It adds a table
+by repository and labels each branch with its repo, the same branch name
+recurring across them. A repository counts by its ledger, not muthur's
+watermark: the ledger is opt-in, so a watermark alone has nothing to count, and
+those adopters are named in one line. A session id in two repositories — a fork
+carries its source's rows — is counted once, and a row GitHub truncates stops
+the run, since a missing one understates every total it belongs to. These rows
+are reshaped in memory and never written: they are another branch's to change.
+
 ## What the totals do not cover
 
 - **The turn that merges.** `/finalize and merge` merges within its turn and the
@@ -284,8 +296,8 @@ repository clears it, and those rewrites are ordinary changes to commit.
 - **Abandoned branches.** Rows reach the trunk by merge, so work that is thrown
   away is thrown out of the ledger too — an undercount biased toward exactly the
   sessions that spent without delivering.
-- **Other repositories.** The transcript directory is keyed by working
-  directory, so these totals are this repo's. A cross-repo month needs a home
-  outside any one repository.
+- **Repositories the token cannot reach.** `--all-repos` sees what the `gh`
+  user sees, so an organization that enforces SAML SSO is out of reach until
+  the token is authorized for it.
 - **The trunk itself.** The hook declines to commit a row on `main` or
   `master`, where there is no branch to carry it.
