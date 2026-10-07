@@ -26,22 +26,21 @@ not count as session activity; a background Bash task does (relay-1: two
   and the description, never stdout; `UserPromptSubmit` hooks fire on task
   notifications too.
 
+**Done after the pause (relay-2's successor).**
+1. The operator's condition (verbatim below) is the agent's call, not a
+   mechanical predicate — operator picked it («первое, да») over a hook-side
+   check of plan state and commit times, which runs at the turn's start and
+   cannot see a reply that went only to chat. The hook asks the agent to start
+   the watcher as the turn's last action unless the branch alone lets a fresh
+   session continue, and to `TaskStop` a running one once that holds. Probed:
+   `TaskStop` ends a task with no completion notice, so stopping wakes nothing.
+2. `settings.json`'s `Stop` entry dropped; tests rewritten; `.claude/keepalive/CLAUDE.md`
+   rewritten; CLAUDE.md's `run_in_background` exception staged.
+
 **Left.**
-1. **The operator's new condition** (verbatim below): start the watcher only
-   when the repo does not hold enough to continue from a fresh session. Design
-   the predicate: e.g. not at a loop boundary (draft plan just published awaiting
-   `/go`; `/go` done awaiting `/finalize`), no `*.paused.md` plan, and no relay
-   summary newer than the last operator prompt. Where it holds, the hook says
-   nothing and no watcher runs.
-2. `settings.json`: drop the `Stop` entry with `asyncRewake` (the script now
-   ignores `Stop`, so it is inert but dead).
-3. Rewrite `test_keepalive.py` for the watcher + hook (currently tests the old
-   Stop design and will fail).
-4. Rewrite `.claude/keepalive/CLAUDE.md` for the new mechanism.
-5. CLAUDE.md § "Key principles" bans `run_in_background`; the watcher is an
-   exception. CLAUDE.md is edited only through `scripts/staged.sh stage`.
-6. Refresh the PR body and the squash proposal; `/polish`.
-7. Live check with `tmp/keepalive/period`.
+1. Refresh the PR body and the squash proposal; `/polish`.
+2. Live check with `tmp/keepalive/period`: a wake arrives, the wake turn
+   restarts the watcher.
 
 Operator, on the condition: «давай так, запускать фоновую задачу только тогда,
 когда сессия не в "готовом к запуску с новой сессии" состоянии, т.е. не на
