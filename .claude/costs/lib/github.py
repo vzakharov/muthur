@@ -220,14 +220,12 @@ def _row_text(entry: Dict[str, Any], where: str) -> str:
 
 
 def ledger_texts(
-    transport: Transport,
-    candidates: Sequence[Candidate],
-    month: Optional[str] = None,
-    sleep: Sleep = time.sleep,
+    transport: Transport, candidates: Sequence[Candidate], sleep: Sleep = time.sleep
 ) -> List[Tuple[str, str, str]]:
-    """`(repo, where, text)` for each row, read in batches of month trees. A
-    row GitHub truncates raises rather than going missing."""
-    pairs = [(c.repo, m) for c in candidates for m in c.months if month is None or m == month]
+    """`(repo, where, text)` for each row of the candidates' months, read in
+    batches of month trees. A row GitHub truncates raises rather than going
+    missing."""
+    pairs = [(c.repo, m) for c in candidates for m in c.months]
     texts: List[Tuple[str, str, str]] = []
     for start in range(0, len(pairs), BATCH):
         batch = pairs[start : start + BATCH]
@@ -273,14 +271,16 @@ def remote_ledger(
     session id in two repositories — a fork carries its source's rows — is
     counted in the first, by name."""
     found = discover(transport, only, sleep)
-    repos = {
-        c.repo: RepoLedger(c.repo, [m for m in c.months if month is None or m == month])
+    # Only the months asked for are ever requested.
+    wanted = [
+        Candidate(c.repo, [m for m in c.months if month is None or m == month])
         for c in found.ledgers
-    }
+    ]
+    repos = {c.repo: RepoLedger(c.repo, c.months) for c in wanted}
     rows: List[SessionCost] = []
     repo_of: Dict[str, str] = {}
     reshaped: Dict[str, int] = {}
-    for repo, where, text in ledger_texts(transport, found.ledgers, month, sleep):
+    for repo, where, text in ledger_texts(transport, wanted, sleep):
         row, changes = reshape(text, where)
         if changes:
             reshaped[repo] = reshaped.get(repo, 0) + 1

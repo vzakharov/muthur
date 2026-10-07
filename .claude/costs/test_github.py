@@ -16,7 +16,7 @@ import re
 import unittest
 from typing import Any, Dict, List, Mapping, Optional
 
-from lib.github import GitHubError, ServerError, discover, ledger_texts, remote_ledger
+from lib.github import GitHubError, ServerError, discover, remote_ledger
 from lib.rows import SessionCost, row_text
 from lib.shape import ShapeError
 from lib.tally import Tally
@@ -184,9 +184,9 @@ class WhatIsRead(unittest.TestCase):
         github = FakeGitHub(
             {"a/ledger": {"2026-03": {"s.json": row("s")}, "2026-04": {"t.json": row("t")}}}
         )
-        found = discover(github, sleep=no_sleep)
-        texts = ledger_texts(github, found.ledgers, "2026-04", sleep=no_sleep)
-        self.assertEqual([where for _, where, _ in texts], ["a/ledger:.claude/costs/sessions/2026-04/t.json"])
+        ledger = remote_ledger(github, month="2026-04", sleep=no_sleep)
+        self.assertEqual([r.session_id for r in ledger.rows], ["t"])
+        self.assertEqual(ledger.repos[0].months, ["2026-04"])
         self.assertFalse(any("2026-03" in query for query in github.queries[1:]))
 
     def test_month_trees_are_fetched_in_batches(self) -> None:
