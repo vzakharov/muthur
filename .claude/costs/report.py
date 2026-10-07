@@ -36,6 +36,7 @@ from lib.shape import to_json
 from lib.totals import (
     Bucket,
     EffortSummary,
+    HoursTable,
     OrientationSummary,
     PhaseStats,
     Rate,
@@ -171,10 +172,39 @@ def effort(summary: EffortSummary) -> None:
     rate_table("per senior-hour by model", summary.by_model_month)
 
 
+def hours(summary: HoursTable) -> None:
+    print(f"\nhours by role and grade, {summary.month}: estimated {summary.estimated} of {count(summary.rows, 'row')}")
+    if not summary.by_role:
+        return
+    width = max(len("total"), *(len(role) for role in summary.by_role))
+    columns = [*summary.grades, "total"]
+
+    def line(label: str, cells: Dict[str, float]) -> str:
+        figures = [*(cells.get(grade, 0.0) for grade in summary.grades), sum(cells.values())]
+        return f"  {label.ljust(width)}" + "".join(
+            f"  {'—' if figure == 0 else f'{figure:.1f}':>{max(len(column), 7)}}"
+            for column, figure in zip(columns, figures)
+        )
+
+    print(f"  {''.ljust(width)}" + "".join(f"  {column:>{max(len(column), 7)}}" for column in columns))
+    for role, cells in summary.by_role.items():
+        print(line(role, cells))
+    column_totals: Dict[str, float] = {}
+    for cells in summary.by_role.values():
+        for grade, figure in cells.items():
+            column_totals[grade] = column_totals.get(grade, 0.0) + figure
+    print(line("total", column_totals))
+
+
 def repo_name(value: str) -> str:
     if not REPO.fullmatch(value):
         raise argparse.ArgumentTypeError(f"{value!r} is not OWNER/NAME")
     return value
+
+
+def this_month() -> str:
+    """UTC, as every row's month is."""
+    return datetime.now(timezone.utc).strftime("%Y-%m")
 
 
 def this_repo(month: Optional[str], as_json: bool, rates: Rates) -> int:
@@ -185,7 +215,7 @@ def this_repo(month: Optional[str], as_json: bool, rates: Rates) -> int:
         return 0
 
     rows = [row for shown_month in shown for row in rows_in(shown_month)]
-    totals = totals_of(rows, rates)
+    totals = totals_of(rows, rates, hours_month=month or this_month())
     if as_json:
         print(json.dumps(to_json(totals), indent=2, ensure_ascii=False))
         return 0
@@ -220,7 +250,7 @@ def across_repos(only: Optional[List[str]], month: Optional[str], as_json: bool,
     finally:
         status.clear()
     rows = ledger.rows
-    totals = totals_of(rows, rates, ledger.repo_of)
+    totals = totals_of(rows, rates, ledger.repo_of, month or this_month())
     repos = by_repo(rows, ledger.repo_of)
     if as_json:
         print(
@@ -274,6 +304,8 @@ def report(rows: List[SessionCost], totals: Totals) -> None:
         telemetry(totals.telemetry)
     if totals.effort is not None:
         effort(totals.effort)
+    if totals.hours is not None:
+        hours(totals.hours)
 
     # The hand-kept rate table has no published source to check itself against,
     # so the report states its age, and checks the arithmetic against the only
