@@ -20,7 +20,9 @@ The argument is the message the operator would have sent first after a compact, 
 
 ### Step 1 — Leave the branch resumable
 
-Commit and push everything. A plan named `*.in-progress.md` is released per `@.claude/skills/go/SKILL.md` § "Stopping partway releases the plan": the successor cannot pick up a plan this session still claims. No uncommitted state survives a relay, because on the web the successor's container is not this one.
+**An opaque auto-branch is renamed first**, per `@.claude/skills/branch-rename/SKILL.md`, unless a PR is open on it — renaming a PR's head closes the PR. A session that only talked never reached `/pr`, where the rename usually happens; with no diff to derive a slug from, pass one taken from the conversation as the skill's argument. Renamed any later, the summary's State, the successor's `/relay take <branch>` and the pushed ref all name a branch that is gone.
+
+Then commit and push everything. A plan named `*.in-progress.md` is released per `@.claude/skills/go/SKILL.md` § "Stopping partway releases the plan": the successor cannot pick up a plan this session still claims. No uncommitted state survives a relay, because on the web the successor's container is not this one.
 
 Where the cost ledger ships (`.claude/costs/`), revise this session's human-hour estimate down to the work done here, with `python3 .claude/costs/estimate.py set`: the rest is the successor's, and two sessions each claiming the whole job would count it twice.
 
