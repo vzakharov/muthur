@@ -162,8 +162,11 @@ commit_row() {
   [ "$pushed" = false ] || state=pushed
 }
 
+# What the pricing step said when it failed, for the agent to be told.
+unpriced_reason=''
+
 run_ledger() {
-  local transcript staged row
+  local transcript staged row err
   transcript="$(field transcript_path)"
   [ -n "$transcript" ] && [ -f "$transcript" ] || return 0
 
@@ -174,12 +177,19 @@ run_ledger() {
   # Priced off the tree: `tmp/` is ignored, and on the row's filesystem, so the
   # rename that puts the row in place is atomic.
   staged="$root/tmp/cost-row.$$.json"
+  err="$root/tmp/cost-row.$$.err"
   mkdir -p -- "$root/tmp" &&
     row="$(python3 "$root/.claude/costs/session_cost.py" \
       --transcript "$transcript" \
       --session-id "$(field session_id)" \
-      --row-path --at-stop --out "$staged")" ||
-    { rm -f -- "$staged"; state=unpriced; return 0; }
+      --row-path --at-stop --out "$staged" 2>"$err")" ||
+    {
+      unpriced_reason="$(awk 'NF { line = $0 } END { print line }' "$err" 2>/dev/null)"
+      rm -f -- "$staged" "$err"
+      state=unpriced
+      return 0
+    }
+  rm -f -- "$err"
 
   ! dirty "$row" || row_left=true
 
@@ -201,11 +211,17 @@ outstanding() {
   [ "$(repo rev-list "$upstream..HEAD" --count 2>/dev/null || echo 0)" -gt 0 ]
 }
 
-# The only channel a `Stop` hook has to the agent, spent only where a block is
-# already happening — and never on a re-fired `Stop`, which the harness's check
-# bails out of and this must bail with or the turn never ends.
-[ "$state" = unpriced ] && say "pricing failed; no cost row written this turn"
+# The only channel a `Stop` hook has to the agent is an exit 2, so a row that
+# could not be priced blocks the turn once with the reason: a stderr line on a
+# turn that ends anyway reaches nobody, and the ledger would lose sessions
+# silently. Never on a re-fired `Stop`, which the harness's check bails out of
+# and this must bail with or the turn never ends.
 [ "$(field stop_hook_active)" != "true" ] || exit 0
+
+if [ "$state" = unpriced ]; then
+  say "pricing failed; no cost row written this turn. ${unpriced_reason:-session_cost.py exited non-zero without a message.} Fix that — a missing model is a new row in \`.claude/costs/prices.json\` — then just stop; the next turn's row covers this one too."
+  exit 2
+fi
 
 case "$state" in
   committed | uncommitted | pushed)

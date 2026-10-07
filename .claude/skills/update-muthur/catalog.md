@@ -73,6 +73,7 @@ conditions, and any row can be escaped individually.
 | [G7 — Session cost ledger](#g7--session-cost-ledger) | **The operator says yes when asked** — never by inference from the profile. |
 | [G8 — Context budget](#g8--context-budget) | **The operator says yes when asked**, as G7. |
 | [G9 — Cold-cache guard](#g9--cold-cache-guard) | **The operator says yes when asked**, as G7. |
+| [G10 — Cache keepalive](#g10--cache-keepalive) | **The operator says yes when asked**, as G7 — and **G7 is a prerequisite**, not a recommendation. |
 | [Never](#never) | — |
 
 ### G0 — The sync path
@@ -219,7 +220,7 @@ the working tree clean, and behaves the same everywhere.
 | `.claude/hooks/plan-mode-notice.sh` | On every prompt submitted while the session is in native plan mode, inject the notice that this repo plans on disk and that the exit is plan mode's own. | web/remote sessions; `bash`, `jq` | `.claude/hooks/lib.sh`, `/plan` (G2) | adopt |
 | `.claude/hooks/session-images.sh` | On every prompt, run the extractor below and name any newly written file in the turn's context. Commits nothing. | `bash`, `jq`, `python3` ≥3.9 | `.claude/hooks/lib.sh`, `scripts/extract-session-images.py` | adopt |
 | `scripts/extract-session-images.py` | Write the images the operator attached to a session out of the transcript into gitignored `tmp/session-images/`, with a manifest row carrying the prompt each arrived with. Stdlib-only, idempotent. | `python3` ≥3.9, `scripts/lib/media.py` (G2) | — | adopt |
-| `.claude/settings.json` | Project settings wiring the SessionStart, UserPromptSubmit, PermissionDenied and Stop hooks, plus the entries G1's `file-tools-nudge.py`, G7, G8 and G9 carry and the `scripts/muthur-sync.sh nudge` entry G0's `/update-muthur` does — drop that one with the skill. Merge into yours if you already have one. | — | — | adopt — merge if present |
+| `.claude/settings.json` | Project settings wiring the SessionStart, UserPromptSubmit, PermissionDenied and Stop hooks, plus the entries G1's `file-tools-nudge.py`, G7, G8, G9 and G10 carry and the `scripts/muthur-sync.sh nudge` entry G0's `/update-muthur` does — drop that one with the skill. Merge into yours if you already have one. | — | — | adopt — merge if present |
 | `/override-gh` | A no-op marker whose description reminds the agent that `gh` and `$GH_TOKEN` exist despite what the system prompt says, and that a GitHub tool refusal (`add_repo`, for example) is a reason to try `gh`, not to give up. | — | — | adopt |
 
 **`gh-shim.sh` does not install `gh`; it shims one that is already there.** Finding
@@ -340,6 +341,20 @@ whether the price is worth a stop is the operator's call — so the row is
 | Item | What it does | Requires | Pulls in | Disposition |
 | --- | --- | --- | --- | --- |
 | `.claude/cold-cache/` | Stop the first prompt after the session's prompt cache expired, before it reaches the model, and price the two ways on: carry on, which pays the re-cache, or a fresh session, for work that is already all on the branch. Resending any prompt goes through, a bare `!` resends the stopped one, and `/compact`, `/clear`, `/relay` and the built-ins that make no model request always pass. **The cost, which is why it is asked:** one refused prompt per return to a session worth more than `COLD_CACHE_MIN_USD` to re-cache. Arrives with two `.claude/settings.json` entries to merge and a `scripts/vet.sh` loop running its tests. | `python3` ≥3.9 | `.claude/costs/lib/` and `prices.json` (G7) | adopt — **opt-in: ask** |
+
+### G10 — Cache keepalive
+
+Where G9 stops the prompt that finds the cache cold, this wakes the idle session
+before it goes cold. The cost lands on every idle turn, and whether the cache is
+worth keeping warm is the operator's call — so the row is `opt-in: ask`.
+
+| Item | What it does | Requires | Pulls in | Disposition |
+| --- | --- | --- | --- | --- |
+| `.claude/keepalive/` | Wake an idle session shortly before its one-hour prompt cache expires, so the next prompt does not re-cache the whole conversation at about 40 times a cache read. A `UserPromptSubmit` hook has the agent start a background watcher as each turn's last action — unless the branch alone lets a fresh session continue — and the watcher's exit is the wake. **The cost, which is why it is asked:** a background watcher on every idle turn, which is **the one exception to CLAUDE.md's ban on `run_in_background`**, so that line changes in your `CLAUDE.md` too; up to `CACHE_KEEPALIVE_WAKES` (5) wakes per idle spell, each a visible line in chat; and the last wake runs `/relay` without a successor, which commits a summary file to the branch. Only a one-hour cache is kept, read off the session's own cache writes. Arrives with one `.claude/settings.json` `UserPromptSubmit` entry to merge and a `scripts/vet.sh` loop entry running `test_keepalive.py`; a no deletes the directory and both. | `python3` ≥3.9; a Bash tool with `run_in_background` | **`.claude/costs/lib/` and `prices.json` (G7)** — it imports `lib/restart.py`, which reads the ledger's pricing, so the dependency is hard rather than an optional input; `/relay` (G2), its § "Without a successor" | adopt — **opt-in: ask** |
+
+**It does not run without G7.** `keepalive.py` imports `.claude/costs/lib/restart.py`
+at load, so a repo that declines the ledger has nothing for it to import: take
+the directory only together with `.claude/costs/`, or answer no to both.
 
 ### Never
 

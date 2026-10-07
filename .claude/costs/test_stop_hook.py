@@ -78,11 +78,11 @@ class Clone:
     def env(self) -> dict:
         return {"PATH": "/usr/bin:/bin", "HOME": str(self.home), "GIT_CONFIG_NOSYSTEM": "1"}
 
-    def respond(self) -> None:
+    def respond(self, **fields: str) -> None:
         """One more priced turn in the transcript, so the next row differs."""
         self.responses += 1
         with self.transcript.open("a") as f:
-            record = response(id=f"msg_{self.responses}", output=1_000, stop="end_turn")
+            record = response(id=f"msg_{self.responses}", output=1_000, stop="end_turn", **fields)
             f.write(record + "\n")
 
     def register_check(self) -> None:
@@ -249,6 +249,20 @@ class StopHookTest(unittest.TestCase):
         result = self.clone.stop(active=True)
         self.assertEqual((result.returncode, result.stderr), (0, ""))
         self.assertLevelWithOrigin()
+
+    def test_a_turn_that_cannot_be_priced_is_blocked_once_naming_the_model(self) -> None:
+        self.clone.respond(model="unheard-of")
+        result = self.clone.stop()
+        self.assertEqual(result.returncode, 2)
+        self.assertIn("pricing failed", result.stderr)
+        self.assertIn("unheard-of/standard", result.stderr)
+        self.assertEqual(self.clone.commits(), 1)
+        self.assertEqual(self.clone.status(), "")
+
+    def test_a_refired_stop_over_an_unpriced_turn_never_blocks(self) -> None:
+        self.clone.respond(model="unheard-of")
+        result = self.clone.stop(active=True)
+        self.assertEqual(result.returncode, 0)
 
     def test_a_failed_push_is_reported_as_committed_but_not_pushed(self) -> None:
         self.clone.git("remote", "set-url", "origin", str(self.clone.root.parent / "missing.git"))
