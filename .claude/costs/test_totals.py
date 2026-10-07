@@ -19,6 +19,7 @@ from pathlib import Path
 from lib.billed import Telemetry
 from lib.estimate import Estimate, Part, Rates
 from lib.orientation import Compaction, Phase, Rereads
+from lib.period import month_of
 from lib.rows import ROOT, SessionCost, parse_session_cost, read_row, row_text
 from lib.shape import to_json
 from lib.tally import Tally
@@ -127,6 +128,9 @@ def estimated(*parts: Part, started: str = "2026-03-04T05:06:07.000Z") -> Sessio
     )
 
 
+MARCH = month_of(date(2026, 3, 1))
+
+
 class HoursByRoleAndGrade(unittest.TestCase):
     RATES = Rates(roles={"copywriter": 1, "developer": 1}, grades={"junior": 0.5, "senior": 1})
 
@@ -136,19 +140,22 @@ class HoursByRoleAndGrade(unittest.TestCase):
             estimated(Part(3, "senior", "developer")),
             replace(ROW, session_id="unestimated"),
         ]
-        table = totals_of(rows, self.RATES, hours_month="2026-03").hours
+        table = totals_of(rows, self.RATES, hours_period=MARCH).hours
         assert table is not None
         self.assertEqual(table.grades, ["junior", "senior"])
         self.assertEqual(table.by_role, {"copywriter": {"junior": 1}, "developer": {"senior": 5}})
         self.assertEqual((table.estimated, table.rows), (2, 3))
 
-    def test_counts_only_the_sessions_that_started_in_its_month(self) -> None:
-        rows = [estimated(Part(2, "senior", "developer"), started="2026-04-01T00:00:00.000Z")]
-        table = totals_of(rows, self.RATES, hours_month="2026-03").hours
+    def test_counts_only_the_sessions_that_started_in_its_period(self) -> None:
+        rows = [
+            estimated(Part(2, "senior", "developer"), started="2026-04-01T00:00:00.000Z"),
+            replace(ROW, session_id="undated", first_response_at=None),
+        ]
+        table = totals_of(rows, self.RATES, hours_period=MARCH).hours
         assert table is not None
         self.assertEqual((table.by_role, table.rows), ({}, 0))
 
-    def test_is_absent_unless_a_month_is_asked_for(self) -> None:
+    def test_is_absent_unless_a_period_is_asked_for(self) -> None:
         self.assertIsNone(totals_of([ROW], self.RATES).hours)
 
 

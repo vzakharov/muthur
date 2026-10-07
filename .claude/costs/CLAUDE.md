@@ -250,9 +250,10 @@ week and day, by the branch that spent it with the pull requests it touched
 named beside it, and by operator — then orientation's averages, the calls only
 the events saw, by `query_source`, as a share of the spend of the rows priced
 with events, the dollars per senior-hour over the estimated rows, by month,
-week, day and model, and one month's estimated hours by role and grade — plain
-hours, the current UTC month unless `--month` names another; `--json` prints
-the lot. The spend is the
+week, day and model, and a period's estimated hours by role and grade, in plain
+hours; `--json` prints the lot. `--month`, `--week` or `--day`, each named or
+`cur` / `prev`, narrows the whole report to the sessions that started in it;
+without one, the hours cover the current UTC month. The spend is the
 branch's rather than each PR's, since a session that touched two would otherwise
 be counted twice.
 

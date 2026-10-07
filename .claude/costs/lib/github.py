@@ -17,7 +17,7 @@ import re
 import subprocess
 import time
 from dataclasses import dataclass, field
-from typing import Any, Callable, Dict, List, Mapping, Optional, Sequence, Tuple
+from typing import Any, Callable, Collection, Dict, List, Mapping, Optional, Sequence, Tuple
 
 from lib.rows import SessionCost, reshape
 from lib.shape import ShapeError, read_object, read_string, required
@@ -279,7 +279,9 @@ class RemoteLedger:
 
 
 def remote_ledger(
-    client: Client, only: Optional[Sequence[str]] = None, month: Optional[str] = None
+    client: Client,
+    only: Optional[Sequence[str]] = None,
+    months: Optional[Collection[str]] = None,
 ) -> RemoteLedger:
     """Rows are reshaped in memory and never written back: this repository's
     parser is the one in force, but the rows are another branch's to change. A
@@ -288,7 +290,7 @@ def remote_ledger(
     found = discover(client, only)
     client.progress(f"{_count(len(found.ledgers), 'ledger')} among {_count(found.seen, 'repository', 'repositories')}")
     wanted = [
-        Candidate(c.repo, [m for m in c.months if month is None or m == month])
+        Candidate(c.repo, [m for m in c.months if months is None or m in months])
         for c in found.ledgers
     ]
     repos = {c.repo: RepoLedger(c.repo, c.months) for c in wanted}

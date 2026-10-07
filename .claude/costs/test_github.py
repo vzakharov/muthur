@@ -186,7 +186,7 @@ class WhatIsRead(unittest.TestCase):
         github = FakeGitHub(
             {"a/ledger": {"2026-03": {"s.json": row("s")}, "2026-04": {"t.json": row("t")}}}
         )
-        ledger = remote_ledger(Client(github, no_sleep), month="2026-04")
+        ledger = remote_ledger(Client(github, no_sleep), months={"2026-04"})
         self.assertEqual([r.session_id for r in ledger.rows], ["t"])
         self.assertEqual(ledger.repos[0].months, ["2026-04"])
         self.assertFalse(any("2026-03" in query for query in github.queries[1:]))
@@ -230,7 +230,7 @@ class WhatIsRead(unittest.TestCase):
 
     def test_a_repo_with_no_month_under_the_filter_is_left_out(self) -> None:
         github = FakeGitHub({"a/ledger": {"2026-03": {"s.json": row("s")}}, "b/ledger": {"2026-04": {}}})
-        ledger = remote_ledger(Client(github, no_sleep), month="2026-03")
+        ledger = remote_ledger(Client(github, no_sleep), months={"2026-03"})
         self.assertEqual([repo.name for repo in ledger.repos], ["a/ledger"])
 
 

@@ -16,7 +16,9 @@ from statistics import mean, median
 from typing import Callable, Dict, Iterable, List, Mapping, Optional, Sequence, Tuple
 
 from lib.estimate import Rates, checked, senior_hours
+from lib.hours import HoursTable, hours_of
 from lib.orientation import Phase
+from lib.period import Period, iso_week
 from lib.rows import SessionCost
 from lib.tally import Tally
 
@@ -133,13 +135,6 @@ class TelemetrySummary:
     # By `query_source`; a bucket's `sessions` are the rows the source appeared in.
     unseen: Dict[str, Bucket]
 
-
-def iso_week(day: date) -> str:
-    """The ISO-8601 week a day falls in, `<year>-W<nn>`. The year is the one
-    owning that week's Thursday, so the last days of December can read as week
-    01 of the next year — the scheme working, not a rounding error."""
-    year, week, _ = day.isocalendar()
-    return f"{year}-W{week:02d}"
 
 
 def branch_label(row: SessionCost, repo: Optional[str] = None) -> str:
@@ -316,44 +311,6 @@ def effort_of(rows: Sequence[SessionCost], rates: Rates) -> EffortSummary:
     )
 
 
-@dataclass
-class HoursTable:
-    """A month's estimated hours as a team would bill them: plain hours, not
-    senior-hours, so a junior's hour reads as an hour."""
-
-    month: str
-    estimated: int
-    rows: int
-    # Only what was estimated, each in `rates.json`'s order.
-    grades: List[str]
-    by_role: Dict[str, Dict[str, float]]
-
-
-def _ordered(keys: Iterable[str], order: Mapping[str, float]) -> List[str]:
-    ranks = {key: rank for rank, key in enumerate(order)}
-    return sorted(set(keys), key=lambda key: (ranks.get(key, len(ranks)), key))
-
-
-def hours_of(rows: Iterable[SessionCost], rates: Rates, month: str) -> HoursTable:
-    """Over the rows that started in `month`, the rule every month bucket follows."""
-    in_month = [row for row in rows if (row.first_response_at or "")[:7] == month]
-    parts = [part for row in in_month if row.estimate is not None for part in row.estimate.parts]
-    cells: Dict[Tuple[str, str], float] = {}
-    for part in parts:
-        cells[(part.role, part.grade)] = cells.get((part.role, part.grade), 0.0) + part.hours
-    grades = _ordered((grade for _, grade in cells), rates.grades)
-    return HoursTable(
-        month=month,
-        estimated=sum(1 for row in in_month if row.estimate is not None),
-        rows=len(in_month),
-        grades=grades,
-        by_role={
-            role: {grade: round(cells[(role, grade)], 2) for grade in grades if (role, grade) in cells}
-            for role in _ordered((role for role, _ in cells), rates.roles)
-        },
-    )
-
-
 def by_repo(rows: Iterable[SessionCost], repo_of: Mapping[str, str]) -> Dict[str, Bucket]:
     """`repo_of` maps a session id to the `owner/name` its row was read from:
     where a row was read is not something the row records."""
@@ -367,7 +324,7 @@ def totals_of(
     rows: Iterable[SessionCost],
     rates: Rates,
     repo_of: Optional[Mapping[str, str]] = None,
-    hours_month: Optional[str] = None,
+    hours_period: Optional[Period] = None,
 ) -> Totals:
     """A session is filed under where it **started**, the rule that already picks
     its row's month, so one running past midnight stays whole. A row with no
@@ -405,5 +362,5 @@ def totals_of(
         orientation=orientation_of(rows),
         telemetry=telemetry_of(rows),
         effort=effort_of(rows, rates),
-        hours=None if hours_month is None else hours_of(rows, rates, hours_month),
+        hours=None if hours_period is None else hours_of(rows, rates, hours_period),
     )
