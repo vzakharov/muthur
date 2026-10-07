@@ -91,7 +91,7 @@ class HookCase(unittest.TestCase):
 
     def notice(self) -> str:
         """The prompt a wake reaches `UserPromptSubmit` with."""
-        return f"Background command \"{keepalive.MARK} watcher\" completed (exit code 0)"
+        return f"Background command \"{keepalive.TASK}\" completed (exit code 0)"
 
 
 class WhenAnOperatorPromptArrives(HookCase):

@@ -31,13 +31,15 @@ from lib.restart import TTL_1H, epoch, read_history
 DEFAULT_WAKES = 5
 DEFAULT_LEAD = 300
 POLL = 30
-# Under the Bash tool's two-hour cap on a background command, which would
-# otherwise stop the watcher with a notice of its own.
-LIFETIME = 7000
+# The Bash tool's cap on a background command, in seconds. The watcher exits
+# under it, since reaching it stops the watcher with a notice of its own.
+BASH_CAP = 7200
+LIFETIME = BASH_CAP - 200
 # Opens the watcher's task description, so a wake's notice — and a restart's
 # list of stopped tasks — carries it into `UserPromptSubmit`, which must not
 # read either as the operator coming back.
 MARK = "Cache keepalive"
+TASK = f"{MARK} watcher"
 HOOK = Path(__file__).resolve()
 
 
@@ -126,7 +128,7 @@ def watch(state: State, transcript: Path, lead: int) -> int:
 def start_line(session: str, transcript: str) -> str:
     return (
         f"start the cache keepalive's watcher: one Bash call with `run_in_background: true`,"
-        f" `timeout: 7200000`, description `{MARK} watcher`, command"
+        f" `timeout: {BASH_CAP * 1000}`, description `{TASK}`, command"
         f" `{HOOK} watch {session} {transcript}`."
     )
 
@@ -201,17 +203,17 @@ def main() -> int:
     lead = setting("CACHE_KEEPALIVE_LEAD", DEFAULT_LEAD)
     if wakes is None or lead is None:
         return 0
-    project = Path(os.environ.get("CLAUDE_PROJECT_DIR") or ROOT)
+    home = Path(os.environ.get("CLAUDE_PROJECT_DIR") or ROOT) / "tmp" / "keepalive"
     if sys.argv[1:2] == ["watch"] and len(sys.argv) == 4:
         session, transcript = sys.argv[2], sys.argv[3]
         if not safe(session):
             return 0
-        return watch(State(project / "tmp" / "keepalive", session), Path(transcript), lead)
+        return watch(State(home, session), Path(transcript), lead)
     event = json.load(sys.stdin)
     session = event.get("session_id") or ""
     if event.get("hook_event_name") != "UserPromptSubmit" or not safe(session):
         return 0
-    state = State(project / "tmp" / "keepalive", session)
+    state = State(home, session)
     out = on_prompt(state, event.get("prompt") or "", wakes, session, event.get("transcript_path") or "")
     if out is not None:
         print(json.dumps({"hookSpecificOutput": {"hookEventName": "UserPromptSubmit", "additionalContext": out}}))
