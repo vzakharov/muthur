@@ -60,6 +60,10 @@ Its prompt is one line, `/relay take <branch>`. The summary is not passed in the
 
 The successor's link — on the web `https://claude.ai/code/<session_id>` from the id `create_session` returned, written bare so the operator clicks through to it — or the local recipe, and the summary's size in characters with a rough token count at four characters a token — the context the successor starts with on top of its baseline. Leave this session open: archiving it is the operator's call.
 
+### Without a successor
+
+The cache keepalive's last wake (`.claude/keepalive/`) relays this way: the session has idled for hours, so a successor started now is a session nobody is waiting for. Steps 1–2 as written, then no Step 3: the report gives the line the operator starts a new session with — `/relay take <branch>` in a fenced block holding only it — and the summary's size as Step 4 gives it.
+
 ### After the handoff
 
 An operator message that lands here once the successor is running → load `@.claude/skills/relay/after-handoff.md` § "In the predecessor" before acting on it.
