@@ -81,7 +81,7 @@ class WhenTheSessionGoesIdle(HookCase):
         code, err = self.run_hook("Stop")
         self.assertEqual(code, 2)
         self.assertIn("wake 1 of 5", err)
-        self.assertIn("one short line", err)
+        self.assertIn("at most seven words", err)
         self.assertEqual(self.wakes(), 1)
 
     def test_the_fifth_wake_relays_without_a_successor_and_nothing_follows_it(self) -> None:

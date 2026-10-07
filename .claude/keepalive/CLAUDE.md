@@ -10,8 +10,8 @@ conversation at about 40 times what a cache read costs.
   stderr to the model as a system reminder and the model answers it. The wake
   turn's own `Stop` arms the next one.
 - **Every wake is one visible line.** The harness rejects a turn with no visible
-  output and forces a second request, so the instruction asks for one short
-  line rather than silence.
+  output and forces a second request, so the instruction asks for one line
+  of at most seven words rather than silence.
 - **One sleeper fires per idle spell step.** Each `Stop` and each operator
   prompt writes a fresh token to `tmp/keepalive/<session_id>.json`; a sleeper
   whose token was replaced exits 0 when it wakes. It is never killed, since an

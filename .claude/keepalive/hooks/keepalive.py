@@ -62,8 +62,8 @@ def message(wake: int, wakes: int, idle_minutes: int) -> str:
         return (
             f"{MARK}wake {wake} of {wakes}: the session has been idle about"
             f" {idle_minutes} min, and this turn exists only to keep its prompt cache warm."
-            " Reply with one short line in the conversation's language saying so"
-            f" (e.g. «🕯 кеш продлён, {wake}/{wakes}»), and nothing else: no tools."
+            " Reply in the conversation's language with one line of at most seven words"
+            f" saying so (e.g. «🕯 кеш продлён, {wake}/{wakes}»), and nothing else: no tools."
         )
     return (
         f"{MARK}last wake ({wake} of {wakes}): the session has been idle about"
