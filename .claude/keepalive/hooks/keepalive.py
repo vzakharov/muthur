@@ -3,8 +3,8 @@
 `.claude/keepalive/CLAUDE.md` carrying the contract:
 
 - `UserPromptSubmit` hook (no arguments, the event on stdin): ends the idle
-  spell on an operator prompt, and tells the model what to do whenever no
-  watcher is running — start one, answer a wake, or relay on the last.
+  spell on an operator prompt, and tells the model whether to start or stop a
+  watcher and how to answer a wake.
 - `keepalive.py watch <session_id> <transcript_path>`: the watcher, run as a
   background Bash task. It exits once the cache is `lead` seconds from expiry,
   and that exit is the wake.
@@ -133,9 +133,6 @@ def start_line(session: str, transcript: str) -> str:
     )
 
 
-# Keeping a container alive is worth it only while losing it would lose
-# something: the agent alone knows whether the conversation holds decisions
-# the branch does not, so the call is its, made as the turn ends.
 SUFFICIENT = (
     "the branch alone lets a fresh session continue: everything committed and pushed, the work"
     " at a loop boundary (a draft plan published awaiting `/go`, a paused plan, `/go` done"
