@@ -249,8 +249,11 @@ per senior-hour with no change to the model at all.
 week and day, by the branch that spent it with the pull requests it touched
 named beside it, and by operator — then orientation's averages, the calls only
 the events saw, by `query_source`, as a share of the spend of the rows priced
-with events, and the dollars per senior-hour over the estimated rows, by month,
-week, day and model; `--json` prints the lot. The spend is the
+with events, the dollars per senior-hour over the estimated rows, by month,
+week, day and model, and a period's estimated hours by role and grade, in plain
+hours; `--json` prints the lot. `--month`, `--week` or `--day`, each named or
+`cur` / `prev`, narrows the whole report to the sessions that started in it;
+without one, the hours cover the current UTC month. The spend is the
 branch's rather than each PR's, since a session that touched two would otherwise
 be counted twice.
 
@@ -265,6 +268,14 @@ dropped, an estimate comment its parts now carry — is rewritten in the current
 one as the report reads it, and the report names each one on stderr. Retiring a
 shape is therefore a change to the reader alone: the first report in each
 repository clears it, and those rewrites are ordinary changes to commit.
+
+**Across repositories, the rows are read off GitHub.** `--all-my-repos` reads the
+ledger on the default branch of every repository the `gh` user can reach, and
+`--repo` just the ones named, so nothing needs cloning. A repository counts by
+its ledger, not muthur's watermark: the ledger is opt-in, so a watermark alone
+has nothing to count. A row GitHub truncates stops the run, since a missing one
+understates every total it belongs to, and these rows are never written back:
+they are another branch's to change.
 
 ## What the totals do not cover
 
@@ -284,8 +295,8 @@ repository clears it, and those rewrites are ordinary changes to commit.
 - **Abandoned branches.** Rows reach the trunk by merge, so work that is thrown
   away is thrown out of the ledger too — an undercount biased toward exactly the
   sessions that spent without delivering.
-- **Other repositories.** The transcript directory is keyed by working
-  directory, so these totals are this repo's. A cross-repo month needs a home
-  outside any one repository.
+- **Repositories the token cannot reach.** `--all-my-repos` sees what the `gh`
+  user sees, so an organization that enforces SAML SSO is out of reach until
+  the token is authorized for it.
 - **The trunk itself.** The hook declines to commit a row on `main` or
   `master`, where there is no branch to carry it.

@@ -17,12 +17,21 @@ from datetime import date
 from pathlib import Path
 
 from lib.billed import Telemetry
-from lib.estimate import Rates
+from lib.estimate import Estimate, Part, Rates
 from lib.orientation import Compaction, Phase, Rereads
+from lib.period import month_of
 from lib.rows import ROOT, SessionCost, parse_session_cost, read_row, row_text
 from lib.shape import to_json
 from lib.tally import Tally
-from lib.totals import Bucket, branch_label, iso_week, opening_command, operator_label, totals_of
+from lib.totals import (
+    Bucket,
+    branch_label,
+    by_repo,
+    iso_week,
+    opening_command,
+    operator_label,
+    totals_of,
+)
 
 
 def tally(cost_usd: float) -> Tally:
@@ -96,6 +105,58 @@ class HowABranchIsLabelled(unittest.TestCase):
 
     def test_says_so_rather_than_dropping_a_row_whose_branch_went_unrecorded(self) -> None:
         self.assertEqual(branch_label(replace(ROW, branch=None)), "(no branch)")
+
+    def test_prefixes_the_repo_only_across_repositories(self) -> None:
+        rows = [replace(ROW, session_id="a"), replace(ROW, session_id="b")]
+        self.assertEqual(list(totals_of(rows, RATES).by_branch), ["a-branch"])
+        across = totals_of(rows, RATES, {"a": "o/one", "b": "o/two"})
+        self.assertEqual(list(across.by_branch), ["o/one:a-branch", "o/two:a-branch"])
+
+
+class WhichRepoItCameFrom(unittest.TestCase):
+    def test_files_a_session_under_the_repo_its_row_was_read_from(self) -> None:
+        rows = [replace(ROW, session_id="a"), replace(ROW, session_id="b"), replace(ROW, session_id="c")]
+        buckets = by_repo(rows, {"a": "o/one", "b": "o/two", "c": "o/one"})
+        self.assertEqual(buckets, {"o/one": Bucket(2, 2, 2), "o/two": Bucket(1, 1, 1)})
+
+
+def estimated(*parts: Part, started: str = "2026-03-04T05:06:07.000Z") -> SessionCost:
+    return replace(
+        ROW,
+        first_response_at=started,
+        estimate=Estimate(at="2026-03-04T05:06:07Z", parts=[replace(part, comment="why") for part in parts]),
+    )
+
+
+MARCH = month_of(date(2026, 3, 1))
+
+
+class HoursByRoleAndGrade(unittest.TestCase):
+    RATES = Rates(roles={"copywriter": 1, "developer": 1}, grades={"junior": 0.5, "senior": 1})
+
+    def test_sums_plain_hours_per_role_and_grade_in_the_rate_table_s_order(self) -> None:
+        rows = [
+            estimated(Part(2, "senior", "developer"), Part(1, "junior", "copywriter")),
+            estimated(Part(3, "senior", "developer")),
+            replace(ROW, session_id="unestimated"),
+        ]
+        table = totals_of(rows, self.RATES, hours_period=MARCH).hours
+        assert table is not None
+        self.assertEqual(table.grades, ["junior", "senior"])
+        self.assertEqual(table.by_role, {"copywriter": {"junior": 1}, "developer": {"senior": 5}})
+        self.assertEqual((table.estimated, table.rows), (2, 3))
+
+    def test_counts_only_the_sessions_that_started_in_its_period(self) -> None:
+        rows = [
+            estimated(Part(2, "senior", "developer"), started="2026-04-01T00:00:00.000Z"),
+            replace(ROW, session_id="undated", first_response_at=None),
+        ]
+        table = totals_of(rows, self.RATES, hours_period=MARCH).hours
+        assert table is not None
+        self.assertEqual((table.by_role, table.rows), ({}, 0))
+
+    def test_is_absent_unless_a_period_is_asked_for(self) -> None:
+        self.assertIsNone(totals_of([ROW], self.RATES).hours)
 
 
 class WhoseSessionItWas(unittest.TestCase):

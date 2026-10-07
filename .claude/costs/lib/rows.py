@@ -156,19 +156,26 @@ def write_pending_estimate(session_id: str, estimate: Estimate) -> None:
     write_atomic(pending_estimate_path(session_id), json_text(estimate))
 
 
-def read_row(path: Path) -> Tuple[SessionCost, List[str]]:
-    """A row in an older shape is rewritten in the current one as it is read,
-    and what changed is returned: the keys it lost, and an estimate comment
-    `split_comment` moved onto the parts. That is how a retired shape leaves the
-    ledger — in every repository it runs in, on the first report there — with no
-    migration for anyone to remember to run."""
-    text = path.read_text(encoding="utf-8")
-    row = parse_session_cost(text, str(path))
+def reshape(text: str, where: str) -> Tuple[SessionCost, List[str]]:
+    """A row in the current shape, and what bringing it there changed: the keys
+    it lost, and an estimate comment `split_comment` moved onto the parts. A
+    key is lost from a retired shape and from a newer ledger's alike, this
+    parser being the one in force."""
+    row = parse_session_cost(text, where)
     changes = [f"dropped {key}" for key in sorted(set(json.loads(text)) - set(to_json(row)))]
     split = split_comment(row.estimate) if row.estimate is not None else None
     if split is not None:
         row.estimate = split
         changes.append("split the estimate's comment onto its parts")
+    return row, changes
+
+
+def read_row(path: Path) -> Tuple[SessionCost, List[str]]:
+    """A row in an older shape is rewritten in the current one as it is read.
+    That is how a retired shape leaves the ledger — in every repository it runs
+    in, on the first report there — with no migration for anyone to remember to
+    run."""
+    row, changes = reshape(path.read_text(encoding="utf-8"), str(path))
     if changes:
         write_atomic(path, row_text(row))
     return row, changes
