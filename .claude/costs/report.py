@@ -29,7 +29,7 @@ from pathlib import Path
 from typing import Dict, List, Optional
 
 from lib.estimate import Rates, parse_rates
-from lib.github import REPO, GitHubError, gh_transport, remote_ledger
+from lib.github import REPO, Client, GitHubError, remote_ledger
 from lib.pricing import parse_prices
 from lib.rows import SessionCost, read_row
 from lib.shape import to_json
@@ -193,8 +193,32 @@ def this_repo(month: Optional[str], as_json: bool, rates: Rates) -> int:
     return 0
 
 
+class Status:
+    """What a cross-repo run is doing, on stderr so `--json` stays parseable:
+    one line rewritten in place on a terminal, a line per step otherwise."""
+
+    def __init__(self) -> None:
+        self.live = sys.stderr.isatty()
+
+    def __call__(self, message: str) -> None:
+        if self.live:
+            sys.stderr.write(f"\r\033[K{message}…")
+            sys.stderr.flush()
+        else:
+            print(f"costs: {message}", file=sys.stderr)
+
+    def clear(self) -> None:
+        if self.live:
+            sys.stderr.write("\r\033[K")
+            sys.stderr.flush()
+
+
 def across_repos(only: Optional[List[str]], month: Optional[str], as_json: bool, rates: Rates) -> int:
-    ledger = remote_ledger(gh_transport, only, month)
+    status = Status()
+    try:
+        ledger = remote_ledger(Client(progress=status), only, month)
+    finally:
+        status.clear()
     rows = ledger.rows
     totals = totals_of(rows, rates, ledger.repo_of)
     repos = by_repo(rows, ledger.repo_of)

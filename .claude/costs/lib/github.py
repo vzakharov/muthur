@@ -36,6 +36,7 @@ AFFILIATIONS = "[OWNER, COLLABORATOR, ORGANIZATION_MEMBER]"
 # `(query, variables)` to the response, `data` and `errors` as GitHub sent them.
 Transport = Callable[[str, Mapping[str, Any]], Dict[str, Any]]
 Sleep = Callable[[float], None]
+Progress = Callable[[str], None]
 
 
 class GitHubError(RuntimeError):
@@ -69,25 +70,40 @@ def gh_transport(query: str, variables: Mapping[str, Any]) -> Dict[str, Any]:
     return response
 
 
-def call(
-    transport: Transport, query: str, variables: Mapping[str, Any], sleep: Sleep
-) -> Dict[str, Any]:
-    """A GraphQL error raises rather than leaving a repository out, since a
-    missing one understates every total it belongs to."""
-    attempt = 0
-    while True:
-        try:
-            response = transport(query, variables)
-            break
-        except ServerError:
-            attempt += 1
-            if attempt > RETRIES:
-                raise
-            sleep(2**attempt)
-    errors = response.get("errors")
-    if errors:
-        raise GitHubError("; ".join(str(error.get("message", error)) for error in errors))
-    return required(read_object, response, "data", "GraphQL response")
+def _quiet(_: str) -> None:
+    pass
+
+
+def _count(n: int, noun: str, plural: Optional[str] = None) -> str:
+    return f"{n} {noun if n == 1 else plural or noun + 's'}"
+
+
+@dataclass
+class Client:
+    transport: Transport = gh_transport
+    sleep: Sleep = time.sleep
+    # Told what the run is doing at each step: a listing of hundreds of
+    # repositories takes tens of seconds, and a silent one reads as a hang.
+    progress: Progress = _quiet
+
+    def call(self, query: str, variables: Optional[Mapping[str, Any]] = None) -> Dict[str, Any]:
+        """A GraphQL error raises rather than leaving a repository out, since a
+        missing one understates every total it belongs to."""
+        attempt = 0
+        while True:
+            try:
+                response = self.transport(query, variables or {})
+                break
+            except ServerError as error:
+                attempt += 1
+                if attempt > RETRIES:
+                    raise
+                self.progress(f"{error}; retrying in {2**attempt}s")
+                self.sleep(2**attempt)
+        errors = response.get("errors")
+        if errors:
+            raise GitHubError("; ".join(str(error.get("message", error)) for error in errors))
+        return required(read_object, response, "data", "GraphQL response")
 
 
 def literal(value: str) -> str:
@@ -166,15 +182,17 @@ def _read_node(node: Any) -> Tuple[str, Optional[List[str]], bool]:
     return repo, months, node.get("watermark") is not None
 
 
-def _nodes(transport: Transport, only: Optional[Sequence[str]], sleep: Sleep) -> List[Any]:
+def _nodes(client: Client, only: Optional[Sequence[str]]) -> List[Any]:
     if only:
+        client.progress(f"reading {_count(len(only), 'named repository', 'named repositories')}")
         aliased = " ".join(f"r{i}: {repository(repo)} {{ {REPO_FIELDS} }}" for i, repo in enumerate(only))
-        data = call(transport, f"query {{ {aliased} }}", {}, sleep)
+        data = client.call(f"query {{ {aliased} }}")
         return [data.get(f"r{i}") for i in range(len(only))]
     nodes: List[Any] = []
     cursor: Optional[str] = None
     while True:
-        data = call(transport, LISTING, {"cursor": cursor}, sleep)
+        client.progress(f"listing your repositories: {len(nodes)} so far")
+        data = client.call(LISTING, {"cursor": cursor})
         page = required(read_object, required(read_object, data, "viewer", "listing"), "repositories", "listing")
         nodes.extend(page.get("nodes") or [])
         info = required(read_object, page, "pageInfo", "listing")
@@ -183,16 +201,14 @@ def _nodes(transport: Transport, only: Optional[Sequence[str]], sleep: Sleep) ->
         cursor = required(read_string, info, "endCursor", "listing pageInfo")
 
 
-def discover(
-    transport: Transport, only: Optional[Sequence[str]] = None, sleep: Sleep = time.sleep
-) -> Discovery:
+def discover(client: Client, only: Optional[Sequence[str]] = None) -> Discovery:
     """Every repository the viewer owns, collaborates on or reaches through an
     organization — or, given `only`, those alone, where one without a ledger
     raises: it was named, so leaving it out quietly would answer a question
     nobody asked."""
     ledgers: List[Candidate] = []
     without_ledger: List[str] = []
-    nodes = _nodes(transport, only, sleep)
+    nodes = _nodes(client, only)
     for repo, months, watermarked in sorted(map(_read_node, nodes), key=lambda read: read[0]):
         if months is not None:
             ledgers.append(Candidate(repo, months))
@@ -219,9 +235,7 @@ def _row_text(entry: Dict[str, Any], where: str) -> str:
     return required(read_string, blob, "text", where)
 
 
-def ledger_texts(
-    transport: Transport, candidates: Sequence[Candidate], sleep: Sleep = time.sleep
-) -> List[Tuple[str, str, str]]:
+def ledger_texts(client: Client, candidates: Sequence[Candidate]) -> List[Tuple[str, str, str]]:
     """`(repo, where, text)` for each row of the candidates' months, read in
     batches of month trees. A row GitHub truncates raises rather than going
     missing."""
@@ -229,7 +243,11 @@ def ledger_texts(
     texts: List[Tuple[str, str, str]] = []
     for start in range(0, len(pairs), BATCH):
         batch = pairs[start : start + BATCH]
-        data = call(transport, _month_query(batch), {}, sleep)
+        client.progress(
+            f"reading {_count(len(candidates), 'ledger')}: {start} of {_count(len(pairs), 'month')},"
+            f" {_count(len(texts), 'row')} so far"
+        )
+        data = client.call(_month_query(batch))
         for i, (repo, name) in enumerate(batch):
             where = f"{repo}:{LEDGER}/{name}"
             found = required(read_object, data, f"p{i}", where)
@@ -261,16 +279,14 @@ class RemoteLedger:
 
 
 def remote_ledger(
-    transport: Transport,
-    only: Optional[Sequence[str]] = None,
-    month: Optional[str] = None,
-    sleep: Sleep = time.sleep,
+    client: Client, only: Optional[Sequence[str]] = None, month: Optional[str] = None
 ) -> RemoteLedger:
     """Rows are reshaped in memory and never written back: this repository's
     parser is the one in force, but the rows are another branch's to change. A
     session id in two repositories — a fork carries its source's rows — is
     counted in the first, by name."""
-    found = discover(transport, only, sleep)
+    found = discover(client, only)
+    client.progress(f"{_count(len(found.ledgers), 'ledger')} among {_count(found.seen, 'repository', 'repositories')}")
     wanted = [
         Candidate(c.repo, [m for m in c.months if month is None or m == month])
         for c in found.ledgers
@@ -279,7 +295,7 @@ def remote_ledger(
     rows: List[SessionCost] = []
     repo_of: Dict[str, str] = {}
     reshaped: Dict[str, int] = {}
-    for repo, where, text in ledger_texts(transport, wanted, sleep):
+    for repo, where, text in ledger_texts(client, wanted):
         row, changes = reshape(text, where)
         if changes:
             reshaped[repo] = reshaped.get(repo, 0) + 1
@@ -290,7 +306,7 @@ def remote_ledger(
         repo_of[row.session_id] = repo
         rows.append(row)
     for repo, n in reshaped.items():
-        repos[repo].warnings.append(f"{n} row{'' if n == 1 else 's'} in an older or newer shape than this ledger's")
+        repos[repo].warnings.append(f"{_count(n, 'row')} in an older or newer shape than this ledger's")
     return RemoteLedger(
         rows=rows,
         repo_of=repo_of,
