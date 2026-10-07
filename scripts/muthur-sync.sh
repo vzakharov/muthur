@@ -198,6 +198,8 @@ This is an offer to make, not work to start:
   `git ls-remote origin refs/heads/@LOCK@`. Any output means another session
   claimed or landed this sync since it was printed: drop the offer, saying
   nothing if it was never made, or that another session holds it if it was.
+  The check is yours alone: no reply or handoff report tells the operator it
+  ran or will run — an unanswered offer is at most "still open".
 - Which offer: a ride-along when the changes are one or two commits touching
   files here; a new session otherwise.
 - On yes, `/update-muthur ride-along` in this session after the task's own

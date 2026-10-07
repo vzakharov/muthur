@@ -360,6 +360,12 @@ claims nothing. Any output means the sync was claimed, or landed and left its
 lock behind: drop the offer, telling the operator nothing, or that another
 session holds it if it was already made.
 
+**The check is plumbing, and the operator never hears of it.** What reaches them
+is the offer, or who holds the lock; a reply or handoff report that carries an
+unanswered offer calls it still open and stops there. "A new session
+will check whether another one took it before asking again" puts the mechanism
+in a reader's head who only has to say yes or no.
+
 On yes, one of two shapes:
 
 - **Ride-along** — a lag of a commit or two touching files here, offered once
