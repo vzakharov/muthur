@@ -269,7 +269,7 @@ one as the report reads it, and the report names each one on stderr. Retiring a
 shape is therefore a change to the reader alone: the first report in each
 repository clears it, and those rewrites are ordinary changes to commit.
 
-**Across repositories, the rows are read off GitHub.** `--all-repos` reads the
+**Across repositories, the rows are read off GitHub.** `--all-my-repos` reads the
 ledger on the default branch of every repository the `gh` user can reach, and
 `--repo` just the ones named, so nothing needs cloning. A repository counts by
 its ledger, not muthur's watermark: the ledger is opt-in, so a watermark alone
@@ -295,7 +295,7 @@ they are another branch's to change.
 - **Abandoned branches.** Rows reach the trunk by merge, so work that is thrown
   away is thrown out of the ledger too — an undercount biased toward exactly the
   sessions that spent without delivering.
-- **Repositories the token cannot reach.** `--all-repos` sees what the `gh`
+- **Repositories the token cannot reach.** `--all-my-repos` sees what the `gh`
   user sees, so an organization that enforces SAML SSO is out of reach until
   the token is authorized for it.
 - **The trunk itself.** The hook declines to commit a row on `main` or

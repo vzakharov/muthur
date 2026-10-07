@@ -3,7 +3,7 @@
 have cost at Claude API rates.
 
 Usage:
-  python3 .claude/costs/report.py [--all-repos | --repo OWNER/NAME ...]
+  python3 .claude/costs/report.py [--all-my-repos | --repo OWNER/NAME ...]
                                   [--month YYYY-MM | --week YYYY-Www | --day YYYY-MM-DD] [--json]
 
 Each period also takes `cur` or `prev`. Without one, every row is totalled and
@@ -16,7 +16,7 @@ retired shape is rewritten in the current one, and the report says which.
 reach the trunk by merge, so a month read there is a month of *merged* work:
 `CLAUDE.md` beside this file carries what that leaves out.
 
-`--all-repos` reads every repository the `gh` user can see whose default
+`--all-my-repos` reads every repository the `gh` user can see whose default
 branch carries a ledger, and `--repo` (repeatable) just the ones named, off
 GitHub rather than this checkout, adding a table by repository.
 
@@ -352,7 +352,7 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
     scope = parser.add_mutually_exclusive_group()
     scope.add_argument(
-        "--all-repos",
+        "--all-my-repos",
         action="store_true",
         help="every repo the gh user can see whose default branch has a ledger",
     )
@@ -379,11 +379,11 @@ def main() -> int:
     except PeriodError as error:
         parser.error(str(error))
     rates = parse_rates((COSTS / "rates.json").read_text(encoding="utf-8"))
-    if not (args.all_repos or args.repo):
+    if not (args.all_my_repos or args.repo):
         return this_repo(span, args.json, rates)
     try:
         return across_repos(
-            None if args.all_repos else list(dict.fromkeys(args.repo)), span, args.json, rates
+            None if args.all_my_repos else list(dict.fromkeys(args.repo)), span, args.json, rates
         )
     except GitHubError as error:
         print(f"costs: {error}", file=sys.stderr)

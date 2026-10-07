@@ -54,6 +54,11 @@ class NamedOutright(unittest.TestCase):
     def test_a_day_is_itself(self) -> None:
         self.assertEqual(span("day", "2026-10-07"), ("2026-10-07", "2026-10-07", "2026-10-07"))
 
+    def test_case_is_ignored_and_the_label_keeps_iso_s(self) -> None:
+        self.assertEqual(span("week", "2026-w41")[0], "2026-W41")
+        self.assertEqual(span("week", "CUR")[0], "2026-W41")
+        self.assertEqual(span("month", "Prev")[0], "2026-09")
+
     def test_a_malformed_or_impossible_one_raises(self) -> None:
         for kind, value in (("month", "2026-13"), ("week", "2026-41"), ("day", "2026-02-30")):
             with self.subTest(kind=kind, value=value), self.assertRaises(PeriodError):

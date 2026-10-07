@@ -19,7 +19,7 @@ KINDS = ("month", "week", "day")
 RELATIVE = ("cur", "prev")
 FORMATS = {
     "month": (re.compile(r"(\d{4})-(\d{2})"), "YYYY-MM"),
-    "week": (re.compile(r"(\d{4})-W(\d{2})"), "YYYY-Www"),
+    "week": (re.compile(r"(\d{4})-W(\d{2})", re.IGNORECASE), "YYYY-Www"),
     "day": (re.compile(r"(\d{4})-(\d{2})-(\d{2})"), "YYYY-MM-DD"),
 }
 
@@ -75,8 +75,11 @@ def day_of(day: date) -> Period:
 
 
 def period(kind: str, value: str, today: date) -> Period:
-    """`cur` is the period holding `today`, `prev` the one before it."""
-    if value in RELATIVE:
+    """`cur` is the period holding `today`, `prev` the one before it. Case is
+    ignored: the label is printed in ISO's case whatever was typed."""
+    relative = value.lower()
+    if relative in RELATIVE:
+        value = relative
         if kind == "month":
             current = month_of(today)
             return current if value == "cur" else month_of(current.first - timedelta(days=1))
