@@ -195,7 +195,21 @@ class LagTest(MuthurSyncTestCase):
         self.assertNotIn(".claude/costs/sessions/", out)
         self.assertIn("  .claude/\n  scripts/\n", out)
         self.assertIn("Investigate nothing before the operator says yes", out)
+        self.assertIn(
+            f"`git ls-remote origin refs/heads/muthur-sync-lock-{self.fx.base[:12]}`", out
+        )
         self.assertNotIn("ride-along is unavailable", out)
+
+    def test_single_branch_clone_of_another_branch(self) -> None:
+        work = self.lagging()
+        self.fx.git(work, "push", "-q", "origin", "HEAD:refs/heads/feature")
+        narrow = self.fx.root / "narrow"
+        self.fx.git(
+            self.fx.root, "clone", "-q", "--single-branch", "-b", "feature",
+            str(self.fx.origin), str(narrow),
+        )
+        shutil.copytree(work / "scripts", narrow / "scripts")
+        self.assertIn("is 3 commit(s) past the last sync", self.nudge(narrow))
 
     def test_cap(self) -> None:
         work = self.fx.adopter(self.fx.base)
