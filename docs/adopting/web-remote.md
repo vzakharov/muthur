@@ -22,7 +22,7 @@ nicety.
 
 **To adopt it**, copy `.claude/hooks/gh-shim.sh` and merge
 `.claude/settings.json` (see the [G4 catalog
-rows](../../.claude/skills/update-muthur/catalog.md#g4--remote-session-plumbing)), then install the shim for
+rows](../../.claude/skills/update-muthur/catalog/g4-remote-plumbing.md)), then install the shim for
 the *current* session so the remaining steps and the newly-adopted skills have a
 working `gh`.
 
