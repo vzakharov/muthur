@@ -25,8 +25,10 @@ split out of `read_row` so the single-repo report keeps rewriting its
 own rows as before. While it reads, it says on stderr what it is doing,
 so tens of seconds of listing do not look like a hang.
 
-Every report also prints one month's estimated hours by role and grade,
-in plain hours: the current month unless `--month` names another.
+Every report also prints a period's estimated hours by role and grade,
+in plain hours. `--month`, `--week` and `--day`, each named or `cur` /
+`prev`, narrow the whole report to the sessions that started in that
+period; without one, the hours cover the current month.
 
 Co-authored-by: Claude <noreply@anthropic.com>
 ```
