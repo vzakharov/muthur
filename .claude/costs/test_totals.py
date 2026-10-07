@@ -22,7 +22,15 @@ from lib.orientation import Compaction, Phase, Rereads
 from lib.rows import ROOT, SessionCost, parse_session_cost, read_row, row_text
 from lib.shape import to_json
 from lib.tally import Tally
-from lib.totals import Bucket, branch_label, iso_week, opening_command, operator_label, totals_of
+from lib.totals import (
+    Bucket,
+    branch_label,
+    by_repo,
+    iso_week,
+    opening_command,
+    operator_label,
+    totals_of,
+)
 
 
 def tally(cost_usd: float) -> Tally:
@@ -96,6 +104,19 @@ class HowABranchIsLabelled(unittest.TestCase):
 
     def test_says_so_rather_than_dropping_a_row_whose_branch_went_unrecorded(self) -> None:
         self.assertEqual(branch_label(replace(ROW, branch=None)), "(no branch)")
+
+    def test_prefixes_the_repo_only_across_repositories(self) -> None:
+        rows = [replace(ROW, session_id="a"), replace(ROW, session_id="b")]
+        self.assertEqual(list(totals_of(rows, RATES).by_branch), ["a-branch"])
+        across = totals_of(rows, RATES, {"a": "o/one", "b": "o/two"})
+        self.assertEqual(list(across.by_branch), ["o/one:a-branch", "o/two:a-branch"])
+
+
+class WhichRepoItCameFrom(unittest.TestCase):
+    def test_files_a_session_under_the_repo_its_row_was_read_from(self) -> None:
+        rows = [replace(ROW, session_id="a"), replace(ROW, session_id="b"), replace(ROW, session_id="c")]
+        buckets = by_repo(rows, {"a": "o/one", "b": "o/two", "c": "o/one"})
+        self.assertEqual(buckets, {"o/one": Bucket(2, 2, 2), "o/two": Bucket(1, 1, 1)})
 
 
 class WhoseSessionItWas(unittest.TestCase):
