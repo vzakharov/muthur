@@ -171,7 +171,7 @@ cannot have. And this skill goes (Step 5.8).
 
 Ordering is load-bearing at exactly one point, and it is the first step:
 
-1. **Delete `.claude/skills/update-muthur/catalog.md` first.** It flips `scripts/check-skill-catalog.sh`
+1. **Delete `.claude/skills/update-muthur/catalog.md` and its `catalog/` parts first.** The index flips `scripts/check-skill-catalog.sh`
    assertion 4 from "the stubs are the shipped product, merely listed" to "a stub
    is a stowaway", and it un-refuses `/spinoff`, whose guard is literally the
    catalog's presence. Sweep it first and the G6 prune is enforced by the vet run

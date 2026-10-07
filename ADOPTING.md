@@ -150,7 +150,8 @@ optional](.claude/skills/update-muthur/catalog.md#closure-is-not-optional) expla
 don't, and lists the four counter-intuitive cases. Don't re-derive them.
 
 Copy the resolved set from the clone into your repo — but **not**
-[`.claude/skills/update-muthur/catalog.md`](.claude/skills/update-muthur/catalog/never.md),
+[`.claude/skills/update-muthur/catalog.md`](.claude/skills/update-muthur/catalog.md)
+or its `catalog/` parts ([the `never` rows](.claude/skills/update-muthur/catalog/never.md)),
 which taking `/update-muthur` otherwise brings along inside its directory.
 Each `opt-in: ask` row goes by its answer: on a yes, copy its path and merge the
 `.claude/settings.json` entries its row names — `.claude/costs/` without this

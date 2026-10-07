@@ -2,7 +2,7 @@
 > is what marks a tree as the template rather than a repo that adopted it —
 > `scripts/check-skill-catalog.sh` and `/spinoff` both key on that. If you are
 > reading this in a repo that *adopted* this infrastructure, it rode along with
-> `.claude/skills/**` by mistake: **delete the file.** Do not prune its rows to
+> `.claude/skills/**` by mistake: **delete the file and its `catalog/` parts.** Do not prune its rows to
 > match your tree — that repairs the symptom (assertion 3 failing on rows you
 > can never satisfy) and leaves the sentinel permanently wrong.
 

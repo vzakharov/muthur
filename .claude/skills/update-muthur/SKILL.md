@@ -261,10 +261,11 @@ first, and say so.
 A commit that adds a skill in neither `adopted` nor `declined` is an open
 question, and the answer belongs in the watermark so it is asked exactly once.
 
-Read the new skill's row in the source's
-`.claude/skills/update-muthur/catalog.md` — that file is the source's
-inventory, read from the clone and never vendored, so it is current by
-construction — and surface the decision **with its criteria attached** rather than
+Read the new skill's row in the source's catalog — `.claude/skills/update-muthur/catalog.md`
+and its parts under `catalog/`, the source's inventory, read from the clone and
+never vendored, so it is current by construction. Find the row with
+`grep -n '^| `/<name>`' .claude/skills/update-muthur/catalog.md .claude/skills/update-muthur/catalog/*.md`;
+an opt-in path is looked up the same way. Surface the decision **with its criteria attached** rather than
 as a bare "upstream added `/foo`, want it?".
 
 - **Taken** → add the path to `adopted` — as a `{path: note}` entry if it landed
