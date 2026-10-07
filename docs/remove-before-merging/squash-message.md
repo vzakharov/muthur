@@ -1,26 +1,28 @@
 Proposed squash title/body:
 
 ```
-feat: keep an idle session's prompt cache warm from a Stop hook (pr #159)
+feat: keep an idle session's prompt cache warm with a watcher (pr #159)
 ```
 
 ```
 An idle web session loses its one-hour prompt cache, and the next
 prompt re-caches the whole conversation, about 40 times what a cache
-read before expiry costs. Nothing kept the cache warm without the
-agent re-arming something on every reply.
+read before expiry costs. Only a background task keeps an idle
+container alive, so keeping the cache warm takes one.
 
-A Stop hook with asyncRewake now sleeps in the background until about
-five minutes before the cache expires, then wakes the session for a
-one-line reply. Each turn's own Stop re-arms it, so the agent does
-nothing per reply. A session on the five-minute TTL is left alone.
+A UserPromptSubmit hook now asks the agent to start a watcher as a
+background Bash task at the end of a turn. The watcher exits about
+five minutes before the cache expires, and its completion notice
+wakes the session for a one-line reply. The agent skips it, or
+TaskStops a running one, when the branch alone lets a fresh session
+continue: the work at a loop boundary and nothing said since that the
+repo lacks. A session on the five-minute TTL is left alone.
 
 It wakes at most five times per idle spell, and an operator prompt
-resets the count. The fifth wake runs /relay without a successor:
-the summary is committed and the operator gets the /relay take line
-to start a fresh session from, since a branch idle for about six
-hours can wait, and the summary makes picking it up again cheap.
-CACHE_KEEPALIVE=off turns it off.
+resets the count. The fifth wake runs /relay without a successor: the
+summary is committed and the operator gets the /relay take line to
+start a fresh session from, since a branch idle for about six hours
+can wait. CACHE_KEEPALIVE=off turns it off.
 
 Co-authored-by: Claude <noreply@anthropic.com>
 ```
