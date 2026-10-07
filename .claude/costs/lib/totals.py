@@ -136,7 +136,6 @@ class TelemetrySummary:
     unseen: Dict[str, Bucket]
 
 
-
 def branch_label(row: SessionCost, repo: Optional[str] = None) -> str:
     """The branch a session's spend is filed under, with the pull requests it
     touched named beside it: the branch says roughly what the work was, the

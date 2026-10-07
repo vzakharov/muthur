@@ -79,13 +79,13 @@ def period(kind: str, value: str, today: date) -> Period:
     ignored: the label is printed in ISO's case whatever was typed."""
     relative = value.lower()
     if relative in RELATIVE:
-        value = relative
+        current = relative == "cur"
         if kind == "month":
-            current = month_of(today)
-            return current if value == "cur" else month_of(current.first - timedelta(days=1))
+            this = month_of(today)
+            return this if current else month_of(this.first - timedelta(days=1))
         if kind == "week":
-            return week_of(today if value == "cur" else today - timedelta(days=7))
-        return day_of(today if value == "cur" else today - timedelta(days=1))
+            return week_of(today if current else today - timedelta(days=7))
+        return day_of(today if current else today - timedelta(days=1))
     pattern, shape = FORMATS[kind]
     found = pattern.fullmatch(value)
     if found is None:
