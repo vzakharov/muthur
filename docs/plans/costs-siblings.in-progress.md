@@ -59,9 +59,9 @@ until the token is authorized for it, and any work not yet on a trunk.
    `reshape(text, where) -> (SessionCost, changes)` out of `read_row`, which
    becomes `reshape` + `write_atomic` when `changes` is non-empty. GitHub rows
    go through `reshape` only. A remote row in a retired shape, or one on a
-   newer ledger than this repo's (dropped keys), is counted per repo on stderr
-   — "N rows in an older or newer shape" — since this repo's parser is the one
-   in force.
+   newer ledger than this repo's (dropped keys), is counted per repo among
+   that repo's warnings — "N rows in an older or newer shape" — since this
+   repo's parser is the one in force.
 2. **`lib/github.py` (new)** — stdlib only, one injected transport:
    - `Transport = Callable[[str, Dict[str, Any]], Dict[str, Any]]`, defaulting
      to `gh api graphql` through `subprocess`; a non-zero exit or a GraphQL
@@ -72,21 +72,25 @@ until the token is authorized for it, and any work not yet on a trunk.
      COLLABORATOR, ORGANIZATION_MEMBER])` 40 at a time, retrying a 5xx page
      up to three times with backoff, and reads per node the month names under
      `HEAD:.claude/costs/sessions` and whether the watermark exists. `only`
-     (from `--repo`) queries those repos directly instead of listing;
-   - `ledger_texts(transport, candidates, months) -> Dict[repo, Dict[path, text]]`:
-     one aliased query per batch of repos, each alias an
+     (from `--repo`) queries those repos directly instead of listing, and one
+     of them without a ledger raises, since it was named;
+   - `ledger_texts(transport, candidates, month) -> List[(repo, where, text)]`:
+     one aliased query per batch of five repo-months, each alias an
      `object(expression: "HEAD:.claude/costs/sessions/<month>")` tree with its
      entries' blob `text` and `isTruncated`; months outside `--month` are never
      requested.
 3. **`lib/totals.py`** — `totals_of` takes an optional
    `repo_of: Mapping[str, str]` (session id → `owner/name`). When given, it
-   fills a new `by_repo` and labels branches `<owner/name>:<branch>`, since the
-   same branch name recurs across repos. Absent, nothing changes: the
-   single-repo report is byte-identical.
+   labels branches `<owner/name>:<branch>`, since the same branch name recurs
+   across repos. A separate `by_repo(rows, repo_of)` gives the per-repo
+   buckets, rather than a field on `Totals`, which `--json` would print as an
+   empty key in the single-repo report too. Absent, nothing changes: the
+   single-repo report is byte-identical, text and `--json`.
 4. **`report.py`** — `--all-repos` and `--repo`, in a mutually exclusive
    argparse group. The warnings and the "muthur, no
    ledger" line print first; the `repo` table prints before `month`. `--json`
-   gains a `repos` array: name, months, rows, warnings. The repo-reading lives
+   gains a `repos` array — name, months, warnings and the repo's bucket — and
+   `withoutLedger`. A GitHub error exits 1 with its message. The repo-reading lives
    in `lib/github.py` so `report.py` stays under ~450 lines.
 5. **`test_github.py`** — a fake transport answering from recorded response
    shapes, which is the mock at the network boundary. Cases:
@@ -97,7 +101,9 @@ until the token is authorized for it, and any work not yet on a trunk.
    - the same session id in two repos is counted once and named;
    - a truncated blob raises;
    - a retired-shape row is reshaped and reported, nothing written;
-   - branch labels are repo-prefixed only under `repo_of`.
+   - a named repo without a ledger raises.
+   `test_totals.py` gains the branch labels, repo-prefixed only under
+   `repo_of`, and `by_repo`.
    `scripts/vet.sh` already runs every `.claude/costs/test_*.py`.
 6. **Docs.** `.claude/costs/CLAUDE.md`: § "The report" gains a short paragraph
    — what `--all-repos` reads, why the ledger and not the watermark qualifies a
