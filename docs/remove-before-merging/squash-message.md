@@ -22,7 +22,11 @@ A session id found in two repos is counted once, and a GitHub error, a
 truncated row or a named repo without a ledger stops the run rather
 than leaving a total short. Rows are reshaped in memory only, the parse
 split out of `read_row` so the single-repo report keeps rewriting its
-own rows as before.
+own rows as before. While it reads, it says on stderr what it is doing,
+so tens of seconds of listing do not look like a hang.
+
+Every report also prints one month's estimated hours by role and grade,
+in plain hours: the current month unless `--month` names another.
 
 Co-authored-by: Claude <noreply@anthropic.com>
 ```
