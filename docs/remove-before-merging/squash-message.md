@@ -1,7 +1,7 @@
 Proposed squash title/body:
 
 ```
-feat: #161 catalog the cache keepalive as opt-in G10 (pr #162)
+feat: #161 catalog the keepalive as opt-in G10, fix the ledger (pr #162)
 ```
 
 ```
@@ -15,13 +15,15 @@ states what a yes costs: a background watcher on every idle turn, the
 one exception to CLAUDE.md's run_in_background ban, so that line
 changes in the adopter's CLAUDE.md too; up to CACHE_KEEPALIVE_WAKES
 visible wakes per idle spell, the last running /relay without a
-successor and committing a summary to the branch; and the settings.json
-and vet.sh loop entries it arrives with.
+successor; and the settings.json and vet.sh entries it arrives with.
+The row records the dependency a sync would miss: keepalive.py imports
+the ledger's lib, so the directory travels only with G7.
 
-The row also records the dependency a sync would otherwise miss:
-keepalive.py imports .claude/costs/lib/restart.py, which reads the
-ledger's pricing, so the directory travels only with G7. The
-settings.json row lists G10's entry among those it carries.
+Sessions on claude-sonnet-5-5 got no ledger row, because the price
+table had no rate for it and the Stop hook's one stderr line on that
+failure reaches nobody. The table gains the model at Sonnet 5's
+prices, and a turn that cannot be priced now blocks the stop once,
+naming the missing model; a re-fired Stop still passes.
 
 Closes #161
 
