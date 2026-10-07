@@ -242,7 +242,8 @@ already sorted every travelling path into a copy or a rewrite:
 
 - **Copies → `main`.** Reviewed where they came from, travelling unchanged:
   `.claude/skills/**` except
-  [`update-muthur/catalog.md`](../update-muthur/catalog.md), the
+  [`update-muthur/catalog.md`](../update-muthur/catalog.md) and its `catalog/`
+  parts, the
   `.claude/rules/` that survived the triage, the `scripts/` the loop's own skills
   call, the editor config. That exception is redundant with § "Two invariants" —
   a well-formed caller has no catalog at all — and is kept so a leaked copy

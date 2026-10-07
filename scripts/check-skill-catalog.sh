@@ -8,7 +8,7 @@
 #      the bulk of them; CLAUDE.md's imports fail the same way, which is why the
 #      scope is the directory.
 #   2. Every `.claude/skills/*/` directory has exactly one row in
-#      `.claude/skills/update-muthur/catalog.md`.
+#      `.claude/skills/update-muthur/catalog.md` or its parts under `catalog/`.
 #   3. Every path named in a catalog row's first column exists; a row naming a
 #      glob names a set rather than a path, and is skipped.
 #   4. A skill's two stub markers agree, and no unhydrated stub is present
@@ -22,7 +22,7 @@
 #      nothing, and the agent following one reads the surviving file without
 #      the rule it was sent for.
 #
-# Assertions 2-3 skip when the catalog is absent — the normal downstream
+# Assertions 2-3 skip when the catalog index is absent — the normal downstream
 # case, since the catalog describes the source repo and is never vendored. So the
 # same script is useful at every link in the adoption chain. Assertion 4 runs
 # everywhere but changes verdict on the same signal: the catalog's presence is
@@ -36,6 +36,8 @@ set -uo pipefail
 cd "$(dirname "$0")/.." || exit 1
 
 CATALOG=".claude/skills/update-muthur/catalog.md"
+# The index and its parts: rows live in `catalog/*.md`, the index keeps the prose.
+CATALOG_FILES=("$CATALOG" ".claude/skills/update-muthur/catalog"/*.md)
 failures=0
 
 fail() {
@@ -91,7 +93,7 @@ else
   # A catalog row is a table line whose first cell is a single backticked
   # token: `/skill-name` for a skill, a repo-relative path for anything else.
   mapfile -t row_items < <(
-    grep -E '^\|' "$CATALOG" |
+    grep -hE '^\|' "${CATALOG_FILES[@]}" |
       sed -E 's/^\| *`([^`]+)` *\|.*/\1/;t;d' |
       sort
   )
@@ -187,9 +189,10 @@ fi
 # pointer are separate edits, so assertion 1 catches losing the page and this one
 # catches losing the pointer.
 #
-# The catalog does not count as a reference. It names a page in its skill's row
-# — "Carries `carving.md`" — and that is an inventory entry, not a load path, so
-# a page the catalog is alone in naming is still one no session can reach.
+# The catalog and its parts do not count as a reference. A row names a page in
+# its skill's entry — "Carries `carving.md`" — and that is an inventory entry,
+# not a load path, so a page the catalog is alone in naming is still one no
+# session can reach.
 
 echo "5. Every colocated skill page is referenced"
 
@@ -200,7 +203,7 @@ for page in .claude/skills/*/*.md; do
   referenced=0
   while IFS= read -r hit; do
     [ "$hit" = "$page" ] && continue
-    [ "$hit" = "$CATALOG" ] && continue
+    case " ${CATALOG_FILES[*]} " in *" $hit "*) continue ;; esac
     referenced=1
     break
   done < <(grep -lF "$page" "${sources[@]}" 2>/dev/null)

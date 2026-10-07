@@ -14,7 +14,7 @@ you. An adopter taking a one-time snapshot deletes the skill instead.
 
 `/update-muthur` is a stub for want of a watermark, not a procedure, so
 hydrating it is `.claude/skills/update-muthur/watermark.json` — the file the
-skill's [own row](../../.claude/skills/update-muthur/catalog.md#g0--the-sync-path) tells
+skill's [own row](../../.claude/skills/update-muthur/catalog/g0-sync-path.md) tells
 you to rewrite. Write it for **your**
 repo, then clear both stub markers: delete the `⚠️ **STUB.**` banner and drop
 `STUB` from the frontmatter `description`. Half of either leaves the skill
