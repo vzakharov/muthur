@@ -351,6 +351,15 @@ the operator says yes, so an offer nobody answers holds nothing. The price is
 that a parallel session may claim the sync in between: a claim that exits 3
 after the yes means saying who holds the lock and dropping the offer.
 
+**So the lock is re-checked right before the offer is made, and before each
+repeat of it** — a relayed session's summary carrying the offer as open
+included, since hours can pass between the nudge and the offer. The nudge
+prints the `git ls-remote origin refs/heads/muthur-sync-lock-<lastSyncedSha:0:12>`
+to run; it claims nothing, so it sits beside the rule above. Any output means
+the sync is taken, or landed and left its lock behind: the offer is dropped,
+and the operator hears nothing, or that another session holds it if the offer
+was already made.
+
 On yes, one of two shapes:
 
 - **Ride-along** — a lag of a commit or two touching files here, offered once

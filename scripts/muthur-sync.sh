@@ -44,9 +44,11 @@ need() { command -v "$1" >/dev/null || die "$1 is not installed."; }
 lowercase() { tr '[:upper:]' '[:lower:]' <<<"$1"; }
 
 # `origin/HEAD` is absent from a clone made without it — agent sessions get one
-# of those — hence the default names after it.
+# of those — hence the default names after it. A single-branch clone of another
+# branch has none of them, so origin is asked for its default branch, fetched
+# into the remote-tracking ref the other cases read.
 trunk_ref() {
-  local ref
+  local ref branch
   if ref="$(git symbolic-ref --quiet refs/remotes/origin/HEAD 2>/dev/null)"; then
     echo "$ref"
     return 0
@@ -54,7 +56,11 @@ trunk_ref() {
   for ref in refs/remotes/origin/main refs/remotes/origin/master; do
     git rev-parse --verify --quiet "$ref" >/dev/null && { echo "$ref"; return 0; }
   done
-  return 1
+  ref="$(git ls-remote --symref origin HEAD 2>/dev/null)" || return 1
+  branch="$(sed -n 's|^ref: refs/heads/\([^[:space:]]*\)[[:space:]]*HEAD$|\1|p' <<<"$ref")"
+  [ -n "$branch" ] || return 1
+  git fetch --quiet origin "+refs/heads/$branch:refs/remotes/origin/$branch" 2>/dev/null || return 1
+  echo "refs/remotes/origin/$branch"
 }
 
 # Sets SOURCE_REPO, LAST_SHA and ADOPTED from the trunk's watermark. Returns 1 when there
@@ -72,7 +78,8 @@ read_trunk_watermark() {
 # Refreshes the trunk before reading it, so a sync that landed since this clone
 # last fetched is not offered again.
 load_watermark() {
-  TRUNK="$(trunk_ref)" || die "no trunk ref (origin/HEAD, origin/main or origin/master) to read the watermark from."
+  TRUNK="$(trunk_ref)" ||
+    die "no trunk to read the watermark from: no origin/HEAD, origin/main or origin/master, and origin's default branch could not be fetched."
   read_trunk_watermark || return 1
   git fetch --quiet origin "${TRUNK#refs/remotes/origin/}" 2>/dev/null ||
     die "could not fetch ${TRUNK#refs/remotes/} from origin."
@@ -174,8 +181,10 @@ mark_files() {
   done
 }
 
+# The lock's name is printed literally, so the re-check needs nothing the agent
+# would have to reconstruct hours later.
 offer_rules() {
-  cat <<'EOF'
+  sed "s/@LOCK@/$LOCK/" <<'EOF'
 
 This is an offer to make, not work to start:
 - Investigate nothing before the operator says yes: no clone, no `git show`, no
@@ -184,6 +193,11 @@ This is an offer to make, not work to start:
   this session is making a change on this branch, never in answer to a question
   that changes nothing; a new session at the end of a turn that delivered
   something. Declined means not offered again in this session.
+- Right before making the offer, and before repeating it — a relayed summary
+  carrying it as open included — run
+  `git ls-remote origin refs/heads/@LOCK@`. Any output means another session
+  claimed or landed this sync since it was printed: drop the offer, saying
+  nothing if it was never made, or that another session holds it if it was.
 - Which offer: a ride-along when the changes are one or two commits touching
   files here; a new session otherwise.
 - On yes, `/update-muthur ride-along` in this session after the task's own
