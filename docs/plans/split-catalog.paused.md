@@ -87,6 +87,32 @@ rule of thumb, and a row added in two concurrent syncs conflicts in one file.
    new directory to carve out of the copy steps, at the price of a dozen files
    beside `SKILL.md`.
 
+## Where this stands
+
+Paused for the context budget with **nothing built**: the go-ahead is recorded
+(e9df96c) and both decisions took their recommendations — one file per group,
+parts under `catalog/`. Step 1 onward is untouched; `catalog.md` is as on `main`
+(510 lines). Next session: start at Step 1, using the section map from
+`grep -n '^## \|^### ' catalog.md`.
+
+Facts the next session would otherwise re-derive:
+
+- `check-skill-catalog.sh` parses rows with `grep -E '^\|'` over `$CATALOG`
+  (lines ~86–125); assertion 5 (~line 190) skips a hit equal to `$CATALOG`, so a
+  part naming a colocated page needs the same exemption. `*/*.md` does not
+  descend into `catalog/`, so parts are not themselves "colocated pages".
+- Consumers of `catalog.md#<anchor>` to repoint: `ADOPTING.md` (~12 links, anchors
+  `#three-dispositions-not-two`, `#closure-is-not-optional`, `#never`,
+  `#g6--stack-stubs`, `#g1--prose--principles`), `docs/adopting/sync.md`
+  (`#g0--the-sync-path`), `docs/adopting/web-remote.md`
+  (`#g4--remote-session-plumbing`). The index-only anchors stay.
+- The carve-out wording to widen from the file to the directory: the `Never` row
+  for `catalog.md`, `ADOPTING.md`'s copy step, `/update-muthur` Step 4a
+  (line ~265, "never vendored"), `/spinoff`, `/detemplate`'s "delete the
+  catalog first" (line ~174), and `.claude/skills/CLAUDE.md` line 3.
+- Root CLAUDE.md, `check-muthur.sh`, `check-repo-identity.sh` and the globs in
+  `/detemplate` and `/spinoff` key on `catalog.md` alone and do not change.
+
 ## Out of scope
 
 Rewording any row, regrouping skills between groups, or changing the
