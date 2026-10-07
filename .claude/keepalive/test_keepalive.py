@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Drives the hook as the harness does — a payload on stdin, a transcript on
-disk — for each rule that decides whether a wake fires. The period knob stands
-in for the hour, so a case sleeps for at most a few seconds.
+disk — and the watcher as the agent's background Bash call does. The period
+knob stands in for the hour, so a watcher exits at once.
 
 Run by path (`python3 .claude/keepalive/test_keepalive.py`), as
 `scripts/vet.sh` does.
@@ -16,14 +16,17 @@ import tempfile
 import time
 import unittest
 from pathlib import Path
-from typing import Any, Dict, Optional
+from typing import Dict, Optional
 
 HERE = Path(__file__).resolve().parent
 HOOK = HERE / "hooks" / "keepalive.py"
 # The ledger's directory, for its test's record builders.
 sys.path.insert(0, str(HERE.parent / "costs"))
+sys.path.insert(0, str(HERE / "hooks"))
 
 from test_restart import opening, response
+
+import keepalive
 
 
 class HookCase(unittest.TestCase):
@@ -44,121 +47,136 @@ class HookCase(unittest.TestCase):
         self.state.mkdir(parents=True, exist_ok=True)
         (self.state / "period").write_text(str(seconds))
 
-    def wakes(self) -> int:
-        return json.loads((self.state / "sess.json").read_text())["wakes"]
+    def data(self) -> Dict[str, object]:
+        return json.loads((self.state / "sess.json").read_text())
 
-    def start(self, event: str, env: Optional[Dict[str, str]] = None, prompt: str = "carry on") -> "subprocess.Popen[str]":
-        body: Dict[str, Any] = {
-            "hook_event_name": event,
-            "prompt": prompt,
+    def env(self, extra: Optional[Dict[str, str]]) -> Dict[str, str]:
+        return {"PATH": "/usr/bin:/bin", "CLAUDE_PROJECT_DIR": str(self.root), **(extra or {})}
+
+    def start_watcher(self) -> "subprocess.Popen[str]":
+        return subprocess.Popen(
+            [sys.executable, str(HOOK), "watch", "sess", str(self.transcript)],
+            stderr=subprocess.PIPE,
+            text=True,
+            env=self.env(None),
+        )
+
+    def wake(self) -> None:
+        """One watcher run to its exit, as the knob at 0 makes it."""
+        self.knob(0)
+        proc = self.start_watcher()
+        proc.communicate(timeout=30)
+        self.assertEqual(proc.returncode, 0)
+
+    def prompt(self, text: str = "carry on", env: Optional[Dict[str, str]] = None) -> "tuple[str, str]":
+        """The hook's additional context, or "" when it adds none, and its stderr."""
+        body = {
+            "hook_event_name": "UserPromptSubmit",
+            "prompt": text,
             "session_id": "sess",
             "transcript_path": str(self.transcript),
         }
-        proc = subprocess.Popen(
+        proc = subprocess.run(
             [sys.executable, str(HOOK)],
-            stdin=subprocess.PIPE,
-            stderr=subprocess.PIPE,
+            input=json.dumps(body),
+            capture_output=True,
             text=True,
-            env={"PATH": "/usr/bin:/bin", "CLAUDE_PROJECT_DIR": str(self.root), **(env or {})},
+            env=self.env(env),
+            timeout=30,
         )
-        assert proc.stdin is not None
-        proc.stdin.write(json.dumps(body))
-        proc.stdin.close()
-        return proc
+        self.assertEqual(proc.returncode, 0)
+        if not proc.stdout:
+            return "", proc.stderr
+        return json.loads(proc.stdout)["hookSpecificOutput"]["additionalContext"], proc.stderr
 
-    def finish(self, proc: "subprocess.Popen[str]") -> "tuple[int, str]":
-        _, err = proc.communicate(timeout=30)
-        return proc.returncode, err
-
-    def run_hook(self, event: str, env: Optional[Dict[str, str]] = None, prompt: str = "carry on") -> "tuple[int, str]":
-        return self.finish(self.start(event, env, prompt))
+    def notice(self) -> str:
+        """The prompt a wake reaches `UserPromptSubmit` with."""
+        return f"Background command \"{keepalive.MARK} watcher\" completed (exit code 0)"
 
 
-class WhenTheSessionGoesIdle(HookCase):
-    def test_a_stop_wakes_the_model_with_one_line_to_say(self) -> None:
+class WhenAnOperatorPromptArrives(HookCase):
+    def test_the_agent_is_told_to_start_the_watcher_unless_the_repo_suffices(self) -> None:
+        out, _ = self.prompt()
+        self.assertIn("As this turn's last action, start the cache keepalive's watcher", out)
+        self.assertIn(f"{HOOK} watch sess {self.transcript}", out)
+        self.assertIn("Skip it when", out)
+        self.assertIn("loop boundary", out)
+
+    def test_a_running_watcher_is_left_to_the_agent_to_stop(self) -> None:
         self.session(ago=1)
-        self.knob(0)
-        code, err = self.run_hook("Stop")
-        self.assertEqual(code, 2)
-        self.assertIn("wake 1 of 5", err)
-        self.assertIn("at most seven words", err)
-        self.assertEqual(self.wakes(), 1)
+        self.knob(60)
+        watcher = self.start_watcher()
+        try:
+            deadline = time.time() + 10
+            while not (self.state / "sess.json").exists() or not self.data().get("pid"):
+                self.assertLess(time.time(), deadline)
+                time.sleep(0.05)
+            out, _ = self.prompt()
+            self.assertIn("watcher is running", out)
+            self.assertIn("TaskStop", out)
+        finally:
+            watcher.kill()
+            watcher.communicate()
 
-    def test_the_fifth_wake_relays_without_a_successor_and_nothing_follows_it(self) -> None:
+    def test_it_starts_a_new_idle_spell(self) -> None:
         self.session(ago=1)
-        self.knob(0)
+        for _ in range(3):
+            self.wake()
+            self.prompt(self.notice())
+        self.prompt()
+        self.wake()
+        self.assertIn("wake 1 of 5", self.prompt(self.notice())[0])
+
+
+class WhenTheWatcherWakesTheSession(HookCase):
+    def test_the_wake_asks_for_one_short_line_and_a_new_watcher(self) -> None:
+        self.session(ago=1)
+        self.wake()
+        self.assertEqual((self.data()["wakes"], self.data()["fired"], self.data()["pid"]), (1, True, None))
+        out, _ = self.prompt(self.notice())
+        self.assertIn("wake 1 of 5", out)
+        self.assertIn("at most seven words", out)
+        self.assertIn("start the cache keepalive's watcher", out)
+
+    def test_the_fifth_wake_relays_without_a_successor_and_starts_nothing(self) -> None:
+        self.session(ago=1)
         for wake in range(1, 5):
-            self.assertIn(f"wake {wake} of 5", self.run_hook("Stop")[1])
-        code, err = self.run_hook("Stop")
-        self.assertEqual(code, 2)
-        self.assertIn("last wake (5 of 5)", err)
-        self.assertIn('"Without a successor"', err)
-        self.assertEqual(self.run_hook("Stop"), (0, ""))
-
-    def test_an_operator_prompt_starts_a_new_spell(self) -> None:
-        self.session(ago=1)
-        self.knob(0)
-        for _ in range(5):
-            self.run_hook("Stop")
-        self.run_hook("UserPromptSubmit")
-        self.assertIn("wake 1 of 5", self.run_hook("Stop")[1])
-
-    def test_the_wake_reaching_user_prompt_submit_keeps_the_count(self) -> None:
-        self.session(ago=1)
-        self.knob(0)
-        _, err = self.run_hook("Stop")
-        self.run_hook("UserPromptSubmit", prompt=f"Stop hook blocking error from command \"Stop\": {err}")
-        self.assertIn("wake 2 of 5", self.run_hook("Stop")[1])
+            self.wake()
+            self.assertIn(f"wake {wake} of 5", self.prompt(self.notice())[0])
+        self.wake()
+        out, _ = self.prompt(self.notice())
+        self.assertIn("last wake (5 of 5)", out)
+        self.assertIn('"Without a successor"', out)
+        self.assertIn("Do not start the watcher again", out)
 
     def test_the_wake_count_is_configurable(self) -> None:
         self.session(ago=1)
-        self.knob(0)
-        self.assertIn("last wake (1 of 1)", self.run_hook("Stop", {"CACHE_KEEPALIVE_WAKES": "1"})[1])
+        self.wake()
+        self.assertIn("last wake (1 of 1)", self.prompt(self.notice(), {"CACHE_KEEPALIVE_WAKES": "1"})[0])
 
 
-class WhenASleeperIsSuperseded(HookCase):
-    def test_a_later_stop_stands_the_earlier_sleeper_down(self) -> None:
-        self.session(ago=1)
-        self.knob(1.5)
-        first = self.start("Stop")
-        time.sleep(0.5)
-        second = self.start("Stop")
-        self.assertEqual((self.finish(first)[0], self.finish(second)[0]), (0, 2))
-        self.assertEqual(self.wakes(), 1)
+class TheDeadline(HookCase):
+    def test_a_one_hour_cache_is_woken_lead_seconds_before_expiry(self) -> None:
+        self.session(ago=10)
+        due = keepalive.deadline(self.transcript, 300)
+        assert due is not None
+        self.assertAlmostEqual(due, time.time() - 10 + 3600 - 300, delta=5)
 
-    def test_an_operator_prompt_stands_the_sleeper_down(self) -> None:
-        self.session(ago=1)
-        self.knob(1.5)
-        sleeper = self.start("Stop")
-        time.sleep(0.5)
-        self.run_hook("UserPromptSubmit")
-        self.assertEqual(self.finish(sleeper), (0, ""))
-        self.assertEqual(self.wakes(), 0)
-
-
-class WhenThereIsNothingToKeepWarm(HookCase):
     def test_a_five_minute_cache_is_left_alone(self) -> None:
         self.session(ago=1, ttl="5m")
-        self.assertEqual(self.run_hook("Stop"), (0, ""))
-        self.assertFalse((self.state / "sess.json").exists())
+        self.assertIsNone(keepalive.deadline(self.transcript, 300))
 
     def test_a_session_with_no_transcript_yet_is_left_alone(self) -> None:
-        self.assertEqual(self.run_hook("Stop"), (0, ""))
+        self.assertIsNone(keepalive.deadline(self.transcript, 300))
 
-    def test_an_already_expired_cache_fires_at_once(self) -> None:
-        self.session(ago=2 * 3600)
-        self.assertEqual(self.run_hook("Stop")[0], 2)
 
-    def test_the_off_switch_arms_nothing(self) -> None:
-        self.session(ago=1)
-        self.knob(0)
-        self.assertEqual(self.run_hook("Stop", {"CACHE_KEEPALIVE": "off"}), (0, ""))
+class TheSwitches(HookCase):
+    def test_the_off_switch_says_nothing(self) -> None:
+        self.assertEqual(self.prompt(env={"CACHE_KEEPALIVE": "off"}), ("", ""))
 
-    def test_a_malformed_setting_arms_nothing_and_says_why(self) -> None:
-        self.session(ago=1)
-        self.knob(0)
-        code, err = self.run_hook("Stop", {"CACHE_KEEPALIVE_LEAD": "five"})
-        self.assertEqual(code, 0)
+    def test_a_malformed_setting_says_why(self) -> None:
+        out, err = self.prompt(env={"CACHE_KEEPALIVE_LEAD": "five"})
+        self.assertEqual(out, "")
         self.assertIn("CACHE_KEEPALIVE_LEAD", err)
 
 

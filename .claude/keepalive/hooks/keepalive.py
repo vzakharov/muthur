@@ -125,18 +125,35 @@ def watch(state: State, transcript: Path, lead: int) -> int:
 
 def start_line(session: str, transcript: str) -> str:
     return (
-        f"Start the cache keepalive's watcher: one Bash call with `run_in_background: true`,"
+        f"start the cache keepalive's watcher: one Bash call with `run_in_background: true`,"
         f" `timeout: 7200000`, description `{MARK} watcher`, command"
         f" `{HOOK} watch {session} {transcript}`."
     )
 
 
+# Keeping a container alive is worth it only while losing it would lose
+# something: the agent alone knows whether the conversation holds decisions
+# the branch does not, so the call is its, made as the turn ends.
+SUFFICIENT = (
+    "the branch alone lets a fresh session continue: everything committed and pushed, the work"
+    " at a loop boundary (a draft plan published awaiting `/go`, a paused plan, `/go` done"
+    " awaiting `/finalize`, a relay summary written), and nothing said since that the repo"
+    " does not hold"
+)
+
+
 def context(data: Dict[str, Any], wakes: int, session: str, transcript: str) -> Optional[str]:
     if running(data.get("pid")):
-        return None
+        return (
+            f"A {MARK.lower()} watcher is running. If, as this turn ends, {SUFFICIENT},"
+            " stop it with TaskStop (its id is in the Bash result that started it)."
+        )
     spent = int(data.get("wakes", 0))
     if not data.get("fired"):
-        return start_line(session, transcript) + " Then go on with the turn as you would have."
+        return (
+            f"As this turn's last action, {start_line(session, transcript)}"
+            f" Skip it when, at that point, {SUFFICIENT}."
+        )
     if spent >= wakes:
         return (
             f"{MARK}, last wake ({spent} of {wakes}): the session has idled for hours. Run `/relay`"
@@ -145,7 +162,7 @@ def context(data: Dict[str, Any], wakes: int, session: str, transcript: str) -> 
             " Do not start the watcher again."
         )
     return (
-        f"{MARK}, wake {spent} of {wakes}: this turn exists only to keep the prompt cache warm. "
+        f"{MARK}, wake {spent} of {wakes}: this turn exists only to keep the prompt cache warm, so "
         + start_line(session, transcript)
         + " Then reply in the conversation's language with one line of at most seven words"
         f" saying so (e.g. «🕯 кеш продлён, {spent}/{wakes}»), and nothing else."
