@@ -22,7 +22,7 @@
 #      nothing, and the agent following one reads the surviving file without
 #      the rule it was sent for.
 #
-# Assertions 2-3 skip when the catalog is absent — the normal downstream
+# Assertions 2-3 skip when the catalog index is absent — the normal downstream
 # case, since the catalog describes the source repo and is never vendored. So the
 # same script is useful at every link in the adoption chain. Assertion 4 runs
 # everywhere but changes verdict on the same signal: the catalog's presence is
