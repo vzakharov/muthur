@@ -1,7 +1,7 @@
 Proposed squash title/body:
 
 ```
-refactor: split the update-muthur catalog into an index and parts (pr #163)
+feat: split the update-muthur catalog into an index and parts (pr #163)
 ```
 
 ```
