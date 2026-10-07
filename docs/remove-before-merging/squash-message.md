@@ -12,15 +12,17 @@ report in each and adding the numbers by hand.
 `report.py --all-repos` lists every repository the `gh` user owns,
 collaborates on or reaches through an organization, keeps those whose
 default branch carries a ledger, and prints the usual tables over all
-of them plus a per-repo table. It reads each trunk through GitHub's
-GraphQL API, so it needs no clone and runs the same on a laptop, in a
-cloud session or in a routine. The ledger, not the muthur watermark,
-qualifies a repo; adopters that opted out of it are named in one line.
+of them plus a per-repo table; `--repo owner/name` reads just the named
+ones instead. It reads each trunk through GitHub's GraphQL API, so it
+needs no clone and runs the same on a laptop, in a cloud session or in
+a routine. The ledger, not the muthur watermark, qualifies a repo;
+adopters that opted out of it are named in one line.
 
-A session id found in two repos is counted once, and a row GitHub
-truncates stops the run rather than going missing. Rows are reshaped in
-memory only, the parse split out of `read_row` so the single-repo
-report keeps rewriting its own rows as before.
+A session id found in two repos is counted once, and a GitHub error, a
+truncated row or a named repo without a ledger stops the run rather
+than leaving a total short. Rows are reshaped in memory only, the parse
+split out of `read_row` so the single-repo report keeps rewriting its
+own rows as before.
 
 Co-authored-by: Claude <noreply@anthropic.com>
 ```
