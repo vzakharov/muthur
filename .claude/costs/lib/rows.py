@@ -111,12 +111,19 @@ def parse_session_cost(text: str, where: str = "row") -> SessionCost:
     )
 
 
+def _dumped(obj: Any) -> str:
+    return json.dumps(obj, indent=2, ensure_ascii=False) + "\n"
+
+
 def json_text(value: Any) -> str:
-    return json.dumps(to_json(value), indent=2, ensure_ascii=False) + "\n"
+    return _dumped(to_json(value))
 
 
 def row_text(cost: SessionCost) -> str:
-    return json_text(cost)
+    """`estimate` leads the row, so a pull request's diff of it opens on the one
+    field a person sets."""
+    row = to_json(cost)
+    return _dumped({"estimate": row.pop("estimate"), **row})
 
 
 def write_atomic(out: Path, contents: str) -> None:

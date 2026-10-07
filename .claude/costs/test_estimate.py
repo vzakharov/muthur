@@ -125,6 +125,12 @@ class RowsCarryTheirEstimate(unittest.TestCase):
         row = replace(ROW, estimate=estimate_of("a", Part(1, "junior", "developer"), Part(2, "senior", "copywriter")))
         self.assertEqual(parse_session_cost(json.dumps(to_json(row))), row)
 
+    def test_a_row_is_written_with_its_estimate_first(self) -> None:
+        row = replace(ROW, estimate=estimate_of("a"))
+        written = row_text(row)
+        self.assertEqual(next(iter(json.loads(written))), "estimate")
+        self.assertEqual(parse_session_cost(written), row)
+
     def test_a_row_from_before_estimates_reads_as_having_none(self) -> None:
         row = to_json(ROW)
         del row["estimate"]
