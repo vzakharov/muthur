@@ -1,5 +1,54 @@
 # Cache keepalive: a Stop hook that keeps an idle session's prompt cache warm
 
+## Paused: redesign from an async Stop hook to a background watcher
+
+**Why.** The Stop/`asyncRewake` design below shipped (7b8d1cd…5895be2) and woke
+the session once in a live check, but overnight the container was reclaimed
+7.5 min after the last turn (06:45:14 → SIGTERM 06:52:57, `/tmp/claude-code-*.diag.log`:
+`session_activity_at_shutdown refcount 0`, `bg_tasks: {}`). An async hook does
+not count as session activity; a background Bash task does (relay-1: two
+55-min idles survived with one). The cold-cache guard caught the morning prompt.
+
+**Done (uncommitted design, now committed as WIP).** `keepalive.py` rewritten:
+- `keepalive.py watch <session_id> <transcript>` — the watcher, run as a
+  background Bash task (`run_in_background`, `timeout: 7200000`, description
+  starting `Cache keepalive`). Polls the transcript (mtime-cached) every 30 s,
+  exits 0 at `last response + TTL − lead`, recording `wakes+1`, `fired: true`,
+  `pid: None`. Self-exits at `LIFETIME` 7000 s (under the 2 h Bash cap). Skips
+  firing when the cache already expired. `tmp/keepalive/period` knob kept.
+- `UserPromptSubmit` hook: resets `wakes` unless the prompt carries `MARK`
+  (a task notification and the restart notice carry the task description), and
+  when no watcher is alive (`/proc/<pid>/cmdline`) adds context: start the
+  watcher; or wake k: start it and reply ≤ 7 words; or last wake: relay without
+  a successor, don't restart. The hook was already live in this session and
+  emitted the "start the watcher" context correctly.
+- Verified: a background task's completion notice carries only the exit code
+  and the description, never stdout; `UserPromptSubmit` hooks fire on task
+  notifications too.
+
+**Left.**
+1. **The operator's new condition** (verbatim below): start the watcher only
+   when the repo does not hold enough to continue from a fresh session. Design
+   the predicate: e.g. not at a loop boundary (draft plan just published awaiting
+   `/go`; `/go` done awaiting `/finalize`), no `*.paused.md` plan, and no relay
+   summary newer than the last operator prompt. Where it holds, the hook says
+   nothing and no watcher runs.
+2. `settings.json`: drop the `Stop` entry with `asyncRewake` (the script now
+   ignores `Stop`, so it is inert but dead).
+3. Rewrite `test_keepalive.py` for the watcher + hook (currently tests the old
+   Stop design and will fail).
+4. Rewrite `.claude/keepalive/CLAUDE.md` for the new mechanism.
+5. CLAUDE.md § "Key principles" bans `run_in_background`; the watcher is an
+   exception. CLAUDE.md is edited only through `scripts/staged.sh stage`.
+6. Refresh the PR body and the squash proposal; `/polish`.
+7. Live check with `tmp/keepalive/period`.
+
+Operator, on the condition: «давай так, запускать фоновую задачу только тогда,
+когда сессия не в "готовом к запуску с новой сессии" состоянии, т.е. не на
+границе лупа (типа /plan → /go, /go → finalize) и не с .paused. планом. Грубо
+говоря, запускаем тогда, когда всей имеющейся в репе информации НЕ достаточно
+для продолжения с новой сессии (пример: обсуждали, нигде не зафиксировали)»
+
 ## Goal
 
 An idle web session loses its one-hour prompt cache, and the next prompt pays a
