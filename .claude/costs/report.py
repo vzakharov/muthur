@@ -3,7 +3,7 @@
 have cost at Claude API rates.
 
 Usage:
-  python3 .claude/costs/report.py [--month YYYY-MM] [--json]
+  python3 .claude/costs/report.py [--all-repos | --repo OWNER/NAME ...] [--month YYYY-MM] [--json]
 
 The totals are never written: they are derived from the rows, so the report is
 run when a number is wanted rather than kept on disk going stale. A row in a
@@ -11,6 +11,10 @@ retired shape is rewritten in the current one, and the report says which.
 `--json` prints the whole breakdown for whoever wants to keep one anyway. Rows
 reach the trunk by merge, so a month read there is a month of *merged* work:
 `CLAUDE.md` beside this file carries what that leaves out.
+
+`--all-repos` reads every repository the `gh` user can see whose default
+branch carries a ledger, and `--repo` (repeatable) just the ones named, off
+GitHub rather than this checkout, adding a table by repository.
 
 Stdlib only — Python 3.9+.
 """
@@ -24,7 +28,8 @@ from datetime import date, datetime, timezone
 from pathlib import Path
 from typing import Dict, List, Optional
 
-from lib.estimate import parse_rates
+from lib.estimate import Rates, parse_rates
+from lib.github import REPO, GitHubError, gh_transport, remote_ledger
 from lib.pricing import parse_prices
 from lib.rows import SessionCost, read_row
 from lib.shape import to_json
@@ -36,6 +41,8 @@ from lib.totals import (
     Rate,
     Spread,
     TelemetrySummary,
+    Totals,
+    by_repo,
     totals_of,
 )
 
@@ -164,25 +171,64 @@ def effort(summary: EffortSummary) -> None:
     rate_table("per senior-hour by model", summary.by_model_month)
 
 
-def main() -> int:
-    parser = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
-    parser.add_argument("--month", help="YYYY-MM")
-    parser.add_argument("--json", action="store_true")
-    args = parser.parse_args()
+def repo_name(value: str) -> str:
+    if not REPO.fullmatch(value):
+        raise argparse.ArgumentTypeError(f"{value!r} is not OWNER/NAME")
+    return value
 
+
+def this_repo(month: Optional[str], as_json: bool, rates: Rates) -> int:
     months = sorted(p for p in SESSIONS.iterdir() if p.is_dir()) if SESSIONS.is_dir() else []
-    shown = [m for m in months if args.month is None or m.name == args.month]
+    shown = [m for m in months if month is None or m.name == month]
     if not shown:
-        print(f"costs: no rows under {SESSIONS}{'' if args.month is None else f' for {args.month}'}")
+        print(f"costs: no rows under {SESSIONS}{'' if month is None else f' for {month}'}")
         return 0
 
-    rows = [row for month in shown for row in rows_in(month)]
-    totals = totals_of(rows, parse_rates((COSTS / "rates.json").read_text(encoding="utf-8")))
-
-    if args.json:
+    rows = [row for shown_month in shown for row in rows_in(shown_month)]
+    totals = totals_of(rows, rates)
+    if as_json:
         print(json.dumps(to_json(totals), indent=2, ensure_ascii=False))
         return 0
+    report(rows, totals)
+    return 0
 
+
+def across_repos(only: Optional[List[str]], month: Optional[str], as_json: bool, rates: Rates) -> int:
+    ledger = remote_ledger(gh_transport, only, month)
+    rows = ledger.rows
+    totals = totals_of(rows, rates, ledger.repo_of)
+    repos = by_repo(rows, ledger.repo_of)
+    if as_json:
+        print(
+            json.dumps(
+                {
+                    **to_json(totals),
+                    "repos": [
+                        {**to_json(repo), **to_json(repos.get(repo.name, Bucket()))}
+                        for repo in ledger.repos
+                    ],
+                    "withoutLedger": ledger.without_ledger,
+                },
+                indent=2,
+                ensure_ascii=False,
+            )
+        )
+        return 0
+
+    for repo in ledger.repos:
+        for warning in repo.warnings:
+            print(f"{repo.name}: {warning}")
+    if ledger.without_ledger:
+        print(f"muthur, no ledger: {', '.join(ledger.without_ledger)}")
+    if not rows:
+        print(f"costs: no rows in {count(ledger.seen, 'repo')}{'' if month is None else f' for {month}'}")
+        return 0
+    table("repo", repos)
+    report(rows, totals)
+    return 0
+
+
+def report(rows: List[SessionCost], totals: Totals) -> None:
     # Every grain prints: the month is the bill, the week the trend, the day
     # which session did it.
     for title, buckets in (
@@ -234,7 +280,37 @@ def main() -> int:
     unchecked = sum(1 for row in rows if row.claude_code_total_usd is None)
     if unchecked:
         print(f"{count(unchecked, 'row')} with no Claude Code total to check against")
-    return 0
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
+    scope = parser.add_mutually_exclusive_group()
+    scope.add_argument(
+        "--all-repos",
+        action="store_true",
+        help="every repo the gh user can see whose default branch has a ledger",
+    )
+    scope.add_argument(
+        "--repo",
+        action="append",
+        type=repo_name,
+        metavar="OWNER/NAME",
+        help="this repo's ledger on GitHub; repeatable",
+    )
+    parser.add_argument("--month", help="YYYY-MM")
+    parser.add_argument("--json", action="store_true")
+    args = parser.parse_args()
+
+    rates = parse_rates((COSTS / "rates.json").read_text(encoding="utf-8"))
+    if not (args.all_repos or args.repo):
+        return this_repo(args.month, args.json, rates)
+    try:
+        return across_repos(
+            None if args.all_repos else list(dict.fromkeys(args.repo)), args.month, args.json, rates
+        )
+    except GitHubError as error:
+        print(f"costs: {error}", file=sys.stderr)
+        return 1
 
 
 if __name__ == "__main__":
