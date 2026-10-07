@@ -47,9 +47,10 @@ class HookCase(unittest.TestCase):
     def wakes(self) -> int:
         return json.loads((self.state / "sess.json").read_text())["wakes"]
 
-    def start(self, event: str, env: Optional[Dict[str, str]] = None) -> "subprocess.Popen[str]":
+    def start(self, event: str, env: Optional[Dict[str, str]] = None, prompt: str = "carry on") -> "subprocess.Popen[str]":
         body: Dict[str, Any] = {
             "hook_event_name": event,
+            "prompt": prompt,
             "session_id": "sess",
             "transcript_path": str(self.transcript),
         }
@@ -69,8 +70,8 @@ class HookCase(unittest.TestCase):
         _, err = proc.communicate(timeout=30)
         return proc.returncode, err
 
-    def run_hook(self, event: str, env: Optional[Dict[str, str]] = None) -> "tuple[int, str]":
-        return self.finish(self.start(event, env))
+    def run_hook(self, event: str, env: Optional[Dict[str, str]] = None, prompt: str = "carry on") -> "tuple[int, str]":
+        return self.finish(self.start(event, env, prompt))
 
 
 class WhenTheSessionGoesIdle(HookCase):
@@ -101,6 +102,13 @@ class WhenTheSessionGoesIdle(HookCase):
             self.run_hook("Stop")
         self.run_hook("UserPromptSubmit")
         self.assertIn("wake 1 of 5", self.run_hook("Stop")[1])
+
+    def test_the_wake_reaching_user_prompt_submit_keeps_the_count(self) -> None:
+        self.session(ago=1)
+        self.knob(0)
+        _, err = self.run_hook("Stop")
+        self.run_hook("UserPromptSubmit", prompt=f"Stop hook blocking error from command \"Stop\": {err}")
+        self.assertIn("wake 2 of 5", self.run_hook("Stop")[1])
 
     def test_the_wake_count_is_configurable(self) -> None:
         self.session(ago=1)

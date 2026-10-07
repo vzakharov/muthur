@@ -27,6 +27,7 @@ from lib.restart import TTL_1H, epoch, read_history
 WAKE = 2
 DEFAULT_WAKES = 5
 DEFAULT_LEAD = 300
+MARK = "Cache keepalive, "
 
 
 @dataclass(frozen=True)
@@ -59,13 +60,13 @@ class State:
 def message(wake: int, wakes: int, idle_minutes: int) -> str:
     if wake < wakes:
         return (
-            f"Cache keepalive, wake {wake} of {wakes}: the session has been idle about"
+            f"{MARK}wake {wake} of {wakes}: the session has been idle about"
             f" {idle_minutes} min, and this turn exists only to keep its prompt cache warm."
             " Reply with one short line in the conversation's language saying so"
             f" (e.g. «🕯 кеш продлён, {wake}/{wakes}»), and nothing else: no tools."
         )
     return (
-        f"Cache keepalive, last wake ({wake} of {wakes}): the session has been idle about"
+        f"{MARK}last wake ({wake} of {wakes}): the session has been idle about"
         f" {idle_minutes} min. Run `/relay` per `.claude/skills/relay/SKILL.md`"
         " § \"Without a successor\": commit the summary, start no session, and end the"
         " reply with the `/relay take <branch>` line. The cache stays warm about an hour"
@@ -110,7 +111,11 @@ def on_stop(state: State, transcript: Path, wakes: int, lead: int) -> int:
     return WAKE
 
 
-def on_prompt(state: State) -> None:
+def on_prompt(state: State, prompt: str) -> None:
+    # A wake reaches `UserPromptSubmit` too, carrying its own instruction, and
+    # resetting on it would never let the spell end.
+    if MARK in prompt:
+        return
     if state.file.exists():
         state.write({"wakes": 0, "token": None})
 
@@ -143,7 +148,7 @@ def main() -> int:
     if kind == "Stop":
         return on_stop(state, Path(event.get("transcript_path") or ""), wakes, lead)
     if kind == "UserPromptSubmit":
-        on_prompt(state)
+        on_prompt(state, event.get("prompt") or "")
     return 0
 
 
