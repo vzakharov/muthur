@@ -251,8 +251,9 @@ above. Verdicts:
 | **skip (not adopted)** | The path is in `declined` **and its recorded reason still holds** — if it doesn't, re-offer the path per Step 4a and move it to `adopted` if taken. Or the path is in neither list, which is Step 4a's other case. Never skip silently on either. |
 | **skip (diverged locally)** | This repo rewrote the file for its own stack — `scripts/vet.sh`, the watermark, anything the source marks `rewrite`. The source's edit is advice at best; read it for an idea, don't port it. |
 
-**A subject marked `[attn adopters]` — or `ADOPTERS, read body`, the spelling
-older commits carry — addresses this repo whatever its verdict.** Its body's
+**A subject marked `[attn adopters]` — or, in older commits, any prose to the
+same effect, such as `ADOPTERS, read body` — addresses this repo whatever its
+verdict.** Its body's
 `Adopters:` paragraph asks for something no port does
 (`@.claude/skills/squash-message/SKILL.md` defines the marker), so a skipped
 commit still delivers it. A sweep inside this tree rides the sync like a port
