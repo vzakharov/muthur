@@ -18,13 +18,15 @@ the chapter, and /detemplate asks it among its plan questions and posts
 it as its last step, carrying the text in its plan since the chapter is
 deleted before that plan runs.
 
-A squash title marked [attn adopters] offers adopters an action
-their sync's port does not perform by itself. /squash-message defines
-the marker and the body paragraph it points at; /update-muthur puts a
-marked commit's offer to the operator once, whatever the commit's
-triage verdict.
+The "ADOPTERS, read body" that pr #99 and pr #145 wrote ad hoc becomes
+a convention, shortened to [attn adopters]: a squash title carrying it
+asks syncing repos for something their port does not do — a sweep of
+their own tree, which rides the sync, or an ask reaching outside it,
+which waits on their operator's yes. /squash-message defines it;
+/update-muthur delivers it whatever the commit's triage verdict and
+reads the older spelling too.
 
-Adopters: this commit is the first marked one. Ask your operator, once,
+Adopters: ask your operator, once,
 whether to post a hello as described in
 https://github.com/vzakharov/muthur/blob/main/docs/adopting/hello.md
 and post only on a yes. A no, or no answer, is final.
