@@ -376,8 +376,10 @@ On yes, one of two shapes:
   says so.
 - **New session** — anything larger. `scripts/muthur-sync.sh claim` first, so
   nobody takes the lock while the session starts. Then, where `create_session`
-  exists, spawn one on this repo with the prompt `/update-muthur claimed`;
-  elsewhere, hand the operator that command to paste into one.
+  exists, spawn one on this repo with the prompt `/update-muthur claimed` and
+  the title `🔄 muthur → <repo>`, `<repo>` being this repo's name without its
+  owner: an operator syncing several adopters otherwise gets a session list of
+  identical titles. Elsewhere, hand the operator that command to paste into one.
 
 ## Add what the next sync teaches you
 
