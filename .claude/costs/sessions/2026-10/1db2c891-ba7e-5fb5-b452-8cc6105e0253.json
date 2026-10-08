@@ -21,32 +21,34 @@
   "branch": "claude/denial-phrase-upfront-e6z8sm",
   "cwd": "/home/user/muthur",
   "openingPrompt": "хук выполняется слишком поздно, и агенты начинают паниковать. надо где-то на более раннем/общем уровне им прописать: \"не бойтесь блоков автомода, ждите хука кот…",
-  "prs": [],
+  "prs": [
+    169
+  ],
   "url": "https://claude.ai/code/session_019zZCMhnHzc2JATJW3D4erH",
   "operator": "vzakharov",
   "firstResponseAt": "2026-10-08T14:21:57.402Z",
-  "lastResponseAt": "2026-10-08T18:09:57.656Z",
+  "lastResponseAt": "2026-10-08T18:12:16.265Z",
   "pricesAsOf": "2026-10-06",
   "claudeCodeTotalUsd": 1.225191,
   "total": {
-    "inputTokens": 64,
+    "inputTokens": 92,
     "cacheWrite5mTokens": 0,
-    "cacheWrite1hTokens": 161351,
-    "cacheReadTokens": 3448717,
-    "outputTokens": 15956,
-    "thinkingTokens": 5689,
-    "responses": 32,
-    "costUsd": 2.2999274000000005
+    "cacheWrite1hTokens": 189243,
+    "cacheReadTokens": 5598060,
+    "outputTokens": 21808,
+    "thinkingTokens": 7287,
+    "responses": 46,
+    "costUsd": 3.0700840000000005
   },
   "ownTurns": {
-    "inputTokens": 64,
+    "inputTokens": 92,
     "cacheWrite5mTokens": 0,
-    "cacheWrite1hTokens": 161351,
-    "cacheReadTokens": 3448717,
-    "outputTokens": 15956,
-    "thinkingTokens": 5689,
-    "responses": 32,
-    "costUsd": 2.2999274000000005
+    "cacheWrite1hTokens": 189243,
+    "cacheReadTokens": 5598060,
+    "outputTokens": 21808,
+    "thinkingTokens": 7287,
+    "responses": 46,
+    "costUsd": 3.0700840000000005
   },
   "subagents": {
     "inputTokens": 0,
@@ -60,14 +62,14 @@
   },
   "byRate": {
     "claude-opus-5-5/standard": {
-      "inputTokens": 64,
+      "inputTokens": 92,
       "cacheWrite5mTokens": 0,
-      "cacheWrite1hTokens": 161351,
-      "cacheReadTokens": 3448717,
-      "outputTokens": 15956,
-      "thinkingTokens": 5689,
-      "responses": 32,
-      "costUsd": 2.2999274000000005
+      "cacheWrite1hTokens": 189243,
+      "cacheReadTokens": 5598060,
+      "outputTokens": 21808,
+      "thinkingTokens": 7287,
+      "responses": 46,
+      "costUsd": 3.0700840000000005
     }
   },
   "warnings": [],
