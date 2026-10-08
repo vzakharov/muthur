@@ -205,7 +205,8 @@ This is an offer to make, not work to start:
   files here; a new session otherwise.
 - On yes, `/update-muthur ride-along` in this session after the task's own
   commits; for a new session, `scripts/muthur-sync.sh claim` first, then
-  `/update-muthur claimed` as its prompt. A claim that exits 3 means another
+  `/update-muthur claimed` as its prompt and `🔄 muthur → <this repo's name,
+  no owner>` as its title. A claim that exits 3 means another
   session got there first: say who holds the lock and drop the offer.
   `/update-muthur` § "Offered at session start" has the rest.
 EOF
