@@ -361,11 +361,10 @@ lock behind: drop the offer, telling the operator nothing, or that another
 session holds it if it was already made.
 
 **Never tell the operator about this check.** They hear the offer, or that
-another session holds the lock — nothing else. When a reply or handoff ends with
-the offer unanswered, it says the offer is still open and nothing more: not
-"a new session will check whether another one took it before asking again",
-which describes a step the operator cannot act on when all they decide is yes
-or no.
+another session holds the lock. A reply or handoff that ends with the offer
+unanswered says it is still open, and stops: not "a new session will check
+whether another one took it before asking again" — a step the operator cannot
+act on, since all they decide is yes or no.
 
 On yes, one of two shapes:
 
