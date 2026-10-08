@@ -101,17 +101,17 @@ web/remote (G4); whether the project will have a deploy path, a visual surface,
 deployed logs, a production datastore, or sequential numbered migrations — the
 five that decide the individual G6 rows; the language decision; one question
 per catalog row marked `opt-in: ask`, each asked with the cost its row states;
-and the hello.
+and the hello. A fork carries every `opt-in: ask` row wired on, so a no deletes
+the row's path, its `.claude/settings.json` entries and its `scripts/vet.sh`
+loop. The ledger's yes changes the tree too: it empties
+`.claude/costs/sessions/` of this template's own rows.
 
 **The hello is asked by `docs/adopting/hello.md`, read now**, since Step 5.2
 deletes it before the plan runs: the question shows the drafted post word for
 word, written to that chapter's rule for this fork's visibility. The plan is
 written with *not posting* in force rather than a recommendation, since consent
 is not the agent's to assume — so an unanswered question executes as a no and
-holds back nothing else. A fork carries every such row wired on, so a no deletes the row's path,
-its `.claude/settings.json` entries and its `scripts/vet.sh` loop. The ledger's
-yes changes the tree too: it empties `.claude/costs/sessions/` of this template's
-own rows.
+holds back nothing else.
 
 **Language is the one question with evidence in hand**, so read it before asking:
 the language the brief is written in, the language the operator writes to the
