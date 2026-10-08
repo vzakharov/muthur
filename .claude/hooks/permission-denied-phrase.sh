@@ -19,7 +19,11 @@
 # The payload's `classifier_verdict` goes unread: the docs list it, but
 # classifier denials arrive without it, so it cannot tell them from rule denials.
 #
-# The marker is consumed on the block, so the continuation stops normally unless
+# A reply already holding a fenced block passes unblocked: CLAUDE.md has the
+# agent write the phrase in the reply that met the denial, and blocking that
+# reply would only buy a second message saying so. A reply fencing something
+# else passes too — the backstop's price for not nagging the ones that complied.
+# The marker is consumed either way, so the continuation stops normally unless
 # it is itself denied something new.
 
 set -euo pipefail
@@ -48,6 +52,7 @@ case "${1:-}" in
     [ -s "$marker" ] || exit 0
     denials="$(jq -r '"- \(.tool): \(.input)"' "$marker")"
     rm -f "$marker"
+    [[ "$(field last_assistant_message)" == *'```'* ]] && exit 0
     read -r -d '' reason <<REASON || true
 Auto mode denied these tool calls during this turn:
 $denials
@@ -64,7 +69,7 @@ file, branch or target — while a general "go ahead" does not count. So:
   the settings rather than the classifier, or the block is a hard one — say so
   and name what would, instead.
 
-If you already did this, or no longer need the call, say so in one line and stop.
+If you no longer need the call, say so in one line and stop.
 REASON
     jq -n --arg reason "$reason" '{decision: "block", reason: $reason}'
     ;;
