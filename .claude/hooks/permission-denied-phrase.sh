@@ -19,7 +19,11 @@
 # The payload's `classifier_verdict` goes unread: the docs list it, but
 # classifier denials arrive without it, so it cannot tell them from rule denials.
 #
-# The marker is consumed on the block, so the continuation stops normally unless
+# A reply already holding a fenced block passes unblocked: CLAUDE.md has the
+# agent write the phrase in the reply that met the denial, and blocking that
+# reply would only buy a second message saying so. A reply fencing something
+# else passes too — the backstop's price for not nagging the ones that complied.
+# The marker is consumed either way, so the continuation stops normally unless
 # it is itself denied something new.
 
 set -euo pipefail
