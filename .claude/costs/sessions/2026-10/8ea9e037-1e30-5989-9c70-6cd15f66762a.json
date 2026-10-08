@@ -1,0 +1,88 @@
+{
+  "estimate": {
+    "at": "2026-10-08T07:06:04.173Z",
+    "parts": [
+      {
+        "hours": 0.5,
+        "grade": "middle",
+        "role": "prompter",
+        "comment": "one rule added to a skill and the nudge text it mirrors; the judgement is only where the title must appear so an agent acting on either path sets it"
+      }
+    ],
+    "comment": null
+  },
+  "sessionId": "8ea9e037-1e30-5989-9c70-6cd15f66762a",
+  "branch": "claude/sync-session-title-fwmzfe",
+  "cwd": "/home/user/muthur",
+  "openingPrompt": "давай посоветуем адоптерам при синхронизации инфры из новой сессии (если оператор подтверждает предложение) указывать название *их* репы в названии релейной сес…",
+  "prs": [
+    165
+  ],
+  "url": "https://claude.ai/code/session_01KfbahGxWgYUyW8upXvCRp9",
+  "operator": "vzakharov",
+  "firstResponseAt": "2026-10-08T07:04:06.339Z",
+  "lastResponseAt": "2026-10-08T07:06:10.917Z",
+  "pricesAsOf": "2026-10-06",
+  "claudeCodeTotalUsd": null,
+  "total": {
+    "inputTokens": 58,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 79789,
+    "cacheReadTokens": 2934958,
+    "outputTokens": 9754,
+    "thinkingTokens": 1840,
+    "responses": 29,
+    "costUsd": 1.4206156
+  },
+  "ownTurns": {
+    "inputTokens": 58,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 79789,
+    "cacheReadTokens": 2934958,
+    "outputTokens": 9754,
+    "thinkingTokens": 1840,
+    "responses": 29,
+    "costUsd": 1.4206156
+  },
+  "subagents": {
+    "inputTokens": 0,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 0,
+    "cacheReadTokens": 0,
+    "outputTokens": 0,
+    "thinkingTokens": 0,
+    "responses": 0,
+    "costUsd": 0.0
+  },
+  "byRate": {
+    "claude-opus-5-5/standard": {
+      "inputTokens": 58,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 79789,
+      "cacheReadTokens": 2934958,
+      "outputTokens": 9754,
+      "thinkingTokens": 1840,
+      "responses": 29,
+      "costUsd": 1.4206156
+    }
+  },
+  "warnings": [],
+  "orientation": {
+    "endedBy": "Edit",
+    "endedOn": ".claude/skills/update-muthur/SKILL.md",
+    "endedAt": "2026-10-08T07:04:31.590Z",
+    "contextTokens": 97281,
+    "spend": {
+      "inputTokens": 16,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 52320,
+      "cacheReadTokens": 673690,
+      "outputTokens": 1958,
+      "thinkingTokens": 668,
+      "responses": 8,
+      "costUsd": 0.592522
+    }
+  },
+  "compactions": [],
+  "telemetry": null
+}
