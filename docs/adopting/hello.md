@@ -11,8 +11,8 @@
 muthur keeps a public thread where adopters say who they are and what they use it
 for: **[vzakharov/muthur#168](https://github.com/vzakharov/muthur/issues/168)**.
 You are here because an adoption — [`ADOPTING.md`](../../ADOPTING.md)'s shared
-tail, a template fork's `/detemplate` — or a sync commit marked `[ADOPTERS, read
-body]` sent you to offer your operator a post there.
+tail, a template fork's `/detemplate` — or a sync commit marked `[attn adopters]`
+sent you to offer your operator a post there.
 
 ## Ask once, showing the exact text
 

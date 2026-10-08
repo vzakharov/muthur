@@ -62,17 +62,17 @@ trees that have never seen it. It says:
 - **`README.md`** — one line under § "Getting it": using it? say hello in
   `#<N>`, or let your agent offer to.
 
-### 4. The convention: `[ADOPTERS, read body]`
+### 4. The convention: `[attn adopters]`
 
 **Writing side — `/squash-message` § format rules, title bullet.** A change that
 offers adopters an action their sync's port doesn't perform by itself — a hello,
 a setting only the operator can flip, a one-off migration of adopter-side state —
-carries `[ADOPTERS, read body]` right after the type's colon:
-`feat: [ADOPTERS, read body] #<issue> <essence> (pr #<n>)`. The body gives the
+carries `[attn adopters]` right after the type's colon:
+`feat: [attn adopters] #<issue> <essence> (pr #<n>)`. The body gives the
 offer its own paragraph, addressed to the adopter's agent: what to offer, that
 it waits on the operator's yes, and a URL into the source for anything the
 adopter's tree may not have yet. Not for a change that is merely worth porting —
-the sync's triage already reads every commit. The 22 characters come out of the
+the sync's triage already reads every commit. The 16 characters come out of the
 80-char title cap; `scripts/check-squash-message.sh` needs no change.
 
 **Reading side — `/update-muthur` Step 4.** A subject carrying the marker
@@ -88,20 +88,20 @@ adopter sees the marker at session start without any change there.
 Its title carries the marker, and its body's adopter paragraph asks an existing
 adopter's agent to offer the hello per the chapter's URL. That is the whole
 after-the-fact path for adopters who already took muthur — including ones whose
-`/update-muthur` predates the marker, since a shouted title reads plainly to any
-agent triaging from commit messages first.
+`/update-muthur` predates the marker, since `[attn adopters]` reads plainly to
+any agent triaging from commit messages first.
 
 ## Out of scope
 
 `/spinoff`: the sibling is born from a repo whose operator already got the offer
-at their own adoption. See question 2.
+at their own adoption. See the open question.
+
+The marker was first `[ADOPTERS, read body]`; the operator shortened it to
+`[attn adopters]`, the convention itself telling agents what it means.
 
 ## Open questions
 
-1. **Marker form.** (a, recommended) `[ADOPTERS, read body]` right after the
-   type — a greppable token that survives `--oneline` truncation; (b) the bare
-   phrase as a title suffix after `(pr #N)`.
-2. **Spinoff.** (a, recommended) no hello at spinoff — same operator, already
+1. **Spinoff.** (a, recommended) no hello at spinoff — same operator, already
    asked; (b) offer it too, a spinoff being a new "what for".
 
 ## DRY notes

@@ -1,7 +1,7 @@
 Proposed squash title/body:
 
 ```
-feat: [ADOPTERS, read body] a welcome thread for adopters (pr #167)
+feat: [attn adopters] a welcome thread for adopters (pr #167)
 ```
 
 ```
@@ -18,7 +18,7 @@ the chapter, and /detemplate asks it among its plan questions and posts
 it as its last step, carrying the text in its plan since the chapter is
 deleted before that plan runs.
 
-A squash title marked [ADOPTERS, read body] offers adopters an action
+A squash title marked [attn adopters] offers adopters an action
 their sync's port does not perform by itself. /squash-message defines
 the marker and the body paragraph it points at; /update-muthur puts a
 marked commit's offer to the operator once, whatever the commit's
