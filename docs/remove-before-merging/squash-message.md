@@ -1,7 +1,7 @@
 Proposed squash title/body:
 
 ```
-feat: hand over the denial phrase in the reply that meets it (pr #169)
+fix: hand over the denial phrase in the reply that meets it (pr #169)
 ```
 
 ```
