@@ -13,9 +13,10 @@ own plumbing.
 
 The nudge's offer rules and update-muthur's "Offered at session start"
 now make the offer once and never bring it up again: not repeated,
-reminded of or called still open in a reply, a handoff report or a relay
-summary, declined or unanswered alike. The lock re-check runs only
-before the first offer, and drops it silently.
+reminded of or called still open in a reply or a handoff report,
+declined or unanswered alike. Once spans a relay chain: the summary
+tells the next session the offer was made, and it makes none. The lock
+re-check runs only before the first offer, and drops it silently.
 
 Co-authored-by: Claude <noreply@anthropic.com>
 ```
