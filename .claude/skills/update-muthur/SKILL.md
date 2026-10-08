@@ -253,8 +253,7 @@ above. Verdicts:
 
 **A subject marked `[attn adopters]` — or, in older commits, any prose to the
 same effect, such as `ADOPTERS, read body` — addresses this repo whatever its
-verdict.** Its body's
-`Adopters:` paragraph asks for something no port does
+verdict.** Its body's `Adopters:` paragraph asks for something no port does
 (`@.claude/skills/squash-message/SKILL.md` defines the marker), so a skipped
 commit still delivers it. A sweep inside this tree rides the sync like a port
 and is reported with it. What the paragraph gates on the operator goes to them
