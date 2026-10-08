@@ -115,6 +115,7 @@ class WhenAnOperatorPromptArrives(HookCase):
             self.assertIn("watcher is running", out)
             self.assertIn("TaskStop", out)
             self.assertIn("asks to stop the keepalive", out)
+            self.assertIn("asks to park the session", out)
         finally:
             watcher.kill()
             watcher.communicate()
@@ -137,8 +138,9 @@ class WhenTheWatcherWakesTheSession(HookCase):
         out, _ = self.prompt(self.notice())
         self.assertIn("wake 1 of 5", out)
         self.assertIn("one line and nothing else", out)
-        self.assertIn("`/relay park` to record", out)
-        self.assertIn("a stop word to just stop", out)
+        self.assertIn("plain words, no command names", out)
+        self.assertIn("a word to park the session", out)
+        self.assertIn("a word to just stop", out)
         self.assertIn("start the cache keepalive's watcher", out)
 
     def test_the_fifth_wake_parks_the_session_and_starts_nothing(self) -> None:

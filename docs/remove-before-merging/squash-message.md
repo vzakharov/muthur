@@ -16,10 +16,10 @@ resume from. It replaces the relay's "Without a successor" subsection,
 which the keepalive's last wake already ran the same way, so the last
 wake now runs /relay park by name.
 
-Each keepalive wake is still one line, now carrying both answers that
-end the idle spell: /relay park to record and stop extending, a stop
-word to just stop. The hook tells the agent to stop a running watcher,
-or start none, when the operator asks the keepalive to stop.
+Each keepalive wake is still one line, now offering in plain words the
+two answers that end the idle spell: one to park the session, one to
+just stop. The hook maps either answer back for the agent, running
+/relay park or stopping the watcher.
 
 Co-authored-by: Claude <noreply@anthropic.com>
 ```

@@ -9,8 +9,8 @@ description: >-
   summary and starts no session, for an operator coming back later. Use when
   the operator says "/relay", "relay the session", "hand this to a new
   session", or takes up the `/relay` the context budget notice offers — and
-  `park` for "park it", "record it but don't hand over", or the answer a cache
-  keepalive line offers.
+  `park` for "park it", "запаркуй", "record it but don't hand over", in any
+  words.
 ---
 
 A relay is `/compact` done in the open. The summary is written as an ordinary turn — its tokens priced like any other, its text a file the operator can read — and a new session, the **successor**, starts from it. The branch already holds the plan, the commits and the PR, and the successor re-reads them from disk, so the summary carries only what the tree does not.

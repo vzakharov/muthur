@@ -141,13 +141,17 @@ SUFFICIENT = (
 )
 
 
-STOP ="the operator's message asks to stop the keepalive (\"стоп\", \"stop\", in any words)"
+STOP = "the operator's message asks to stop the keepalive (\"стоп\", \"stop\", in any words)"
+PARK = (
+    "If the operator's message asks to park the session (\"запаркуй\", \"park it\", in any words),"
+    " run `/relay park` per `.claude/skills/relay/SKILL.md`."
+)
 
 
 def context(data: Dict[str, Any], wakes: int, session: str, transcript: str) -> Optional[str]:
     if running(data.get("pid")):
         return (
-            f"A {MARK.lower()} watcher is running. If {STOP}, or if, as this turn ends, {SUFFICIENT},"
+            f"A {MARK.lower()} watcher is running. {PARK} If {STOP}, or if, as this turn ends, {SUFFICIENT},"
             " stop it with TaskStop (its id is in the Bash result that started it)."
         )
     spent = int(data.get("wakes", 0))
@@ -167,10 +171,10 @@ def context(data: Dict[str, Any], wakes: int, session: str, transcript: str) -> 
         f"{MARK}, wake {spent} of {wakes}: this turn exists only to keep the prompt cache warm, so "
         + start_line(session, transcript)
         + " Then reply in the conversation's language with one line and nothing else: the cache"
-        " extended, which wake of how many, and the two answers — `/relay park` to record the"
-        " session and stop extending it, a stop word to just stop"
-        f" (e.g. «🕯 кеш продлён {spent}/{wakes} · `/relay park` — зафиксировать и не продлевать"
-        " · «стоп» — просто остановить»)."
+        " extended, which wake of how many, and the two answers in plain words, no command names —"
+        " a word to park the session (record it and stop extending) and a word to just stop"
+        f" (e.g. «🕯 кеш продлён {spent}/{wakes} · скажи «запаркуй», чтобы зафиксировать и не"
+        " продлевать, или «стоп», чтобы просто остановить»)."
     )
 
 

@@ -19,8 +19,9 @@ conversation at about 40 times what a cache read costs.
   stopping one wakes nothing.
 - **Every wake is one visible line.** The harness rejects a turn with no visible
   output and forces a second request, so the instruction asks for one line
-  rather than silence — and spends it on the two answers that end the spell:
-  `/relay park` to record the session and stop, a stop word to just stop.
+  rather than silence — and spends it on the two answers that end the spell,
+  in plain words an operator types without knowing the loop: one parks the
+  session (`/relay park`), one just stops. The hook maps both back.
 - **`CACHE_KEEPALIVE_WAKES` (default 5) wakes per idle spell**, which an
   operator prompt resets. The last runs `/relay park`
   (`@.claude/skills/relay/SKILL.md`): a branch idle for hours can wait, and the
