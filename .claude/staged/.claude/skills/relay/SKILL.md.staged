@@ -5,12 +5,12 @@ description: >-
   stop. Invoke as `/relay [<to-be first message>]`, the argument being what
   the operator would type first after a compact, a skill in it named bare
   (`/relay go`, `/relay handle`);
-  the new session runs `/relay take <branch>`. `/relay park` writes the same
+  the new session runs `/relay take <branch>`. `/relay park` writes the
   summary and starts no session, for an operator coming back later. Use when
   the operator says "/relay", "relay the session", "hand this to a new
-  session", or takes up the `/relay` the context budget notice offers; and
-  `park` when they say "park it", "record it in a relay but don't hand over",
-  or answer a cache keepalive line with it.
+  session", or takes up the `/relay` the context budget notice offers — and
+  `park` for "park it", "record it but don't hand over", or the answer a cache
+  keepalive line offers.
 ---
 
 A relay is `/compact` done in the open. The summary is written as an ordinary turn — its tokens priced like any other, its text a file the operator can read — and a new session, the **successor**, starts from it. The branch already holds the plan, the commits and the PR, and the successor re-reads them from disk, so the summary carries only what the tree does not.
@@ -75,7 +75,7 @@ For an operator who will come back to the work later, not now: a successor start
 
 Steps 1–2 as the handoff runs them, the argument becoming the Next step the same way; then no Step 3. The report gives the line the operator starts a new session with — `/relay take <branch>` in a fenced block holding only it — and the summary's size as Step 4 gives it.
 
-A parked session keeps no keepalive: `TaskStop` its running watcher and start none, since the committed summary is the loop boundary the keepalive's hook stops at.
+A parked session keeps no keepalive: `TaskStop` a running watcher and start none.
 
 ## The predecessor's transcript
 
