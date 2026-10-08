@@ -230,6 +230,7 @@ class LargeReview(unittest.TestCase):
         self.assertNotIn("Large review", section(comments=waiting_comments(20)))
         out = section(comments=waiting_comments(21))
         self.assertRegex(out, r"Large review: [\d,]+ lines, ~[\d,]+ tokens, 21 awaiting")
+        self.assertIn("executors grouped by topic", out)
 
     def test_a_large_file_warns_whatever_the_row_count(self) -> None:
         out = section(comments=waiting_comments(1), rest=LARGE_FILE)

@@ -46,10 +46,11 @@ HEADING = "## Awaiting an answer"
 # comment and review body — their identities.
 _POST_ID = re.compile(r"#((?:issuecomment|pullrequestreview)-\d+)")
 
-# Either alone makes a review large: more rows than one session works through
-# beside their edits, or one read of the export taking more than this share of
-# the context budget's warning line.
-LARGE_ROW_COUNT = 20
+# Either alone makes a review large. The count is of posts awaiting an answer
+# and measures the work rather than the export: each costs a read of the files
+# it is about, the edit and the reply. The share is of the context budget's
+# warning line that one read of the export may take.
+LARGE_AWAITING_COUNT = 20
 LARGE_SHARE_OF_WARN_LINE = 1 / 5
 CHARS_PER_TOKEN = 4
 
@@ -127,20 +128,20 @@ def awaiting_section(
     return "\n".join([*heading, *_large_review_warning(len(rows), size, warn_line), *body])
 
 
-def _large_review_warning(rows: int, size: ExportSize, warn_line: int) -> list[str]:
-    """Empty when no row awaits, however large the file: there is nothing to
-    batch. No line may be `---`, where `/handle`'s hook stops lifting the
+def _large_review_warning(awaiting: int, size: ExportSize, warn_line: int) -> list[str]:
+    """Empty when nothing awaits, however large the file: there is nothing to
+    hand out. No line may be `---`, where `/handle`'s hook stops lifting the
     verdict out of the file."""
     tokens = size.chars // CHARS_PER_TOKEN
-    large = rows > LARGE_ROW_COUNT or tokens > warn_line * LARGE_SHARE_OF_WARN_LINE
-    if not (rows and large):
+    large = awaiting > LARGE_AWAITING_COUNT or tokens > warn_line * LARGE_SHARE_OF_WARN_LINE
+    if not (awaiting and large):
         return []
     return [
-        f"> **Large review: {size.lines:,} lines, ~{tokens:,} tokens, {rows} "
-        "awaiting.** Do not read this file whole. Batch the rows below — by "
-        "file, or by kind: code, content, questions — and hand each batch to a "
-        "subagent with its anchors and this file's path, keeping this session "
-        "for the edits, commits and replies. `/handle` Step 2 says how.",
+        f"> **Large review: {size.lines:,} lines, ~{tokens:,} tokens, {awaiting} "
+        "awaiting.** Do not read this file whole. Hand the posts below to "
+        "subagents — readers in batches, then executors grouped by topic from "
+        "what the readers return — keeping this session for the commits and "
+        "replies. `/handle` Step 2 says how.",
         "",
     ]
 
