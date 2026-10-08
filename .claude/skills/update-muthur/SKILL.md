@@ -389,9 +389,8 @@ On yes, one of two shapes:
   the title `🔄 muthur → <repo>`, `<repo>` being this repo's name without its
   owner: an operator syncing several adopters otherwise gets a session list of
   identical titles. Then `scripts/muthur-sync.sh handover <its session id>`,
-  because the claim named this session, which is not the one syncing: the
-  lock's `Session:` becomes the new session's link, and this one is kept as
-  `Spawned-By:`. Elsewhere, hand the operator that command to paste into one.
+  so the lock names the session doing the sync rather than this one. Elsewhere,
+  hand the operator `/update-muthur claimed` to paste into one.
 
 ## Add what the next sync teaches you
 
