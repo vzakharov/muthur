@@ -69,7 +69,7 @@ file, branch or target — while a general "go ahead" does not count. So:
   the settings rather than the classifier, or the block is a hard one — say so
   and name what would, instead.
 
-If you already did this, or no longer need the call, say so in one line and stop.
+If you no longer need the call, say so in one line and stop.
 REASON
     jq -n --arg reason "$reason" '{decision: "block", reason: $reason}'
     ;;
