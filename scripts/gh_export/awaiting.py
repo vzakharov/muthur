@@ -137,7 +137,7 @@ def _large_review_warning(awaiting: int, size: ExportSize, warn_line: int) -> li
         "awaiting.** Do not read this file whole. Hand the posts below to "
         "subagents — readers in batches, then executors grouped by topic from "
         "what the readers return — keeping this session for the commits and "
-        "replies. `/handle` Step 2 says how.",
+        "replies. `.claude/skills/handle/large-review.md` says how.",
         "",
     ]
 
