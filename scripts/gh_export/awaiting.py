@@ -20,9 +20,8 @@ lost its context before answering still meets it. With no committed export,
 that second clause is the whole test.
 
 A review too large for one context to read through opens the verdict on a
-warning saying so, since the verdict is what `/handle`'s hook hands the agent
-before it reads a line: past it, `/handle` Step 2 works the rows through
-subagents rather than paging the file into the session that edits.
+warning, the verdict being what `/handle`'s hook hands the agent before it
+reads a line.
 """
 
 from __future__ import annotations
@@ -47,10 +46,9 @@ HEADING = "## Awaiting an answer"
 # comment and review body — their identities.
 _POST_ID = re.compile(r"#((?:issuecomment|pullrequestreview)-\d+)")
 
-# Either threshold alone makes a review large: rows past what one session works
-# through beside the edits they ask for, or an export whose one read takes more
-# than this share of the context budget's warning line — and a paged read takes
-# it again with every page.
+# Either alone makes a review large: more rows than one session works through
+# beside their edits, or one read of the export taking more than this share of
+# the context budget's warning line.
 LARGE_ROW_COUNT = 20
 LARGE_SHARE_OF_WARN_LINE = 1 / 5
 CHARS_PER_TOKEN = 4
@@ -78,8 +76,8 @@ def awaiting_section(
     """The section, its heading carrying the count so a zero reads as a verdict
     rather than an absence. Every row links to the body it names.
 
-    `rest` is the export outside this section, which the warning's size adds
-    this section to; `warn_line` is the context budget's, in tokens."""
+    `rest` measures the export outside this section; `warn_line` is the context
+    budget's, in tokens."""
     seen = set(_POST_ID.findall(previous.text)) if previous else None
     last_agent_post = _last_agent_post(comments, reviews, review_comments)
 
@@ -130,9 +128,9 @@ def awaiting_section(
 
 
 def _large_review_warning(rows: int, size: ExportSize, warn_line: int) -> list[str]:
-    """The warning's lines, none when the review is not large or nothing awaits:
-    a verdict of `none` is the whole reading. `/handle`'s hook lifts the verdict
-    out of the file up to its first `---`, so no line here may be one."""
+    """Empty when no row awaits, however large the file: there is nothing to
+    batch. No line may be `---`, where `/handle`'s hook stops lifting the
+    verdict out of the file."""
     tokens = size.chars // CHARS_PER_TOKEN
     large = rows > LARGE_ROW_COUNT or tokens > warn_line * LARGE_SHARE_OF_WARN_LINE
     if not (rows and large):
