@@ -24,7 +24,7 @@ asks syncing repos for something their port does not do — a sweep of
 their own tree, which rides the sync, or an ask reaching outside it,
 which waits on their operator's yes. /squash-message defines it;
 /update-muthur delivers it whatever the commit's triage verdict and
-reads the older spelling too.
+reads older wordings to the same effect too.
 
 Adopters: ask your operator, once,
 whether to post a hello as described in
