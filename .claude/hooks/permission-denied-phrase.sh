@@ -48,6 +48,7 @@ case "${1:-}" in
     [ -s "$marker" ] || exit 0
     denials="$(jq -r '"- \(.tool): \(.input)"' "$marker")"
     rm -f "$marker"
+    [[ "$(field last_assistant_message)" == *'```'* ]] && exit 0
     read -r -d '' reason <<REASON || true
 Auto mode denied these tool calls during this turn:
 $denials
