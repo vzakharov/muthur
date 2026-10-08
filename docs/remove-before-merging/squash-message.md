@@ -6,7 +6,7 @@ feat: [ADOPTERS, read body] a welcome thread for adopters (pr #167)
 
 ```
 muthur has adopters and no way to know who they are or what they build.
-A pinned issue in this repo is now the public place to say so: a
+Issue #168, kept open, is now the public place to say so: a
 sentence or two, written by the adopter's agent and posted only on its
 operator's yes, with a private repo free to stay unnamed.
 docs/adopting/hello.md is the procedure's one home: ask once showing
