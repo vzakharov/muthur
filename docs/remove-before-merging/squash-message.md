@@ -11,16 +11,17 @@ knew its own size before anyone read a line.
 
 The export's "Awaiting an answer" verdict now opens on a Large review
 warning, giving lines, ~tokens and the awaiting count, when more than
-20 rows await or one read of the file would take more than a fifth of
+20 posts await an answer or one read of the file would take a fifth of
 the context budget's warning line ($CONTEXT_BUDGET_WARN, default 200k
 tokens). An export with nothing awaiting stays quiet. The warning sits
 inside what the /handle hook lifts into the turn's context, so the
 agent meets it before reading anything.
 
-/handle Step 2 says what a flagged export gets: the session reads the
-verdict only, batches its rows, and hands each batch to a parallel
-subagent that returns a digest per row and edits nothing, keeping the
-edits, commits and replies for itself.
+/handle Step 2 works a flagged export in two rounds of subagents: the
+session reads the verdict only, readers digest the posts in batches
+(the ask, the files it touches, the posts it relates to), and the
+session regroups those by topic for executors that make the edits. It
+keeps the commits and replies for itself.
 
 Closes #170
 
