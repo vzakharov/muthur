@@ -1,18 +1,21 @@
 Proposed squash title/body:
 
 ```
-fix: keep the sync offer's lock re-check out of operator replies (pr #164)
+fix: make the muthur sync offer once and never chase it (pr #164)
 ```
 
 ```
-An agent holding an unanswered muthur-sync offer told the operator that
-the next session would check whether another one had taken the sync
-before asking again. The re-check is the agent's own plumbing; the
-operator only has to say yes or no.
+An agent holding an unanswered muthur-sync offer told the operator they
+hadn't answered, and that the next session would check whether another
+one had taken the sync before asking again. The operator should hear of
+a sync once; reminding them chases them, and the re-check is the agent's
+own plumbing.
 
 The nudge's offer rules and update-muthur's "Offered at session start"
-now keep the re-check silent: a reply or handoff report carrying an
-unanswered offer calls it still open and stops there.
+now make the offer once and never bring it up again: not repeated,
+reminded of or called still open in a reply, a handoff report or a relay
+summary, declined or unanswered alike. The lock re-check runs only
+before the first offer, and drops it silently.
 
 Co-authored-by: Claude <noreply@anthropic.com>
 ```
