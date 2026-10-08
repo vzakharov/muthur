@@ -192,12 +192,15 @@ This is an offer to make, not work to start:
 - Offer it once, at a natural moment. A ride-along ("by the way, …") only once
   this session is making a change on this branch, never in answer to a question
   that changes nothing; a new session at the end of a turn that delivered
-  something. Declined means not offered again in this session.
-- Right before making the offer, and before repeating it — a relayed summary
-  carrying it as open included — run
-  `git ls-remote origin refs/heads/@LOCK@`. Any output means another session
-  claimed or landed this sync since it was printed: drop the offer, saying
-  nothing if it was never made, or that another session holds it if it was.
+  something.
+- Once made, it is never brought up again — not repeated, reminded of, or
+  called still open in a later reply or a handoff report — whether the
+  operator declined it or left it unanswered. A relay summary carries one line
+  for the next session, "The muthur sync offer was made; do not make it
+  again.", and a session whose relay summary has that line makes none.
+- Right before making the offer, run `git ls-remote origin refs/heads/@LOCK@`.
+  Any output means another session claimed or landed this sync since it was
+  printed: drop the offer, and say nothing of it or of the check.
 - Which offer: a ride-along when the changes are one or two commits touching
   files here; a new session otherwise.
 - On yes, `/update-muthur ride-along` in this session after the task's own
