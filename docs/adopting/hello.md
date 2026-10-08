@@ -27,8 +27,7 @@ and that is a different commit asking, not you chasing.
 
 ## What to write
 
-One or two sentences, in the operator's voice rather than yours: what the
-project is and what muthur does for it. How you adopted — template fork, a
+One or two sentences: what the project is and what muthur does for it. How you adopted — template fork, a
 subset merged into an existing repo, a spinoff — is a useful half-sentence.
 
 **Read the repo's visibility before drafting**:
