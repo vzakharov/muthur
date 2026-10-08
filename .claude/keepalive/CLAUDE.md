@@ -19,11 +19,12 @@ conversation at about 40 times what a cache read costs.
   stopping one wakes nothing.
 - **Every wake is one visible line.** The harness rejects a turn with no visible
   output and forces a second request, so the instruction asks for one line
-  of at most seven words rather than silence.
+  rather than silence — and spends it on the two answers that end the spell:
+  `/relay park` to record the session and stop, a stop word to just stop.
 - **`CACHE_KEEPALIVE_WAKES` (default 5) wakes per idle spell**, which an
-  operator prompt resets. The last runs `/relay` without a successor
-  (`@.claude/skills/relay/SKILL.md` § "Without a successor"): a branch idle for
-  hours can wait, and the summary makes picking it up cheap. No watcher follows it.
+  operator prompt resets. The last runs `/relay park`
+  (`@.claude/skills/relay/SKILL.md`): a branch idle for hours can wait, and the
+  summary makes picking it up cheap. No watcher follows it.
 - **Only a one-hour cache is kept**, read off the session's own cache writes by
   `.claude/costs/lib/restart.py`. A five-minute cache would take a wake every
   few minutes.
