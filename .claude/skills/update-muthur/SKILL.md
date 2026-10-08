@@ -251,6 +251,15 @@ above. Verdicts:
 | **skip (not adopted)** | The path is in `declined` **and its recorded reason still holds** — if it doesn't, re-offer the path per Step 4a and move it to `adopted` if taken. Or the path is in neither list, which is Step 4a's other case. Never skip silently on either. |
 | **skip (diverged locally)** | This repo rewrote the file for its own stack — `scripts/vet.sh`, the watermark, anything the source marks `rewrite`. The source's edit is advice at best; read it for an idea, don't port it. |
 
+**A subject marked `[attn adopters]` — or, in older commits, any prose to the
+same effect, such as `ADOPTERS, read body` — addresses this repo whatever its
+verdict.** Its body's `Adopters:` paragraph asks for something no port does
+(`@.claude/skills/squash-message/SKILL.md` defines the marker), so a skipped
+commit still delivers it. A sweep inside this tree rides the sync like a port
+and is reported with it. What the paragraph gates on the operator goes to them
+once, in the sync's report and in its terms, and § "Offered at session start"'s
+never-chase rule holds for it as it does for the sync.
+
 **The source's fix may not be this repo's fix.** Split a commit's rationale
 before deciding: one commit can carry a change that addresses a defect this repo
 never had *and* a change that fixes one it does. Take the second half, drop the
