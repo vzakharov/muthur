@@ -299,6 +299,98 @@ class LockTest(MuthurSyncTestCase):
         self.assertIn("Claimed-By: @bob", self.fx.lock_message(self.fx.base))
 
 
+class HandoverTest(MuthurSyncTestCase):
+    OFFERING = {"CLAUDE_CODE_REMOTE_SESSION_ID": "cse_offer"}
+
+    def claimed(self, **env: str) -> Path:
+        work = self.lagging()
+        result = self.claim(work, **{**self.OFFERING, **env})
+        self.assertEqual(result.returncode, 0, result.stderr)
+        return work
+
+    def handover(self, work: Path, *args: str, **env: str) -> subprocess.CompletedProcess[str]:
+        return self.fx.sync(work, "handover", *args, **{**self.OFFERING, **env})
+
+    def lock(self) -> str:
+        return self.fx.git(
+            self.fx.origin, "rev-parse", f"refs/heads/muthur-sync-lock-{self.fx.base[:12]}"
+        )
+
+    def test_names_the_spawned_session(self) -> None:
+        work = self.claimed()
+        claimed = self.lock()
+        result = self.handover(work, "session_spawned")
+        self.assertEqual(result.returncode, 0, result.stderr)
+        message = self.fx.lock_message(self.fx.base)
+        self.assertIn("Claimed-By: @alice", message)
+        self.assertIn("Session: https://claude.ai/code/session_spawned", message)
+        self.assertIn("Spawned-By: https://claude.ai/code/session_offer", message)
+        handed = self.lock()
+        for fmt in ("%T", "%P", "%s", "%aI", "%cI"):
+            self.assertEqual(
+                self.fx.git(self.fx.origin, "log", "-1", f"--format={fmt}", handed),
+                self.fx.git(self.fx.origin, "log", "-1", f"--format={fmt}", claimed),
+                fmt,
+            )
+
+    def test_takes_a_url(self) -> None:
+        work = self.claimed()
+        url = "https://claude.ai/code/session_spawned"
+        self.assertEqual(self.handover(work, url).returncode, 0)
+        self.assertIn(f"Session: {url}", self.fx.lock_message(self.fx.base))
+
+    def test_stale_report_names_the_spawner(self) -> None:
+        work = self.claimed(GIT_COMMITTER_DATE=f"@{int(time.time()) - 2 * DAY} +0000")
+        self.assertEqual(self.handover(work, "session_spawned").returncode, 0)
+        out = self.nudge(work)
+        self.assertIn("claimed over a day ago", out)
+        self.assertIn("Session: https://claude.ai/code/session_spawned", out)
+        self.assertIn("Spawned-By: https://claude.ai/code/session_offer", out)
+
+    def test_only_the_holder_hands_over(self) -> None:
+        work = self.claimed()
+        claimed = self.lock()
+        result = self.handover(work, "session_mine", CLAUDE_CODE_REMOTE_SESSION_ID="cse_other")
+        self.assertEqual(result.returncode, 3)
+        self.assertIn("Session: https://claude.ai/code/session_offer", result.stderr)
+        self.assertEqual(self.lock(), claimed)
+
+    def test_repeat_is_a_no_op(self) -> None:
+        work = self.claimed()
+        self.assertEqual(self.handover(work, "session_spawned").returncode, 0)
+        handed = self.lock()
+        result = self.handover(work, "session_spawned")
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertIn("already held by", result.stdout)
+        self.assertEqual(self.lock(), handed)
+
+    def test_nothing_to_hand_over(self) -> None:
+        result = self.handover(self.lagging(), "session_spawned")
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("nothing to hand over", result.stderr)
+
+    def test_a_takeover_in_between_wins(self) -> None:
+        work = self.claimed()
+        claimed = self.lock()
+        ref = f"refs/heads/muthur-sync-lock-{self.fx.base[:12]}"
+        result = self.claim(
+            work, "--takeover", FAKE_GH_LOGIN="bob", CLAUDE_CODE_REMOTE_SESSION_ID="cse_bob"
+        )
+        self.assertEqual(result.returncode, 0, result.stderr)
+        taken = self.lock()
+        self.fx.git(self.fx.origin, "update-ref", ref, claimed)
+        # Lands the takeover after the handover has read the lock and before
+        # its push reaches origin.
+        hook = work / ".git" / "hooks" / "pre-push"
+        hook.write_text(f"#!/bin/sh\ngit --git-dir='{self.fx.origin}' update-ref {ref} {taken}\n")
+        hook.chmod(0o755)
+        result = self.handover(work, "session_spawned")
+        self.assertEqual(result.returncode, 3, result.stderr)
+        self.assertIn("changed hands", result.stderr)
+        self.assertIn("Claimed-By: @bob", result.stderr)
+        self.assertEqual(self.lock(), taken)
+
+
 class CloneTest(MuthurSyncTestCase):
     def test_clone_then_refresh(self) -> None:
         work = self.lagging()

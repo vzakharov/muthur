@@ -388,7 +388,10 @@ On yes, one of two shapes:
   exists, spawn one on this repo with the prompt `/update-muthur claimed` and
   the title `🔄 muthur → <repo>`, `<repo>` being this repo's name without its
   owner: an operator syncing several adopters otherwise gets a session list of
-  identical titles. Elsewhere, hand the operator that command to paste into one.
+  identical titles. Then `scripts/muthur-sync.sh handover <its session id>`,
+  because the claim named this session, which is not the one syncing: the
+  lock's `Session:` becomes the new session's link, and this one is kept as
+  `Spawned-By:`. Elsewhere, hand the operator that command to paste into one.
 
 ## Add what the next sync teaches you
 

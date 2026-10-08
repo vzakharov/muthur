@@ -4,6 +4,8 @@
 #
 #   muthur-sync.sh nudge               what the SessionStart hook prints
 #   muthur-sync.sh claim [--takeover]  take the lock for the next sync
+#   muthur-sync.sh handover <session>  name the session it spawned as the lock's
+#                                      holder, by its id or URL
 #   muthur-sync.sh clone <dir>         the source, blobless, at its current HEAD
 #
 # The watermark is always read **off the trunk**, not the working tree: the lock
@@ -17,7 +19,13 @@
 #
 # `nudge` never fails the session: every failure is one line of context and exit
 # 0, for `prompt-issue-export.sh`'s reason — a session must not fail to start
-# over an offer. `claim` exits 3 when the lock is held, 1 on any other failure.
+# over an offer. `claim` exits 3 when the lock is held, and `handover` when the
+# lock is not this session's; both exit 1 on any other failure.
+#
+# A new-session sync is claimed by the session that offers it, before it spawns
+# the one that syncs, so nobody takes the lock while that session starts; the
+# offering session then hands the lock over, so `Session:` names the session
+# doing the sync and `Spawned-By:` the one that claimed it.
 #
 # Functions whose output is captured with `$(…)` fail only through an explicit
 # `die`: outside POSIX mode bash clears `-e` in command substitutions, so an
@@ -152,16 +160,29 @@ describe_lock() {
   fetch_lock "$1"
   echo "  Claimed-By: $(trailer "$1" Claimed-By)"
   echo "  Session: $(trailer "$1" Session)"
+  local spawned_by
+  spawned_by="$(trailer "$1" Spawned-By)"
+  [ -z "$spawned_by" ] || echo "  Spawned-By: $spawned_by"
   echo "  Claimed: $(($(lock_age "$1") / 3600))h ago, as $LOCK on origin"
 }
 
 # The session-URL mapping — `cse_<id>` in the environment, `session_<id>` in the
-# URL — is observed on live sessions, not documented, which is why it is built
-# here and nowhere else.
+# URL and in what `create_session` returns — is observed on live sessions, not
+# documented, which is why it is built here and nowhere else.
+url_of_session() {
+  case "$1" in
+  https://*) echo "$1" ;;
+  *)
+    local id="${1#cse_}"
+    echo "https://claude.ai/code/session_${id#session_}"
+    ;;
+  esac
+}
+
 session_url() {
   local id="${CLAUDE_CODE_REMOTE_SESSION_ID:-}"
   if [ -n "$id" ]; then
-    echo "https://claude.ai/code/session_${id#cse_}"
+    url_of_session "$id"
   else
     echo local
   fi
@@ -206,7 +227,8 @@ This is an offer to make, not work to start:
 - On yes, `/update-muthur ride-along` in this session after the task's own
   commits; for a new session, `scripts/muthur-sync.sh claim` first, then
   `/update-muthur claimed` as its prompt and `🔄 muthur → <this repo's name,
-  no owner>` as its title. A claim that exits 3 means another
+  no owner>` as its title, then `scripts/muthur-sync.sh handover <the new
+  session's id>`. A claim that exits 3 means another
   session got there first: say who holds the lock and drop the offer.
   `/update-muthur` § "Offered at session start" has the rest.
 EOF
@@ -336,6 +358,58 @@ EOF
   echo "muthur-sync: claimed the sync from ${LAST_SHA:0:12} as $LOCK."
 }
 
+# The rewritten lock keeps the claim's tree, parent and dates, so its age still
+# counts from the claim; only who holds it changes.
+handover() {
+  [ $# -eq 1 ] && [ -n "$1" ] || die "usage: muthur-sync.sh handover <session-id|session-url>"
+  need jq
+  load_watermark || die "the trunk has no hydrated $WATERMARK to hand a sync over from."
+
+  local to here held holder
+  to="$(url_of_session "$1")"
+  here="$(session_url)"
+  held="$(lock_sha)"
+  [ -n "$held" ] || die "nobody holds $LOCK on origin, so there is nothing to hand over."
+  fetch_lock "$held"
+  holder="$(trailer "$held" Session)"
+  if [ "$holder" = "$to" ]; then
+    echo "muthur-sync: $LOCK is already held by $to."
+    return 0
+  fi
+  if [ "$holder" != "$here" ]; then
+    echo "muthur-sync: the sync from ${LAST_SHA:0:12} is not this session's ($here) to hand over:" >&2
+    describe_lock "$held" >&2
+    exit 3
+  fi
+
+  local commit
+  commit="$(
+    GIT_AUTHOR_DATE="$(git log -1 --format=%aI "$held")" \
+      GIT_COMMITTER_DATE="$(git log -1 --format=%cI "$held")" \
+      git commit-tree "$held^{tree}" -p "$held^" -F - <<EOF
+$(git log -1 --format=%s "$held")
+
+Claimed-By: $(trailer "$held" Claimed-By)
+Session: $to
+Spawned-By: $holder
+EOF
+  )" || die "could not write the handed-over lock commit."
+
+  # Leased on the commit read above: a takeover that lands in between wins, and
+  # this handover then reports who holds the lock instead.
+  if ! git push --quiet origin "$commit:refs/heads/$LOCK" \
+    "--force-with-lease=refs/heads/$LOCK:$held" 2>/dev/null; then
+    held="$(lock_sha)"
+    [ -n "$held" ] || die "could not push $LOCK to origin."
+    if [ "$held" != "$commit" ]; then
+      echo "muthur-sync: the sync from ${LAST_SHA:0:12} changed hands before the handover:" >&2
+      describe_lock "$held" >&2
+      exit 3
+    fi
+  fi
+  echo "muthur-sync: handed $LOCK over to $to."
+}
+
 clone() {
   [ -n "${1:-}" ] || die "usage: muthur-sync.sh clone <dir>"
   need jq
@@ -368,6 +442,7 @@ run_nudge() {
 case "$MODE" in
 nudge) run_nudge ;;
 claim) claim "${@:2}" ;;
+handover) handover "${@:2}" ;;
 clone) clone "${@:2}" ;;
-*) die "usage: muthur-sync.sh nudge | claim [--takeover] | clone <dir>" ;;
+*) die "usage: muthur-sync.sh nudge | claim [--takeover] | handover <session> | clone <dir>" ;;
 esac
