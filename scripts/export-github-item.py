@@ -20,7 +20,8 @@ reads the index and follows a link to the body rather than the whole document.
 A PR export opens, right under its header, on `## Awaiting an answer`: `/handle`
 Step 2's tail and novelty tests already run, so the work is the first thing read.
 The novelty test reads the export the branch last committed, so run it from the
-repository root.
+repository root. A review too large to read in one context opens that section on
+a warning, measured against `$CONTEXT_BUDGET_WARN` (default 200000 tokens).
 
 Exit status is non-zero when any attachment fails to download; the Markdown is
 still written, with the failed attachments still linked remotely.
@@ -56,9 +57,9 @@ from gh_export.attachments import (
     download_attachments,
     rewrite_attachment_refs,
 )
-from gh_export.cli import parse_args
+from gh_export.cli import context_warn_line, parse_args
 from gh_export.authorship import split_agent_footer
-from gh_export.awaiting import awaiting_section
+from gh_export.awaiting import ExportSize, awaiting_section
 from gh_export.index import indexed_section
 from gh_export.markdown import comments_parts, header_section
 from gh_export.previous import previous_export
@@ -146,24 +147,6 @@ def main() -> None:
     # An empty section is left out rather than joined as "" — an empty element
     # would leave a stray blank line in every export that lacks it.
     parts: list[str] = [header_section(item, pr, body_by_agent)]
-    if pr:
-        try:
-            previous = previous_export(md_path, pr, repo, token)
-        except AllRoutesFailed as exc:
-            die(
-                f"Reading #{number}'s last committed export failed on every route:\n"
-                f"{format_route_statuses_and_bodies(exc.failures)}"
-            )
-        parts.append(
-            awaiting_section(
-                comments,
-                reviews,
-                review_comments,
-                resolved_by_comment_id,
-                include_resolved,
-                previous,
-            )
-        )
     parts.extend(
         [
             "## Body",
@@ -181,6 +164,30 @@ def main() -> None:
     if thread_items:
         parts.append(indexed_section(thread_items))
     parts.append(timeline_section(timeline, noun))
+
+    # Rendered last and placed under the header: the verdict measures the export
+    # around it.
+    if pr:
+        try:
+            previous = previous_export(md_path, pr, repo, token)
+        except AllRoutesFailed as exc:
+            die(
+                f"Reading #{number}'s last committed export failed on every route:\n"
+                f"{format_route_statuses_and_bodies(exc.failures)}"
+            )
+        parts.insert(
+            1,
+            awaiting_section(
+                comments,
+                reviews,
+                review_comments,
+                resolved_by_comment_id,
+                include_resolved,
+                previous,
+                ExportSize.of("\n".join(parts)),
+                context_warn_line(),
+            ),
+        )
 
     out_dir.mkdir(parents=True, exist_ok=True)
     _clear_sibling_bodies(out_dir)
