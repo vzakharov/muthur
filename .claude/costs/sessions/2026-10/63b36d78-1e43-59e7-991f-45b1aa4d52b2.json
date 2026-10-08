@@ -1,0 +1,94 @@
+{
+  "estimate": {
+    "at": "2026-10-08T19:27:06.512Z",
+    "parts": [
+      {
+        "hours": 3.0,
+        "grade": "senior",
+        "role": "developer",
+        "comment": "measuring an export the verdict sits inside means rendering around the verdict; the threshold must follow the budget's env override without a second copy of its default"
+      },
+      {
+        "hours": 1.5,
+        "grade": "senior",
+        "role": "prompter",
+        "comment": "the /handle rule has to change how a session reads a big export without contradicting Step 2's 'follow the links'"
+      }
+    ],
+    "comment": null
+  },
+  "sessionId": "63b36d78-1e43-59e7-991f-45b1aa4d52b2",
+  "branch": "claude/large-review-warning-ov483m",
+  "cwd": "/home/user/muthur",
+  "openingPrompt": "PR export: warn on a large review up front and route it through subagents #170",
+  "prs": [
+    171
+  ],
+  "url": "https://claude.ai/code/session_016xxZEpQABszUQ2yHhVUbUc",
+  "operator": "vzakharov",
+  "firstResponseAt": "2026-10-08T19:26:27.121Z",
+  "lastResponseAt": "2026-10-08T19:33:15.749Z",
+  "pricesAsOf": "2026-10-06",
+  "claudeCodeTotalUsd": null,
+  "total": {
+    "inputTokens": 80,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 129629,
+    "cacheReadTokens": 5251736,
+    "outputTokens": 27571,
+    "thinkingTokens": 8920,
+    "responses": 40,
+    "costUsd": 2.6391192
+  },
+  "ownTurns": {
+    "inputTokens": 80,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 129629,
+    "cacheReadTokens": 5251736,
+    "outputTokens": 27571,
+    "thinkingTokens": 8920,
+    "responses": 40,
+    "costUsd": 2.6391192
+  },
+  "subagents": {
+    "inputTokens": 0,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 0,
+    "cacheReadTokens": 0,
+    "outputTokens": 0,
+    "thinkingTokens": 0,
+    "responses": 0,
+    "costUsd": 0.0
+  },
+  "byRate": {
+    "claude-opus-5-5/standard": {
+      "inputTokens": 80,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 129629,
+      "cacheReadTokens": 5251736,
+      "outputTokens": 27571,
+      "thinkingTokens": 8920,
+      "responses": 40,
+      "costUsd": 2.6391192
+    }
+  },
+  "warnings": [],
+  "orientation": {
+    "endedBy": "Edit",
+    "endedOn": "scripts/gh_export/awaiting.py",
+    "endedAt": "2026-10-08T19:27:44.797Z",
+    "contextTokens": 119152,
+    "spend": {
+      "inputTokens": 18,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 72910,
+      "cacheReadTokens": 809780,
+      "outputTokens": 5008,
+      "thinkingTokens": 3340,
+      "responses": 9,
+      "costUsd": 0.845468
+    }
+  },
+  "compactions": [],
+  "telemetry": null
+}
