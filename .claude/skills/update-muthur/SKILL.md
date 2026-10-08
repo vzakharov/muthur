@@ -360,10 +360,10 @@ lock behind: drop the offer, and tell the operator nothing of it or of the
 check.
 
 **The operator hears of a sync once, and is never chased about it.** Once made,
-the offer is not repeated, reminded of, or called still open — in a later reply,
-a handoff report or a relay summary — whether it was declined or left
-unanswered. A relayed session runs its own nudge and its own re-check, so the
-summary has nothing to carry.
+the offer is not repeated, reminded of, or called still open — in a later reply
+or a handoff report — whether it was declined or left unanswered. "Once" spans a
+relay chain: a relayed session gets its own nudge, so the summary handing it
+over says the offer was made, and that session makes none.
 
 On yes, one of two shapes:
 

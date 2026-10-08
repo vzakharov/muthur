@@ -194,8 +194,10 @@ This is an offer to make, not work to start:
   that changes nothing; a new session at the end of a turn that delivered
   something.
 - Once made, it is never brought up again — not repeated, reminded of, or
-  called still open in a later reply, a handoff report or a relay summary —
-  whether the operator declined it or left it unanswered.
+  called still open in a later reply or a handoff report — whether the
+  operator declined it or left it unanswered. A relay summary carries one line
+  for the next session, "The muthur sync offer was made; do not make it
+  again.", and a session whose relay summary has that line makes none.
 - Right before making the offer, run `git ls-remote origin refs/heads/@LOCK@`.
   Any output means another session claimed or landed this sync since it was
   printed: drop the offer, and say nothing of it or of the check.
