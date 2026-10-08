@@ -107,6 +107,11 @@ shipped watermark already names this repo — you fill in the rest (see
 [`docs/adopting/sync.md`](docs/adopting/sync.md)). The infrastructure is
 adoptable **and** re-syncable; a fork is not a dead end.
 
+Took it? Say hello in
+[#168](https://github.com/vzakharov/muthur/issues/168) — a sentence on what
+you're building, or just that you're here. Both routes have your agent offer to
+post it for you.
+
 ## More
 
 `CLAUDE.md` carries the conventions themselves, and each
