@@ -129,9 +129,12 @@ class Fixture:
             text=True,
         )
 
+    @staticmethod
+    def lock_ref(last_synced: str) -> str:
+        return f"refs/heads/muthur-sync-lock-{last_synced[:12]}"
+
     def lock_message(self, last_synced: str) -> str:
-        ref = f"refs/heads/muthur-sync-lock-{last_synced[:12]}"
-        return self.git(self.origin, "log", "-1", "--format=%B", ref)
+        return self.git(self.origin, "log", "-1", "--format=%B", self.lock_ref(last_synced))
 
 
 class MuthurSyncTestCase(unittest.TestCase):
@@ -312,9 +315,7 @@ class HandoverTest(MuthurSyncTestCase):
         return self.fx.sync(work, "handover", *args, **{**self.OFFERING, **env})
 
     def lock(self) -> str:
-        return self.fx.git(
-            self.fx.origin, "rev-parse", f"refs/heads/muthur-sync-lock-{self.fx.base[:12]}"
-        )
+        return self.fx.git(self.fx.origin, "rev-parse", self.fx.lock_ref(self.fx.base))
 
     def test_names_the_spawned_session(self) -> None:
         work = self.claimed()
@@ -372,7 +373,7 @@ class HandoverTest(MuthurSyncTestCase):
     def test_a_takeover_in_between_wins(self) -> None:
         work = self.claimed()
         claimed = self.lock()
-        ref = f"refs/heads/muthur-sync-lock-{self.fx.base[:12]}"
+        ref = self.fx.lock_ref(self.fx.base)
         result = self.claim(
             work, "--takeover", FAKE_GH_LOGIN="bob", CLAUDE_CODE_REMOTE_SESSION_ID="cse_bob"
         )

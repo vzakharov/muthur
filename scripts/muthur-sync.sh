@@ -310,6 +310,25 @@ $(mark_files <<<"$files")"
   fi
 }
 
+# Exit 3: the lock is someone else's.
+held_elsewhere() {
+  echo "muthur-sync: $2" >&2
+  describe_lock "$1" >&2
+  exit 3
+}
+
+# Pushes <commit> as the lock, leased on <expect>, which the server checks
+# atomically; an empty <expect> means the lock must not exist yet. Losing the
+# lease to another commit reports its holder after <lost>.
+push_lock() {
+  local commit="$1" expect="$2" lost="$3" held
+  git push --quiet origin "$commit:refs/heads/$LOCK" \
+    "--force-with-lease=refs/heads/$LOCK:$expect" 2>/dev/null && return 0
+  held="$(lock_sha)"
+  [ -n "$held" ] || die "could not push $LOCK to origin."
+  [ "$held" = "$commit" ] || held_elsewhere "$held" "$lost"
+}
+
 claim() {
   local takeover=""
   case "${1:-}" in
@@ -324,11 +343,7 @@ claim() {
   local held expect=""
   held="$(lock_sha)"
   if [ -n "$held" ]; then
-    if [ -z "$takeover" ]; then
-      echo "muthur-sync: the sync from ${LAST_SHA:0:12} is already claimed:" >&2
-      describe_lock "$held" >&2
-      exit 3
-    fi
+    [ -n "$takeover" ] || held_elsewhere "$held" "the sync from ${LAST_SHA:0:12} is already claimed:"
     expect="$held"
   fi
 
@@ -343,18 +358,8 @@ Session: $(session_url)
 EOF
 )"
 
-  # The empty lease value means "the ref must not exist yet", which the server
-  # checks atomically: of two concurrent claims, exactly one lands.
-  if ! git push --quiet origin "$commit:refs/heads/$LOCK" \
-    "--force-with-lease=refs/heads/$LOCK:$expect" 2>/dev/null; then
-    held="$(lock_sha)"
-    [ -n "$held" ] || die "could not push $LOCK to origin."
-    if [ "$held" != "$commit" ]; then
-      echo "muthur-sync: lost the race for the sync from ${LAST_SHA:0:12}:" >&2
-      describe_lock "$held" >&2
-      exit 3
-    fi
-  fi
+  # Of two concurrent claims, exactly one lands.
+  push_lock "$commit" "$expect" "lost the race for the sync from ${LAST_SHA:0:12}:"
   echo "muthur-sync: claimed the sync from ${LAST_SHA:0:12} as $LOCK."
 }
 
@@ -376,11 +381,8 @@ handover() {
     echo "muthur-sync: $LOCK is already held by $to."
     return 0
   fi
-  if [ "$holder" != "$here" ]; then
-    echo "muthur-sync: the sync from ${LAST_SHA:0:12} is not this session's ($here) to hand over:" >&2
-    describe_lock "$held" >&2
-    exit 3
-  fi
+  [ "$holder" = "$here" ] ||
+    held_elsewhere "$held" "the sync from ${LAST_SHA:0:12} is not this session's ($here) to hand over:"
 
   local commit
   commit="$(
@@ -395,18 +397,8 @@ Spawned-By: $holder
 EOF
   )" || die "could not write the handed-over lock commit."
 
-  # Leased on the commit read above: a takeover that lands in between wins, and
-  # this handover then reports who holds the lock instead.
-  if ! git push --quiet origin "$commit:refs/heads/$LOCK" \
-    "--force-with-lease=refs/heads/$LOCK:$held" 2>/dev/null; then
-    held="$(lock_sha)"
-    [ -n "$held" ] || die "could not push $LOCK to origin."
-    if [ "$held" != "$commit" ]; then
-      echo "muthur-sync: the sync from ${LAST_SHA:0:12} changed hands before the handover:" >&2
-      describe_lock "$held" >&2
-      exit 3
-    fi
-  fi
+  # A takeover that lands between the read above and this push wins.
+  push_lock "$commit" "$held" "the sync from ${LAST_SHA:0:12} changed hands before the handover:"
   echo "muthur-sync: handed $LOCK over to $to."
 }
 
