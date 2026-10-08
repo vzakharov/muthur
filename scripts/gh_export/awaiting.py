@@ -46,11 +46,8 @@ HEADING = "## Awaiting an answer"
 # comment and review body — their identities.
 _POST_ID = re.compile(r"#((?:issuecomment|pullrequestreview)-\d+)")
 
-# Either alone makes a review large. The count is of posts awaiting an answer
-# and measures the work rather than the export: each costs a read of the files
-# it is about, the edit and the reply. The share is of the context budget's
-# warning line that one read of the export may take.
-LARGE_AWAITING_COUNT = 20
+# A review is large when one read of its export takes more than this share of
+# the context budget's warning line.
 LARGE_SHARE_OF_WARN_LINE = 1 / 5
 CHARS_PER_TOKEN = 4
 
@@ -133,8 +130,7 @@ def _large_review_warning(awaiting: int, size: ExportSize, warn_line: int) -> li
     hand out. No line may be `---`, where `/handle`'s hook stops lifting the
     verdict out of the file."""
     tokens = size.chars // CHARS_PER_TOKEN
-    large = awaiting > LARGE_AWAITING_COUNT or tokens > warn_line * LARGE_SHARE_OF_WARN_LINE
-    if not (awaiting and large):
+    if not awaiting or tokens <= warn_line * LARGE_SHARE_OF_WARN_LINE:
         return []
     return [
         f"> **Large review: {size.lines:,} lines, ~{tokens:,} tokens, {awaiting} "

@@ -226,15 +226,13 @@ class LargeReview(unittest.TestCase):
     def test_a_small_review_carries_no_warning(self) -> None:
         self.assertNotIn("Large review", section(comments=waiting_comments(3)))
 
-    def test_rows_past_the_threshold_warn(self) -> None:
-        self.assertNotIn("Large review", section(comments=waiting_comments(20)))
-        out = section(comments=waiting_comments(21))
-        self.assertRegex(out, r"Large review: [\d,]+ lines, ~[\d,]+ tokens, 21 awaiting")
-        self.assertIn("executors grouped by topic", out)
+    def test_many_short_posts_in_a_small_export_carry_no_warning(self) -> None:
+        self.assertNotIn("Large review", section(comments=waiting_comments(40)))
 
-    def test_a_large_file_warns_whatever_the_row_count(self) -> None:
+    def test_a_large_export_warns_however_few_posts_await(self) -> None:
         out = section(comments=waiting_comments(1), rest=LARGE_FILE)
         self.assertRegex(out, r"Large review: 3,0\d\d lines, ~50,\d\d\d tokens, 1 awaiting")
+        self.assertIn("executors grouped by topic", out)
 
     def test_a_large_file_with_nothing_awaiting_carries_no_warning(self) -> None:
         self.assertNotIn("Large review", section(rest=LARGE_FILE))
@@ -257,9 +255,9 @@ class LargeReview(unittest.TestCase):
 
     def test_the_warning_rides_inside_what_the_hook_lifts(self) -> None:
         # `prompt-handle-pr-export.sh` stops at the section's first `---` line.
-        lines = section(comments=waiting_comments(21)).splitlines()
+        lines = section(comments=waiting_comments(2), rest=LARGE_FILE).splitlines()
         lifted = lines[: lines.index("---")]
-        self.assertTrue(lifted[0].startswith("## Awaiting an answer: 21"))
+        self.assertTrue(lifted[0].startswith("## Awaiting an answer: 2"))
         self.assertTrue(any("Large review" in line for line in lifted[:3]))
 
 

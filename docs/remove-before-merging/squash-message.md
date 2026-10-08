@@ -10,10 +10,10 @@ the export before editing a file, and nothing warned it: the export
 knew its own size before anyone read a line.
 
 The export's "Awaiting an answer" verdict now opens on a Large review
-warning, giving lines, ~tokens and the awaiting count, when more than
-20 posts await an answer or one read of the file would take a fifth of
-the context budget's warning line ($CONTEXT_BUDGET_WARN, default 200k
-tokens). An export with nothing awaiting stays quiet. The warning sits
+warning, giving lines, ~tokens and the awaiting count, when one read
+of the file would take more than a fifth of the context budget's
+warning line ($CONTEXT_BUDGET_WARN, default 200k tokens), and at least
+one post awaits an answer. The warning sits
 inside what the /handle hook lifts into the turn's context, so the
 agent meets it before reading anything.
 
