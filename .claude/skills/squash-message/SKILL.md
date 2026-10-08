@@ -136,9 +136,8 @@ number>)`. **One line, at most 80 chars** — the mandatory suffix eats ~10 of i
   - **`[attn adopters]`** goes right after the colon — `feat: [attn adopters]
     #<issue> <essence> (pr #<n>)` — when the change asks whoever syncs from
     this repo for something their port does not do by itself: a one-off sweep
-    of state that lives in their tree alone (pr #99's rules, pr #145's ledger
-    rows), or an action only their operator can take or approve (pr #167's
-    public hello). Not for a change that is merely worth porting; the sync's
+    of state that lives in their tree alone, or an action only their operator
+    can take or approve. Not for a change that is merely worth porting; the sync's
     triage reads every commit anyway. The body then gives the ask a paragraph
     of its own, opening `Adopters:` and addressed to their agent: what to do,
     whether it waits on their operator's yes — anything reaching outside their
