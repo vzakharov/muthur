@@ -18,7 +18,7 @@
 **You are probably an agent, reading this from a temporary clone.** This file is
 the acquisition procedure. It is read once, over the network, and is **never
 copied into the adopting repo** — nothing here describes how to work in your
-project, only how to get the infrastructure into it. The same holds for its two
+project, only how to get the infrastructure into it. The same holds for its
 chapters under [`docs/adopting/`](docs/adopting/), each opened only at the point
 where an answer says it is needed.
 
@@ -281,6 +281,13 @@ Taking `/update-muthur` (G0) to pull later changes forward: follow
 [`docs/adopting/sync.md`](docs/adopting/sync.md), which writes its watermark.
 Taking the infrastructure as a one-time snapshot: delete the skill rather than
 carrying it unhydrated — assertion 4 fails a stub left in the tree.
+
+### Say hello, if your operator agrees
+
+muthur keeps a public thread of who adopted it and what for. Offer your
+operator a one- or two-sentence post there, once, by
+[`docs/adopting/hello.md`](docs/adopting/hello.md) — which also says what a
+private repo leaves out.
 
 ### Verify
 

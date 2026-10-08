@@ -66,6 +66,7 @@ needs probing, and is decidable by inspection:
 git remote -v                                  # Step 0's origin clause, and the fork's name
 gh api "repos/$R" --jq .default_branch         # the trunk G2 assumes
 gh api "repos/$R" --jq .allow_squash_merge     # does the squash discipline apply?
+gh api "repos/$R" --jq .visibility             # what the hello may name
 ```
 
 **Use the REST form throughout** — `gh <noun> <verb> --json` is GraphQL and 403s
@@ -98,12 +99,19 @@ What the tree cannot answer, asked as numbered prose in the plan turn per
 `@.claude/skills/plan/SKILL.md` Part 2: whether sessions run on Claude Code
 web/remote (G4); whether the project will have a deploy path, a visual surface,
 deployed logs, a production datastore, or sequential numbered migrations — the
-five that decide the individual G6 rows; the language decision; and one
-question per catalog row marked `opt-in: ask`, each asked with the cost its row
-states. A fork carries every such row wired on, so a no deletes the row's path,
-its `.claude/settings.json` entries and its `scripts/vet.sh` loop. The ledger's
-yes changes the tree too: it empties `.claude/costs/sessions/` of this template's
-own rows.
+five that decide the individual G6 rows; the language decision; one question
+per catalog row marked `opt-in: ask`, each asked with the cost its row states;
+and the hello. A fork carries every `opt-in: ask` row wired on, so a no deletes
+the row's path, its `.claude/settings.json` entries and its `scripts/vet.sh`
+loop. The ledger's yes changes the tree too: it empties
+`.claude/costs/sessions/` of this template's own rows.
+
+**The hello is asked by `docs/adopting/hello.md`, read now**, since Step 5.2
+deletes it before the plan runs: the question shows the drafted post word for
+word, written to that chapter's rule for this fork's visibility. The plan is
+written with *not posting* in force rather than a recommendation, since consent
+is not the agent's to assume — so an unanswered question executes as a no and
+holds back nothing else.
 
 **Language is the one question with evidence in hand**, so read it before asking:
 the language the brief is written in, the language the operator writes to the
@@ -157,7 +165,8 @@ permanently.
 Per-group keep/drop with the criterion that decided each; the G6 rows as
 hydrate-now-or-delete; the reverse-closure edits; the derived watermark and
 `lineage`; the `CLAUDE.md` brief; the first issue's body (Step 5.5);
-`scripts/vet.sh`'s disposition; the language answer; and the deletion list. Plus
+`scripts/vet.sh`'s disposition; the language answer; the hello as drafted, its
+answer, and the chapter's post-or-hand-over recipe; and the deletion list. Plus
 the `## DRY notes` section CLAUDE.md requires of every plan.
 
 **Three dispositions are pre-decided, and the plan states them rather than asking.**
@@ -209,6 +218,8 @@ Ordering is load-bearing at exactly one point, and it is the first step:
    skill that cannot re-run its own procedure against the tree it just pruned.
 9. **`bash scripts/vet.sh`** — now enforcing the stub prune, the catalog being
    gone — then Steps 6 and 7's text in the report.
+10. **Post the hello on a yes**, by the recipe the plan carries, and say in the
+    report what happened: posted, handed over for pasting, or declined.
 
 ## Step 6 — Hand back the setup script
 
