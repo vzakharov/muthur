@@ -13,9 +13,9 @@ The export's "Awaiting an answer" verdict now opens on a Large review
 warning, giving lines, ~tokens and the awaiting count, when one read
 of the file would take more than a fifth of the context budget's
 warning line ($CONTEXT_BUDGET_WARN, default 200k tokens), and at least
-one post awaits an answer. The warning sits
-inside what the /handle hook lifts into the turn's context, so the
-agent meets it before reading anything.
+one post awaits an answer. The warning sits inside what the /handle
+hook lifts into the turn's context, so the agent meets it before
+reading anything.
 
 /handle Step 2 works a flagged export in two rounds of subagents: the
 session reads the verdict only, readers digest the posts in batches
