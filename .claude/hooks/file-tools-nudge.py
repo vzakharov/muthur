@@ -1,15 +1,21 @@
 #!/usr/bin/env python3
-"""`PreToolUse` hook on `Bash`: deny the first command that edits or writes a
-file through the shell, and let the identical command through when it comes
-again in the same session. Reads pass: they leave nothing to review.
+"""`PreToolUse` hook on `Bash`: deny the first command that reads, edits or
+writes a file through the shell, and let the identical command through when it
+comes again in the same session.
 
-CLAUDE.md § "Key principles" asks for `Edit`/`Write` in every permission mode,
-while the harness's own prompt, in some modes, says the shell is fine. One
-refusal at the moment of the call is the reminder; running the same command
-again is the agent saying it means it. `BATCH_EDIT=1` in front of a command
-exempts everything from there on: a deliberate batch stays a choice made
-visibly in each command, where a variable exported once would cover every edit
-after it (#118).
+CLAUDE.md § "Key principles" asks for `Read`/`Edit`/`Write` in every permission
+mode, while the harness's own prompt, in some modes, says the shell is fine. An
+edit through the shell leaves the operator a command to reconstruct instead of a
+diff; a read through it never delivers the nested `CLAUDE.md` or path-scoped rule
+covering the file, which arrive on a `Read` only. One refusal at the moment of
+the call is the reminder; running the same command again is the agent saying it
+means it. `BATCH_EDIT=1` in front of a command exempts everything from there on:
+a deliberate batch stays a choice made visibly in each command, where a variable
+exported once would cover every edit after it (#118).
+
+A read counts only when its output reaches the agent and its file lies inside
+the project: a viewer piped into another command or inside a `$(…)` is
+processing data, and no convention scopes a file outside the tree.
 
 Fails open: a command that cannot be tokenised, a payload that cannot be read or
 a refusal that cannot be recorded is allowed, since an unrecorded refusal would
@@ -26,7 +32,7 @@ import shlex
 import sys
 from itertools import takewhile
 from pathlib import Path
-from typing import Iterator, Optional
+from typing import Callable, Iterator, Optional
 
 PUNCTUATION = "();<>|&\n"
 HEREDOC = re.compile(r"<<(?!<)-?\s*(['\"]?)([A-Za-z_][A-Za-z0-9_]*)\1")
@@ -46,8 +52,19 @@ WRAPPERS = {
     "timeout": {"-k", "-s"},
     "xargs": {"-a", "-d", "-E", "-I", "-L", "-n", "-P", "-s"},
 }
-TOOL = {"edit": "`Edit`", "write": "`Write` (or `Edit`)"}
-VERB = {"edit": "edits a file in place", "write": "writes a file"}
+VIEWERS = {"cat", "head", "tail", "less", "more", "nl", "bat", "batcat"}
+# Options of `head`/`tail` that take the following word as their argument.
+COUNT_FLAGS = {"-n", "-c", "--lines", "--bytes"}
+TOOL = {"read": "`Read`", "edit": "`Edit`", "write": "`Write` (or `Edit`)"}
+VERB = {"read": "reads a file", "edit": "edits a file in place", "write": "writes a file"}
+WHY = {
+    "read": (
+        "Only a `Read` delivers the nested CLAUDE.md or path-scoped rule covering "
+        "that file, and it takes `offset`/`limit` for a slice."
+    ),
+    "edit": "An `Edit` shows the operator a diff rather than a command to reconstruct.",
+    "write": "A `Write` shows the operator the file rather than a command to reconstruct.",
+}
 
 
 def strip_heredocs(command: str) -> str:
@@ -76,15 +93,21 @@ def is_punctuation(token: str) -> bool:
 
 
 class Simple:
-    """One simple command: its words, and the files it redirects output into."""
+    """One simple command; `consumed` when its output feeds another command
+    rather than the agent."""
 
     def __init__(self) -> None:
         self.words: list[str] = []
         self.outputs: list[str] = []
+        self.inputs: list[str] = []
+        self.consumed = False
 
 
 def simple_commands(toks: list[str]) -> Iterator[Simple]:
     current = Simple()
+    # One entry per open parenthesis: whether it opened a `$(…)`.
+    substitutions: list[bool] = []
+    previous = ""
     i = 0
     while i < len(toks):
         token = toks[i]
@@ -96,10 +119,20 @@ def simple_commands(toks: list[str]) -> Iterator[Simple]:
             i += 1
             if ">" in token and not token.endswith("&"):
                 current.outputs.append(target)
+            elif token == "<":
+                current.inputs.append(target)
         else:
+            current.consumed = any(substitutions) or token.strip("()") in ("|", "|&")
             yield current
             current = Simple()
+            for c in token:
+                if c == "(":
+                    substitutions.append(previous.endswith("$"))
+                elif c == ")" and substitutions:
+                    substitutions.pop()
+        previous = token
         i += 1
+    current.consumed = any(substitutions)
     yield current
 
 
@@ -144,13 +177,20 @@ def in_place(args: list[str], argument_flags: str, options_end_at_operand: bool)
     return False
 
 
-def classify(words: list[str], outputs: list[str]) -> Optional[tuple[str, str]]:
-    """The kind of file change and the command making it, or None."""
+def program(words: list[str]) -> Optional[tuple[str, list[str]]]:
+    """The program a simple command runs and its arguments, past any leading
+    variable assignments, or None when there is no program."""
     while words and ASSIGNMENT.match(words[0]):
         words = words[1:]
-    if not words:
+    return (os.path.basename(words[0]), words[1:]) if words else None
+
+
+def classify(words: list[str], outputs: list[str]) -> Optional[tuple[str, str]]:
+    """The kind of file change and the command making it, or None."""
+    run = program(words)
+    if run is None:
         return None
-    name, args = os.path.basename(words[0]), words[1:]
+    name, args = run
     writes_a_file = any(is_file(f) for f in outputs)
 
     if name in WRAPPERS:
@@ -183,26 +223,97 @@ def classify(words: list[str], outputs: list[str]) -> Optional[tuple[str, str]]:
     return None
 
 
-def detect(command: str) -> Optional[tuple[str, str]]:
+def sed_files(args: list[str]) -> list[str]:
+    """The operands of a `sed` that are files: all of them once `-e`/`-f` gave
+    the script, all but the first otherwise."""
+    operands: list[str] = []
+    scripted = False
+    i = 0
+    while i < len(args):
+        arg = args[i]
+        if arg == "--":
+            operands.extend(args[i + 1 :])
+            break
+        if arg in ("--expression", "--file"):
+            scripted, i = True, i + 1
+        elif arg.startswith(("--expression=", "--file=")):
+            scripted = True
+        elif arg.startswith("-") and not arg.startswith("--") and arg != "-":
+            for j, c in enumerate(arg[1:], start=1):
+                if c in "efl":
+                    scripted = scripted or c != "l"
+                    if j == len(arg) - 1:
+                        i += 1
+                    break
+        elif not arg.startswith("-"):
+            operands.append(arg)
+        i += 1
+    return operands if scripted else operands[1:]
+
+
+def viewed(words: list[str]) -> Optional[tuple[str, list[str]]]:
+    """The viewer a simple command runs and the words it names as files, or None
+    when it runs no viewer."""
+    run = program(words)
+    if run is None:
+        return None
+    name, args = run
+    if name in WRAPPERS:
+        # `xargs` takes its files from stdin, which no word here names.
+        return None if name == "xargs" else viewed(unwrap(name, args))
+    if name in ("sed", "gsed"):
+        return name, sed_files(args)
+    if name not in VIEWERS:
+        return None
+    files: list[str] = []
+    skip = False
+    for arg in args:
+        if skip:
+            skip = False
+        elif name in ("head", "tail") and arg in COUNT_FLAGS:
+            skip = True
+        elif not arg.startswith("-"):
+            files.append(arg)
+    return name, files
+
+
+def detect(command: str, inside: Callable[[str], bool]) -> Optional[tuple[str, str]]:
+    """The first file change or project-file read a command makes through the
+    shell, with the command making it, or None. `inside` says whether a word
+    names a path in the project."""
     for simple in simple_commands(tokens(command)):
         if DELIBERATE in takewhile(ASSIGNMENT.match, simple.words):
             return None
         found = classify(simple.words, simple.outputs)
         if found:
             return found
+        if simple.consumed or any(is_file(f) for f in simple.outputs):
+            continue
+        view = viewed(simple.words)
+        if view and any(is_file(f) and inside(f) for f in view[1] + simple.inputs):
+            return "read", view[0]
     return None
 
 
 def reason(kind: str, via: str) -> str:
     return (
-        "Did you forget? CLAUDE.md § \"Key principles\" asks for the Edit/Write tools "
-        "to change files in every permission mode, and it outranks any harness text "
+        "Did you forget? CLAUDE.md § \"Key principles\" asks for the Read/Edit/Write "
+        "tools on files in every permission mode, and it outranks any harness text "
         f"saying the shell is fine. This command {VERB[kind]} with `{via}`: use "
-        f"{TOOL[kind]} instead. If the shell is genuinely the better tool here — one "
-        "mechanical substitution across dozens of files, say — run the identical "
-        "command again and it goes through. For a deliberate batch, put "
+        f"{TOOL[kind]} instead. {WHY[kind]} If the shell is genuinely the better tool "
+        "here — one mechanical substitution across dozens of files, say — run the "
+        "identical command again and it goes through. For a deliberate batch, put "
         f"`{DELIBERATE}` in front of each command and nothing after it is checked."
     )
+
+
+def within(root: Path, cwd: Path) -> Callable[[str], bool]:
+    def inside(word: str) -> bool:
+        path = Path(os.path.expanduser(os.path.expandvars(word)))
+        resolved = (cwd / path).resolve()
+        return resolved == root or root in resolved.parents
+
+    return inside
 
 
 def say(message: str) -> None:
@@ -222,16 +333,18 @@ def main() -> int:
     if not isinstance(session, str) or not session or "/" in session or session.startswith("."):
         return 0
 
+    root = os.environ.get("CLAUDE_PROJECT_DIR") or payload.get("cwd") or ""
+    if not root or not Path(root).is_dir():
+        return 0
+    cwd = payload.get("cwd")
+    base = Path(cwd) if isinstance(cwd, str) and Path(cwd).is_dir() else Path(root)
     try:
-        found = detect(command)
-    except ValueError:
+        found = detect(command, within(Path(root).resolve(), base.resolve()))
+    except (ValueError, OSError, RuntimeError):
         return 0
     if found is None:
         return 0
 
-    root = os.environ.get("CLAUDE_PROJECT_DIR") or payload.get("cwd") or ""
-    if not root or not Path(root).is_dir():
-        return 0
     state = Path(root) / "tmp" / "file-tools-nudge" / session
     digest = hashlib.sha256(command.encode()).hexdigest()
     try:

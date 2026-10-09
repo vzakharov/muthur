@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Drives `.claude/hooks/file-tools-nudge.py` as the harness does — a payload on
 stdin — and reads what it prints. What it protects is which commands count as a
-shell edit or write of a file, and the refuse-once-then-allow contract.
+shell read, edit or write of a file, and the refuse-once-then-allow contract.
 
 Run by path (`python3 scripts/test_file_tools_nudge.py`), as
 `scripts/check-muthur.sh` does.
@@ -35,11 +35,14 @@ class NudgeTestCase(unittest.TestCase):
         self.assertEqual(result.returncode, 0, result.stderr)
         return result
 
-    def reason(self, command: str, session: str = "sess") -> Optional[str]:
+    def reason(
+        self, command: str, session: str = "sess", cwd: Optional[Path] = None
+    ) -> Optional[str]:
         """The refusal's reason, or None when the command is allowed."""
         payload = {
             "hook_event_name": "PreToolUse",
             "session_id": session,
+            "cwd": str(cwd or self.root),
             "tool_name": "Bash",
             "tool_input": {"command": command},
         }
@@ -88,18 +91,60 @@ class WhatIsRefused(NudgeTestCase):
             with self.subTest(command=command):
                 self.assert_refused(command, "`Write`")
 
-
-class WhatIsLeftAlone(NudgeTestCase):
-    def test_reads(self) -> None:
+    def test_reads_of_project_files(self) -> None:
         for command in (
             "cat README.md",
             "head -n 40 CLAUDE.md",
             "tail -20 log.txt",
+            "head -n 5 a.md b.md",
             "sed -n '10,20p' notes.md",
             "sed 's/i/x/' notes.md",
+            "sed -n -e '1p' notes.md",
             "cat < input.txt",
+            "cd sub && cat a.md",
+            "timeout 5 head a.md",
+            "less docs/guide.md",
+            "nl -ba script.py",
+            "cat .claude/hooks/../rules/staging.md",
+        ):
+            with self.subTest(command=command):
+                self.assert_refused(command, "`Read`")
+
+    def test_an_absolute_path_inside_the_project(self) -> None:
+        self.assert_refused(f"cat {self.root}/CLAUDE.md", "`Read`")
+
+    def test_a_relative_path_resolves_against_the_cwd(self) -> None:
+        outside = tempfile.TemporaryDirectory()
+        self.addCleanup(outside.cleanup)
+        self.assertIsNone(self.reason("cat notes.md", cwd=Path(outside.name)))
+
+
+class WhatIsLeftAlone(NudgeTestCase):
+    def test_reads_that_feed_another_command(self) -> None:
+        for command in (
+            "cat data.json | jq .name",
+            "head -100 log.txt | grep ERROR",
             "echo $(cat VERSION)",
+            "v=$(head -1 VERSION) && echo $v",
+        ):
+            with self.subTest(command=command):
+                self.assertIsNone(self.reason(command))
+
+    def test_reads_of_files_outside_the_project(self) -> None:
+        for command in (
+            "cat /etc/hosts",
+            "head -20 ~/.bashrc",
+            "cat ../elsewhere.md",
+        ):
+            with self.subTest(command=command):
+                self.assertIsNone(self.reason(command))
+
+    def test_commands_reading_no_named_file(self) -> None:
+        for command in (
+            "sed 's/i/x/'",
+            "head -n 5",
             "perl -e 'print' -i",
+            "find . -name '*.md' | xargs cat",
         ):
             with self.subTest(command=command):
                 self.assertIsNone(self.reason(command))
@@ -179,6 +224,12 @@ class RefusedOnceThenAllowed(NudgeTestCase):
         self.assertIn("run the identical command again", reason)
         self.assertIn("with `sed -i`", reason)
         self.assertIn("`BATCH_EDIT=1`", reason)
+
+    def test_a_read_is_told_what_the_shell_misses(self) -> None:
+        reason = self.reason("head -n 40 CLAUDE.md")
+        assert reason is not None
+        self.assertIn("with `head`", reason)
+        self.assertIn("path-scoped rule", reason)
 
     def test_an_unrecordable_refusal_is_not_made(self) -> None:
         (self.root / "tmp").write_text("a file where the state directory goes")
