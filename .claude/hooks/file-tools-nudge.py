@@ -178,13 +178,20 @@ def in_place(args: list[str], argument_flags: str, options_end_at_operand: bool)
     return False
 
 
-def classify(words: list[str], outputs: list[str]) -> Optional[tuple[str, str]]:
-    """The kind of file change and the command making it, or None."""
+def program(words: list[str]) -> Optional[tuple[str, list[str]]]:
+    """The program a simple command runs and its arguments, past any leading
+    variable assignments, or None when there is no program."""
     while words and ASSIGNMENT.match(words[0]):
         words = words[1:]
-    if not words:
+    return (os.path.basename(words[0]), words[1:]) if words else None
+
+
+def classify(words: list[str], outputs: list[str]) -> Optional[tuple[str, str]]:
+    """The kind of file change and the command making it, or None."""
+    run = program(words)
+    if run is None:
         return None
-    name, args = os.path.basename(words[0]), words[1:]
+    name, args = run
     writes_a_file = any(is_file(f) for f in outputs)
 
     if name in WRAPPERS:
@@ -248,11 +255,10 @@ def sed_files(args: list[str]) -> list[str]:
 def viewed(words: list[str]) -> Optional[tuple[str, list[str]]]:
     """The viewer a simple command runs and the words it names as files, or None
     when it runs no viewer."""
-    while words and ASSIGNMENT.match(words[0]):
-        words = words[1:]
-    if not words:
+    run = program(words)
+    if run is None:
         return None
-    name, args = os.path.basename(words[0]), words[1:]
+    name, args = run
     if name in WRAPPERS:
         # `xargs` takes its files from stdin, which no word here names.
         return None if name == "xargs" else viewed(unwrap(name, args))
