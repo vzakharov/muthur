@@ -1,7 +1,7 @@
 Proposed squash title/body:
 
 ```
-feat: turn away the first shell read of a project file (pr #174)
+fix: turn away the first shell read of a project file (pr #174)
 ```
 
 ```
