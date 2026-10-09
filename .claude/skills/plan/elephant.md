@@ -7,16 +7,14 @@ principle both shapes share. The plan is written here and kept by
 
 ## The plan's shape
 
-Three sections:
+Three sections, in this order — the order the work runs, so the session taking
+a bite reads what it builds before where the job goes after it:
 
 - **`## Eaten so far`** — what the bites before this one built, coarse, at
   the altitude of the rest of the elephant: what now exists and what the next
   bite can build on, never how it got built. The session taking a bite starts
   from it, so it has to stand on its own without the PR or the history. Each
   bite folds itself in at its end; the section appears with the first one.
-- **`## Rest of the elephant`** — the job still to eat, coarse, in whatever
-  form reads best for it. What a bite takes leaves it. This section is what
-  marks a plan as an elephant for `/go`.
 - **`## This bite`** — what the open bite builds, detailed to what it needs: a
   line when it is plain, a page with its own DRY notes when it has a reuse call
   or a shape to settle. It exists while a bite is open — written when a session
@@ -24,6 +22,9 @@ Three sections:
   mid-bite folds in what is built and renames the rest `## Rest of the bite`,
   which is what the next session finds. The plan may write the first one, so
   the operator reviews it at the approval gate.
+- **`## Rest of the elephant`** — the job still to eat, coarse, in whatever
+  form reads best for it. What a bite takes leaves it. This section is what
+  marks a plan as an elephant for `/go`.
 
 **The plan is the current contract at every moment.** Each pause rewrites it
 to what is true now: the bite folded into what is eaten or cut to its rest,
