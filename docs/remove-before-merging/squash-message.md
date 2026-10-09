@@ -6,10 +6,11 @@ fix: #175 extract images the operator sends mid-turn (pr #176)
 
 ```
 An image the operator sent while a turn was running reached the agent's
-context but never tmp/session-images/, so it died with the machine. The
-client writes such a message not as a `user` record but as an
-`attachment` record of type `queued_command`, with the image blocks
-under `attachment.prompt`, and the extractor read only the first shape.
+context but never tmp/session-images/, so the agent could look at it and
+do nothing else: no file to commit, edit or hand to a tool. The client
+writes such a message not as a `user` record but as an `attachment`
+record of type `queued_command`, with the image blocks under
+`attachment.prompt`, and the extractor read only the first shape.
 
 scripts/extract-session-images.py now reads an operator's message from
 either record, with the human-origin filter on both; the SHA dedupe
