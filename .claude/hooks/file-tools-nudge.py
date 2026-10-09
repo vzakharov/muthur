@@ -93,9 +93,8 @@ def is_punctuation(token: str) -> bool:
 
 
 class Simple:
-    """One simple command: its words, the files it redirects output into and
-    input from, and whether its output feeds another command rather than the
-    agent."""
+    """One simple command; `consumed` when its output feeds another command
+    rather than the agent."""
 
     def __init__(self) -> None:
         self.words: list[str] = []
