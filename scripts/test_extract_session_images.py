@@ -1,10 +1,6 @@
 #!/usr/bin/env python3
 """Tests for which transcript records `extract-session-images.py` writes out.
 
-The records are built to the shapes Claude Code writes, since the shape is the
-client's and undocumented: an image sent with a prompt that starts a turn, and
-one sent while a turn was running.
-
 Run by path, as `scripts/check-muthur.sh` does — see the note there on why never
 through `unittest discover`.
 """

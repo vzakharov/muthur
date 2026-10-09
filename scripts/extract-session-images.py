@@ -116,13 +116,11 @@ def _human(origin: object) -> bool:
 
 
 def _operator_message(record: dict) -> Optional[tuple[List[object], str]]:
-    """The content blocks and timestamp of an operator's message, or None.
+    """An operator's message as its content blocks and timestamp, or None.
 
-    An operator's message lands in one of two records. A prompt that starts a
-    turn is `type: "user"` with the blocks under `message.content`. One sent
-    while a turn is running is folded into that turn as `type: "attachment"`
-    whose `attachment.type` is `queued_command`, with the blocks under
-    `attachment.prompt` — a string when it carried no image.
+    A prompt that starts a turn is a `user` record; one sent mid-turn is folded
+    into the running turn as a `queued_command` attachment, whose `prompt` is a
+    plain string when it carries no image.
     """
     if record.get("type") == "user":
         if not _human(record.get("origin")):
