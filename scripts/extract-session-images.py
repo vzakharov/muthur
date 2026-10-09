@@ -111,11 +111,44 @@ def _cell(text: str) -> str:
     return text.replace("|", "\\|") or "—"
 
 
+def _human(origin: object) -> bool:
+    return isinstance(origin, dict) and origin.get("kind") == "human"
+
+
+def _operator_message(record: dict) -> Optional[tuple[List[object], str]]:
+    """An operator's message as its content blocks and timestamp, or None.
+
+    A prompt that starts a turn is a `user` record; one sent mid-turn is folded
+    into the running turn as a `queued_command` attachment, whose `prompt` is a
+    plain string when it carries no image.
+    """
+    if record.get("type") == "user":
+        if not _human(record.get("origin")):
+            return None
+        content = record.get("message", {}).get("content")
+        timestamp = record.get("timestamp")
+    elif record.get("type") == "attachment":
+        attachment = record.get("attachment")
+        if not isinstance(attachment, dict):
+            return None
+        if attachment.get("type") != "queued_command":
+            return None
+        if not _human(attachment.get("origin")):
+            return None
+        content = attachment.get("prompt")
+        timestamp = attachment.get("timestamp") or record.get("timestamp")
+    else:
+        return None
+    if not isinstance(content, list):
+        return None
+    return content, str(timestamp or "")
+
+
 def iter_attachments(transcript: Path, verbose: bool) -> Iterator[Attachment]:
     """Yield every operator-attached image in the transcript, in order.
 
     Three things look like one and are not, so the filter is narrower than
-    "a user record carrying an image": the agent's own `Read` of an image file
+    "a record carrying an image": the agent's own `Read` of an image file
     also lands under `type: "user"`, but nests the image in a `tool_result` and
     carries no `origin` key — extracting those would re-commit files the repo
     already has. Subagent turns carry `isSidechain: true`. `queue-operation`
@@ -142,16 +175,12 @@ def iter_attachments(transcript: Path, verbose: bool) -> Iterator[Attachment]:
                 continue
             if not isinstance(record, dict):
                 continue
-            if record.get("type") != "user":
-                continue
             if record.get("isSidechain"):
                 continue
-            origin = record.get("origin")
-            if not isinstance(origin, dict) or origin.get("kind") != "human":
+            message = _operator_message(record)
+            if message is None:
                 continue
-            content = record.get("message", {}).get("content")
-            if not isinstance(content, list):
-                continue
+            content, timestamp = message
 
             images = [
                 block
@@ -178,7 +207,7 @@ def iter_attachments(transcript: Path, verbose: bool) -> Iterator[Attachment]:
                 yield Attachment(
                     data=data,
                     media_type=source.get("media_type"),
-                    timestamp=str(record.get("timestamp") or ""),
+                    timestamp=timestamp,
                     uuid=str(record.get("uuid") or ""),
                     branch=str(record.get("gitBranch") or ""),
                     prompt=prompt,
