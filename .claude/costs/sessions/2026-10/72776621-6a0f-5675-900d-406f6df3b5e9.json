@@ -1,0 +1,94 @@
+{
+  "estimate": {
+    "at": "2026-10-10T13:03:32.252Z",
+    "parts": [
+      {
+        "hours": 3.0,
+        "grade": "senior",
+        "role": "developer",
+        "comment": "the check reads git's merge base, the ledger's row shapes and a running session's pending file together, and its tests need throwaway repositories; a mistake fails every branch's finalize"
+      },
+      {
+        "hours": 0.5,
+        "grade": "middle",
+        "role": "prompter",
+        "comment": "the notice and the ledger doc each gain a sentence giving the estimate its deadline, worded to the house voice"
+      }
+    ],
+    "comment": null
+  },
+  "sessionId": "72776621-6a0f-5675-900d-406f6df3b5e9",
+  "branch": "claude/vet-missing-estimate-tllyb2",
+  "cwd": "/home/user/muthur",
+  "openingPrompt": "Vet: fail when a branch's cost row has no human-hour estimate #179",
+  "prs": [
+    180
+  ],
+  "url": "https://claude.ai/code/session_01WBhET9gZCJgPqe8gMPiPcX",
+  "operator": "vzakharov",
+  "firstResponseAt": "2026-10-10T13:02:31.986Z",
+  "lastResponseAt": "2026-10-10T13:08:26.117Z",
+  "pricesAsOf": "2026-10-06",
+  "claudeCodeTotalUsd": null,
+  "total": {
+    "inputTokens": 90,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 160979,
+    "cacheReadTokens": 6857783,
+    "outputTokens": 32496,
+    "thinkingTokens": 13410,
+    "responses": 45,
+    "costUsd": 3.3096685999999993
+  },
+  "ownTurns": {
+    "inputTokens": 90,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 160979,
+    "cacheReadTokens": 6857783,
+    "outputTokens": 32496,
+    "thinkingTokens": 13410,
+    "responses": 45,
+    "costUsd": 3.3096685999999993
+  },
+  "subagents": {
+    "inputTokens": 0,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 0,
+    "cacheReadTokens": 0,
+    "outputTokens": 0,
+    "thinkingTokens": 0,
+    "responses": 0,
+    "costUsd": 0.0
+  },
+  "byRate": {
+    "claude-opus-5-5/standard": {
+      "inputTokens": 90,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 160979,
+      "cacheReadTokens": 6857783,
+      "outputTokens": 32496,
+      "thinkingTokens": 13410,
+      "responses": 45,
+      "costUsd": 3.3096685999999993
+    }
+  },
+  "warnings": [],
+  "orientation": {
+    "endedBy": "Edit",
+    "endedOn": ".claude/costs/lib/rows.py",
+    "endedAt": "2026-10-10T13:04:31.746Z",
+    "contextTokens": 146639,
+    "spend": {
+      "inputTokens": 28,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 97295,
+      "cacheReadTokens": 1517185,
+      "outputTokens": 8251,
+      "thinkingTokens": 5563,
+      "responses": 14,
+      "costUsd": 1.2469290000000002
+    }
+  },
+  "compactions": [],
+  "telemetry": null
+}
