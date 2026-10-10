@@ -25,8 +25,7 @@ rate is below the usual tenth of input (`.claude/costs/prices.json`).
   operator prompt resets. The wake after the last one parks the session — runs
   `/relay` without a successor (`@.claude/skills/relay/SKILL.md` § "Without a
   successor"), and no watcher follows it — so by default the first wake parks.
-  The relay's summary makes picking the work up cheap, which is what a renewal
-  competes with.
+  A renewal competes with that summary, which makes picking the work up cheap.
 - **More than 5 renewals is not recommended.** A renewal is two requests (the
   Bash call starting the next watcher, then the line), each reading the whole
   cached conversation, so it costs 2 ÷ 20 = 10% of a cold re-cache, or 5% where
