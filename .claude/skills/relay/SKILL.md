@@ -64,7 +64,7 @@ The successor's link — on the web `https://claude.ai/code/<session_id>` from t
 
 ### Without a successor
 
-The cache keepalive's last wake (`.claude/keepalive/`) relays this way: the session has idled for hours, so a successor started now is a session nobody is waiting for. Steps 1–2 as written, then no Step 3: the report gives the line the operator starts a new session with — `/relay take <branch>` in a fenced block holding only it — and the summary's size as Step 4 gives it.
+The cache keepalive's last wake (`.claude/keepalive/`) relays this way: the session has idled for an hour or more, so a successor started now is a session nobody is waiting for. Steps 1–2 as written, then no Step 3: the report gives the line the operator starts a new session with — `/relay take <branch>` in a fenced block holding only it — and the summary's size as Step 4 gives it.
 
 ### After the handoff
 
