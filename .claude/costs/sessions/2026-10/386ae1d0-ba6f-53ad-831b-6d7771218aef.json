@@ -12,35 +12,35 @@
     "comment": null
   },
   "sessionId": "386ae1d0-ba6f-53ad-831b-6d7771218aef",
-  "branch": "claude/dazzling-ride-gr4c0w",
+  "branch": "claude/estimate-staleness-gr4c0w",
   "cwd": "/home/user/muthur",
   "openingPrompt": "The session estimate goes stale while the operator grows the task #177 ещё вопрос, почему оценка меняется каким-то скриптом, а не просто Edit-ом? Как будто конф…",
   "prs": [],
   "url": "https://claude.ai/code/session_01ThPwHmD3Mcb3TEThoJ5MLa",
   "operator": "vzakharov",
   "firstResponseAt": "2026-10-10T12:55:19.345Z",
-  "lastResponseAt": "2026-10-10T16:53:59.732Z",
+  "lastResponseAt": "2026-10-10T17:49:53.393Z",
   "pricesAsOf": "2026-10-06",
   "claudeCodeTotalUsd": null,
   "total": {
-    "inputTokens": 46,
+    "inputTokens": 68,
     "cacheWrite5mTokens": 0,
-    "cacheWrite1hTokens": 79915,
-    "cacheReadTokens": 2461415,
-    "outputTokens": 16636,
-    "thinkingTokens": 9583,
-    "responses": 23,
-    "costUsd": 1.4645070000000002
+    "cacheWrite1hTokens": 93237,
+    "cacheReadTokens": 3931281,
+    "outputTokens": 20927,
+    "thinkingTokens": 10123,
+    "responses": 34,
+    "costUsd": 1.9509642000000005
   },
   "ownTurns": {
-    "inputTokens": 46,
+    "inputTokens": 68,
     "cacheWrite5mTokens": 0,
-    "cacheWrite1hTokens": 79915,
-    "cacheReadTokens": 2461415,
-    "outputTokens": 16636,
-    "thinkingTokens": 9583,
-    "responses": 23,
-    "costUsd": 1.4645070000000002
+    "cacheWrite1hTokens": 93237,
+    "cacheReadTokens": 3931281,
+    "outputTokens": 20927,
+    "thinkingTokens": 10123,
+    "responses": 34,
+    "costUsd": 1.9509642000000005
   },
   "subagents": {
     "inputTokens": 0,
@@ -54,14 +54,14 @@
   },
   "byRate": {
     "claude-opus-5-5/standard": {
-      "inputTokens": 46,
+      "inputTokens": 68,
       "cacheWrite5mTokens": 0,
-      "cacheWrite1hTokens": 79915,
-      "cacheReadTokens": 2461415,
-      "outputTokens": 16636,
-      "thinkingTokens": 9583,
-      "responses": 23,
-      "costUsd": 1.4645070000000002
+      "cacheWrite1hTokens": 93237,
+      "cacheReadTokens": 3931281,
+      "outputTokens": 20927,
+      "thinkingTokens": 10123,
+      "responses": 34,
+      "costUsd": 1.9509642000000005
     }
   },
   "warnings": [],
