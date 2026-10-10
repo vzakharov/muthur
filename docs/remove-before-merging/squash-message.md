@@ -11,12 +11,12 @@ running, and a new session for anything larger. The ride-along cost
 more than it saved: the sync waited on the host task's commits, and
 its triage table and commits muddied that task's PR.
 
-Every offer is now a new session, whatever the lag: claim the lock,
-then spawn `/update-muthur claimed`. The nudge's offer rules say so,
-and the notice that ruled a ride-along out on a branch whose watermark
-had drifted from the trunk's is gone with it. `/update-muthur` drops
-its `ride-along` argument and the Step 3a and Step 8 branches it
-selected, leaving `claimed` as its one argument.
+Every offer is now a new session: claim the lock, then spawn
+`/update-muthur claimed`. The nudge's offer rules say so, and the
+notice that ruled a ride-along out on a branch whose watermark had
+drifted from the trunk's is gone with it. `/update-muthur` drops its
+`ride-along` argument and the Step 3a and Step 8 branches it selected,
+leaving `claimed` as its one argument.
 
 Co-authored-by: Claude <noreply@anthropic.com>
 ```
