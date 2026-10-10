@@ -201,8 +201,8 @@ This is an offer to make, not work to start:
   printed: drop the offer, and say nothing of it or of the check.
 - The offer is a new session. On yes, `scripts/muthur-sync.sh claim` first,
   then a session with `/update-muthur claimed` as its prompt and `🔄 muthur →
-  <this repo's name, no owner>` as its title. A claim that exits 3 means another session got there first: say who
-  holds the lock and drop the offer.
+  <this repo's name, no owner>` as its title. A claim that exits 3 means
+  another session got there first: say who holds the lock and drop the offer.
   `/update-muthur` § "Offered at session start" has the rest.
 EOF
 }
