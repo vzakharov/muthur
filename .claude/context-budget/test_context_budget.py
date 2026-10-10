@@ -224,57 +224,80 @@ class WhenTheNoticesFire(BudgetTestCase):
         warning, _ = self.notices()
         self.assertIn("the open bite", warning)
 
-    def test_both_notices_offer_relay_as_the_way_on(self) -> None:
+    def test_both_notices_end_the_pause_in_a_relay(self) -> None:
         warning, pause = self.notices()
-        self.assertIn("offering `/relay`", warning)
-        self.assertIn("offering `/relay`", pause)
+        self.assertIn("run `/relay`", warning)
+        self.assertIn("run `/relay`", pause)
 
 
 class WhetherThePauseRelaysOnItsOwn(BudgetTestCase):
-    OPT_IN = "has not said whether to relay on their own"
+    AUTO = "without asking and with no argument, run `/relay`"
+    OFFER = "offering `/relay`"
 
-    def test_an_operator_never_asked_is_offered_it_with_the_relay(self) -> None:
-        self.session.signed_in_as("Someone")
-        warning, pause = self.notices()
-        self.assertIn(self.OPT_IN, warning)
-        self.assertIn("@someone", pause)
-        self.assertIn("offering `/relay`", pause)
+    def assert_relays(self, notice: str) -> None:
+        self.assertIn(self.AUTO, notice)
+        self.assertNotIn(self.OFFER, notice)
 
-    def test_on_makes_either_pause_relay_without_asking(self) -> None:
+    def assert_offers(self, notice: str) -> None:
+        self.assertIn(self.OFFER, notice)
+        self.assertNotIn(self.AUTO, notice)
+
+    def test_an_operator_with_no_setting_relays_without_asking(self) -> None:
         self.session.signed_in_as("Someone")
-        self.session.auto_relay("someone", "on\n")
         for notice in self.notices():
-            self.assertIn("without asking and with no argument, run `/relay`", notice)
-            self.assertIn("auto-relay/someone", notice)
-            self.assertNotIn("offering `/relay`", notice)
-            self.assertNotIn(self.OPT_IN, notice)
+            self.assert_relays(notice)
+            self.assertIn("how they turn that off", notice)
 
-    def test_off_keeps_the_offer_and_asks_nothing(self) -> None:
-        self.session.signed_in_as("someone")
-        self.session.auto_relay("someone", "off")
-        warning, pause = self.notices()
-        self.assertIn("offering `/relay`", pause)
-        self.assertNotIn(self.OPT_IN, warning)
-        self.assertNotIn(self.OPT_IN, pause)
+    def test_an_operators_off_keeps_the_offer(self) -> None:
+        self.session.signed_in_as("Someone")
+        self.session.auto_relay("someone", "off\n")
+        for notice in self.notices():
+            self.assert_offers(notice)
 
-    def test_a_setting_that_is_neither_reads_as_never_asked(self) -> None:
+    def test_an_operator_setting_that_is_not_off_is_the_default(self) -> None:
         self.session.signed_in_as("someone")
         self.session.auto_relay("someone", "yes please")
         _, pause = self.notices()
-        self.assertIn(self.OPT_IN, pause)
-        self.assertNotIn("with no argument, run", pause)
+        self.assert_relays(pause)
 
-    def test_a_bot_token_has_no_operator_to_ask(self) -> None:
+    def test_another_operators_off_is_not_this_ones(self) -> None:
+        self.session.signed_in_as("someone")
+        self.session.auto_relay("someone-else", "off")
+        _, pause = self.notices()
+        self.assert_relays(pause)
+
+    def test_the_environments_off_outranks_the_operators_on(self) -> None:
+        self.session.signed_in_as("someone")
+        self.session.auto_relay("someone", "on")
+        off = {"MUTHUR_AUTO_RELAY": "off"}
+        self.session.append(assistant(PAUSE + 1))
+        pause = self.session.notice(off)
+        assert pause is not None
+        self.assert_offers(pause)
+
+    def test_the_environments_on_leaves_the_operators_off(self) -> None:
+        self.session.signed_in_as("someone")
+        self.session.auto_relay("someone", "off")
+        self.session.append(assistant(PAUSE + 1))
+        pause = self.session.notice({"MUTHUR_AUTO_RELAY": "on"})
+        assert pause is not None
+        self.assert_offers(pause)
+
+    def test_an_unknown_environment_value_reads_as_off(self) -> None:
+        self.session.append(assistant(PAUSE + 1))
+        result = self.session.tool_call({"MUTHUR_AUTO_RELAY": "no"})
+        self.assertIn("MUTHUR_AUTO_RELAY", result.stderr)
+        self.assert_offers(json.loads(result.stdout)["hookSpecificOutput"]["additionalContext"])
+
+    def test_a_bot_token_has_no_operator_setting_to_read(self) -> None:
         self.session.signed_in_as("claude[bot]", kind="Bot")
-        self.session.auto_relay("claude[bot]", "on")
+        self.session.auto_relay("claude[bot]", "off")
         _, pause = self.notices()
-        self.assertIn("offering `/relay`", pause)
-        self.assertNotIn(self.OPT_IN, pause)
+        self.assert_relays(pause)
 
-    def test_an_unanswering_gh_has_no_operator_to_ask(self) -> None:
+    def test_an_unanswering_gh_leaves_the_default(self) -> None:
         _, pause = self.notices()
-        self.assertIn("offering `/relay`", pause)
-        self.assertNotIn(self.OPT_IN, pause)
+        self.assert_relays(pause)
 
 
 class ThePricedLines(BudgetTestCase):

@@ -98,7 +98,7 @@ Record in the plan file what is done and what is left, and the open question whe
 
 **Work with no plan behind it gets one here**, written straight to `docs/plans/<slug>.paused.md`: the task as asked, what is done (with its commits), what is left, and the decisions a successor would otherwise re-litigate. There is no draft stage — the work is already under way on a go-ahead, and `*.paused.md` is the state Step 1 resumes from.
 
-A pause the budget notice triggered is reported, not just done: say so, and end the turn offering `/relay` (`@.claude/skills/relay/SKILL.md`), whose new session resumes the paused plan from a summary of this one — or run it unasked, when the notice says the operator turned that on (`@.claude/skills/relay/SKILL.md` § "Auto-relay").
+A pause the budget notice triggered is reported, not just done: say so, and run `/relay` (`@.claude/skills/relay/SKILL.md`), whose new session resumes the paused plan from a summary of this one — unasked, unless the notice says auto-relay is off, when the turn ends offering it instead (`@.claude/skills/relay/SKILL.md` § "Auto-relay").
 
 ## Step 3 — Mandatory quality passes
 
