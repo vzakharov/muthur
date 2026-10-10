@@ -1,14 +1,15 @@
 Proposed squash title/body:
 
 ```
-feat: #179 fail vet when a branch's session has no estimate (pr #180)
+fix: #179 fail vet when a branch's session has no estimate (pr #180)
 ```
 
 ```
-A session's cost row could reach the trunk with no human-hour estimate:
-the notice asks for one "once the size of the work is known", which sets
-no deadline, and a Stop-hook block would ask before the size is settled.
-The gate goes where the work is done instead: the vet run at /finalize.
+Agents forget the human-hour estimate, so a session's cost row could
+reach the trunk without one: the notice asks for it "once the size of
+the work is known", which sets no deadline, and a Stop-hook block would
+ask before the size is settled. The gate goes where the work is done
+instead: the vet run at /finalize.
 
 `.claude/costs/check_estimates.py` fails on each session the branch
 carries without an estimate: rows it adds against its merge base with
@@ -24,7 +25,7 @@ counts the trunk's rows as the branch's.
 tests, so a repo that declined the ledger has nothing for it to find,
 and the estimate notice names the deadline.
 
-Closes #179
+Fixes #179
 
 Co-authored-by: Claude <noreply@anthropic.com>
 ```
