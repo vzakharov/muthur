@@ -269,9 +269,8 @@ class WhetherThePauseRelaysOnItsOwn(BudgetTestCase):
     def test_the_environments_off_outranks_the_operators_on(self) -> None:
         self.session.signed_in_as("someone")
         self.session.auto_relay("someone", "on")
-        off = {"MUTHUR_AUTO_RELAY": "off"}
         self.session.append(assistant(PAUSE + 1))
-        pause = self.session.notice(off)
+        pause = self.session.notice({"MUTHUR_AUTO_RELAY": "off"})
         assert pause is not None
         self.assert_offers(pause)
 

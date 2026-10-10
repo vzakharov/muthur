@@ -58,7 +58,7 @@ plan".
   warning, a hook failing on every tool call costs the session.
 
 `CONTEXT_BUDGET_WARN` and `CONTEXT_BUDGET_PAUSE` each fix their line, in
-tokens, `CONTEXT_BUDGET_PAUSE_SAVING` moves the priced pause, and
+tokens, `CONTEXT_BUDGET_PAUSE_SAVING` moves the priced pause,
 `CONTEXT_BUDGET_LINES=fixed` turns the pricing off, and
 `MUTHUR_AUTO_RELAY=off` turns auto-relay off — set them in
 `.claude/settings.local.json`'s `env`, or on the web in the cloud environment's
