@@ -198,7 +198,7 @@ class LagTest(MuthurSyncTestCase):
         self.assertIn(
             f"`git ls-remote origin refs/heads/muthur-sync-lock-{self.fx.base[:12]}`", out
         )
-        self.assertNotIn("ride-along is unavailable", out)
+        self.assertIn("The offer is a new session, whatever the lag.", out)
 
     def test_single_branch_clone_of_another_branch(self) -> None:
         work = self.lagging()
@@ -219,11 +219,6 @@ class LagTest(MuthurSyncTestCase):
         self.assertIn("is 50 commit(s) past", out)
         self.assertIn("  … and 62 more", out)
         self.assertNotIn("scripts/s0.sh", out)
-
-    def test_branch_watermark_behind_the_trunk(self) -> None:
-        work = self.lagging()
-        (work / WATERMARK).write_text(json.dumps({"lastSyncedSha": "0" * 40}))
-        self.assertIn("ride-along is unavailable on", self.nudge(work))
 
     def test_unreachable_source(self) -> None:
         work = self.lagging()

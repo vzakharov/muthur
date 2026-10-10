@@ -189,9 +189,7 @@ offer_rules() {
 This is an offer to make, not work to start:
 - Investigate nothing before the operator says yes: no clone, no `git show`, no
   reading of diffs, no claim. The lists above are the whole input for the offer.
-- Offer it once, at a natural moment. A ride-along ("by the way, …") only once
-  this session is making a change on this branch, never in answer to a question
-  that changes nothing; a new session at the end of a turn that delivered
+- Offer it once, at a natural moment: the end of a turn that delivered
   something.
 - Once made, it is never brought up again — not repeated, reminded of, or
   called still open in a later reply or a handoff report — whether the
@@ -201,13 +199,11 @@ This is an offer to make, not work to start:
 - Right before making the offer, run `git ls-remote origin refs/heads/@LOCK@`.
   Any output means another session claimed or landed this sync since it was
   printed: drop the offer, and say nothing of it or of the check.
-- Which offer: a ride-along when the changes are one or two commits touching
-  files here; a new session otherwise.
-- On yes, `/update-muthur ride-along` in this session after the task's own
-  commits; for a new session, `scripts/muthur-sync.sh claim` first, then
-  `/update-muthur claimed` as its prompt and `🔄 muthur → <this repo's name,
-  no owner>` as its title. A claim that exits 3 means another
-  session got there first: say who holds the lock and drop the offer.
+- The offer is a new session, whatever the lag. On yes,
+  `scripts/muthur-sync.sh claim` first, then a session with `/update-muthur
+  claimed` as its prompt and `🔄 muthur → <this repo's name, no owner>` as its
+  title. A claim that exits 3 means another session got there first: say who
+  holds the lock and drop the offer.
   `/update-muthur` § "Offered at session start" has the rest.
 EOF
 }
@@ -266,8 +262,7 @@ $(mark_files <<<"$files")"
   echo "muthur-sync: $SOURCE_REPO, the source this repo syncs its agent infrastructure"
   echo "from, is $count commit(s) past the last sync (${LAST_SHA:0:12})."
   echo
-  # Past the cap the lag is large, the offer is a new session whatever the rest
-  # says, and the exact list stops mattering.
+  # Past the cap the lag is large and the exact list stops mattering.
   if [ "$lines" -gt "$NUDGE_CAP" ]; then
     head -n "$NUDGE_CAP" <<<"$data"
     echo "  … and $((lines - NUDGE_CAP)) more"
@@ -278,14 +273,6 @@ $(mark_files <<<"$files")"
   echo "You adopted the following (the watermark's \`adopted\`):"
   sed 's/^/  /' <<<"$ADOPTED"
   offer_rules
-
-  local here_sha
-  here_sha="$(jq -r '.lastSyncedSha // empty' "$WATERMARK" 2>/dev/null || true)"
-  if [ "$here_sha" != "$LAST_SHA" ]; then
-    echo
-    echo "This branch's watermark is not the trunk's, so a ride-along is unavailable on"
-    echo "this branch: the offer is a new session."
-  fi
 }
 
 claim() {
