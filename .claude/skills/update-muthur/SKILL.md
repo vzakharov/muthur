@@ -157,15 +157,9 @@ chain is what makes it load-bearing.
 
 ## Arguments
 
-Two words, order-free, each changing one step. Bare, the sync claims its own
-lock and is a task of its own.
-
-- **`claimed`** — the session that made the offer holds the lock on this one's
-  behalf, so Step 1 skips the claim. A session spawned from the offer starts
-  with it.
-- **`ride-along`** — the sync is part of a task this session is already running,
-  so Step 3a is skipped and Step 8's tail is that task's. A ride-along offer
-  runs it.
+**`claimed`** — the session that made the offer holds the lock on this one's
+behalf, so Step 1 skips the claim. A session spawned from the offer starts with
+it. Bare, the sync claims its own lock.
 
 ## Procedure
 
@@ -231,10 +225,6 @@ split across sessions, an elephant or a pizza, when the lag is too long for one.
 A split cuts the candidates in source order, each slice or bite ending on a
 commit of the source's first-parent line — Step 7's boundary.
 
-**Invoked with `ride-along`, skip this step.** The session is already inside a
-routed task, and a lag of a commit or two fits in it by definition; handing the
-sync to `/task` would route a second task inside the first.
-
 ### Step 4 — Triage each candidate, from its commit message first
 
 Sources tend to write long commit messages that state the rationale. The message
@@ -250,6 +240,15 @@ above. Verdicts:
 | **skip (already have)** | This repo reached the same end state independently. |
 | **skip (not adopted)** | The path is in `declined` **and its recorded reason still holds** — if it doesn't, re-offer the path per Step 4a and move it to `adopted` if taken. Or the path is in neither list, which is Step 4a's other case. Never skip silently on either. |
 | **skip (diverged locally)** | This repo rewrote the file for its own stack — `scripts/vet.sh`, the watermark, anything the source marks `rewrite`. The source's edit is advice at best; read it for an idea, don't port it. |
+
+**A subject marked `[attn adopters]` — or, in older commits, any prose to the
+same effect, such as `ADOPTERS, read body` — addresses this repo whatever its
+verdict.** Its body's `Adopters:` paragraph asks for something no port does
+(`@.claude/skills/squash-message/SKILL.md` defines the marker), so a skipped
+commit still delivers it. A sweep inside this tree rides the sync like a port
+and is reported with it. What the paragraph gates on the operator goes to them
+once, in the sync's report and in its terms, and § "Offered at session start"'s
+never-chase rule holds for it as it does for the sync.
 
 **The source's fix may not be this repo's fix.** Split a commit's rationale
 before deciding: one commit can carry a change that addresses a defect this repo
@@ -320,8 +319,7 @@ Report the triage table — every candidate, with its verdict and one line of
 reasoning, skips included. The skipped commits' reasoning belongs in the PR
 body, since the watermark advances past them and nothing else records why. The
 tail — `@.claude/skills/polish/SKILL.md` and `@.claude/skills/pr/SKILL.md` — is
-whatever the `/task` outcome runs, `/go` ending in both; a ride-along's is the
-routed task's own.
+whatever the `/task` outcome runs, `/go` ending in both.
 
 If this repo adopted the sync path without the PR loop, land the sync however it
 normally lands changes — the triage table still belongs wherever that record goes.
@@ -365,21 +363,13 @@ or a handoff report — whether it was declined or left unanswered. "Once" spans
 relay chain: a relayed session gets its own nudge, so the summary handing it
 over says the offer was made, and that session makes none.
 
-On yes, one of two shapes:
-
-- **Ride-along** — a lag of a commit or two touching files here, offered once
-  the session is already making a change on its branch. Run `/update-muthur
-  ride-along` in this session, on this branch, after the task's own commits; its
-  Step 1 claims the lock. The sync's commits ride that task's PR, and its
-  triage table goes in that PR's body beside the task's own summary. It is
-  unavailable on a branch whose watermark is not the trunk's, where the nudge
-  says so.
-- **New session** — anything larger. `scripts/muthur-sync.sh claim` first, so
-  nobody takes the lock while the session starts. Then, where `create_session`
-  exists, spawn one on this repo with the prompt `/update-muthur claimed` and
-  the title `🔄 muthur → <repo>`, `<repo>` being this repo's name without its
-  owner: an operator syncing several adopters otherwise gets a session list of
-  identical titles. Elsewhere, hand the operator that command to paste into one.
+**On yes, the sync gets a session of its own.** `scripts/muthur-sync.sh claim`
+first, so nobody takes the lock while the session starts. Then, where
+`create_session` exists, spawn one on this repo with the prompt `/update-muthur
+claimed` and the title `🔄 muthur → <repo>`, `<repo>` being this repo's name
+without its owner: an operator syncing several adopters otherwise gets a session
+list of identical titles. Elsewhere, hand the operator that command to paste
+into one.
 
 ## Add what the next sync teaches you
 

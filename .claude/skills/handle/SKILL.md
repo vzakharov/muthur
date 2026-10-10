@@ -46,6 +46,8 @@ Two lanes, and which runs is read off the branch:
 
   The commit is what makes the next re-export a `git diff` rather than a guess, and the novelty test's record of what you have seen. It is the same answer `/take-issue` Step 2 gives for an issue — with a difference that is the whole point here: an issue is committed once, a PR every time it is re-taken. What that leaves on the branch is the sequence of states the PR was in when each turn read it, so the operator reviewing the branch sees what the agent was reacting to rather than only what it did about it. `@.claude/skills/finalize/SKILL.md` deletes the tree before `gh pr ready`, so these commits and that delete cancel out in the squash. **Follow the verdict's links** — every row's anchor is further down the same file. Open the posts it lists; the indexes below it are context, not a second selection.
 
+  **A verdict that opens on `Large review` is worked through subagents, never read here:** load `@.claude/skills/handle/large-review.md` before opening a single post.
+
   **Whose post the tail is comes off the export's label, not the login** — shared identity puts both under the same `@login`. Every rendered author reads `@login (agent)` or `@login (human)`: a tail labelled `(agent)` is your own reply, `(human)` is guidance. `scripts/gh_export/authorship.py` owns the test, and why the footer it reads stays mandatory.
 
   **No verdict test.** A review's `state` is not consulted. Shared identity again: GitHub disables both verdicts on your own PR ("Pull request authors can't request changes on their own pull requests"), so every review that can reach these PRs is a plain `COMMENTED` one — `CHANGES_REQUESTED` is unreachable, not merely rare, and would have selected the same work anyway.

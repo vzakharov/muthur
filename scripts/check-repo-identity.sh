@@ -66,6 +66,7 @@ allowed=(
   ADOPTING.md
   docs/adopting/web-remote.md
   docs/adopting/sync.md
+  docs/adopting/hello.md
   .claude/skills/detemplate/SKILL.md
 )
 

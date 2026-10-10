@@ -16,6 +16,7 @@ from lib.shape import ShapeError, read_number, read_object, read_string, require
 from lib.tally import Tally, parse_tally
 
 ROOT = Path(__file__).resolve().parents[3]
+SESSIONS = ROOT / ".claude" / "costs" / "sessions"
 
 
 @dataclass
@@ -136,6 +137,11 @@ def write_atomic(out: Path, contents: str) -> None:
     out.parent.mkdir(parents=True, exist_ok=True)
     staged.write_text(contents, encoding="utf-8")
     os.replace(staged, out)
+
+
+def row_path(session_id: str) -> Optional[Path]:
+    found = sorted(SESSIONS.glob(f"*/{session_id}.json"))
+    return found[0] if found else None
 
 
 def pending_estimate_path(session_id: str) -> Path:

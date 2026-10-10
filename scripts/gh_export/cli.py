@@ -1,10 +1,26 @@
-"""Argument parsing for `scripts/export-github-item.py`."""
+"""Argument and environment parsing for `scripts/export-github-item.py`."""
 
 from __future__ import annotations
 
+import os
 import re
 
 from lib.github import detect_origin_repo, die
+
+# Mirrors `.claude/context-budget/hooks/post-tool-context-budget.sh`'s fixed
+# warning line and its override; a tree without the context budget still
+# measures a review against it.
+WARN_LINE_VARIABLE = "CONTEXT_BUDGET_WARN"
+DEFAULT_WARN_LINE = 200_000
+
+
+def context_warn_line() -> int:
+    raw = os.environ.get(WARN_LINE_VARIABLE, "")
+    if not raw:
+        return DEFAULT_WARN_LINE
+    if not raw.isdigit():
+        die(f"{WARN_LINE_VARIABLE} must be a whole count of tokens, not {raw!r}.")
+    return int(raw)
 
 USAGE = (
     "Usage: python3 scripts/export-github-item.py "
