@@ -1,0 +1,94 @@
+{
+  "estimate": {
+    "at": "2026-10-10T13:10:51.026Z",
+    "parts": [
+      {
+        "hours": 1.5,
+        "grade": "senior",
+        "role": "developer",
+        "comment": "a hook's semantics change with its tests, and the default has to stay safe for adopters who set nothing"
+      },
+      {
+        "hours": 1.0,
+        "grade": "senior",
+        "role": "analyst",
+        "comment": "the renewal cost has to be derived from the pricing table and the wake's request count, not taken on trust"
+      }
+    ],
+    "comment": null
+  },
+  "sessionId": "fed446c3-7439-53b1-ad69-92d65655685a",
+  "branch": "claude/keepalive-renewals-jgr7s4",
+  "cwd": "/home/user/muthur",
+  "openingPrompt": "давай делать автопродление кеша на уровне энва (количество продлений), И в отсутствии энва = 0, то есть сразу переходим к паркингу релея. Зачем: по себе заметил…",
+  "prs": [
+    181
+  ],
+  "url": "https://claude.ai/code/session_01GKjXg4C3zoQEoLCPCNWWpw",
+  "operator": "vzakharov",
+  "firstResponseAt": "2026-10-10T13:08:28.356Z",
+  "lastResponseAt": "2026-10-10T13:11:33.298Z",
+  "pricesAsOf": "2026-10-06",
+  "claudeCodeTotalUsd": null,
+  "total": {
+    "inputTokens": 60,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 99436,
+    "cacheReadTokens": 3511596,
+    "outputTokens": 18142,
+    "thinkingTokens": 6002,
+    "responses": 30,
+    "costUsd": 1.8608872000000003
+  },
+  "ownTurns": {
+    "inputTokens": 60,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 99436,
+    "cacheReadTokens": 3511596,
+    "outputTokens": 18142,
+    "thinkingTokens": 6002,
+    "responses": 30,
+    "costUsd": 1.8608872000000003
+  },
+  "subagents": {
+    "inputTokens": 0,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 0,
+    "cacheReadTokens": 0,
+    "outputTokens": 0,
+    "thinkingTokens": 0,
+    "responses": 0,
+    "costUsd": 0.0
+  },
+  "byRate": {
+    "claude-opus-5-5/standard": {
+      "inputTokens": 60,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 99436,
+      "cacheReadTokens": 3511596,
+      "outputTokens": 18142,
+      "thinkingTokens": 6002,
+      "responses": 30,
+      "costUsd": 1.8608872000000003
+    }
+  },
+  "warnings": [],
+  "orientation": {
+    "endedBy": "Edit",
+    "endedOn": ".claude/keepalive/hooks/keepalive.py",
+    "endedAt": "2026-10-10T13:09:41.533Z",
+    "contextTokens": 114955,
+    "spend": {
+      "inputTokens": 20,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 68459,
+      "cacheReadTokens": 937307,
+      "outputTokens": 5767,
+      "thinkingTokens": 4024,
+      "responses": 10,
+      "costUsd": 0.8505534
+    }
+  },
+  "compactions": [],
+  "telemetry": null
+}
