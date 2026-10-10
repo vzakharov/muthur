@@ -6,10 +6,9 @@ feat: make auto-relay the default, with env and operator opt-outs (pr #182)
 
 ```
 A context-budget pause offered /relay and asked each operator once
-whether to run it unasked from then on. Opting in was the step nearly
-everyone took, so the relay now runs on its own by default and the
-once-a-session question is gone; the relay's report says how to turn
-it off instead.
+whether to run it unasked from then on. Running it unasked is now the
+default, so the question is gone and the relay's report says how to
+turn it off instead.
 
 Two switches turn it off, either one enough: MUTHUR_AUTO_RELAY=off
 among the environment's variables (on the web, the cloud environment's
