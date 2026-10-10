@@ -28,7 +28,7 @@ sys.path.insert(0, str(ROOT / ".claude" / "costs"))
 
 from lib.restart import TTL_1H, epoch, read_history
 
-DEFAULT_WAKES = 5
+DEFAULT_RENEWALS = 0
 DEFAULT_LEAD = 300
 POLL = 30
 # The Bash tool's cap on a background command, in seconds. The watcher exits
@@ -141,7 +141,7 @@ SUFFICIENT = (
 )
 
 
-def context(data: Dict[str, Any], wakes: int, session: str, transcript: str) -> Optional[str]:
+def context(data: Dict[str, Any], renewals: int, session: str, transcript: str) -> Optional[str]:
     if running(data.get("pid")):
         return (
             f"A {MARK.lower()} watcher is running. If, as this turn ends, {SUFFICIENT},"
@@ -153,26 +153,26 @@ def context(data: Dict[str, Any], wakes: int, session: str, transcript: str) -> 
             f"As this turn's last action, {start_line(session, transcript)}"
             f" Skip it when, at that point, {SUFFICIENT}."
         )
-    if spent >= wakes:
+    if spent > renewals:
         return (
-            f"{MARK}, last wake ({spent} of {wakes}): the session has idled for hours. Run `/relay`"
-            " per `.claude/skills/relay/SKILL.md` § \"Without a successor\": commit the summary,"
-            " start no session, and end the reply with the `/relay take <branch>` line."
-            " Do not start the watcher again."
+            f"{MARK}, last wake ({renewals} renewals spent): the prompt cache is about to expire"
+            " on an idle session, so park it. Run `/relay` per `.claude/skills/relay/SKILL.md`"
+            " § \"Without a successor\": commit the summary, start no session, and end the reply"
+            " with the `/relay take <branch>` line. Do not start the watcher again."
         )
     return (
-        f"{MARK}, wake {spent} of {wakes}: this turn exists only to keep the prompt cache warm, so "
+        f"{MARK}, renewal {spent} of {renewals}: this turn exists only to keep the prompt cache warm, so "
         + start_line(session, transcript)
         + " Then reply in the conversation's language with one line of at most seven words"
-        f" saying so (e.g. «🕯 кеш продлён, {spent}/{wakes}»), and nothing else."
+        f" saying so (e.g. «🕯 кеш продлён, {spent}/{renewals}»), and nothing else."
     )
 
 
-def on_prompt(state: State, prompt: str, wakes: int, session: str, transcript: str) -> Optional[str]:
+def on_prompt(state: State, prompt: str, renewals: int, session: str, transcript: str) -> Optional[str]:
     data = state.read()
     if MARK not in prompt:
         data["wakes"] = 0
-    out = context(data, wakes, session, transcript)
+    out = context(data, renewals, session, transcript)
     data["fired"] = False
     state.write(data)
     return out
@@ -183,10 +183,13 @@ def setting(name: str, default: int) -> Optional[int]:
     if raw is None:
         return default
     try:
-        return int(raw)
+        value = int(raw)
     except ValueError:
+        value = -1
+    if value < 0:
         print(f"keepalive: {name} must be a whole number; nothing armed.", file=sys.stderr)
         return None
+    return value
 
 
 def safe(session: str) -> bool:
@@ -196,9 +199,9 @@ def safe(session: str) -> bool:
 def main() -> int:
     if os.environ.get("CACHE_KEEPALIVE") == "off":
         return 0
-    wakes = setting("CACHE_KEEPALIVE_WAKES", DEFAULT_WAKES)
+    renewals = setting("CACHE_KEEPALIVE_RENEWALS", DEFAULT_RENEWALS)
     lead = setting("CACHE_KEEPALIVE_LEAD", DEFAULT_LEAD)
-    if wakes is None or lead is None:
+    if renewals is None or lead is None:
         return 0
     home = Path(os.environ.get("CLAUDE_PROJECT_DIR") or ROOT) / "tmp" / "keepalive"
     if sys.argv[1:2] == ["watch"] and len(sys.argv) == 4:
@@ -211,7 +214,7 @@ def main() -> int:
     if event.get("hook_event_name") != "UserPromptSubmit" or not safe(session):
         return 0
     state = State(home, session)
-    out = on_prompt(state, event.get("prompt") or "", wakes, session, event.get("transcript_path") or "")
+    out = on_prompt(state, event.get("prompt") or "", renewals, session, event.get("transcript_path") or "")
     if out is not None:
         print(json.dumps({"hookSpecificOutput": {"hookEventName": "UserPromptSubmit", "additionalContext": out}}))
     return 0
