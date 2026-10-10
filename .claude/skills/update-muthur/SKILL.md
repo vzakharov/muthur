@@ -363,14 +363,13 @@ or a handoff report — whether it was declined or left unanswered. "Once" spans
 relay chain: a relayed session gets its own nudge, so the summary handing it
 over says the offer was made, and that session makes none.
 
-**On yes, the sync gets a session of its own, whatever the lag**, so its triage
-and its PR are about the sync alone and the session that made the offer stays
-on its task. `scripts/muthur-sync.sh claim` first, so nobody takes the lock
-while the session starts. Then, where `create_session` exists, spawn one on this
-repo with the prompt `/update-muthur claimed` and the title `🔄 muthur →
-<repo>`, `<repo>` being this repo's name without its owner: an operator syncing
-several adopters otherwise gets a session list of identical titles. Elsewhere,
-hand the operator that command to paste into one.
+**On yes, the sync gets a session of its own.** `scripts/muthur-sync.sh claim`
+first, so nobody takes the lock while the session starts. Then, where
+`create_session` exists, spawn one on this repo with the prompt `/update-muthur
+claimed` and the title `🔄 muthur → <repo>`, `<repo>` being this repo's name
+without its owner: an operator syncing several adopters otherwise gets a session
+list of identical titles. Elsewhere, hand the operator that command to paste
+into one.
 
 ## Add what the next sync teaches you
 

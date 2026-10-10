@@ -198,7 +198,7 @@ class LagTest(MuthurSyncTestCase):
         self.assertIn(
             f"`git ls-remote origin refs/heads/muthur-sync-lock-{self.fx.base[:12]}`", out
         )
-        self.assertIn("The offer is a new session, whatever the lag.", out)
+        self.assertIn("The offer is a new session.", out)
 
     def test_single_branch_clone_of_another_branch(self) -> None:
         work = self.lagging()
