@@ -233,7 +233,6 @@ the reason for them. A revision replaces it, so its history is git's.
 - **A branch lands with an estimate on every session it carries.**
   `check_estimates.py`, in the vet run, fails one without: the notice sets no
   deadline, and a `Stop` hook would ask before the size of the work is known.
-  Rows the trunk already carries are exempt, since many predate estimates.
 - **It sizes the task, never the session's pace.** It moves when the task
   does — scope added, a difficulty no estimator would have foreseen, a relay
   handing the rest on. A model that booked its own detours as extra hours would

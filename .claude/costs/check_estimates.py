@@ -7,10 +7,6 @@ responding, and the running session (`CLAUDE_CODE_SESSION_ID`), whose estimate
 counts from its pending file under `tmp/` by `estimate.py show`'s rule. A row
 the trunk already carries is left alone, since many predate estimates.
 
-`scripts/vet.sh` runs it by path beside the ledger's tests, so `/finalize`
-stops on a missing estimate where the size of the work is known; a turn's end
-is too early to ask for one, and the notice alone sets no deadline.
-
 Stdlib only — Python 3.9+.
 """
 
