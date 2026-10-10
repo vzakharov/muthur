@@ -1,0 +1,88 @@
+{
+  "estimate": {
+    "at": "2026-10-10T13:36:24.969Z",
+    "parts": [
+      {
+        "hours": 0.5,
+        "grade": "middle",
+        "role": "developer",
+        "comment": "land prep for a small, already-reviewed hook-and-skill PR: base merge, vet, squash message, attestation"
+      }
+    ],
+    "comment": null
+  },
+  "sessionId": "a68a31b8-1fe9-58ec-abe3-3afe15a5f01f",
+  "branch": "claude/relay-park-9gse57",
+  "cwd": "/home/user/muthur",
+  "openingPrompt": "/finalize & merge claude/relay-park-9gse57",
+  "prs": [
+    166
+  ],
+  "url": "https://claude.ai/code/session_01XiyPnDZfzqfZkYA8YC682T",
+  "operator": "vzakharov",
+  "firstResponseAt": "2026-10-10T13:33:56.059Z",
+  "lastResponseAt": "2026-10-10T13:39:00.544Z",
+  "pricesAsOf": "2026-10-06",
+  "claudeCodeTotalUsd": null,
+  "total": {
+    "inputTokens": 70,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 92949,
+    "cacheReadTokens": 4094042,
+    "outputTokens": 10698,
+    "thinkingTokens": 2798,
+    "responses": 35,
+    "costUsd": 1.7766404000000002
+  },
+  "ownTurns": {
+    "inputTokens": 70,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 92949,
+    "cacheReadTokens": 4094042,
+    "outputTokens": 10698,
+    "thinkingTokens": 2798,
+    "responses": 35,
+    "costUsd": 1.7766404000000002
+  },
+  "subagents": {
+    "inputTokens": 0,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 0,
+    "cacheReadTokens": 0,
+    "outputTokens": 0,
+    "thinkingTokens": 0,
+    "responses": 0,
+    "costUsd": 0.0
+  },
+  "byRate": {
+    "claude-opus-5-5/standard": {
+      "inputTokens": 70,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 92949,
+      "cacheReadTokens": 4094042,
+      "outputTokens": 10698,
+      "thinkingTokens": 2798,
+      "responses": 35,
+      "costUsd": 1.7766404000000002
+    }
+  },
+  "warnings": [],
+  "orientation": {
+    "endedBy": "end_turn",
+    "endedOn": null,
+    "endedAt": "2026-10-10T13:39:00.544Z",
+    "contextTokens": 139247,
+    "spend": {
+      "inputTokens": 68,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 92699,
+      "cacheReadTokens": 3955047,
+      "outputTokens": 9873,
+      "thinkingTokens": 2701,
+      "responses": 34,
+      "costUsd": 1.7303334000000001
+    }
+  },
+  "compactions": [],
+  "telemetry": null
+}
