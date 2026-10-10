@@ -1,0 +1,86 @@
+{
+  "estimate": {
+    "at": "2026-10-10T12:56:04.512Z",
+    "parts": [
+      {
+        "hours": 0.5,
+        "grade": "senior",
+        "role": "architect",
+        "comment": "weighing a storage API against the house tool rule needs someone who knows the ledger's Stop-hook commit flow and the row/pending merge by timestamp"
+      }
+    ],
+    "comment": null
+  },
+  "sessionId": "386ae1d0-ba6f-53ad-831b-6d7771218aef",
+  "branch": "claude/dazzling-ride-gr4c0w",
+  "cwd": "/home/user/muthur",
+  "openingPrompt": "The session estimate goes stale while the operator grows the task #177 ещё вопрос, почему оценка меняется каким-то скриптом, а не просто Edit-ом? Как будто конф…",
+  "prs": [],
+  "url": "https://claude.ai/code/session_01ThPwHmD3Mcb3TEThoJ5MLa",
+  "operator": "vzakharov",
+  "firstResponseAt": "2026-10-10T12:55:19.345Z",
+  "lastResponseAt": "2026-10-10T12:56:13.395Z",
+  "pricesAsOf": "2026-10-06",
+  "claudeCodeTotalUsd": null,
+  "total": {
+    "inputTokens": 16,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 57862,
+    "cacheReadTokens": 712365,
+    "outputTokens": 5813,
+    "thinkingTokens": 2876,
+    "responses": 8,
+    "costUsd": 0.721693
+  },
+  "ownTurns": {
+    "inputTokens": 16,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 57862,
+    "cacheReadTokens": 712365,
+    "outputTokens": 5813,
+    "thinkingTokens": 2876,
+    "responses": 8,
+    "costUsd": 0.721693
+  },
+  "subagents": {
+    "inputTokens": 0,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 0,
+    "cacheReadTokens": 0,
+    "outputTokens": 0,
+    "thinkingTokens": 0,
+    "responses": 0,
+    "costUsd": 0.0
+  },
+  "byRate": {
+    "claude-opus-5-5/standard": {
+      "inputTokens": 16,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 57862,
+      "cacheReadTokens": 712365,
+      "outputTokens": 5813,
+      "thinkingTokens": 2876,
+      "responses": 8,
+      "costUsd": 0.721693
+    }
+  },
+  "warnings": [],
+  "orientation": {
+    "endedBy": "end_turn",
+    "endedOn": null,
+    "endedAt": "2026-10-10T12:56:13.395Z",
+    "contextTokens": 104160,
+    "spend": {
+      "inputTokens": 14,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 57490,
+      "cacheReadTokens": 608579,
+      "outputTokens": 4555,
+      "thinkingTokens": 2865,
+      "responses": 7,
+      "costUsd": 0.6727918
+    }
+  },
+  "compactions": [],
+  "telemetry": null
+}
