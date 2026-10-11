@@ -49,15 +49,17 @@ plan".
   it would otherwise repeat on every tool call.
 - **The operator is resolved only when a notice is about to fire**, with `gh api
   user`, since it costs a network call and the ordinary tool call has no use for
-  it. Their `auto-relay/<handle>` decides how the pause ends, and
-  `@.claude/skills/relay/SKILL.md` § "Auto-relay" owns what it means and who
-  writes it. A `gh` that cannot answer, or a token that is not a `User`'s, reads
-  as `off` and asks nothing: there is no one to have opted in and nowhere to
-  record an answer.
+  it — and not at all once `MUTHUR_AUTO_RELAY=off` has settled how the
+  pause ends. Their `auto-relay/<handle>` saying `off` turns auto-relay off for
+  them, and `@.claude/skills/relay/SKILL.md` § "Auto-relay" owns what the two
+  switches mean and who writes the file. A `gh` that cannot answer, or a token
+  that is not a `User`'s, has no setting to read and leaves auto-relay on.
 - **Anything unreadable is silence**, never an error: a missing notice costs a
   warning, a hook failing on every tool call costs the session.
 
 `CONTEXT_BUDGET_WARN` and `CONTEXT_BUDGET_PAUSE` each fix their line, in
-tokens, `CONTEXT_BUDGET_PAUSE_SAVING` moves the priced pause, and
-`CONTEXT_BUDGET_LINES=fixed` turns the pricing off — set them in
-`.claude/settings.local.json`'s `env` to tune without editing a tracked file.
+tokens, `CONTEXT_BUDGET_PAUSE_SAVING` moves the priced pause,
+`CONTEXT_BUDGET_LINES=fixed` turns the pricing off, and
+`MUTHUR_AUTO_RELAY=off` turns auto-relay off — set them in
+`.claude/settings.local.json`'s `env`, or on the web in the cloud environment's
+variables, to tune without editing a tracked file.

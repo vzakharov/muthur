@@ -1,0 +1,94 @@
+{
+  "estimate": {
+    "at": "2026-10-10T13:12:13.071Z",
+    "parts": [
+      {
+        "hours": 2.0,
+        "grade": "senior",
+        "role": "developer",
+        "comment": "flipping a default in a hook means reworking its precedence and the tests that pin each switch, where a wrong case relays sessions nobody asked for"
+      },
+      {
+        "hours": 1.0,
+        "grade": "senior",
+        "role": "prompter",
+        "comment": "the relay, go and budget docs each state the switch, and must agree on who writes it and what wins"
+      }
+    ],
+    "comment": null
+  },
+  "sessionId": "832e46e1-ef8f-519d-9b60-f2b6ea489317",
+  "branch": "claude/auto-relay-default-8o7x6i",
+  "cwd": "/home/user/muthur",
+  "openingPrompt": "давай сделаем авторелей дефолтным поведением; может отключаться на уровне конкретного оператора (по хендлу) или по энву (через setup script, точнее идущий в том…",
+  "prs": [
+    182
+  ],
+  "url": "https://claude.ai/code/session_01TMUnDUc4KfS2oRHWMpEfxZ",
+  "operator": "vzakharov",
+  "firstResponseAt": "2026-10-10T13:09:17.335Z",
+  "lastResponseAt": "2026-10-10T13:13:59.443Z",
+  "pricesAsOf": "2026-10-06",
+  "claudeCodeTotalUsd": null,
+  "total": {
+    "inputTokens": 56,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 121588,
+    "cacheReadTokens": 3591372,
+    "outputTokens": 22445,
+    "thinkingTokens": 7329,
+    "responses": 28,
+    "costUsd": 2.1401024000000004
+  },
+  "ownTurns": {
+    "inputTokens": 56,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 121588,
+    "cacheReadTokens": 3591372,
+    "outputTokens": 22445,
+    "thinkingTokens": 7329,
+    "responses": 28,
+    "costUsd": 2.1401024000000004
+  },
+  "subagents": {
+    "inputTokens": 0,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 0,
+    "cacheReadTokens": 0,
+    "outputTokens": 0,
+    "thinkingTokens": 0,
+    "responses": 0,
+    "costUsd": 0.0
+  },
+  "byRate": {
+    "claude-opus-5-5/standard": {
+      "inputTokens": 56,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 121588,
+      "cacheReadTokens": 3591372,
+      "outputTokens": 22445,
+      "thinkingTokens": 7329,
+      "responses": 28,
+      "costUsd": 2.1401024000000004
+    }
+  },
+  "warnings": [],
+  "orientation": {
+    "endedBy": "Edit",
+    "endedOn": ".claude/context-budget/hooks/post-tool-context-budget.sh",
+    "endedAt": "2026-10-10T13:10:31.089Z",
+    "contextTokens": 122338,
+    "spend": {
+      "inputTokens": 20,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 74256,
+      "cacheReadTokens": 977677,
+      "outputTokens": 5520,
+      "thinkingTokens": 3939,
+      "responses": 10,
+      "costUsd": 0.9000634000000001
+    }
+  },
+  "compactions": [],
+  "telemetry": null
+}
