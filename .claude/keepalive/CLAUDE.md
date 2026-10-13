@@ -8,9 +8,9 @@ rate is below the usual tenth of input (`.claude/costs/prices.json`).
 - **The watcher is a background Bash task, the one exception to CLAUDE.md's
   ban on `run_in_background`.** The platform reclaims an idle container within
   minutes unless a background task is running; an async hook does not count.
-  `keepalive.py watch` polls the transcript and exits `CACHE_KEEPALIVE_LEAD`
-  seconds (default 300) before the cache expires, and the task's completion
-  notice is the wake.
+  `keepalive.py watch` polls the transcript and exits
+  `MUTHUR_CACHE_KEEPALIVE_LEAD` seconds (default 300) before the cache expires,
+  and the task's completion notice is the wake.
 - **It runs only while losing the session would lose something.** The
   `UserPromptSubmit` hook asks the agent to start it as a turn's last action,
   unless the branch alone lets a fresh session continue — the work at a loop
@@ -21,10 +21,11 @@ rate is below the usual tenth of input (`.claude/costs/prices.json`).
 - **Every wake is one visible line.** The harness rejects a turn with no visible
   output and forces a second request, so the instruction asks for one line
   of at most seven words rather than silence.
-- **`CACHE_KEEPALIVE_RENEWALS` (default 0) renewals per idle spell**, which an
-  operator prompt resets. The wake after the last one parks the session — runs
-  `/relay` without a successor (`@.claude/skills/relay/SKILL.md` § "Without a
-  successor"), and no watcher follows it — so by default the first wake parks.
+- **`MUTHUR_CACHE_KEEPALIVE_RENEWALS` (default 0) renewals per idle spell**,
+  which an operator prompt resets. The wake after the last one parks the
+  session — runs `/relay` without a successor (`@.claude/skills/relay/SKILL.md`
+  § "Without a successor"), and no watcher follows it — so by default the first
+  wake parks.
   A renewal competes with that summary, which makes picking the work up cheap.
 - **More than 5 renewals is not recommended.** A renewal is two requests (the
   Bash call starting the next watcher, then the line), each reading the whole
@@ -38,4 +39,4 @@ rate is below the usual tenth of input (`.claude/costs/prices.json`).
   computed deadline, for a live check in minutes rather than an hour. Settings'
   `env` is read at session start, which is why this knob is a file.
 
-`CACHE_KEEPALIVE=off` in `.claude/settings.local.json`'s `env` disables it.
+`MUTHUR_CACHE_KEEPALIVE=off` in `.claude/settings.local.json`'s `env` disables it.

@@ -197,10 +197,10 @@ def safe(session: str) -> bool:
 
 
 def main() -> int:
-    if os.environ.get("CACHE_KEEPALIVE") == "off":
+    if os.environ.get("MUTHUR_CACHE_KEEPALIVE") == "off":
         return 0
-    renewals = setting("CACHE_KEEPALIVE_RENEWALS", DEFAULT_RENEWALS)
-    lead = setting("CACHE_KEEPALIVE_LEAD", DEFAULT_LEAD)
+    renewals = setting("MUTHUR_CACHE_KEEPALIVE_RENEWALS", DEFAULT_RENEWALS)
+    lead = setting("MUTHUR_CACHE_KEEPALIVE_LEAD", DEFAULT_LEAD)
     if renewals is None or lead is None:
         return 0
     home = Path(os.environ.get("CLAUDE_PROJECT_DIR") or ROOT) / "tmp" / "keepalive"

@@ -120,7 +120,7 @@ class WhenAnOperatorPromptArrives(HookCase):
 
     def test_it_starts_a_new_idle_spell(self) -> None:
         self.session(ago=1)
-        renewals = {"CACHE_KEEPALIVE_RENEWALS": "5"}
+        renewals = {"MUTHUR_CACHE_KEEPALIVE_RENEWALS": "5"}
         for _ in range(3):
             self.wake()
             self.prompt(self.notice(), renewals)
@@ -142,14 +142,14 @@ class WhenTheWatcherWakesTheSession(HookCase):
         self.session(ago=1)
         self.wake()
         self.assertEqual((self.data()["wakes"], self.data()["fired"], self.data()["pid"]), (1, True, None))
-        out, _ = self.prompt(self.notice(), {"CACHE_KEEPALIVE_RENEWALS": "5"})
+        out, _ = self.prompt(self.notice(), {"MUTHUR_CACHE_KEEPALIVE_RENEWALS": "5"})
         self.assertIn("renewal 1 of 5", out)
         self.assertIn("at most seven words", out)
         self.assertIn("start the cache keepalive's watcher", out)
 
     def test_the_wake_after_the_last_renewal_parks_the_session(self) -> None:
         self.session(ago=1)
-        renewals = {"CACHE_KEEPALIVE_RENEWALS": "2"}
+        renewals = {"MUTHUR_CACHE_KEEPALIVE_RENEWALS": "2"}
         for renewal in range(1, 3):
             self.wake()
             self.assertIn(f"renewal {renewal} of 2", self.prompt(self.notice(), renewals)[0])
@@ -176,13 +176,13 @@ class TheDeadline(HookCase):
 
 class TheSwitches(HookCase):
     def test_the_off_switch_says_nothing(self) -> None:
-        self.assertEqual(self.prompt(env={"CACHE_KEEPALIVE": "off"}), ("", ""))
+        self.assertEqual(self.prompt(env={"MUTHUR_CACHE_KEEPALIVE": "off"}), ("", ""))
 
     def test_a_malformed_setting_says_why(self) -> None:
         for raw in ("five", "-1"):
-            out, err = self.prompt(env={"CACHE_KEEPALIVE_RENEWALS": raw})
+            out, err = self.prompt(env={"MUTHUR_CACHE_KEEPALIVE_RENEWALS": raw})
             self.assertEqual(out, "")
-            self.assertIn("CACHE_KEEPALIVE_RENEWALS", err)
+            self.assertIn("MUTHUR_CACHE_KEEPALIVE_RENEWALS", err)
 
 
 if __name__ == "__main__":
