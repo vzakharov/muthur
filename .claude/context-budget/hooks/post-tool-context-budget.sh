@@ -97,7 +97,7 @@ says_yes() {
     true | yes | on | 1) return 0 ;;
     '' | false | no | off | 0) return 1 ;;
   esac
-  say "$1 is set only by \`true\`; read as unset."
+  say "$1 is neither a yes nor a no; read as unset."
   return 1
 }
 manual_relay=

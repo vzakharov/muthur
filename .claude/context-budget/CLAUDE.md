@@ -83,5 +83,4 @@ instead:
     you write it, since the operator's next session may start from a base that
     does not have it yet.
 
-`yes`, `on` and `1` count as `true`; any other value leaves the default, and one
-that is not a no either is named on stderr.
+`yes`, `on` and `1` count as `true`; any other value leaves the default.
