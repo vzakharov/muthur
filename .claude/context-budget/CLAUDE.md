@@ -19,7 +19,7 @@ plan".
   reading counts it then.
 - **Both lines are priced by what `/relay` saves over the next 100k tokens of
   work** (`finish`): the warning where that saving reaches $0, the
-  pause where it reaches `CONTEXT_BUDGET_PAUSE_SAVING` percent (default 20) of
+  pause where it reaches `MUTHUR_CONTEXT_BUDGET_PAUSE_SAVING` percent (default 20) of
   what carrying on costs. The model is `.claude/costs/lib/restart.py`, via
   `hooks/priced_line.py`, and the notice carries the dollars.
   - **Each is capped at its fixed line, 200k and 300k**, so pricing only ever
@@ -37,7 +37,7 @@ plan".
     recomputed per 10k of growth, since a Python start-up per tool call is what
     this bash hook avoids.
   - **Without the ledger's lib, on an unpriced model, or under
-    `CONTEXT_BUDGET_LINES=fixed`**, the lines are 200k and 300k and the hook
+    `MUTHUR_CONTEXT_BUDGET_LINES=fixed`**, the lines are 200k and 300k and the hook
     runs no Python.
 - **The main chain only.** A tool call carrying `agent_id` is a subagent's and
   is skipped, as are `isSidechain` records and the `<synthetic>` placeholder
@@ -57,7 +57,7 @@ plan".
 - **Anything unreadable is silence**, never an error: a missing notice costs a
   warning, a hook failing on every tool call costs the session.
 
-`CONTEXT_BUDGET_WARN` and `CONTEXT_BUDGET_PAUSE` each fix their line, in
-tokens, `CONTEXT_BUDGET_PAUSE_SAVING` moves the priced pause, and
-`CONTEXT_BUDGET_LINES=fixed` turns the pricing off — set them in
+`MUTHUR_CONTEXT_BUDGET_WARN` and `MUTHUR_CONTEXT_BUDGET_PAUSE` each fix their line, in
+tokens, `MUTHUR_CONTEXT_BUDGET_PAUSE_SAVING` moves the priced pause, and
+`MUTHUR_CONTEXT_BUDGET_LINES=fixed` turns the pricing off — set them in
 `.claude/settings.local.json`'s `env` to tune without editing a tracked file.

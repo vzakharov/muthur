@@ -18,7 +18,7 @@
 read_payload
 
 # Overridable so the tests can run beside the session's own receiver.
-port="${TELEMETRY_RECEIVER_PORT:-4318}"
+port="${MUTHUR_TELEMETRY_RECEIVER_PORT:-4318}"
 listening() { (exec 3<>"/dev/tcp/127.0.0.1/$port") 2>/dev/null; }
 
 starting=false

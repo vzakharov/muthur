@@ -9,7 +9,7 @@
 
 # Sleep for INTERVAL seconds, minus any time already elapsed since the previous
 # tick — so a tick fired after the agent spent minutes working doesn't double
-# the wait. Reads INTERVAL from the environment (the caller's default).
+# the wait. Reads INTERVAL, which the sourcing script sets.
 # Arg 1: the previous tick's ISO-8601 timestamp ("" on the first tick).
 wt_smart_sleep() {
   local last_tick_at="${1:-}"
