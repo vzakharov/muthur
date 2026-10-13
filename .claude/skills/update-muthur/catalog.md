@@ -131,9 +131,9 @@ Four closure facts are counter-intuitive enough to state outright:
   **rewrite** disposition rather than a choice: there is no version of G2 that
   does not run your checks. (Three more skills *name* it — `/go` to say vetting is
   not its job, `/update-muthur` and `/test-on-gh` as an example — so a grep
-  overcounts the dependency.) Its three lines calling
-  `scripts/check-skill-catalog.sh`, `scripts/check-squash-message.sh` and
-  `scripts/check-muthur.sh` are the part a rewrite decides separately;
+  overcounts the dependency.) Its four lines calling
+  `scripts/check-skill-catalog.sh`, `scripts/check-markdown-tables.sh`,
+  `scripts/check-squash-message.sh` and `scripts/check-muthur.sh` are the part a rewrite decides separately;
   the comment above them says what dropping each costs.
 - **`/finalize` and `/plan` reach into G3 conditionally, and `/finalize` into G5
   as well.** `/finalize`'s working-artifact sweep cites `/take-issue` and its CI

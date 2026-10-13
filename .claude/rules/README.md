@@ -18,10 +18,10 @@ README carries one, and why editing such a file goes through a staged copy
 directory whose own conventions live in a scoped rule file rather than in its
 `CLAUDE.md`.
 
-The directory ships the loop's own two rules — `stack.md` (what
-`scripts/vet.sh` exits, and what a stack landing wires) and `staging.md`
-(editing a file that loads on every turn), each spanning paths no one directory
-holds.
+The directory ships the loop's own three rules — `stack.md` (what
+`scripts/vet.sh` exits, and what a stack landing wires), `staging.md` (editing a
+file that loads on every turn) and `markdown.md` (no tables), each spanning
+paths no one directory holds.
 Everything else here is yours: rules are mostly project-specific, and the
 reusable part is the mechanism. Add rule files as your conventions emerge.
 
@@ -50,11 +50,12 @@ paths:
 
 ## What belongs here vs. in a `CLAUDE.md`
 
-| | Goes in |
-|---|---|
-| Holds everywhere in the repo (commit style, error handling, general principles) | the root `CLAUDE.md` |
-| Holds in one directory's files (schema rules under `src/db/`, a directory with a trap in it) | that directory's own `CLAUDE.md` |
-| Holds in files no single directory bounds (`'**/*.test.ts'`, several scattered paths) | a rule file here |
+- **Holds everywhere in the repo** (commit style, error handling, general
+  principles) — the root `CLAUDE.md`.
+- **Holds in one directory's files** (schema rules under `src/db/`, a directory
+  with a trap in it) — that directory's own `CLAUDE.md`.
+- **Holds in files no single directory bounds** (`'**/*.test.ts'`, several
+  scattered paths) — a rule file here.
 
 The test is scope, not importance. A directory's `CLAUDE.md` loads when a rule
 scoped to that directory would — on a read of a file beneath it — and sits where

@@ -49,12 +49,10 @@ The argument may **name one lens**, optionally followed by focus guidance:
 `/tend-prose durability`, `/tend-prose tightness src/db`, `/tend-prose polar
 bear`.
 
-| Lens | Primary      | Alias         |
-| ---- | ------------ | ------------- |
-| 1    | `existence`  | —             |
-| 2    | `durability` | `narration`   |
-| 3    | `tightness`  | `bloat`       |
-| 4    | `negation`   | `polar bear`  |
+1. `existence`
+2. `durability`, alias `narration`
+3. `tightness`, alias `bloat`
+4. `negation`, alias `polar bear`
 
 Then run **only** that lens: skip the other three in Step 2 and apply only its
 fixes in Step 3. This is the mode for "I just saw narration in there", and for a
@@ -125,15 +123,20 @@ Then check it is in the right home, and **move it if it isn't** — a rule that 
 one call site can violate is a comment; a page nobody's glob reaches is nothing.
 The homes, in order of preference — take the first that fits:
 
-| #   | Home                                                          | What lives there                                                                             |
-| --- | ------------------------------------------------------------- | -------------------------------------------------------------------------------------------- |
-| 1   | **A comment at the call site**                                | A trap that lives at one line                                                                |
-| 2   | **A docstring at the topmost point of the code it describes** | How a flow works, when following it means holding more modules in your head than fit at once |
-| 3   | **The skill or hook whose run it governs**                    | A step, or a rule that only binds while that process runs                                    |
-| 4   | **The directory's own `CLAUDE.md`**                           | An obligation every edit in that directory's files must respect, loaded on the first read there |
-| 5   | **`.claude/rules/<area>.md`** (frontmatter `paths:`)          | The same, for files no single directory bounds — `'**/*.test.ts'`, several scattered paths   |
-| 6   | **A colocated `README.md`**                                   | The big picture, for when not having it is itself what blocks the edit                       |
-| 7   | **A runbook page** (`docs/runbook/*.md`, or the project's equivalent)       | A procedure a human executes                                                    |
+1. **A comment at the call site** — a trap that lives at one line.
+2. **A docstring at the topmost point of the code it describes** — how a flow
+   works, when following it means holding more modules in your head than fit at
+   once.
+3. **The skill or hook whose run it governs** — a step, or a rule that only
+   binds while that process runs.
+4. **The directory's own `CLAUDE.md`** — an obligation every edit in that
+   directory's files must respect, loaded on the first read there.
+5. **`.claude/rules/<area>.md`** (frontmatter `paths:`) — the same, for files no
+   single directory bounds — `'**/*.test.ts'`, several scattered paths.
+6. **A colocated `README.md`** — the big picture, for when not having it is
+   itself what blocks the edit.
+7. **A runbook page** (`docs/runbook/*.md`, or the project's equivalent) — a
+   procedure a human executes.
 
 **A line in the root `CLAUDE.md` answers one question before any of these**:
 CLAUDE.md § "About this file"'s test, since that file loads on every turn. A line

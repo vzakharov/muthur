@@ -7,8 +7,8 @@ there is no condition under which it fails to apply.
 
 - `CLAUDE.md` — The always-loaded conventions: the test for what may stay in it, key principles, docstring policy, derive-types-from-source-of-truth, doc-sync rules, commit conventions, the language decision.
   - **Disposition:** adopt — **merge, don't overwrite**
-- `.claude/rules/` — The path-scoped convention mechanism: a rule file loads only when a session reads a file its `paths:` match. For globs no single directory bounds; one directory's conventions go in that directory's own `CLAUDE.md`. Ships with a README and the loop's own two rules: `stack.md` (what `vet.sh` exits, what a stack landing wires) and `staging.md` (editing a file that loads on every turn through a staged copy).
-  - **Pulls in:** `scripts/staged.sh`, `/finalize` (G2), for `staging.md` — without them, drop it and the line in `.claude/skills/CLAUDE.md` that points at it
+- `.claude/rules/` — The path-scoped convention mechanism: a rule file loads only when a session reads a file its `paths:` match. For globs no single directory bounds; one directory's conventions go in that directory's own `CLAUDE.md`. Ships with a README and the loop's own three rules: `stack.md` (what `vet.sh` exits, what a stack landing wires), `staging.md` (editing a file that loads on every turn through a staged copy) and `markdown.md` (no tables outside a code fence).
+  - **Pulls in:** `scripts/staged.sh`, `/finalize` (G2), for `staging.md` — without them, drop it and the line in `.claude/skills/CLAUDE.md` that points at it; `scripts/check-markdown-tables.sh` (this group), for `markdown.md`
   - **Disposition:** adopt
 - `.claude/skills/CLAUDE.md` — The conventions for adding, renaming or cross-referencing a skill: the checks that cover it, names to avoid, naming one bare inside another's argument. Loads on a read of any file under `.claude/skills/`.
   - **Disposition:** adopt
@@ -27,6 +27,9 @@ there is no condition under which it fails to apply.
   - **Disposition:** adopt
 - `scripts/check-skill-catalog.sh` — Assert that no skill `@`-reference dangles. Downstream, that first assertion is the whole value: it is how you find out a subset copy was incomplete.
   - **Requires:** `bash`
+  - **Disposition:** adopt
+- `scripts/check-markdown-tables.sh` — Fail on a Markdown table outside a code fence in any tracked `.md`, reading a staged file through its copy and skipping the working artifacts `/finalize` sweeps. `scripts/vet.sh` runs it.
+  - **Requires:** `bash`, `awk`, `git`
   - **Disposition:** adopt
 - `.gitignore` — Take the `tmp/` entry and keep the rest of yours. `CLAUDE.md`'s "dev artifacts go under `tmp/`" principle depends on that path being ignored.
   - **Disposition:** adopt — merge one line
