@@ -236,17 +236,17 @@ def on_prompt(event: Dict[str, Any], state: State, min_usd: float, margin: float
 
 
 def main() -> None:
-    if os.environ.get("COLD_CACHE_GUARD") == "off":
+    if os.environ.get("MUTHUR_COLD_CACHE_GUARD") == "off":
         return
     try:
-        min_usd = float(os.environ.get("COLD_CACHE_MIN_USD", DEFAULT_MIN_USD))
+        min_usd = float(os.environ.get("MUTHUR_COLD_CACHE_MIN_USD", DEFAULT_MIN_USD))
     except ValueError:
-        print("cold-cache: COLD_CACHE_MIN_USD must be a number of dollars; no check made.", file=sys.stderr)
+        print("cold-cache: MUTHUR_COLD_CACHE_MIN_USD must be a number of dollars; no check made.", file=sys.stderr)
         return
     try:
-        margin = float(os.environ.get("COLD_CACHE_MARGIN", DEFAULT_MARGIN))
+        margin = float(os.environ.get("MUTHUR_COLD_CACHE_MARGIN", DEFAULT_MARGIN))
     except ValueError:
-        print("cold-cache: COLD_CACHE_MARGIN must be a fraction, e.g. 0.10; no check made.", file=sys.stderr)
+        print("cold-cache: MUTHUR_COLD_CACHE_MARGIN must be a fraction, e.g. 0.10; no check made.", file=sys.stderr)
         return
     event = json.load(sys.stdin)
     session = event.get("session_id") or ""

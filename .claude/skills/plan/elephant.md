@@ -65,7 +65,7 @@ The session that claims the plan writes `## This bite` before building:
 - leaves `vet` green and lands whole — nothing half-built that the next bite
   has to finish before anything works;
 - is sized to finish, `/polish` included, before the context budget's warning
-  line (`CONTEXT_BUDGET_WARN`, `.claude/context-budget/CLAUDE.md`) — so a
+  line (`MUTHUR_CONTEXT_BUDGET_WARN`, `.claude/context-budget/CLAUDE.md`) — so a
   bite's end normally comes before the hook says anything, and a notice
   arriving mid-bite means the bite was cut too big;
 - is one per session: the pause is for the operator's review, not for saving

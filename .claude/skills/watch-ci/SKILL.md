@@ -29,7 +29,7 @@ Why push immediately instead of staging locally:
 
 ## Step 1: Tick loop
 
-Repeatedly call `scripts/ci-watch-tick.sh` as a synchronous `Bash` with a generous timeout (e.g. 120000ms). The script handles its own sleep via the `INTERVAL` env var (default 60s) and tracks "time since last tick" in `.git/ci-watch-state.json` — so if you spent 3 minutes fixing the previous batch, the next tick skips its sleep and snapshots immediately.
+Repeatedly call `scripts/ci-watch-tick.sh` as a synchronous `Bash` with a generous timeout (e.g. 120000ms). The script handles its own sleep via the `MUTHUR_INTERVAL` env var (default 60s) and tracks "time since last tick" in `.git/ci-watch-state.json` — so if you spent 3 minutes fixing the previous batch, the next tick skips its sleep and snapshots immediately.
 
 Each tick exits with one of:
 
