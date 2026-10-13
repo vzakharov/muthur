@@ -44,39 +44,44 @@ class CheckMarkdownTables(unittest.TestCase):
         )
 
     def test_table_outside_a_fence_fails_naming_its_line(self) -> None:
-        self.track("notes.md", "# Notes\n\n" + TABLE)
+        self.track(".claude/rules/notes.md", "# Notes\n\n" + TABLE)
         result = self.check()
         self.assertEqual(result.returncode, 1)
-        self.assertIn("notes.md:4", result.stderr)
+        self.assertIn(".claude/rules/notes.md:4", result.stderr)
 
     def test_a_one_column_table_fails(self) -> None:
-        self.track("a.md", "| A |\n|---|\n| 1 |\n")
+        self.track(".claude/a.md", "| A |\n|---|\n| 1 |\n")
         self.assertEqual(self.check().returncode, 1)
 
     def test_table_inside_a_fence_passes(self) -> None:
-        self.track("a.md", "```markdown\n" + TABLE + "```\n")
-        self.track("b.md", "~~~\n" + TABLE + "~~~\n")
+        self.track(".claude/a.md", "```markdown\n" + TABLE + "```\n")
+        self.track("CLAUDE.md", "~~~\n" + TABLE + "~~~\n")
         self.assertEqual(self.check().returncode, 0)
 
     def test_a_shorter_run_inside_a_fence_does_not_close_it(self) -> None:
-        self.track("a.md", "````\n```\n" + TABLE + "````\n")
+        self.track(".claude/a.md", "````\n```\n" + TABLE + "````\n")
         self.assertEqual(self.check().returncode, 0)
 
     def test_table_after_a_closed_fence_fails(self) -> None:
-        self.track("a.md", "```\ncode\n```\n\n" + TABLE)
+        self.track(".claude/a.md", "```\ncode\n```\n\n" + TABLE)
         self.assertEqual(self.check().returncode, 1)
 
     def test_a_dash_rule_and_a_list_pass(self) -> None:
-        self.track("a.md", "Text\n\n---\n\n- **A** — 1\n- **B** — 2\n")
+        self.track(".claude/a.md", "Text\n\n---\n\n- **A** — 1\n- **B** — 2\n")
         self.assertEqual(self.check().returncode, 0)
 
-    def test_working_artifacts_are_skipped(self) -> None:
-        for path in ("docs/issue/1/issue.md", "docs/pr/2/body.md", "docs/plans/x/report.md"):
+    def test_a_nested_claude_md_is_checked(self) -> None:
+        self.track("src/db/CLAUDE.md", TABLE)
+        self.assertEqual(self.check().returncode, 1)
+
+    def test_markdown_read_rendered_is_skipped(self) -> None:
+        for path in ("README.md", "docs/guide.md", "docs/issue/1/issue.md"):
             self.track(path, TABLE)
         self.assertEqual(self.check().returncode, 0)
 
     def test_an_untracked_file_is_not_read(self) -> None:
-        (self.root / "scratch.md").write_text(TABLE, encoding="utf-8")
+        (self.root / ".claude").mkdir()
+        (self.root / ".claude" / "scratch.md").write_text(TABLE, encoding="utf-8")
         self.assertEqual(self.check().returncode, 0)
 
 
