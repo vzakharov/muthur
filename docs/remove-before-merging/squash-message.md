@@ -19,9 +19,10 @@ token. Prose about the catalog says entry and field. /qa-checklist keeps
 its table, fenced, as a template for a PR body read rendered.
 
 .claude/rules/markdown.md states the convention and that exception, and
-scripts/check-markdown-tables.sh, run by check-muthur.sh, fails on a
-table outside a fence. Both are this repo's house style and catalogued
-never: an adopter's tables are its own call, so neither travels.
+scripts/check-markdown-tables.sh, which vet runs while the rule exists,
+fails on a table outside a fence. Whether a project's Markdown carries
+tables is its own call, so the rule is an opt-in: ask catalog entry, and
+deleting it turns the check off.
 
 Closes #189
 

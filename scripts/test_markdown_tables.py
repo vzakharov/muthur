@@ -49,6 +49,10 @@ class CheckMarkdownTables(unittest.TestCase):
         self.assertEqual(result.returncode, 1)
         self.assertIn("notes.md:4", result.stderr)
 
+    def test_a_one_column_table_fails(self) -> None:
+        self.track("a.md", "| A |\n|---|\n| 1 |\n")
+        self.assertEqual(self.check().returncode, 1)
+
     def test_table_inside_a_fence_passes(self) -> None:
         self.track("a.md", "```markdown\n" + TABLE + "```\n")
         self.track("b.md", "~~~\n" + TABLE + "~~~\n")

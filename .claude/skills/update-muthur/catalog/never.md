@@ -22,7 +22,7 @@ someone else's work in progress, not the product.
   - **Disposition:** never
 - `docs/adopting/` — `ADOPTING.md`'s chapters, each read only by some adopters, and the screenshot locating the environment setup script. Goes when that file does, or it is left an orphan.
   - **Disposition:** never
-- `.claude/skills/update-muthur/catalog.md` — The catalog's index, and one of two entries naming something an adopted directory would otherwise carry in: taking `/update-muthur` brings it along, which must not happen. Read it from a fresh clone on every sync instead, so it cannot go stale downstream — both copy steps name it as a carve-out.
+- `.claude/skills/update-muthur/catalog.md` — The catalog's index, and one of two entries naming something a skill directory would otherwise carry in: taking `/update-muthur` brings it along, which must not happen. Read it from a fresh clone on every sync instead, so it cannot go stale downstream — both copy steps name it as a carve-out.
   - **Disposition:** never
 - `.claude/skills/update-muthur/catalog/` — The catalog's parts, one file per group: the same file as the index, split, and never vendored for the same reason. Wherever the index is deleted or carved out, this goes with it.
   - **Disposition:** never
@@ -32,15 +32,10 @@ someone else's work in progress, not the product.
   - **Disposition:** never
 - `scripts/check-muthur.sh` — The one vet line behind which everything that tests only this repo's own machinery sits, so a sync offers it as a single decision. Keyed on this catalog's presence, so it exits 0 the moment it is downstream.
   - **Requires:** `bash`
-  - **Pulls in:** `scripts/check-repo-identity.sh`, `scripts/check-markdown-tables.sh`, `scripts/test_*.py` (all never)
+  - **Pulls in:** `scripts/check-repo-identity.sh`, `scripts/test_*.py` (both never)
   - **Disposition:** never
 - `scripts/check-repo-identity.sh` — Assert that this repo's own `owner/repo` appears only where a human copies it by hand, and nowhere under a stale name — everything else compares `origin` against the watermark's `repo` field instead. Keyed on this catalog's presence, so it exits 0 the moment it is downstream.
   - **Requires:** `bash`, `jq`, `git`
-  - **Disposition:** never
-- `.claude/rules/markdown.md` — This repo's house style: no Markdown tables outside a code fence. The other entry naming something an adopted directory would otherwise carry in — taking `.claude/rules/` brings it along, and an adopter's tables are their own call, so both copy steps name it as a carve-out.
-  - **Disposition:** never
-- `scripts/check-markdown-tables.sh` — Fail on a Markdown table outside a code fence in any tracked `.md`, reading a staged file through its copy and skipping the working artifacts `/finalize` sweeps. Runs behind `scripts/check-muthur.sh`, so never downstream.
-  - **Requires:** `bash`, `awk`, `git`
   - **Disposition:** never
 - `scripts/test_*.py` — The unit tests over the loop's own scripts — today the export's agent/human labelling, its hunk trimming and its layout. They join the line above by matching the pattern, which is why adding one never edits `scripts/vet.sh`.
   - **Requires:** `python3` ≥3.9

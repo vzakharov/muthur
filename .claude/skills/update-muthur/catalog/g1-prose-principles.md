@@ -7,7 +7,7 @@ there is no condition under which it fails to apply.
 
 - `CLAUDE.md` — The always-loaded conventions: the test for what may stay in it, key principles, docstring policy, derive-types-from-source-of-truth, doc-sync rules, commit conventions, the language decision.
   - **Disposition:** adopt — **merge, don't overwrite**
-- `.claude/rules/` — The path-scoped convention mechanism: a rule file loads only when a session reads a file its `paths:` match. For globs no single directory bounds; one directory's conventions go in that directory's own `CLAUDE.md`. Ships with a README and the loop's own two rules: `stack.md` (what `vet.sh` exits, what a stack landing wires) and `staging.md` (editing a file that loads on every turn through a staged copy). Its `markdown.md` is this repo's house style and stays behind — see [Never](never.md).
+- `.claude/rules/` — The path-scoped convention mechanism: a rule file loads only when a session reads a file its `paths:` match. For globs no single directory bounds; one directory's conventions go in that directory's own `CLAUDE.md`. Ships with a README and the loop's own two rules: `stack.md` (what `vet.sh` exits, what a stack landing wires) and `staging.md` (editing a file that loads on every turn through a staged copy). Its `markdown.md` is an opt-in of its own, below.
   - **Pulls in:** `scripts/staged.sh`, `/finalize` (G2), for `staging.md` — without them, drop it and the line in `.claude/skills/CLAUDE.md` that points at it
   - **Disposition:** adopt
 - `.claude/skills/CLAUDE.md` — The conventions for adding, renaming or cross-referencing a skill: the checks that cover it, names to avoid, naming one bare inside another's argument. Loads on a read of any file under `.claude/skills/`.
@@ -28,6 +28,12 @@ there is no condition under which it fails to apply.
 - `scripts/check-skill-catalog.sh` — Assert that no skill `@`-reference dangles. Downstream, that first assertion is the whole value: it is how you find out a subset copy was incomplete.
   - **Requires:** `bash`
   - **Disposition:** adopt
+- `.claude/rules/markdown.md` — No Markdown tables outside a code fence: lists or sections instead, since Markdown read raw diffs a whole row for one cell's edit; output read rendered keeps its table, fenced. **The cost, which is why it is asked:** a house style rather than a correctness rule — every table already in the project's Markdown is rewritten before vet passes, and every later one fails it. A yes keeps the file and its check; a no deletes the file, and the vet line keyed on it goes quiet.
+  - **Pulls in:** `scripts/check-markdown-tables.sh` (this group)
+  - **Disposition:** adopt — **opt-in: ask**
+- `scripts/check-markdown-tables.sh` — Fail on a Markdown table outside a code fence in any tracked `.md`, reading a staged file through its copy and skipping the working artifacts `/finalize` sweeps. `scripts/vet.sh` runs it while the rule above exists.
+  - **Requires:** `bash`, `awk`, `git`
+  - **Disposition:** adopt — **with `.claude/rules/markdown.md`**
 - `.gitignore` — Take the `tmp/` entry and keep the rest of yours. `CLAUDE.md`'s "dev artifacts go under `tmp/`" principle depends on that path being ignored.
   - **Disposition:** adopt — merge one line
 - `.claude/hooks/file-tools-nudge.py` — Before each `Bash` call, refuse the first command that reads a project file into the agent's view (`cat`, `head`, `sed -n` …), edits one in place (`sed -i`, `perl -pi` …) or writes one (a heredoc or `echo` into it, `tee`), naming the tool `CLAUDE.md` asks for instead — a read piped onward or inside a `$(…)`, or of a file outside the project, passes; the identical command again in the same session goes through, and a `BATCH_EDIT=1` in front of a command exempts everything after it, for a deliberate batch of edits. Records what it refused under `tmp/`, and fails open.

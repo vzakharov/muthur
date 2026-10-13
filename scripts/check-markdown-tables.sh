@@ -1,9 +1,9 @@
 #!/bin/bash
 # Fail on a Markdown table outside a code fence in any tracked `.md`.
 #
-# This repo's house style, run by `check-muthur.sh` and so never downstream,
-# where tables are the adopter's call. The convention is
-# `.claude/rules/markdown.md`'s: Markdown here is read raw,
+# Run by `vet.sh` while `.claude/rules/markdown.md` exists: whether a
+# project's Markdown carries tables is its own call, so deleting the rule turns
+# this off. The convention is the rule's: Markdown here is read raw,
 # by agents and in diffs, where a table row is one physical line and editing any
 # cell rewrites the whole row. A table is caught by its delimiter row
 # (`| --- | :-: |`), the one line every GitHub table must have. A table inside a
@@ -43,7 +43,8 @@ while IFS= read -r path; do
         if (fence == "") { fence = run; next }
         if (substr(run, 1, 1) == substr(fence, 1, 1) && length(run) >= length(fence)) { fence = ""; next }
       }
-      fence == "" && /^ *\|? *:?-+:? *(\| *:?-+:? *)+\|? *$/ { print FNR }
+      # Dash cells split by pipes; the pipe is what tells it from a `---` rule.
+      fence == "" && /\|/ && /^ *\|? *:?-+:? *(\| *:?-+:? *)*\|? *$/ { print FNR }
     ' "$file"
   )
 done < <(

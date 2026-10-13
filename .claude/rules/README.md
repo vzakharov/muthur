@@ -21,8 +21,8 @@ directory whose own conventions live in a scoped rule file rather than in its
 The directory ships the loop's own two rules — `stack.md` (what
 `scripts/vet.sh` exits, and what a stack landing wires) and `staging.md`
 (editing a file that loads on every turn), each spanning paths no one directory
-holds. `markdown.md` (no tables) is this repo's own house style and never
-travels.
+holds — plus `markdown.md` (no tables), an opt-in, since whether a project's
+Markdown carries tables is its own call.
 Everything else here is yours: rules are mostly project-specific, and the
 reusable part is the mechanism. Add rule files as your conventions emerge.
 

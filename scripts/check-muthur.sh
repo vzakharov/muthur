@@ -4,9 +4,7 @@
 # Membership is "would the adopting repo run this?", not "is it a test":
 # `check-skill-catalog.sh` and `check-squash-message.sh` stay outside because
 # they measure the adopting repo's own skills and its own branches, while what
-# is in here measures code an adopter vendors and never edits — or, for
-# `check-markdown-tables.sh`, this repo's own house style, which an adopter's
-# Markdown owes nothing.
+# is in here measures code an adopter vendors and never edits.
 #
 # One line rather than one per check, so that a sync offers the adopter a single
 # decision and their `vet.sh`, rewritten for their own stack, has nothing to
@@ -39,7 +37,6 @@ run() {
 }
 
 run scripts/check-repo-identity.sh
-run scripts/check-markdown-tables.sh
 
 shopt -s nullglob
 tests=(scripts/test_*.py)

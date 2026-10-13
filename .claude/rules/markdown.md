@@ -1,12 +1,8 @@
 ---
-description: This repo's Markdown has no tables — lists or sections instead, except as a fenced template for output read rendered
+description: Markdown has no tables — lists or sections instead, except as a fenced template for output read rendered
 paths:
   - '**/*.md'
 ---
-
-> ⛔ **This repo's own house style, never vendored.** In a repo that adopted
-> this infrastructure the file rode along with `.claude/rules/` by mistake:
-> delete it. Your tables are your call.
 
 # No tables in Markdown
 
@@ -23,6 +19,7 @@ table buys is the rendered grid, which almost nobody looks at. So:
 report a script parses — written inside a code fence as the template it is,
 the way `/qa-checklist` shows its classification table.
 
-`scripts/check-markdown-tables.sh`, run by `scripts/check-muthur.sh`, fails on a
-table delimiter row outside a fence. The working artifacts `/finalize` sweeps
-are outside it, since they hold GitHub's text verbatim or a parser's input.
+`scripts/check-markdown-tables.sh`, which `scripts/vet.sh` runs while this file
+exists, fails on a table delimiter row outside a fence. The working artifacts
+`/finalize` sweeps are outside it, since they hold GitHub's text verbatim or a
+parser's input.

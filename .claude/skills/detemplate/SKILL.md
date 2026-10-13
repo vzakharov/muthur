@@ -187,9 +187,7 @@ Ordering is load-bearing at exactly one point, and it is the first step:
    instead of remembered.
 2. **The rest of the `never` entries**: `README.md` — replaced with the project's,
    not merely deleted — `ADOPTING.md`, and **`docs/adopting/`** with it: its
-   chapters, which a sweep of the one file strands as orphans. And
-   `.claude/rules/markdown.md`, this repo's no-tables house style, which would
-   otherwise go on loading for every `.md` the project writes.
+   chapters, which a sweep of the one file strands as orphans.
 3. **Prune the groups**, applying the reverse-closure edits the plan recorded.
 4. **Fill `CLAUDE.md` § "About this project"'s stub** from the brief — which
    retires the standing notice in § "Recognizing an undetemplated fork" along
