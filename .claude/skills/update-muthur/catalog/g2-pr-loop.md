@@ -47,7 +47,7 @@
   - **Requires:** `gh`
   - **Pulls in:** `/pr`
   - **Disposition:** adopt
-- `/squash-message` — Produce and post the copy-ready squash title/body for a PR; owns the format and the draft-then-tighten discipline. Carries `working-file.md`, which picks the working file in the one case the tracked draft is not on the branch — a first run, or a run after `/finalize` already swept it.
+- `/squash-message` — Produce a PR's squash record: post the copy-ready body as a comment and keep the PR title, which GitHub's squash box prefills, as its title; owns the format and the draft-then-tighten discipline. Carries `working-file.md`, which picks the working file in the one case the tracked draft is not on the branch — a first run, or a run after `/finalize` already swept it.
   - **Requires:** `gh`, `jq`, `scripts/check-squash-message.sh`
   - **Pulls in:** `/tend-prose` (G1)
   - **Disposition:** adopt
