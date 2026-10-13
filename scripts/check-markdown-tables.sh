@@ -1,17 +1,13 @@
 #!/bin/bash
-# Fail on a Markdown table outside a code fence in any tracked `.md`.
+# Fail on a Markdown table outside a code fence in tracked agent-facing
+# Markdown: every `CLAUDE.md`, and every `.md` under `.claude/`.
 #
-# The convention is `.claude/rules/markdown.md`'s, and `vet.sh` runs this only
-# while that file exists: Markdown here is read raw, by agents and in diffs,
-# where a table row is one physical line and editing any cell rewrites the
-# whole row. A table is caught by its delimiter row
-# (`| --- | :-: |`), the one line every GitHub table must have. A table inside a
-# fence is a template for output read rendered elsewhere, and passes.
-#
-# Skipped: the working artifacts `/finalize` sweeps before landing, which hold
-# GitHub's text verbatim (`docs/issue/`, `docs/pr/`) or reports a script parses
-# (`docs/plans/`, `docs/remove-before-merging/`). A staged always-loaded file
-# is read through its staged copy, since that is the text the branch will land.
+# The convention, and why Markdown a person reads rendered is left alone, is
+# `.claude/rules/markdown.md`'s; `vet.sh` runs this only while that file
+# exists. A table is caught by its delimiter row (`| --- | :-: |`), the one
+# line every GitHub table must have. A table inside a fence is a template for
+# output read rendered elsewhere, and passes. A staged always-loaded file is
+# read through its staged copy, since that is the text the branch will land.
 
 set -uo pipefail
 
@@ -47,7 +43,7 @@ while IFS= read -r path; do
     ' "$file"
   )
 done < <(
-  git ls-files -- '*.md' ':!docs/issue/' ':!docs/pr/' ':!docs/plans/' ':!docs/remove-before-merging/'
+  git ls-files -- ':(glob)**/CLAUDE.md' ':(glob).claude/**/*.md'
 )
 
 if [ "$failures" -eq 0 ]; then

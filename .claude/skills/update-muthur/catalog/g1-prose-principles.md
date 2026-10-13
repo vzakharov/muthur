@@ -28,10 +28,10 @@ there is no condition under which it fails to apply.
 - `scripts/check-skill-catalog.sh` — Assert that no skill `@`-reference dangles. Downstream, that first assertion is the whole value: it is how you find out a subset copy was incomplete.
   - **Requires:** `bash`
   - **Disposition:** adopt
-- `.claude/rules/markdown.md` — No Markdown tables outside a code fence: lists or sections instead, since Markdown read raw diffs a whole row for one cell's edit; output read rendered keeps its table, fenced. **The cost, which is why it is asked:** a house style rather than a correctness rule — every table already in the project's Markdown is rewritten before vet passes, and every later one fails it. A yes keeps the file and its check; a no deletes the file, and the vet line keyed on it goes quiet.
+- `.claude/rules/markdown.md` — No tables in agent-facing Markdown (every `CLAUDE.md`, everything under `.claude/`): lists or sections instead, since Markdown read raw diffs a whole row for one cell's edit. Markdown a person reads rendered — a README, `docs/` — keeps its tables. **The cost, which is why it is asked:** a house style rather than a correctness rule — every table already in the project's agent-facing Markdown is rewritten before vet passes, and every later one fails it. The call is the project's; the rule of thumb to offer with the question is the split the rule draws — Markdown only agents read gets no tables, Markdown a person may read rendered uses them where they help. A yes keeps the file and its check, and a project wanting a different split moves the rule's `paths:` and the check's pathspec together; a no deletes the file, and the vet line keyed on it goes quiet.
   - **Pulls in:** `scripts/check-markdown-tables.sh` (this group)
   - **Disposition:** adopt — **opt-in: ask**
-- `scripts/check-markdown-tables.sh` — Fail on a Markdown table outside a code fence in any tracked `.md`, reading a staged file through its copy and skipping the working artifacts `/finalize` sweeps. `scripts/vet.sh` runs it while the rule above exists.
+- `scripts/check-markdown-tables.sh` — Fail on a Markdown table outside a code fence in tracked agent-facing Markdown, reading a staged file through its copy. `scripts/vet.sh` runs it while the rule above exists.
   - **Requires:** `bash`, `awk`, `git`
   - **Disposition:** adopt — **with `.claude/rules/markdown.md`**
 - `.gitignore` — Take the `tmp/` entry and keep the rest of yours. `CLAUDE.md`'s "dev artifacts go under `tmp/`" principle depends on that path being ignored.
