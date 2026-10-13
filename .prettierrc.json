@@ -1,6 +1,7 @@
 {
   "proseWrap": "always",
   "printWidth": 80,
+  "embeddedLanguageFormatting": "off",
   "overrides": [
     {
       "files": "*.md.staged",
