@@ -90,18 +90,28 @@ mkdir -p "$state_dir" && printf '%s\n' "$level" >"$state_file" || {
   exit 0
 }
 
-# The operator's auto-relay setting, keyed as `.claude/hooks/operator-voice.sh`
-# keys voice entries: the lowercased login of a `User` token. Read only here,
-# with a notice about to go out, since resolving the operator is an API call.
-auto_relay=unresolved
-handle="$(gh api user 2>/dev/null | jq -r 'select(.type == "User") | .login | ascii_downcase' 2>/dev/null)"
-if [[ "$handle" =~ ^[a-z0-9-]+$ ]]; then
-  setting=".claude/context-budget/auto-relay/$handle"
-  case "$(tr -d '[:space:]' 2>/dev/null <"$root/$setting")" in
-    on) auto_relay=on ;;
-    off) auto_relay=off ;;
-    *) auto_relay=unset ;;
+# A manual-relay switch is set only by a yes; a value that is neither a yes nor a
+# no is named on stderr, so a typo does not pass silently for the default.
+says_yes() {
+  case "$(printf '%s' "$2" | tr -d '[:space:]' | tr '[:upper:]' '[:lower:]')" in
+    true | yes | on | 1) return 0 ;;
+    '' | false | no | off | 0) return 1 ;;
   esac
+  say "$1 is neither a yes nor a no; read as unset."
+  return 1
+}
+manual_relay=
+if says_yes MUTHUR_MANUAL_CONTEXT_BUDGET_RELAY "${MUTHUR_MANUAL_CONTEXT_BUDGET_RELAY:-}"; then
+  manual_relay=1
+else
+  # The operator is keyed as `.claude/hooks/operator-voice.sh` keys voice entries:
+  # the lowercased login of a `User` token. Resolved only here, with a notice
+  # about to go out, since that is an API call.
+  handle="$(gh api user 2>/dev/null | jq -r 'select(.type == "User") | .login | ascii_downcase' 2>/dev/null)"
+  if [[ "$handle" =~ ^[a-z0-9-]+$ ]] \
+    && says_yes "manual-relay/$handle" "$(cat "$root/.claude/context-budget/manual-relay/$handle" 2>/dev/null)"; then
+    manual_relay=1
+  fi
 fi
 
 k() { echo "$(($1 / 1000))k"; }
@@ -114,10 +124,9 @@ relay='`/relay` (`@.claude/skills/relay/SKILL.md`), which hands the branch to a 
 room=$((pause - warn))
 last_step=20000
 
-# However a pause is reached, the operator's setting decides how it ends.
-auto='`@.claude/skills/relay/SKILL.md` § "Auto-relay"'
-ends="tell the operator the session was paused for its context budget, and end the turn offering ${relay}"
-[ "$auto_relay" != on ] || ends="then, without asking and with no argument, run ${relay}. Do so because this operator turned auto-relay on (\`${setting}\`, ${auto}); its report tells the operator the session was paused for its context budget and relayed on its own"
+# However a pause is reached, it ends in the relay, asked first under manual relay.
+ends="then, without asking and with no argument, run ${relay}. Its report tells the operator the session was paused for its context budget and relayed on its own, and how they have a pause ask first instead (\`.claude/context-budget/CLAUDE.md\` § \"Manual relay\")"
+[ -z "$manual_relay" ] || ends="tell the operator the session was paused for its context budget, and end the turn offering ${relay}"
 paused="follow ${stopping}. Push, ${ends}; the new session resumes the paused plan."
 
 saving=
@@ -140,11 +149,5 @@ At $(k "$pause") this notice returns as the pause itself, which stops wherever t
 Pause now, without asking, wherever the work stands: there is no room left to steer to a better stopping point. The one exception is work literally a step from done — under ~$(k "$last_step") more tokens of context — which you finish first, saying in your report why. Otherwise commit what is in hand, leave the branch just resumable rather than tidy, and ${paused}"
     ;;
 esac
-
-# An operator who has never answered is asked alongside the offer, once a
-# session; their answer is what writes the setting.
-[ "$auto_relay" != unset ] || notice="$notice
-
-This operator (@${handle}) has not said whether to relay on their own. Unless you already asked in this session, add to the offer: from now on, whenever the context budget pauses a session, you can run \`/relay\` without asking. Record their answer, yes or no, per ${auto}."
 
 emit_context "$notice"
