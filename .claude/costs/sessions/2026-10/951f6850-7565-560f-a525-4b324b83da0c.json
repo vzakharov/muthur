@@ -1,0 +1,88 @@
+{
+  "estimate": {
+    "at": "2026-10-13T17:31:53.854Z",
+    "parts": [
+      {
+        "hours": 1.5,
+        "grade": "middle",
+        "role": "developer",
+        "comment": "a cross-file rename where the risk is missing a reader: needs a sweep that tells env reads from shell locals and test stubs, plus running each hook's suite"
+      }
+    ],
+    "comment": null
+  },
+  "sessionId": "951f6850-7565-560f-a525-4b324b83da0c",
+  "branch": "muthur-env-prefix",
+  "cwd": "/home/user/muthur",
+  "openingPrompt": "/task Give every environment variable muthur itself defines and reads the `MUTHUR_` prefix, prepended to the existing name (e.g. `FOO_BAR` → `MUTHUR_FOO_BAR`), …",
+  "prs": [
+    188
+  ],
+  "url": "https://claude.ai/code/session_01QNEqZ5h4HuuwmrFGPuWEMq",
+  "operator": "vzakharov",
+  "firstResponseAt": "2026-10-13T17:30:25.294Z",
+  "lastResponseAt": "2026-10-13T17:33:24.845Z",
+  "pricesAsOf": "2026-10-06",
+  "claudeCodeTotalUsd": null,
+  "total": {
+    "inputTokens": 64,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 105074,
+    "cacheReadTokens": 3804077,
+    "outputTokens": 15988,
+    "thinkingTokens": 2930,
+    "responses": 32,
+    "costUsd": 1.9214234
+  },
+  "ownTurns": {
+    "inputTokens": 64,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 105074,
+    "cacheReadTokens": 3804077,
+    "outputTokens": 15988,
+    "thinkingTokens": 2930,
+    "responses": 32,
+    "costUsd": 1.9214234
+  },
+  "subagents": {
+    "inputTokens": 0,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 0,
+    "cacheReadTokens": 0,
+    "outputTokens": 0,
+    "thinkingTokens": 0,
+    "responses": 0,
+    "costUsd": 0.0
+  },
+  "byRate": {
+    "claude-opus-5-5/standard": {
+      "inputTokens": 64,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 105074,
+      "cacheReadTokens": 3804077,
+      "outputTokens": 15988,
+      "thinkingTokens": 2930,
+      "responses": 32,
+      "costUsd": 1.9214234
+    }
+  },
+  "warnings": [],
+  "orientation": {
+    "endedBy": "Edit",
+    "endedOn": "scripts/ci-watch-tick.sh",
+    "endedAt": "2026-10-13T17:31:15.434Z",
+    "contextTokens": 117703,
+    "spend": {
+      "inputTokens": 22,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 69631,
+      "cacheReadTokens": 1035527,
+      "outputTokens": 4431,
+      "thinkingTokens": 1850,
+      "responses": 11,
+      "costUsd": 0.8528613999999999
+    }
+  },
+  "compactions": [],
+  "telemetry": null
+}
