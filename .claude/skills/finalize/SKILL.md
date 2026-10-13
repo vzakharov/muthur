@@ -137,7 +137,7 @@ Steps (stop on first unresolved failure):
    gh api repos/<owner>/<repo>/issues/comments/<id> --jq .body > tmp/proposal.md
    ```
 
-   Extract the comment's fenced block into `tmp/squash-body.txt`, then **print both files and read them** — the title against the `<type>: #<issue> <essence> (#<n>)` shape, the body ending at its `Co-authored-by:` byline. A mis-split silently lands the attribution footer inside the permanent record. Then:
+   Extract the comment's last fenced block — the body, after the title block a one-commit PR carries — into `tmp/squash-body.txt`, then **print both files and read them** — the title against the `<type>: #<issue> <essence> (#<n>)` shape, the body ending at its `Co-authored-by:` byline. A mis-split silently lands the attribution footer inside the permanent record. Then:
 
    ```bash
    gh pr merge <n> --squash --subject "$(cat tmp/squash-title.txt)" --body-file tmp/squash-body.txt

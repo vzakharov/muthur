@@ -52,7 +52,7 @@ The cycle always terminates: merging the advance in makes the next check "contai
 
 Applies whenever the PR is still **open** — after a `contained` (exit `0`) check, or after the enclosing flow has merged an `advanced` (exit `10`) tip back in. Skip it for a landed/closed PR (exit `20`/`21`) and for a hard error (exit `1`).
 
-The squash record is the PR title plus a comment headed `Proposed squash body:` — one fenced block sitting next to the merge button — posted when `/pr` opened the PR. Both go stale as the branch moves: a base-advanced re-merge pulls in work that shifts the essence, a `Closes #N`, or the body's paragraphs. This step keeps them current.
+The squash record is the PR title plus a comment headed `Proposed squash body:` — the fenced body sitting next to the merge button, after a title block on a one-commit PR — posted when `/pr` opened the PR. Both go stale as the branch moves: a base-advanced re-merge pulls in work that shifts the essence, a `Closes #N`, or the body's paragraphs. This step keeps them current.
 
 Invoke `@.claude/skills/squash-message/SKILL.md` in **`update-only`** mode, passing the base the check resolved (the `target=…` the script printed) as the diff base. That skill recomputes the title/body from the branch's current committed state — including its draft-then-tighten pass — and edits the PR title and the existing comment in place if they drifted. The reconcile may push a commit as well as edit the comment — `/squash-message` decides, from the working file it selects. `update-only` is what keeps this step from creating a proposal no earlier step made: absence is reported, not filled in. Report what it reports.
 
