@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# One tick of the incremental CI watch loop. Sleeps MUTHUR_INTERVAL seconds (minus
-# any time already elapsed since the previous tick), then snapshots the
+# One tick of the incremental CI watch loop. Sleeps MUTHUR_INTERVAL seconds
+# (minus any time already elapsed since the previous tick), then snapshots the
 # current run state from GitHub and prints any newly-failed jobs.
 #
 # Usage:
