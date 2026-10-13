@@ -26,15 +26,10 @@ from pathlib import Path
 from typing import List, Optional
 
 from lib.estimate import Estimate, Part, Rates, checked, senior_hours, latest, parse_rates
-from lib.rows import read_pending_estimate, read_row, row_text, write_atomic, write_pending_estimate
+from lib.rows import SESSIONS, read_pending_estimate, read_row, row_path, row_text, write_atomic, write_pending_estimate
 from lib.shape import ShapeError
 
 COSTS = Path(__file__).resolve().parent
-
-
-def row_path(session_id: str) -> Optional[Path]:
-    found = sorted((COSTS / "sessions").glob(f"*/{session_id}.json"))
-    return found[0] if found else None
 
 
 def describe(estimate: Optional[Estimate], rates: Rates) -> str:
@@ -81,7 +76,7 @@ def main() -> int:
     running = session_id == current
     path = row_path(session_id)
     if not running and path is None:
-        print(f"estimate: no row for session {session_id} under {COSTS / 'sessions'}", file=sys.stderr)
+        print(f"estimate: no row for session {session_id} under {SESSIONS}", file=sys.stderr)
         return 1
 
     try:

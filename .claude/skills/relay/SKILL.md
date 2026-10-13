@@ -5,14 +5,17 @@ description: >-
   stop. Invoke as `/relay [<to-be first message>]`, the argument being what
   the operator would type first after a compact, a skill in it named bare
   (`/relay go`, `/relay handle`);
-  the new session runs `/relay take <branch>`. Use when the operator says
-  "/relay", "relay the session", "hand this to a new session", or takes up
-  the `/relay` the context budget notice offers.
+  the new session runs `/relay take <branch>`. `/relay park` writes the
+  summary and starts no session, for an operator coming back later. Use when
+  the operator says "/relay", "relay the session", "hand this to a new
+  session", or takes up the `/relay` the context budget notice offers — and
+  `park` for "park it", "запаркуй", "record it but don't hand over", in any
+  words.
 ---
 
 A relay is `/compact` done in the open. The summary is written as an ordinary turn — its tokens priced like any other, its text a file the operator can read — and a new session, the **successor**, starts from it. The branch already holds the plan, the commits and the PR, and the successor re-reads them from disk, so the summary carries only what the tree does not.
 
-Two ends, told apart by the first token: `take` is the pickup; anything else, or nothing, is the handoff and its to-be first message.
+Three entries, told apart by the first token: `take` is the pickup, `park` the handoff with no successor; anything else, or nothing, is the handoff and its to-be first message.
 
 ## `/relay [<to-be first message>]` — hand off
 
@@ -62,13 +65,17 @@ Its prompt is one line, `/relay take <branch>`. The summary is not passed in the
 
 The successor's link — on the web `https://claude.ai/code/<session_id>` from the id `create_session` returned, written bare so the operator clicks through to it — or the local recipe, and the summary's size in characters with a rough token count at four characters a token — the context the successor starts with on top of its baseline.
 
-### Without a successor
-
-The cache keepalive's last wake (`.claude/keepalive/`) relays this way: the session has idled for hours, so a successor started now is a session nobody is waiting for. Steps 1–2 as written, then no Step 3: the report gives the line the operator starts a new session with — `/relay take <branch>` in a fenced block holding only it — and the summary's size as Step 4 gives it.
-
 ### After the handoff
 
 An operator message that lands here once the successor is running → load `@.claude/skills/relay/after-handoff.md` § "In the predecessor" before acting on it.
+
+## `/relay park [<to-be first message>]` — hand off to nobody yet
+
+For an operator who will come back to the work later, not now: a successor started today is a session nobody is waiting for, and this one kept alive is a cache the keepalive (`.claude/keepalive/`) pays to keep warm. Its last wake parks unasked for the same reason, the session having idled for hours.
+
+Steps 1–2 as the handoff runs them, the argument becoming the Next step the same way; then no Step 3. The report gives the line the operator starts a new session with — `/relay take <branch>` in a fenced block holding only it — and the summary's size as Step 4 gives it.
+
+A parked session keeps no keepalive: `TaskStop` a running watcher and start none.
 
 ## The predecessor's transcript
 

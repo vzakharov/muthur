@@ -230,6 +230,9 @@ the reason for them. A revision replaces it, so its history is git's.
 - **Of the row's copy and a running session's pending one, the later wins.**
   That is how a `--session` edit to a running session's row survives its next
   `Stop`, and how the session's own later `set` overrides that edit.
+- **A branch lands with an estimate on every session it carries.**
+  `check_estimates.py`, in the vet run, fails one without: the notice sets no
+  deadline, and a `Stop` hook would ask before the size of the work is known.
 - **It sizes the task, never the session's pace.** It moves when the task
   does — scope added, a difficulty no estimator would have foreseen, a relay
   handing the rest on. A model that booked its own detours as extra hours would

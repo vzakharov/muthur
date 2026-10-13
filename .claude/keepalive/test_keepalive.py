@@ -114,6 +114,8 @@ class WhenAnOperatorPromptArrives(HookCase):
             out, _ = self.prompt()
             self.assertIn("watcher is running", out)
             self.assertIn("TaskStop", out)
+            self.assertIn("asks to stop the keepalive", out)
+            self.assertIn("asks to park the session", out)
         finally:
             watcher.kill()
             watcher.communicate()
@@ -135,10 +137,13 @@ class WhenTheWatcherWakesTheSession(HookCase):
         self.assertEqual((self.data()["wakes"], self.data()["fired"], self.data()["pid"]), (1, True, None))
         out, _ = self.prompt(self.notice())
         self.assertIn("wake 1 of 5", out)
-        self.assertIn("at most seven words", out)
+        self.assertIn("one line and nothing else", out)
+        self.assertIn("plain words, no command names", out)
+        self.assertIn("a word to park the session", out)
+        self.assertIn("a word to just stop", out)
         self.assertIn("start the cache keepalive's watcher", out)
 
-    def test_the_fifth_wake_relays_without_a_successor_and_starts_nothing(self) -> None:
+    def test_the_fifth_wake_parks_the_session_and_starts_nothing(self) -> None:
         self.session(ago=1)
         for wake in range(1, 5):
             self.wake()
@@ -146,7 +151,7 @@ class WhenTheWatcherWakesTheSession(HookCase):
         self.wake()
         out, _ = self.prompt(self.notice())
         self.assertIn("last wake (5 of 5)", out)
-        self.assertIn('"Without a successor"', out)
+        self.assertIn("Run `/relay park`", out)
         self.assertIn("Do not start the watcher again", out)
 
     def test_the_wake_count_is_configurable(self) -> None:
