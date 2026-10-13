@@ -1,11 +1,10 @@
 #!/bin/bash
 # Fail on a Markdown table outside a code fence in any tracked `.md`.
 #
-# Run by `vet.sh` while `.claude/rules/markdown.md` exists: whether a
-# project's Markdown carries tables is its own call, so deleting the rule turns
-# this off. The convention is the rule's: Markdown here is read raw,
-# by agents and in diffs, where a table row is one physical line and editing any
-# cell rewrites the whole row. A table is caught by its delimiter row
+# The convention is `.claude/rules/markdown.md`'s, and `vet.sh` runs this only
+# while that file exists: Markdown here is read raw, by agents and in diffs,
+# where a table row is one physical line and editing any cell rewrites the
+# whole row. A table is caught by its delimiter row
 # (`| --- | :-: |`), the one line every GitHub table must have. A table inside a
 # fence is a template for output read rendered elsewhere, and passes.
 #
