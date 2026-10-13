@@ -2,12 +2,19 @@
 
 # G5 — CI & landing
 
-| Item | What it does | Requires | Pulls in | Disposition |
-| --- | --- | --- | --- | --- |
-| `/bootstrap-workflow-dispatch` | Register a `workflow_dispatch` workflow in Actions metadata with a one-shot branch-scoped push trigger, so `gh workflow run` stops 404ing on a branch whose workflow has not reached the default branch yet. | GitHub Actions, `gh`, push access to the branch | `/test-on-gh` (G6), `/watch-ci` | adopt |
-| `/watch-ci` | Watch an in-flight GitHub Actions run incrementally, surfacing failures as they happen so fixes can go out mid-run. | GitHub Actions, `gh`, `scripts/ci-watch-tick.sh`; **G4 on the web** | — | adopt |
-| `scripts/ci-watch-tick.sh` | One polling tick of a CI run: what changed since the last tick. | `gh`, `jq`, `scripts/lib/watch-tick-common.sh`, `scripts/lib/gh-repo.sh` (G2) | — | adopt |
-| `scripts/lib/watch-tick-common.sh` | The watch loop's tick helpers: the elapsed-aware sleep between ticks, and the `--reset` state-file removal. | `bash` | — | adopt |
+- `/bootstrap-workflow-dispatch` — Register a `workflow_dispatch` workflow in Actions metadata with a one-shot branch-scoped push trigger, so `gh workflow run` stops 404ing on a branch whose workflow has not reached the default branch yet.
+  - **Requires:** GitHub Actions, `gh`, push access to the branch
+  - **Pulls in:** `/test-on-gh` (G6), `/watch-ci`
+  - **Disposition:** adopt
+- `/watch-ci` — Watch an in-flight GitHub Actions run incrementally, surfacing failures as they happen so fixes can go out mid-run.
+  - **Requires:** GitHub Actions, `gh`, `scripts/ci-watch-tick.sh`; **G4 on the web**
+  - **Disposition:** adopt
+- `scripts/ci-watch-tick.sh` — One polling tick of a CI run: what changed since the last tick.
+  - **Requires:** `gh`, `jq`, `scripts/lib/watch-tick-common.sh`, `scripts/lib/gh-repo.sh` (G2)
+  - **Disposition:** adopt
+- `scripts/lib/watch-tick-common.sh` — The watch loop's tick helpers: the elapsed-aware sleep between ticks, and the `--reset` state-file removal.
+  - **Requires:** `bash`
+  - **Disposition:** adopt
 
 The group's three CI-facing skills partition one timeline.
 `/bootstrap-workflow-dispatch` ends the moment `gh workflow run` stops 404ing,

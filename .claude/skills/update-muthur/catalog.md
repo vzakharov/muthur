@@ -24,19 +24,27 @@ Two audiences:
 Both audiences read it from a fresh clone of the source repo, which is what lets
 the banner's rule hold: no adopter needs a copy, so no copy can go stale.
 
-## How to read a row
+## How to read an entry
 
-| Column | Meaning |
-| --- | --- |
-| **Item** | `/name` is a skill (`.claude/skills/name/`); anything else is a repo-relative path. |
-| **What it does** | The one-liner. Descriptions live here and nowhere else. |
-| **Requires** | External conditions and tools that must hold for the item to work at all. |
-| **Pulls in** | Siblings it cannot work without. Copy these too; only `@`-references are machine-checked, so see [Closure](#closure-is-not-optional). |
-| **Disposition** | `adopt`, `rewrite`, or `never` — see below. |
+An entry is a top-level list item, `` - `item` — what it does ``, with its
+remaining fields as nested items:
 
-The **group** is the part a row lives in (`catalog/`) rather than a column: groups partition the
-inventory, so every item appears under exactly one, and
-`scripts/check-skill-catalog.sh` fails if a skill picks up a second row.
+- **Item** — the backticked token that opens the entry. `/name` is a skill
+  (`.claude/skills/name/`); anything else is a repo-relative path.
+- **What it does** — the one-liner after the dash. Descriptions live here and
+  nowhere else.
+- **Requires** — external conditions and tools that must hold for the item to
+  work at all.
+- **Pulls in** — siblings it cannot work without. Copy these too; only
+  `@`-references are machine-checked, so see
+  [Closure](#closure-is-not-optional).
+- **Disposition** — `adopt`, `rewrite`, or `never` — see below.
+
+A **Requires** or **Pulls in** with nothing to name is left out.
+
+The **group** is the part an entry lives in (`catalog/`) rather than a field:
+groups partition the inventory, so every item appears under exactly one, and
+`scripts/check-skill-catalog.sh` fails if a skill picks up a second entry.
 
 ### Three dispositions, not two
 
@@ -61,20 +69,36 @@ the cost and what a yes and a no each change in the tree.
 Group membership is the coarse decision; **Requires** carries the orthogonal
 conditions, and any row can be escaped individually.
 
-| Group | Adopt when |
-| --- | --- |
-| [G0 — The sync path](catalog/g0-sync-path.md) | Always, unless you want a one-time snapshot and no future updates. The sync half ships unhydrated: filling in the watermark is what makes it runnable. |
-| [G1 — Prose & principles](catalog/g1-prose-principles.md) | Always. Zero external dependencies, no stack assumptions, no GitHub. |
-| [G2 — The PR loop](catalog/g2-pr-loop.md) | A change is a branch → PR → squash-merge, on GitHub, with `gh` and `$GH_TOKEN` reachable. **In a web/remote session, needs G4.** |
-| [G3 — Issue & backlog](catalog/g3-issue-backlog.md) | G2 **and** work is actually tracked as GitHub issues. Same web-session dependency on G4. |
-| [G4 — Remote-session plumbing](catalog/g4-remote-plumbing.md) | Sessions run on Claude Code web/remote. Inert locally — but a **prerequisite** of G2/G3/G5 on the web, not a nicety. Declinable at a stated cost. |
-| [G5 — CI & landing](catalog/g5-ci-landing.md) | CI runs on GitHub Actions, reachable via `gh`. `/watch-ci` additionally needs **G4** in a web session, not merely recommends it; the rest of the group works through the proxy unshimmed. |
-| [G6 — Stack stubs](catalog/g6-stack-stubs.md) | Per row, and only if you will hydrate it now. |
-| [G7 — Session cost ledger](catalog/g7-cost-ledger.md) | **The operator says yes when asked** — never by inference from the profile. |
-| [G8 — Context budget](catalog/g8-context-budget.md) | **The operator says yes when asked**, as G7. |
-| [G9 — Cold-cache guard](catalog/g9-cold-cache.md) | **The operator says yes when asked**, as G7. |
-| [G10 — Cache keepalive](catalog/g10-cache-keepalive.md) | **The operator says yes when asked**, as G7 — and **G7 is a prerequisite**, not a recommendation. |
-| [Never](catalog/never.md) | — |
+Each group, with when to adopt it:
+
+- [G0 — The sync path](catalog/g0-sync-path.md) — always, unless you want a
+  one-time snapshot and no future updates. The sync half ships unhydrated:
+  filling in the watermark is what makes it runnable.
+- [G1 — Prose & principles](catalog/g1-prose-principles.md) — always. Zero
+  external dependencies, no stack assumptions, no GitHub.
+- [G2 — The PR loop](catalog/g2-pr-loop.md) — a change is a branch → PR →
+  squash-merge, on GitHub, with `gh` and `$GH_TOKEN` reachable. **In a
+  web/remote session, needs G4.**
+- [G3 — Issue & backlog](catalog/g3-issue-backlog.md) — G2 **and** work is
+  actually tracked as GitHub issues. Same web-session dependency on G4.
+- [G4 — Remote-session plumbing](catalog/g4-remote-plumbing.md) — sessions run
+  on Claude Code web/remote. Inert locally — but a **prerequisite** of G2/G3/G5
+  on the web, not a nicety. Declinable at a stated cost.
+- [G5 — CI & landing](catalog/g5-ci-landing.md) — CI runs on GitHub Actions,
+  reachable via `gh`. `/watch-ci` additionally needs **G4** in a web session,
+  not merely recommends it; the rest of the group works through the proxy
+  unshimmed.
+- [G6 — Stack stubs](catalog/g6-stack-stubs.md) — per entry, and only if you
+  will hydrate it now.
+- [G7 — Session cost ledger](catalog/g7-cost-ledger.md) — **the operator says
+  yes when asked** — never by inference from the profile.
+- [G8 — Context budget](catalog/g8-context-budget.md) — **the operator says yes
+  when asked**, as G7.
+- [G9 — Cold-cache guard](catalog/g9-cold-cache.md) — **the operator says yes
+  when asked**, as G7.
+- [G10 — Cache keepalive](catalog/g10-cache-keepalive.md) — **the operator says
+  yes when asked**, as G7 — and **G7 is a prerequisite**, not a recommendation.
+- [Never](catalog/never.md) — under no condition.
 
 ## Closure is not optional
 
