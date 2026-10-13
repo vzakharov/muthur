@@ -1,0 +1,94 @@
+{
+  "estimate": {
+    "at": "2026-10-13T17:31:36.569Z",
+    "parts": [
+      {
+        "hours": 3.0,
+        "grade": "middle",
+        "role": "developer",
+        "comment": "a pinned formatter wrapper, an edit hook, vet wiring and a regex change in the catalog check are routine tooling, made slower by the staging rules for always-loaded files"
+      },
+      {
+        "hours": 3.0,
+        "grade": "senior",
+        "role": "prompter",
+        "comment": "rewriting ~30 tables in agent-facing skills as lists without shifting what an agent reads them to mean needs judgement of instruction prose"
+      }
+    ],
+    "comment": null
+  },
+  "sessionId": "4d131818-1a65-5e6b-ab82-dc5071e99734",
+  "branch": "claude/md-prettier-no-tables-5qxf9h",
+  "cwd": "/home/user/muthur",
+  "openingPrompt": "а у нас prettier нет? хочу сделать все md с обязательным переносом после 80 символов, вроде тот так умеет (и с автообработкой)",
+  "prs": [
+    187
+  ],
+  "url": "https://claude.ai/code/session_01FUpwykCPDqAqpvMLCVkpgZ",
+  "operator": "vzakharov",
+  "firstResponseAt": "2026-10-13T17:28:00.062Z",
+  "lastResponseAt": "2026-10-13T17:32:41.475Z",
+  "pricesAsOf": "2026-10-06",
+  "claudeCodeTotalUsd": null,
+  "total": {
+    "inputTokens": 60,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 106400,
+    "cacheReadTokens": 3484532,
+    "outputTokens": 24244,
+    "thinkingTokens": 9900,
+    "responses": 30,
+    "costUsd": 2.0332263999999998
+  },
+  "ownTurns": {
+    "inputTokens": 60,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 106400,
+    "cacheReadTokens": 3484532,
+    "outputTokens": 24244,
+    "thinkingTokens": 9900,
+    "responses": 30,
+    "costUsd": 2.0332263999999998
+  },
+  "subagents": {
+    "inputTokens": 0,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 0,
+    "cacheReadTokens": 0,
+    "outputTokens": 0,
+    "thinkingTokens": 0,
+    "responses": 0,
+    "costUsd": 0.0
+  },
+  "byRate": {
+    "claude-opus-5-5/standard": {
+      "inputTokens": 60,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 106400,
+      "cacheReadTokens": 3484532,
+      "outputTokens": 24244,
+      "thinkingTokens": 9900,
+      "responses": 30,
+      "costUsd": 2.0332263999999998
+    }
+  },
+  "warnings": [],
+  "orientation": {
+    "endedBy": "Write",
+    "endedOn": "docs/plans/md-prettier-no-tables.draft.do-not-implement.md",
+    "endedAt": "2026-10-13T17:30:54.019Z",
+    "contextTokens": 129408,
+    "spend": {
+      "inputTokens": 38,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 78735,
+      "cacheReadTokens": 1955017,
+      "outputTokens": 14255,
+      "thinkingTokens": 9475,
+      "responses": 19,
+      "costUsd": 1.3061353999999998
+    }
+  },
+  "compactions": [],
+  "telemetry": null
+}
