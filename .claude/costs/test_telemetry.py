@@ -225,7 +225,7 @@ class WhenTheHookStartsTheReceiver(unittest.TestCase):
                 **inherited,
                 "PATH": self.path,
                 "CLAUDE_PROJECT_DIR": str(self.root),
-                "TELEMETRY_RECEIVER_PORT": str(self.port),
+                "MUTHUR_TELEMETRY_RECEIVER_PORT": str(self.port),
                 **env,
             },
         )

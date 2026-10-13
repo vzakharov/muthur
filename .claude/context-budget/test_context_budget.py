@@ -193,7 +193,7 @@ class WhenTheNoticesFire(BudgetTestCase):
     def test_the_thresholds_follow_their_env_overrides(self) -> None:
         self.session.append(assistant(60_000))
         notice = self.session.notice(
-            {"CONTEXT_BUDGET_WARN": "50000", "CONTEXT_BUDGET_PAUSE": "100000"}
+            {"MUTHUR_CONTEXT_BUDGET_WARN": "50000", "MUTHUR_CONTEXT_BUDGET_PAUSE": "100000"}
         )
         assert notice is not None
         self.assertIn("50k warning line", notice)
@@ -209,7 +209,7 @@ class WhenTheNoticesFire(BudgetTestCase):
     def test_the_room_follows_the_lines(self) -> None:
         self.session.append(assistant(60_000))
         notice = self.session.notice(
-            {"CONTEXT_BUDGET_WARN": "50000", "CONTEXT_BUDGET_PAUSE": "80000"}
+            {"MUTHUR_CONTEXT_BUDGET_WARN": "50000", "MUTHUR_CONTEXT_BUDGET_PAUSE": "80000"}
         )
         assert notice is not None
         self.assertIn("under ~30k more tokens", notice)
@@ -350,20 +350,20 @@ class ThePricedLines(BudgetTestCase):
 
     def test_a_larger_pause_saving_moves_the_pause_out(self) -> None:
         self.reach(200_000)
-        notice = self.session.notice({"CONTEXT_BUDGET_PAUSE_SAVING": "40"})
+        notice = self.session.notice({"MUTHUR_CONTEXT_BUDGET_PAUSE_SAVING": "40"})
         assert notice is not None
         self.assertIn("warning line", notice)
 
     def test_a_line_set_by_hand_stays_fixed(self) -> None:
         self.reach(150_000)
-        self.assertIsNone(self.session.notice({"CONTEXT_BUDGET_WARN": "200000"}))
+        self.assertIsNone(self.session.notice({"MUTHUR_CONTEXT_BUDGET_WARN": "200000"}))
         self.reach(200_000)
-        notice = self.session.notice({"CONTEXT_BUDGET_PAUSE": "300000"})
+        notice = self.session.notice({"MUTHUR_CONTEXT_BUDGET_PAUSE": "300000"})
         assert notice is not None
         self.assertLess(self.line(notice, "warning"), 200_000)
 
     def test_fixed_lines_turn_the_pricing_off(self) -> None:
-        fixed = {"CONTEXT_BUDGET_LINES": "fixed"}
+        fixed = {"MUTHUR_CONTEXT_BUDGET_LINES": "fixed"}
         self.reach(190_000)
         self.assertIsNone(self.session.notice(fixed))
         self.reach(WARN + 1)
@@ -384,9 +384,9 @@ class ThePricedLines(BudgetTestCase):
 
     def test_an_unknown_mode_is_refused(self) -> None:
         self.reach(WARN + 1)
-        result = self.session.tool_call({"CONTEXT_BUDGET_LINES": "maybe"})
+        result = self.session.tool_call({"MUTHUR_CONTEXT_BUDGET_LINES": "maybe"})
         self.assertEqual(result.stdout, "")
-        self.assertIn("CONTEXT_BUDGET_LINES", result.stderr)
+        self.assertIn("MUTHUR_CONTEXT_BUDGET_LINES", result.stderr)
 
 
 class WhichRecordsAreTheReading(BudgetTestCase):

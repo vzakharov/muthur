@@ -12,16 +12,16 @@ need_command jq "no context-budget reading this tool call."
 # subagent pausing that plan would release it while its parent works on.
 [ -z "$(field agent_id)" ] || exit 0
 
-warn="${CONTEXT_BUDGET_WARN:-200000}"
-pause="${CONTEXT_BUDGET_PAUSE:-300000}"
-pause_saving="${CONTEXT_BUDGET_PAUSE_SAVING:-20}"
-lines="${CONTEXT_BUDGET_LINES:-priced}"
+warn="${MUTHUR_CONTEXT_BUDGET_WARN:-200000}"
+pause="${MUTHUR_CONTEXT_BUDGET_PAUSE:-300000}"
+pause_saving="${MUTHUR_CONTEXT_BUDGET_PAUSE_SAVING:-20}"
+lines="${MUTHUR_CONTEXT_BUDGET_LINES:-priced}"
 [[ "$warn" =~ ^[0-9]+$ && "$pause" =~ ^[0-9]+$ && "$pause_saving" =~ ^[0-9]+$ && "$pause_saving" -lt 100 ]] || {
-  say "CONTEXT_BUDGET_WARN / CONTEXT_BUDGET_PAUSE must be whole counts, CONTEXT_BUDGET_PAUSE_SAVING a percentage under 100; no reading taken."
+  say "MUTHUR_CONTEXT_BUDGET_WARN / MUTHUR_CONTEXT_BUDGET_PAUSE must be whole counts, MUTHUR_CONTEXT_BUDGET_PAUSE_SAVING a percentage under 100; no reading taken."
   exit 0
 }
 [[ "$lines" == priced || "$lines" == fixed ]] || {
-  say "CONTEXT_BUDGET_LINES must be \`priced\` or \`fixed\`; no reading taken."
+  say "MUTHUR_CONTEXT_BUDGET_LINES must be \`priced\` or \`fixed\`; no reading taken."
   exit 0
 }
 # The slice of work a relay's saving is priced over.
@@ -53,7 +53,7 @@ state_file="$state_dir/$session"
 # a hand-set line stays fixed. Cached as `<warn> <pause> <reading>`.
 hooks="$(dirname "${BASH_SOURCE[0]}")"
 priced=
-if [ "$lines" = priced ] && [ -z "${CONTEXT_BUDGET_WARN:-}" -o -z "${CONTEXT_BUDGET_PAUSE:-}" ] \
+if [ "$lines" = priced ] && [ -z "${MUTHUR_CONTEXT_BUDGET_WARN:-}" -o -z "${MUTHUR_CONTEXT_BUDGET_PAUSE:-}" ] \
   && [ -f "$hooks/../../costs/lib/restart.py" ] && command -v python3 >/dev/null; then
   line_file="$state_dir/$session.line"
   priced_warn= priced_pause= at=
@@ -62,11 +62,11 @@ if [ "$lines" = priced ] && [ -z "${CONTEXT_BUDGET_WARN:-}" -o -z "${CONTEXT_BUD
     read -r priced_warn priced_pause < <(python3 "$hooks/priced_line.py" lines "$transcript" "$finish" "$pause_saving")
     mkdir -p "$state_dir" && printf '%s %s %s\n' "${priced_warn:--}" "${priced_pause:--}" "$reading" >"$line_file"
   fi
-  if [ -z "${CONTEXT_BUDGET_WARN:-}" ] && [[ "$priced_warn" =~ ^[0-9]+$ ]]; then
+  if [ -z "${MUTHUR_CONTEXT_BUDGET_WARN:-}" ] && [[ "$priced_warn" =~ ^[0-9]+$ ]]; then
     priced=1
     [ "$priced_warn" -ge "$warn" ] || warn="$priced_warn"
   fi
-  if [ -z "${CONTEXT_BUDGET_PAUSE:-}" ] && [[ "$priced_pause" =~ ^[0-9]+$ ]]; then
+  if [ -z "${MUTHUR_CONTEXT_BUDGET_PAUSE:-}" ] && [[ "$priced_pause" =~ ^[0-9]+$ ]]; then
     priced=1
     [ "$priced_pause" -ge "$pause" ] || pause="$priced_pause"
   fi
