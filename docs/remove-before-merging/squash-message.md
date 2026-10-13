@@ -1,30 +1,26 @@
 Proposed squash title/body:
 
 ```
-feat: [attn adopters] hard-wrapped, table-free Markdown under prettier (pr #187)
+feat: [attn adopters] hard-wrap Markdown at 80 columns with prettier (pr #187)
 ```
 
 ```
-Markdown here is read raw, by agents and in diffs, and both of its line
-shapes diffed badly: a table row and an unwrapped paragraph are each one
-physical line, so editing a cell or a clause rewrites the whole line.
-
-Every table outside a code fence is now a list or a section; a template
-for output GitHub renders, such as /qa-checklist's, stays fenced. The
-update-muthur catalog is a list, read as such by check-skill-catalog.sh.
+Markdown here is read raw, by agents and in diffs, and an unwrapped
+paragraph is one physical line, so editing one clause rewrote the whole
+paragraph in the diff.
 
 All tracked Markdown is hard-wrapped at 80 columns by prettier, pinned
 in scripts/prettier.sh, run by a PostToolUse hook on each edited .md and
-checked by vet.sh, which also fails a table outside a fence. Files that
-become GitHub bodies or comments are exempt, since GitHub renders their
-newlines as line breaks.
+checked by vet.sh. Files that become GitHub bodies or comments are
+exempt through .prettierignore, since GitHub renders their newlines as
+line breaks.
 
 Adopters: split the sync at this commit. Port everything before it as
-usual; read this one with `git show -w --word-diff=plain
---word-diff-regex='[^[:space:]]+'` and port only what changed in words,
-never the reflow; wrap your own Markdown with your own tooling (the
-prettier files here are optional), keeping the GitHub-bound exemptions;
-then port what follows as usual. No operator approval is needed.
+usual; from this one take only the tooling, the hook entry, the vet and
+install-deps lines and the rule, never its reflow of existing Markdown;
+wrap your own Markdown with your own tooling (the prettier files here
+are optional), keeping the GitHub-bound exemptions; then port what
+follows as usual. No operator approval is needed.
 
 Co-authored-by: Claude <noreply@anthropic.com>
 ```
