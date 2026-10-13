@@ -1,26 +1,27 @@
 Proposed squash title/body:
 
 ```
-feat: make auto-relay the default, with env and operator opt-outs (pr #182)
+feat: relay at a context-budget pause by default, with a manual switch (pr #182)
 ```
 
 ```
 A context-budget pause offered /relay and asked each operator once
 whether to run it unasked from then on. Running it unasked is now the
 default, so the question is gone and the relay's report says how to
-turn it off instead.
+have the pause ask first instead.
 
-Two switches turn it off, either one enough: MUTHUR_AUTO_RELAY=off
-among the environment's variables (on the web, the cloud environment's
-settings beside its setup script), or the operator's
-.claude/context-budget/auto-relay/<handle> holding `off`. The
-environment's `on` cannot override an operator's `off`, and a value
-that is neither reads as `off`, since someone set it to reach for the
-switch.
+Either of two switches set to `true` (or yes, on, 1) makes the pause
+offer the relay instead: MUTHUR_MANUAL_RELAY among the environment's
+variables (on the web, the cloud environment's settings beside its
+setup script), or the operator's
+.claude/context-budget/manual-relay/<handle>. Any other value leaves
+the default, and one that is not a no either is named on stderr.
 
 A session with no operator to resolve, a bot token or a gh that cannot
-answer, now relays too; for launches nobody reopens, the environment
-variable is the switch. /relay's Auto-relay section owns both switches.
+answer, relays too; for launches nobody reopens, the environment
+variable is the switch. When a pause relays is the context budget's
+rule, kept in its CLAUDE.md beside the hook; /relay describes only what
+a relay is.
 
 Co-authored-by: Claude <noreply@anthropic.com>
 ```
