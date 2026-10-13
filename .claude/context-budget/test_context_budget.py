@@ -276,7 +276,7 @@ class WhetherThePauseRelaysOnItsOwn(BudgetTestCase):
         self.session.signed_in_as("someone")
         self.session.manual_relay("someone", "false")
         self.session.append(assistant(PAUSE + 1))
-        pause = self.session.notice({"MUTHUR_MANUAL_RELAY": "true"})
+        pause = self.session.notice({"MUTHUR_MANUAL_CONTEXT_BUDGET_RELAY": "true"})
         assert pause is not None
         self.assert_offers(pause)
 
@@ -284,20 +284,20 @@ class WhetherThePauseRelaysOnItsOwn(BudgetTestCase):
         self.session.signed_in_as("someone")
         self.session.manual_relay("someone", "true")
         self.session.append(assistant(PAUSE + 1))
-        pause = self.session.notice({"MUTHUR_MANUAL_RELAY": "false"})
+        pause = self.session.notice({"MUTHUR_MANUAL_CONTEXT_BUDGET_RELAY": "false"})
         assert pause is not None
         self.assert_offers(pause)
 
     def test_an_unknown_environment_value_is_named_and_leaves_the_default(self) -> None:
         self.session.append(assistant(PAUSE + 1))
-        result = self.session.tool_call({"MUTHUR_MANUAL_RELAY": "ture"})
-        self.assertIn("MUTHUR_MANUAL_RELAY", result.stderr)
+        result = self.session.tool_call({"MUTHUR_MANUAL_CONTEXT_BUDGET_RELAY": "ture"})
+        self.assertIn("MUTHUR_MANUAL_CONTEXT_BUDGET_RELAY", result.stderr)
         self.assert_relays(json.loads(result.stdout)["hookSpecificOutput"]["additionalContext"])
 
     def test_a_no_is_not_named(self) -> None:
         self.session.append(assistant(PAUSE + 1))
-        result = self.session.tool_call({"MUTHUR_MANUAL_RELAY": "off"})
-        self.assertNotIn("MUTHUR_MANUAL_RELAY", result.stderr)
+        result = self.session.tool_call({"MUTHUR_MANUAL_CONTEXT_BUDGET_RELAY": "off"})
+        self.assertNotIn("MUTHUR_MANUAL_CONTEXT_BUDGET_RELAY", result.stderr)
 
     def test_a_bot_token_has_no_operator_setting_to_read(self) -> None:
         self.session.signed_in_as("claude[bot]", kind="Bot")

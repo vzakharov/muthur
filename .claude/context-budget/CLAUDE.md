@@ -49,8 +49,8 @@ plan".
   it would otherwise repeat on every tool call.
 - **The operator is resolved only when a notice is about to fire**, with `gh api
   user`, since it costs a network call and the ordinary tool call has no use for
-  it — and not at all once `MUTHUR_MANUAL_RELAY` has settled how the pause
-  ends. A `gh` that cannot answer, or a token that is not a `User`'s, has no
+  it — and not at all once `MUTHUR_MANUAL_CONTEXT_BUDGET_RELAY` has settled how
+  the pause ends. A `gh` that cannot answer, or a token that is not a `User`'s, has no
   operator file to read and leaves the default.
 - **Anything unreadable is silence**, never an error: a missing notice costs a
   warning, a hook failing on every tool call costs the session.
@@ -68,8 +68,8 @@ report says the session relayed on its own and how to have it ask first. Either
 of two switches set to `true` makes the pause end the turn offering the relay
 instead:
 
-- **`MUTHUR_MANUAL_RELAY`, for an environment**, set where the variables above
-  are — on the web, the dialog that also holds the setup script. It is the
+- **`MUTHUR_MANUAL_CONTEXT_BUDGET_RELAY`, for an environment**, set where the
+  variables above are — on the web, the dialog that also holds the setup script. It is the
   switch for launches nobody reopens, whose successor would be a session nobody
   finds, and the only one for a session with no operator to resolve.
 - **`manual-relay/<handle>`, for an operator**, the handle being the one

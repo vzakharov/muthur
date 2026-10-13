@@ -101,7 +101,7 @@ says_yes() {
   return 1
 }
 manual_relay=
-if says_yes MUTHUR_MANUAL_RELAY "${MUTHUR_MANUAL_RELAY:-}"; then
+if says_yes MUTHUR_MANUAL_CONTEXT_BUDGET_RELAY "${MUTHUR_MANUAL_CONTEXT_BUDGET_RELAY:-}"; then
   manual_relay=1
 else
   # The operator is keyed as `.claude/hooks/operator-voice.sh` keys voice entries:

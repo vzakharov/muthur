@@ -11,9 +11,9 @@ default, so the question is gone and the relay's report says how to
 have the pause ask first instead.
 
 Either of two switches set to `true` (or yes, on, 1) makes the pause
-offer the relay instead: MUTHUR_MANUAL_RELAY among the environment's
-variables (on the web, the cloud environment's settings beside its
-setup script), or the operator's
+offer the relay instead: MUTHUR_MANUAL_CONTEXT_BUDGET_RELAY among the
+environment's variables (on the web, the cloud environment's settings
+beside its setup script), or the operator's
 .claude/context-budget/manual-relay/<handle>. Any other value leaves
 the default, and one that is not a no either is named on stderr.
 
