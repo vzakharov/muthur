@@ -151,8 +151,9 @@ don't, and lists the four counter-intuitive cases. Don't re-derive them.
 
 Copy the resolved set from the clone into your repo — but **not**
 [`.claude/skills/update-muthur/catalog.md`](.claude/skills/update-muthur/catalog.md)
-or its `catalog/` parts ([the `never` entries](.claude/skills/update-muthur/catalog/never.md)),
-which taking `/update-muthur` otherwise brings along inside its directory.
+or its `catalog/` parts, and not `.claude/rules/markdown.md` ([the `never`
+entries](.claude/skills/update-muthur/catalog/never.md)), which taking
+`/update-muthur` or `.claude/rules/` otherwise brings along inside its directory.
 Each `opt-in: ask` entry goes by its answer: on a yes, copy its path and merge the
 `.claude/settings.json` entries its catalog entry names — `.claude/costs/` without this
 repo's own cost rows under `sessions/`, then

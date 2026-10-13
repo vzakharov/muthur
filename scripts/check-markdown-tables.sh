@@ -1,7 +1,9 @@
 #!/bin/bash
 # Fail on a Markdown table outside a code fence in any tracked `.md`.
 #
-# The convention is `.claude/rules/markdown.md`'s: Markdown here is read raw,
+# This repo's house style, run by `check-muthur.sh` and so never downstream,
+# where tables are the adopter's call. The convention is
+# `.claude/rules/markdown.md`'s: Markdown here is read raw,
 # by agents and in diffs, where a table row is one physical line and editing any
 # cell rewrites the whole row. A table is caught by its delimiter row
 # (`| --- | :-: |`), the one line every GitHub table must have. A table inside a

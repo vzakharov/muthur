@@ -18,10 +18,11 @@ README carries one, and why editing such a file goes through a staged copy
 directory whose own conventions live in a scoped rule file rather than in its
 `CLAUDE.md`.
 
-The directory ships the loop's own three rules — `stack.md` (what
-`scripts/vet.sh` exits, and what a stack landing wires), `staging.md` (editing a
-file that loads on every turn) and `markdown.md` (no tables), each spanning
-paths no one directory holds.
+The directory ships the loop's own two rules — `stack.md` (what
+`scripts/vet.sh` exits, and what a stack landing wires) and `staging.md`
+(editing a file that loads on every turn), each spanning paths no one directory
+holds. `markdown.md` (no tables) is this repo's own house style and never
+travels.
 Everything else here is yours: rules are mostly project-specific, and the
 reusable part is the mechanism. Add rule files as your conventions emerge.
 

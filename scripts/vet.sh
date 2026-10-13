@@ -24,9 +24,6 @@
 #     dangling reference fails silently: the agent follows the surviving prose
 #     past the step they could not load. Dropping this line puts the check back
 #     on the agent's memory, which is where it was when it went unrun.
-#   check-markdown-tables.sh — fails on a Markdown table outside a code fence,
-#     holding `.claude/rules/markdown.md`'s convention. Dropping it leaves the
-#     rule only for the sessions that happen to read it.
 #   check-squash-message.sh — holds the squash proposal to the rules
 #     `/squash-message` states, passing quietly when a branch has no proposal.
 #     Dropping it leaves nothing catching a proposal edited by hand or outgrown
@@ -40,7 +37,8 @@
 #     with a ceiling and a lower target for a branch that crossed it. Dropping
 #     it leaves text paid for on every turn free to grow unnoticed.
 #   check-muthur.sh — everything that tests only this repo's own machinery: the
-#     repo-identity check and every `scripts/test_*.py`. One line because an
+#     repo-identity check, the no-tables house style and every
+#     `scripts/test_*.py`. One line because an
 #     adopting repo drops them together; it keys on the catalog and exits 0
 #     downstream, so the line is harmless if a rewrite leaves it.
 #   the opt-in loop — the tests of the session cost ledger (`.claude/costs/`),
@@ -57,7 +55,6 @@
 set -euo pipefail
 
 "$(dirname "$0")/check-skill-catalog.sh"
-"$(dirname "$0")/check-markdown-tables.sh"
 "$(dirname "$0")/check-squash-message.sh"
 "$(dirname "$0")/staged.sh" check
 "$(dirname "$0")/check-claude-md-size.sh"
