@@ -26,7 +26,7 @@ rewritten, a fix to one you left alone lands, and something you turned down is
 remembered rather than offered again.
 
 Per-item descriptions live in
-**[`.claude/skills/update-muthur/catalog.md`](.claude/skills/update-muthur/catalog.md)** — one row
+**[`.claude/skills/update-muthur/catalog.md`](.claude/skills/update-muthur/catalog.md)** — one entry
 per skill, script and file, grouped so you can tell how much of it you need:
 
 | Group | What it covers |

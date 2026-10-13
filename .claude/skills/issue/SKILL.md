@@ -28,4 +28,4 @@ beyond the fork, and `/handle`'s Do-NOT names acting on a one-line summary of a
 skill as the failure mode.
 
 Adopting repos: the source's `.claude/skills/update-muthur/catalog.md` states
-when this row is worth taking.
+when this entry is worth taking.

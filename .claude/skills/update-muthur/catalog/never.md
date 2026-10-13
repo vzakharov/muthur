@@ -4,7 +4,7 @@
 
 These are meaningless in a repo that selects a subset. Most of them describe or
 maintain *this* repo, so copying one means shipping a document about someone
-else's template. `/detemplate` is the row that is `never` for the other reason:
+else's template. `/detemplate` is the entry that is `never` for the other reason:
 it describes no repo at all, it *converts* a whole-tree fork — an operation a
 subset adopter is not performing and a fork performs exactly once, deleting the
 skill as it finishes.
@@ -22,11 +22,11 @@ someone else's work in progress, not the product.
   - **Disposition:** never
 - `docs/adopting/` — `ADOPTING.md`'s chapters, each read only by some adopters, and the screenshot locating the environment setup script. Goes when that file does, or it is left an orphan.
   - **Disposition:** never
-- `.claude/skills/update-muthur/catalog.md` — The catalog's index, and one of two rows naming something a skill directory would otherwise carry in: taking `/update-muthur` brings it along, which must not happen. Read it from a fresh clone on every sync instead, so it cannot go stale downstream — both copy steps name it as a carve-out.
+- `.claude/skills/update-muthur/catalog.md` — The catalog's index, and one of two entries naming something a skill directory would otherwise carry in: taking `/update-muthur` brings it along, which must not happen. Read it from a fresh clone on every sync instead, so it cannot go stale downstream — both copy steps name it as a carve-out.
   - **Disposition:** never
 - `.claude/skills/update-muthur/catalog/` — The catalog's parts, one file per group: the same file as the index, split, and never vendored for the same reason. Wherever the index is deleted or carved out, this goes with it.
   - **Disposition:** never
-- `/detemplate` — Turn a fresh template fork into a project: prune the `never` rows and unused groups, hydrate what stays, hand back the setup script. Routes through `/plan` and deletes itself last.
+- `/detemplate` — Turn a fresh template fork into a project: prune the `never` entries and unused groups, hydrate what stays, hand back the setup script. Routes through `/plan` and deletes itself last.
   - **Requires:** `gh`, `$GH_TOKEN`; a whole-tree fork, not a subset copy
   - **Pulls in:** `/plan` (G2); `/spinoff`, `/update-muthur` (G0)
   - **Disposition:** never

@@ -99,10 +99,10 @@ What the tree cannot answer, asked as numbered prose in the plan turn per
 `@.claude/skills/plan/SKILL.md` Part 2: whether sessions run on Claude Code
 web/remote (G4); whether the project will have a deploy path, a visual surface,
 deployed logs, a production datastore, or sequential numbered migrations — the
-five that decide the individual G6 rows; the language decision; one question
-per catalog row marked `opt-in: ask`, each asked with the cost its row states;
-and the hello. A fork carries every `opt-in: ask` row wired on, so a no deletes
-the row's path, its `.claude/settings.json` entries and its `scripts/vet.sh`
+five that decide the individual G6 entries; the language decision; one question
+per catalog entry marked `opt-in: ask`, each asked with the cost its entry states;
+and the hello. A fork carries every `opt-in: ask` entry wired on, so a no deletes
+the entry's path, its `.claude/settings.json` entries and its `scripts/vet.sh`
 loop. The ledger's yes changes the tree too: it empties
 `.claude/costs/sessions/` of this template's own rows.
 
@@ -162,7 +162,7 @@ permanently.
 
 ## Step 4 — What the plan must contain
 
-Per-group keep/drop with the criterion that decided each; the G6 rows as
+Per-group keep/drop with the criterion that decided each; the G6 entries as
 hydrate-now-or-delete; the reverse-closure edits; the derived watermark and
 `lineage`; the `CLAUDE.md` brief; the first issue's body (Step 5.5);
 `scripts/vet.sh`'s disposition; the language answer; the hello as drafted, its
@@ -185,7 +185,7 @@ Ordering is load-bearing at exactly one point, and it is the first step:
    is a stowaway", and it un-refuses `/spinoff`, whose guard is literally the
    catalog's presence. Sweep it first and the G6 prune is enforced by the vet run
    instead of remembered.
-2. **The rest of the `never` rows**: `README.md` — replaced with the project's,
+2. **The rest of the `never` entries**: `README.md` — replaced with the project's,
    not merely deleted — `ADOPTING.md`, and **`docs/adopting/`** with it: its
    chapters, which a sweep of the one file strands as orphans.
 3. **Prune the groups**, applying the reverse-closure edits the plan recorded.

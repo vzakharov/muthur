@@ -24,9 +24,9 @@ where an answer says it is needed.
 
 The inventory lives in
 [`.claude/skills/update-muthur/catalog.md`](.claude/skills/update-muthur/catalog.md):
-one row per skill, script and file, with the criteria for deciding whether you
+one entry per skill, script and file, with the criteria for deciding whether you
 need it. This file
-does not restate what any skill does; it cites catalog rows. Read them together.
+does not restate what any skill does; it cites catalog entries. Read them together.
 
 Two ways in. Pick the one that matches how you got here:
 
@@ -123,10 +123,10 @@ Code web/remote (this decides G4), and whether the project has a deploy path, a
 visual surface, deployed logs, a production datastore, or sequential numbered
 migrations (these decide the individual G6 stubs).
 
-**Some questions are asked whatever the profile says: one per catalog row
+**Some questions are asked whatever the profile says: one per catalog entry
 marked [`opt-in: ask`](.claude/skills/update-muthur/catalog.md#three-dispositions-not-two).**
 Nothing in a repo answers them, since each turns on whether the operator wants
-the item at the price its row states. Tell them that price, and take the answer
+the item at the price its entry states. Tell them that price, and take the answer
 as given.
 
 ### Step 3 — If this is a web/remote session, settle G4 before copying anything
@@ -151,10 +151,10 @@ don't, and lists the four counter-intuitive cases. Don't re-derive them.
 
 Copy the resolved set from the clone into your repo — but **not**
 [`.claude/skills/update-muthur/catalog.md`](.claude/skills/update-muthur/catalog.md)
-or its `catalog/` parts ([the `never` rows](.claude/skills/update-muthur/catalog/never.md)),
+or its `catalog/` parts ([the `never` entries](.claude/skills/update-muthur/catalog/never.md)),
 which taking `/update-muthur` otherwise brings along inside its directory.
-Each `opt-in: ask` row goes by its answer: on a yes, copy its path and merge the
-`.claude/settings.json` entries its row names — `.claude/costs/` without this
+Each `opt-in: ask` entry goes by its answer: on a yes, copy its path and merge the
+`.claude/settings.json` entries its catalog entry names — `.claude/costs/` without this
 repo's own cost rows under `sessions/`, then
 [`docs/adopting/costs.md`](docs/adopting/costs.md); on a no, record a decline.
 Then continue to the shared tail.
@@ -169,7 +169,7 @@ what lets a later sync re-offer the path; otherwise they go in your report.
 *"Use this template"* already gave you every file, so there is nothing to select
 and nothing to clone — your work is removing what doesn't apply and hydrating
 what does. That means deleting the [`never`
-rows](.claude/skills/update-muthur/catalog/never.md) that
+entries](.claude/skills/update-muthur/catalog/never.md) that
 describe the template, pruning the groups this project won't use and stripping
 the `@`-references pointing into them, hydrating or deleting the [G6
 stubs](.claude/skills/update-muthur/catalog/g6-stack-stubs.md), and filling in the stubs the
@@ -233,7 +233,7 @@ session they state it in writes the file. A manner rule that holds for your whol
 team is not an entry — it is an edit to `voice.md` beside them.
 
 Copying the section is the step with a trap in it. The [G1 catalog
-rows](.claude/skills/update-muthur/catalog/g1-prose-principles.md) state it.
+entries](.claude/skills/update-muthur/catalog/g1-prose-principles.md) state it.
 
 ### Implement `scripts/vet.sh`
 
@@ -270,7 +270,7 @@ says what dropping either costs.
 
 ### Hydrate or delete the G6 stubs
 
-Go through the [G6 rows](.claude/skills/update-muthur/catalog/g6-stack-stubs.md) and apply the criterion
+Go through the [G6 entries](.claude/skills/update-muthur/catalog/g6-stack-stubs.md) and apply the criterion
 stated there: hydrate now, or delete. Hydrating means writing your project's real
 commands in and **deleting the banner** at the top — a stub that still carries its
 banner is still a stub.

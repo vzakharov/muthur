@@ -41,10 +41,10 @@ stays the plan, since its name is the gate: it keeps the loop,
 parts. One is a summary of everything built so far, which each bite's end
 rewrites rather than appending to. Its size is fixed, so that the file comes
 back under 400 lines whenever it is cut, and it is cut again only once the
-file passes 450. The other is an index, one row per bite pointing
+file passes 450. The other is an index, one line per bite pointing
 at `docs/plans/<slug>/bite-<nn>.md`, which holds that bite's full contract.
 Standing decisions move to `docs/plans/<slug>/decisions.md` behind a pointer.
-A bite then folds itself in by writing its own file and row and rewriting the
+A bite then folds itself in by writing its own file and index line and rewriting the
 summary, and a resume opens only the files its slice touches. `/finalize`
 sweeps the directory with the plan.
 

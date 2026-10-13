@@ -10,7 +10,7 @@
 # so a tree holding a hook without this file skips that hook instead of failing
 # the turn — the same contract each hook keeps for its own failures. Which is
 # also why taking any one hook means taking this file:
-# `.claude/skills/update-muthur/catalog.md` has the row saying so.
+# `.claude/skills/update-muthur/catalog.md` has the entry saying so.
 #
 # `need_command` exits the *hook*, not just itself: a sourced function's `exit`
 # ends the script that sourced it, which is the intent — a hook with no `jq` has

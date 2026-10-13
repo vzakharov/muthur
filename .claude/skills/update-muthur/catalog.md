@@ -2,13 +2,13 @@
 > is what marks a tree as the template rather than a repo that adopted it —
 > `scripts/check-skill-catalog.sh` and `/spinoff` both key on that. If you are
 > reading this in a repo that *adopted* this infrastructure, it rode along with
-> `.claude/skills/**` by mistake: **delete the file and its `catalog/` parts.** Do not prune its rows to
-> match your tree — that repairs the symptom (assertion 3 failing on rows you
+> `.claude/skills/**` by mistake: **delete the file and its `catalog/` parts.** Do not prune its entries to
+> match your tree — that repairs the symptom (assertion 3 failing on entries you
 > can never satisfy) and leaves the sentinel permanently wrong.
 
 # Catalog: what's here, and how much of it you need
 
-The per-item inventory of this repo's agent infrastructure. One row per skill,
+The per-item inventory of this repo's agent infrastructure. One entry per skill,
 script and file, carrying the criteria for deciding whether it belongs in your
 repo.
 
@@ -19,7 +19,7 @@ Two audiences:
   the inventory; it does not restate the steps.
 - **`/update-muthur`, on every run** — when a commit at the source adds a skill
   that is in neither your `adopted` nor your `declined` list, the sync reads that
-  skill's row here to surface the decision with its criteria attached.
+  skill's entry here to surface the decision with its criteria attached.
 
 Both audiences read it from a fresh clone of the source repo, which is what lets
 the banner's rule hold: no adopter needs a copy, so no copy can go stale.
@@ -49,7 +49,7 @@ groups partition the inventory, so every item appears under exactly one, and
 ### Three dispositions, not two
 
 - **adopt** — copy as-is.
-- **rewrite** — copy the shape, replace the contents for your repo. One row
+- **rewrite** — copy the shape, replace the contents for your repo. One entry
   carries it: `scripts/vet.sh`, whose exit turns on whether your repo has a stack
   yet, with [`.claude/rules/stack.md`](../../rules/stack.md) the contract's home.
   Elsewhere the word qualifies an **adopt** — `/update-muthur`'s watermark,
@@ -59,15 +59,15 @@ groups partition the inventory, so every item appears under exactly one, and
 
 **`opt-in: ask` qualifies an adopt** whose cost lands on every session and whose
 worth turns on what the operator wants rather than on anything in the tree. Such
-a row is asked, never inferred from the profile: `ADOPTING.md` Step 2,
+an entry is asked, never inferred from the profile: `ADOPTING.md` Step 2,
 `/detemplate` Step 1 and `/update-muthur` Step 4a each put the question with the
-row attached, and record the answer so it is asked once. The row itself states
+entry attached, and record the answer so it is asked once. The entry itself states
 the cost and what a yes and a no each change in the tree.
 
 ## Groups
 
 Group membership is the coarse decision; **Requires** carries the orthogonal
-conditions, and any row can be escaped individually.
+conditions, and any entry can be escaped individually.
 
 Each group, with when to adopt it:
 
@@ -156,7 +156,7 @@ Four closure facts are counter-intuitive enough to state outright:
   omission — a path written here would be a guess about your tracker.
 - **`/override-gh` is pulled in by G0 and G3**, not just G4. See G4 above.
 
-Two G2 rows are adopter choices rather than defaults:
+Two G2 entries are adopter choices rather than defaults:
 
 - **`/go` is a local name, not a contract.** It reads ambiguously in a Go
   project, and this is a stack-agnostic template. Rename it to whatever your
@@ -166,9 +166,9 @@ Two G2 rows are adopter choices rather than defaults:
   the shipped name** — that is where a handoff block in a live plan file or PR
   comment might still say it. Never adopted `/implement` → take `/go` alone and
   put `.claude/skills/implement/` in `declined`: there is no downstream caller to
-  redirect, and the stub would be a permanent extra row standing in for a name
+  redirect, and the stub would be a permanent extra entry standing in for a name
   the repo never had. Already adopted it → ask the operator whether the backwards
-  compatibility is worth that extra row, and record either answer in
+  compatibility is worth that extra entry, and record either answer in
   `watermark.json` so the question does not come back. A **fork** is neither
   case and asks nothing: it carries `/implement` because it carries everything,
   and a tree one commit old has no plan file or PR comment old enough to say it,
@@ -177,8 +177,8 @@ Two G2 rows are adopter choices rather than defaults:
 **The `/issue` redirect is the same choice one group over.** It is worth taking
 only where `/issue` was already the shipped name — that is where a handoff block,
 a PR comment, or an operator's own muscle memory might still say it. Never
-adopted `/issue` → decline the row and put `.claude/skills/issue/` in `declined`:
-there is nothing to redirect, and the stub would be a permanent extra row
+adopted `/issue` → decline the entry and put `.claude/skills/issue/` in `declined`:
+there is nothing to redirect, and the stub would be a permanent extra entry
 standing in for a name the repo never had. **A first adoption is that case** —
 take `/take-issue` alone, and leave the redirect for a later sync to offer if the
 name ever does ship. Already adopted it → take the redirect, since the name
@@ -222,6 +222,6 @@ silently, in prose, forever.
 
 ## Keeping this file honest
 
-The one-row-per-skill invariant is machine-checked by
-`scripts/check-skill-catalog.sh`, so a skill added without a row here fails the
+The one-entry-per-skill invariant is machine-checked by
+`scripts/check-skill-catalog.sh`, so a skill added without an entry here fails the
 check rather than going unnoticed.

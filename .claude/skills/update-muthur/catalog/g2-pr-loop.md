@@ -5,7 +5,7 @@
 - `/task` — Judge for itself whether a task needs a plan, write the draft, then judge whether the operator has to look — a question, a draft, and a question, running whichever of the three outcomes they pick. `/task <what to do>` is a conditional go-ahead scoped to that task, and CLAUDE.md's entry ladder routes every change-asking prompt here.
   - **Pulls in:** `/go`, `/plan`, `/pr`; **conditionally** `/take-issue` (G3)
   - **Disposition:** adopt
-- `.claude/hooks/prompt-route-notice.sh` — Point the session's first prompt at that ladder, at the moment the routing call is made — a pointer, not a copy, the rows being in context already. Skips a prompt the operator routed themselves with a leading `/`, and every prompt after the first.
+- `.claude/hooks/prompt-route-notice.sh` — Point the session's first prompt at that ladder, at the moment the routing call is made — a pointer, not a copy, the rungs being in context already. Skips a prompt the operator routed themselves with a leading `/`, and every prompt after the first.
   - **Requires:** `bash`, `jq`, `.claude/settings.json` wiring (G4)
   - **Pulls in:** `.claude/hooks/lib.sh` (G4), `/task`
   - **Disposition:** adopt

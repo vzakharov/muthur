@@ -20,7 +20,7 @@ The group's three CI-facing skills partition one timeline.
 `/bootstrap-workflow-dispatch` ends the moment `gh workflow run` stops 404ing,
 `/test-on-gh` is the dispatch that hits that 404 first, and `/watch-ci` watches
 the run a successful dispatch produces. `/test-on-gh` ships as a stub, so it is
-listed under [G6](g6-stack-stubs.md) with the other stubs — one row, one group.
+listed under [G6](g6-stack-stubs.md) with the other stubs — one entry, one group.
 
 **G4 is a `/watch-ci` requirement, not a group-wide one** — it is `gh run
 watch`'s long-polling that the proxy blocks, counted among the costs of

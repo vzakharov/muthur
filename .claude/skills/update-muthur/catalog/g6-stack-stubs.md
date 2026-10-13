@@ -9,7 +9,7 @@ filled in, and its frontmatter announces that it is a stub.
 
 **An unhydrated stub is worse than a missing skill** — half-following one against
 a project it was never written for beats not having it only in appearance. So
-copy none of these "for later": take a row only if you will hydrate it now, and
+copy none of these "for later": take an entry only if you will hydrate it now, and
 delete the rest. Three of them tell you when to delete the skill outright
 instead (no visual surface, no CI-only tests, no numbered migrations).
 

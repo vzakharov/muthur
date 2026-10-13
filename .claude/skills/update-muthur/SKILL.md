@@ -260,10 +260,10 @@ first, and say so.
 A commit that adds a skill in neither `adopted` nor `declined` is an open
 question, and the answer belongs in the watermark so it is asked exactly once.
 
-Read the new skill's row in the source's catalog: `.claude/skills/update-muthur/catalog.md`
+Read the new skill's entry in the source's catalog: `.claude/skills/update-muthur/catalog.md`
 and its parts under `catalog/` are the source's inventory, read from the clone
-and never vendored, so it is current by construction. The row is found with
-``grep -n '^| `/<name>`' catalog.md catalog/*.md`` run in that directory, and an
+and never vendored, so it is current by construction. The entry is found with
+``grep -n '^- `/<name>`' catalog.md catalog/*.md`` run in that directory, and an
 opt-in path is looked up the same way. Surface the decision **with its criteria
 attached** rather than as a bare "upstream added `/foo`, want it?".
 
@@ -275,12 +275,12 @@ attached** rather than as a bare "upstream added `/foo`, want it?".
 
 Either way the question does not come back.
 
-**An opt-in row is offered by its own path, the same way**, even when a broader
-`adopted` entry such as `.claude/` already covers it. The catalog marks such a
-row `opt-in: ask`, as it does `.claude/costs/`, and a parent directory having
+**An opt-in entry is offered by its own path, the same way**, even when a broader
+`adopted` entry such as `.claude/` already covers it. The catalog marks such an
+entry `opt-in: ask`, as it does `.claude/costs/`, and a parent directory having
 been taken says nothing about whether the operator wants what it costs. Ask with
-the row's criteria, and record the answer as an entry of its own, under the
-row's path, in `adopted` or `declined`.
+the entry's criteria, and record the answer as an entry of its own, under the
+entry's path, in `adopted` or `declined`.
 
 ### Step 5 — Apply by intent, not by patch
 
