@@ -29,9 +29,11 @@ and report, rather than reflowing over it.
 - Wrapping all 74 tracked `.md` files changes 72 of them (+5084/−2576). Beyond
   wrapping it only normalizes `*em*` to `_em_`, and adds a `>` to each new
   continuation line of a blockquote.
-- **Skill frontmatter is reflowed but parses to the same value** (checked with a
-  YAML load), so the skill listing's text — and the prompt cache — is unchanged,
-  and no `SKILL.md` needs staging for it.
+- **By default prettier also reformats embedded languages**: the YAML
+  frontmatter, and the text inside a ` ```markdown ` fence — the attestation and
+  table templates in `/finalize` and `/qa-checklist`.
+  `embeddedLanguageFormatting: off` leaves both byte-identical, so no skill
+  description and no GitHub-bound template changes.
 - **CLAUDE.md grows ~620 characters** (continuation lines of list items get a
   two-space indent). The size check reads 29061/30000 today; step 3 re-measures
   against whatever #189 left.
@@ -53,8 +55,8 @@ and report, rather than reflowing over it.
      proposal comment;
    - `tmp/` — where comment and review-reply drafts are written before posting.
 
-   Text in a code fence inside a skill — a PR-body or comment template — is
-   already outside prettier's reach.
+   Text in a code fence inside a skill — a PR-body or comment template — stays
+   out of prettier's reach through `embeddedLanguageFormatting: off`.
 
 2. **Stage the always-loaded set** the reformat touches, per
    `.claude/rules/staging.md`: CLAUDE.md, `.claude/voice/voice.md`, and every
@@ -75,16 +77,19 @@ and report, rather than reflowing over it.
      formatter, so the next edit works from the wrapped text. On failure — say
      `npx` cannot reach the registry — it exits 2 with prettier's message, so
      the agent sees it rather than the edit passing unformatted in silence.
-   - `scripts/vet.sh` runs `scripts/prettier.sh --check` over the tracked `.md`
-     and the staged copies.
+   - `scripts/vet.sh` runs `scripts/check-markdown-wrap.sh`, a
+     `scripts/prettier.sh --check` over the tracked `.md` with each staged file
+     read through its copy, covered with the hook by
+     `scripts/test_markdown_wrap.py`.
+   - `scripts/check-skill-catalog.sh` matches a `CLAUDE.md § "…"` citation
+     across a line break, which wrapping makes common.
    - `.claude/hooks/install-deps.sh` runs `scripts/prettier.sh --version` once,
      so the first edit of a session does not pay for the download.
 
-5. **Write the convention down where it loads.** In the path-scoped
-   `.claude/rules/markdown.md` that #189 creates: wrapping is prettier's job —
-   never wrap or unwrap by hand — and text bound for an issue, a PR body or a
-   comment is never hard-wrapped, so a new home for such drafts goes into
-   `.prettierignore`.
+5. **Write the convention down where it loads**, in its own path-scoped
+   `.claude/rules/markdown-wrap.md`: prettier wraps, and text bound for an
+   issue, a PR body or a comment is never hard-wrapped, so a new home for such
+   drafts goes into `.prettierignore`.
 
 6. **Catalog the new files** — `.prettierrc.json`, `.prettierignore`,
    `scripts/prettier.sh`, `.claude/hooks/format-md.sh` — in the group that
@@ -102,8 +107,8 @@ their agent to split the sync at this commit, `C`:
 1. **Port `<watermark>..C^` as usual.**
 2. **From `C`, port only the tooling and the rule** — the files step 6 catalogs,
    the `settings.json` hook entry, the `vet.sh` and `install-deps.sh` lines, the
-   rule's new paragraph. Never port its reflow of existing `.md` files as a
-   diff.
+   rule, and the citation fix in `check-skill-catalog.sh`. Never port its reflow
+   of existing `.md` files as a diff.
 3. **Wrap their own Markdown with their own tooling** — each adopter likely has
    a formatter already; the prettier files here are optional. The GitHub-bound
    exemptions hold whatever wraps.
@@ -137,5 +142,7 @@ None of this needs their operator's yes beyond what a sync already asks.
 - **One ignore list.** `.prettierignore` is the only statement of which files
   stay unwrapped; the hook and vet both go through prettier, which reads it, so
   neither repeats the paths.
-- **The rule file is shared with #189** rather than split into a second Markdown
-  rule: both conventions apply to the same files and load on the same reads.
+- **The rule is a file of its own, not a paragraph in #189's `markdown.md`.**
+  That file is an opt-in an adopter deletes to keep tables, and `vet.sh` keys
+  the table check on it, so sharing it would drop the wrap convention with the
+  tables; each now goes with its own tooling.
