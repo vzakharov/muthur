@@ -1,7 +1,7 @@
 Proposed squash title/body:
 
 ```
-feat: hard-wrapped, table-free Markdown under prettier (pr #187)
+feat: [attn adopters] hard-wrapped, table-free Markdown under prettier (pr #187)
 ```
 
 ```
@@ -9,17 +9,22 @@ Markdown here is read raw, by agents and in diffs, and both of its line
 shapes diffed badly: a table row and an unwrapped paragraph are each one
 physical line, so editing a cell or a clause rewrites the whole line.
 
-Every table outside a code fence is now a list or a section. The one
-kind kept is a template for output GitHub renders, such as
-/qa-checklist's PR-body table, which sits fenced. The update-muthur
-catalog is a list too, and check-skill-catalog.sh reads its entries as
-list items.
+Every table outside a code fence is now a list or a section; a template
+for output GitHub renders, such as /qa-checklist's, stays fenced. The
+update-muthur catalog is a list, read as such by check-skill-catalog.sh.
 
-All tracked Markdown is hard-wrapped at 80 columns by prettier
-(proseWrap always), pinned to one version in scripts/prettier.sh. A
-PostToolUse hook formats each .md an agent edits, vet.sh fails on
-unformatted Markdown and on a table outside a fence, and a path-scoped
-rule states the convention where Markdown is read.
+All tracked Markdown is hard-wrapped at 80 columns by prettier, pinned
+in scripts/prettier.sh, run by a PostToolUse hook on each edited .md and
+checked by vet.sh, which also fails a table outside a fence. Files that
+become GitHub bodies or comments are exempt, since GitHub renders their
+newlines as line breaks.
+
+Adopters: split the sync at this commit. Port everything before it as
+usual; read this one with `git show -w --word-diff=plain
+--word-diff-regex='[^[:space:]]+'` and port only what changed in words,
+never the reflow; wrap your own Markdown with your own tooling (the
+prettier files here are optional), keeping the GitHub-bound exemptions;
+then port what follows as usual. No operator approval is needed.
 
 Co-authored-by: Claude <noreply@anthropic.com>
 ```
