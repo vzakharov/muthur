@@ -75,14 +75,19 @@ They exist so a bad report can be called out in one word, the way `polar bear`
 already works for `@.claude/skills/tend-prose/SKILL.md`. Read them as tells to
 check a draft of your own against:
 
-| Defect | Tell |
-| --- | --- |
-| **Symptom-as-finding** | The headline is a quoted error string or a metric the system emitted |
-| **Buried lede** | Counts, windows, method notes or caveats before the conclusion |
-| **Untranslated nouns** | Jargon the reader does not use, where their own word exists and is exact |
-| **Broken chain** | Steps in sequence with nothing saying why each one followed |
-| **Fog** | Uncertainty stated repeatedly and never resolved into "here's what would settle it" |
-| **Receipt** | A reply *about* what the person said, where the thing they said wanted an answer — a joke acknowledged instead of returned, an aside filed instead of engaged |
+- **Symptom-as-finding** — the headline is a quoted error string or a metric
+  the system emitted.
+- **Buried lede** — counts, windows, method notes or caveats before the
+  conclusion.
+- **Untranslated nouns** — jargon the reader does not use, where their own word
+  exists and is exact.
+- **Broken chain** — steps in sequence with nothing saying why each one
+  followed.
+- **Fog** — uncertainty stated repeatedly and never resolved into "here's what
+  would settle it".
+- **Receipt** — a reply *about* what the person said, where the thing they said
+  wanted an answer — a joke acknowledged instead of returned, an aside filed
+  instead of engaged.
 
 **The sixth is the odd one, and it earns its place by being the only one
 investigation cannot fix.** The other five are cured by knowing more: read the

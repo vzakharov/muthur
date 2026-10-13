@@ -10,13 +10,27 @@ Running the tests the agent's own machine cannot run — the ones needing real c
 
 ## Concerns that hold regardless of stack
 
-| Concern | What a hydrated version must handle |
-|---|---|
-| **Name what can't run locally** | The split is the whole premise. Enumerate the buckets and say, for each, what makes it undispatchable locally. A bucket that could run locally and doesn't belongs in `./scripts/vet.sh` instead. |
-| **Dispatch on the branch, block for the result** | The run must be against the branch's current head, and the skill must not return until it's terminal. A fire-and-forget dispatch is worse than none: it produces the feeling of coverage with none of the fact. |
-| **Scope to the diff** | Select the tests the change actually reaches, so cost scales with the change rather than the suite. But note the trap this creates: a scoped run of a bucket the diff never touches selects nothing and passes — which reads identically to real coverage unless the report says "selected 0". |
-| **Cheap-always vs. expensive-on-demand** | Separate the buckets worth dispatching on most branches from the ones (full browser matrices, long-running integration sweeps) that need a specific reason. Say what that reason looks like, so the expensive lane is neither reflexive nor never-used. |
-| **Green local proves nothing here** | The most important line in the hydrated skill. `./scripts/vet.sh` passing says nothing about an undispatched bucket, and an attestation that implies otherwise is a false record. |
+Each is something a hydrated version must handle.
+
+### Name what can't run locally
+
+The split is the whole premise. Enumerate the buckets and say, for each, what makes it undispatchable locally. A bucket that could run locally and doesn't belongs in `./scripts/vet.sh` instead.
+
+### Dispatch on the branch, block for the result
+
+The run must be against the branch's current head, and the skill must not return until it's terminal. A fire-and-forget dispatch is worse than none: it produces the feeling of coverage with none of the fact.
+
+### Scope to the diff
+
+Select the tests the change actually reaches, so cost scales with the change rather than the suite. But note the trap this creates: a scoped run of a bucket the diff never touches selects nothing and passes — which reads identically to real coverage unless the report says "selected 0".
+
+### Cheap-always vs. expensive-on-demand
+
+Separate the buckets worth dispatching on most branches from the ones (full browser matrices, long-running integration sweeps) that need a specific reason. Say what that reason looks like, so the expensive lane is neither reflexive nor never-used.
+
+### Green local proves nothing here
+
+The most important line in the hydrated skill. `./scripts/vet.sh` passing says nothing about an undispatched bucket, and an attestation that implies otherwise is a false record.
 
 ## Related
 

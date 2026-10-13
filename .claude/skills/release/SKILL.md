@@ -12,14 +12,29 @@ Taking the accumulated work on the trunk and turning it into a named, shippable 
 
 These are what a hydrated version has to answer. They're stated as questions because the answers are project-specific, but every project has an answer, and leaving one implicit is how release procedures rot.
 
-| Concern | What to decide |
-|---|---|
-| **Version scheme** | Semver, date-based, or a running integer — and where the number lives (a manifest, a tag, a file the build reads). If release branches share a prefix (`release/*`), treat that prefix as **reserved**: nothing else may create a branch under it, or the release automation fires on ordinary work. |
-| **Notes per version** | Each release gets its own notes file or section, written for someone who wasn't in the room. Decide where it lives and whether it's assembled from commits or written by hand — assembled-from-commits only works if commit subjects are disciplined enough to read as notes. |
-| **Arm vs. ship** | Does merging the release *arm* a deploy (someone still presses a button) or *ship* it (the merge is the deploy)? This single fact changes what the skill owes the operator: an arming release ends with "here's what to press"; a shipping release ends with verification that the thing is live. |
-| **Tag or no tag** | If deploys are driven by tags, the tag is the release and creating it is the act. If they're driven by branch merges, a tag is optional bookkeeping — decide, rather than half-doing both. |
-| **The gate** | Name the one check that must be green before a release is armed, and make the skill refuse to proceed without it. "The usual checks passed at some point" is not a gate. |
-| **Who owns the bump** | Whether the agent bumps the version or the operator does. If the agent does, say what stops two concurrent releases from claiming the same number. |
+### Version scheme
+
+Semver, date-based, or a running integer — and where the number lives (a manifest, a tag, a file the build reads). If release branches share a prefix (`release/*`), treat that prefix as **reserved**: nothing else may create a branch under it, or the release automation fires on ordinary work.
+
+### Notes per version
+
+Each release gets its own notes file or section, written for someone who wasn't in the room. Decide where it lives and whether it's assembled from commits or written by hand — assembled-from-commits only works if commit subjects are disciplined enough to read as notes.
+
+### Arm vs. ship
+
+Does merging the release *arm* a deploy (someone still presses a button) or *ship* it (the merge is the deploy)? This single fact changes what the skill owes the operator: an arming release ends with "here's what to press"; a shipping release ends with verification that the thing is live.
+
+### Tag or no tag
+
+If deploys are driven by tags, the tag is the release and creating it is the act. If they're driven by branch merges, a tag is optional bookkeeping — decide, rather than half-doing both.
+
+### The gate
+
+Name the one check that must be green before a release is armed, and make the skill refuse to proceed without it. "The usual checks passed at some point" is not a gate.
+
+### Who owns the bump
+
+Whether the agent bumps the version or the operator does. If the agent does, say what stops two concurrent releases from claiming the same number.
 
 ## Related
 

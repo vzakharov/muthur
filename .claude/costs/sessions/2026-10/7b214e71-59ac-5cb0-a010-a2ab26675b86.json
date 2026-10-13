@@ -1,0 +1,88 @@
+{
+  "estimate": {
+    "at": "2026-10-13T19:12:02.064Z",
+    "parts": [
+      {
+        "hours": 0.5,
+        "grade": "middle",
+        "role": "developer",
+        "comment": "land prep: quality passes over the opt-in rework, base merge against an advanced main, attestation and merge"
+      }
+    ],
+    "comment": null
+  },
+  "sessionId": "7b214e71-59ac-5cb0-a010-a2ab26675b86",
+  "branch": "claude/markdown-no-tables-xfkjzm",
+  "cwd": "/home/user/muthur",
+  "openingPrompt": "/relay take claude/markdown-no-tables-xfkjzm",
+  "prs": [
+    190
+  ],
+  "url": "https://claude.ai/code/session_01HywNWCri7eYRcvhNaCSvqY",
+  "operator": "vzakharov",
+  "firstResponseAt": "2026-10-13T19:11:50.229Z",
+  "lastResponseAt": "2026-10-13T19:16:15.007Z",
+  "pricesAsOf": "2026-10-06",
+  "claudeCodeTotalUsd": null,
+  "total": {
+    "inputTokens": 54,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 87602,
+    "cacheReadTokens": 3290661,
+    "outputTokens": 8263,
+    "thinkingTokens": 1427,
+    "responses": 27,
+    "costUsd": 1.5244241999999997
+  },
+  "ownTurns": {
+    "inputTokens": 54,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 87602,
+    "cacheReadTokens": 3290661,
+    "outputTokens": 8263,
+    "thinkingTokens": 1427,
+    "responses": 27,
+    "costUsd": 1.5244241999999997
+  },
+  "subagents": {
+    "inputTokens": 0,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 0,
+    "cacheReadTokens": 0,
+    "outputTokens": 0,
+    "thinkingTokens": 0,
+    "responses": 0,
+    "costUsd": 0.0
+  },
+  "byRate": {
+    "claude-opus-5-5/standard": {
+      "inputTokens": 54,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 87602,
+      "cacheReadTokens": 3290661,
+      "outputTokens": 8263,
+      "thinkingTokens": 1427,
+      "responses": 27,
+      "costUsd": 1.5244241999999997
+    }
+  },
+  "warnings": [],
+  "orientation": {
+    "endedBy": "Edit",
+    "endedOn": "scripts/check-markdown-tables.sh",
+    "endedAt": "2026-10-13T19:12:18.995Z",
+    "contextTokens": 124242,
+    "spend": {
+      "inputTokens": 18,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 66939,
+      "cacheReadTokens": 877100,
+      "outputTokens": 2065,
+      "thinkingTokens": 738,
+      "responses": 9,
+      "costUsd": 0.7523039999999999
+    }
+  },
+  "compactions": [],
+  "telemetry": null
+}

@@ -200,14 +200,18 @@ yours and the ones analysts flagged. See § "This is a living document".
 Every verdict carries a one-line reason naming the commit, PR, or verified
 absence behind it.
 
-| Verdict             | Meaning                                                    | Closes as     | Priority |
-| ------------------- | ---------------------------------------------------------- | ------------- | -------- |
-| `CLOSE_DONE`        | The work described is done.                                | `completed`   | —        |
-| `CLOSE_NOT_PLANNED` | Obsolete or abandoned — real once, nobody will do it now.   | `not_planned` | —        |
-| `CLOSE_DUPLICATE`   | Another issue covers it; the reason names it as `#<n>`.     | `duplicate`   | —        |
-| `REFILE`            | Close **and** open a fresh re-framed issue.                | `duplicate`   | required |
-| `KEEP`              | Still reads true against today's code.                     | —             | required |
-| `UNSURE`            | Needs a human. Say precisely what you could not establish.  | —             | —        |
+- `CLOSE_DONE` — the work described is done. Closes as `completed`; no
+  priority.
+- `CLOSE_NOT_PLANNED` — obsolete or abandoned — real once, nobody will do it
+  now. Closes as `not_planned`; no priority.
+- `CLOSE_DUPLICATE` — another issue covers it; the reason names it as `#<n>`.
+  Closes as `duplicate`; no priority.
+- `REFILE` — close **and** open a fresh re-framed issue. Closes as `duplicate`;
+  priority required.
+- `KEEP` — still reads true against today's code. Not closed; priority
+  required.
+- `UNSURE` — needs a human. Say precisely what you could not establish. Not
+  closed; no priority.
 
 **A close carries its modality.** GitHub's close reason is an enum —
 `completed`, `not_planned`, `duplicate` — and `mcp__github__issue_write` takes it
@@ -337,19 +341,36 @@ reason, so the sweep is a record rather than a purge.
 
 Each of these was hit for real. **All but the first fail quietly.**
 
-| Trap                                                                                               | What to do                                                                                        |
-| -------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------- |
-| Shallow clone → `git merge-base` exits 1 with empty output, and downstream rot numbers are fiction | `git fetch --unshallow`, then assert — never proceed on the numbers it would otherwise print       |
-| `mergeable` / `mergeStateStatus` are `UNKNOWN` until GitHub computes them lazily                   | compute locally with `git merge-tree --write-tree`                                                |
-| `gh issue view/list --json stateReason` → `Unknown JSON field`                                     | valid fields are `state`, `closed`, `closedAt`; read the reason from `gh api /repos/…/issues/<n>`  |
-| `gh pr view --json closingIssuesReferences` → `Unknown JSON field`                                 | issue↔PR links are GraphQL-only: query `repository.pullRequests.closingIssuesReferences`           |
-| `duplicate_of` set `state_reason` but recorded no `MarkedAsDuplicateEvent` — neither the REST parameter nor GraphQL's `closeIssue(duplicateIssueId:)` rendered a link | name the canonical issue in the closing comment, in bold; treat the field as write-only            |
-| `gh pr list --search 'issue/1647'` does not index branch names                                     | `gh api '/repos/<owner>/<repo>/pulls?head=<owner>:<branch>'`, or scan the paginated history        |
-| `gh pr list --limit 500` silently truncates                                                        | `gh api --paginate`                                                                               |
-| `gh api --paginate` emits one JSON array **per page**, concatenated — so a single `JSON.parse` reads page 1 and drops the rest | `--slurp` (gh ≥ 2.52) flattens them; below that, split the concatenated arrays yourself           |
-| Merged-PR-title → issue-number matching without `base.ref` reads epic-branch merges as landed      | always filter on `base.ref`                                                                       |
-| Bash `cd` persists between tool calls, so later globs resolve against the wrong directory          | absolute paths                                                                                    |
-| A subagent's transcript output file will overflow the coordinator's context                        | never read it; use the completion notification                                                    |
+Each trap, then what to do about it:
+
+- Shallow clone → `git merge-base` exits 1 with empty output, and downstream
+  rot numbers are fiction — `git fetch --unshallow`, then assert; never proceed
+  on the numbers it would otherwise print.
+- `mergeable` / `mergeStateStatus` are `UNKNOWN` until GitHub computes them
+  lazily — compute locally with `git merge-tree --write-tree`.
+- `gh issue view/list --json stateReason` → `Unknown JSON field` — valid fields
+  are `state`, `closed`, `closedAt`; read the reason from
+  `gh api /repos/…/issues/<n>`.
+- `gh pr view --json closingIssuesReferences` → `Unknown JSON field` —
+  issue↔PR links are GraphQL-only: query
+  `repository.pullRequests.closingIssuesReferences`.
+- `duplicate_of` set `state_reason` but recorded no `MarkedAsDuplicateEvent` —
+  neither the REST parameter nor GraphQL's `closeIssue(duplicateIssueId:)`
+  rendered a link — name the canonical issue in the closing comment, in bold;
+  treat the field as write-only.
+- `gh pr list --search 'issue/1647'` does not index branch names —
+  `gh api '/repos/<owner>/<repo>/pulls?head=<owner>:<branch>'`, or scan the
+  paginated history.
+- `gh pr list --limit 500` silently truncates — `gh api --paginate`.
+- `gh api --paginate` emits one JSON array **per page**, concatenated — so a
+  single `JSON.parse` reads page 1 and drops the rest — `--slurp` (gh ≥ 2.52)
+  flattens them; below that, split the concatenated arrays yourself.
+- Merged-PR-title → issue-number matching without `base.ref` reads epic-branch
+  merges as landed — always filter on `base.ref`.
+- Bash `cd` persists between tool calls, so later globs resolve against the
+  wrong directory — absolute paths.
+- A subagent's transcript output file will overflow the coordinator's context —
+  never read it; use the completion notification.
 
 ## What a run costs, and how often it happens
 

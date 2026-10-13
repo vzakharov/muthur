@@ -25,14 +25,15 @@ Read the repo itself with Read/Grep/Glob, and use `git` freely (`log`, `grep`, `
 
 ## Verdicts — exactly one per item
 
-| Verdict             | Meaning                                                               |
-| ------------------- | --------------------------------------------------------------------- |
-| `CLOSE_DONE`        | The work described is done. Cite what did it.                         |
-| `CLOSE_NOT_PLANNED` | Obsolete or abandoned — real once, but nobody will do it now.          |
-| `CLOSE_DUPLICATE`   | Another issue covers it. **Name it as `#<n>` in your reason.**         |
-| `REFILE`            | The framing no longer fits the code: it needs rewriting, not keeping.  |
-| `KEEP`              | Still reads true against today's code.                                |
-| `UNSURE`            | Needs a human. Say precisely what you could not establish.            |
+- `CLOSE_DONE` — the work described is done. Cite what did it.
+- `CLOSE_NOT_PLANNED` — obsolete or abandoned — real once, but nobody will do
+  it now.
+- `CLOSE_DUPLICATE` — another issue covers it. **Name it as `#<n>` in your
+  reason.**
+- `REFILE` — the framing no longer fits the code: it needs rewriting, not
+  keeping.
+- `KEEP` — still reads true against today's code.
+- `UNSURE` — needs a human. Say precisely what you could not establish.
 
 Write the verdict **exactly** as spelled above. The three closing verdicts are
 separate because GitHub's close reason is: they become `completed`,
@@ -60,12 +61,17 @@ closing verdicts and `UNSURE` carry none: `—` in the column, since a schedule 
 work nobody will do is noise, and an `UNSURE` cannot be scheduled before a human
 resolves it.
 
-| Tier | Meaning                                                                                                                                                                               |
-| ---- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `P0` | Harm is happening now and will not stop on its own — users hitting a broken path in production, data being corrupted or lost, a security or billing hole, a deploy lane that is down. |
-| `P1` | A real defect or a cost the team pays repeatedly, but the app works: a bug with a workaround, a recurring incident source, debt actively slowing changes in code touched weekly.      |
-| `P2` | A genuine improvement with a bounded payoff and no clock on it — consistency, coverage, cleanup in code nobody is currently fighting. Worth doing when someone is already there.      |
-| `P3` | Worth keeping on the record, but nobody would schedule it deliberately. Would not be missed if it sat another year.                                                                   |
+- `P0` — harm is happening now and will not stop on its own — users hitting a
+  broken path in production, data being corrupted or lost, a security or
+  billing hole, a deploy lane that is down.
+- `P1` — a real defect or a cost the team pays repeatedly, but the app works: a
+  bug with a workaround, a recurring incident source, debt actively slowing
+  changes in code touched weekly.
+- `P2` — a genuine improvement with a bounded payoff and no clock on it —
+  consistency, coverage, cleanup in code nobody is currently fighting. Worth
+  doing when someone is already there.
+- `P3` — worth keeping on the record, but nobody would schedule it
+  deliberately. Would not be missed if it sat another year.
 
 Five rules, and the first is the one that goes wrong:
 

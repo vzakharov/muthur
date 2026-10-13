@@ -232,14 +232,18 @@ usually settles relevant-vs-not before any diff is opened, so read it (`git log
 -1 --format=%B <sha>`) before `git show` — subject to the "judge the diff" caveat
 above. Verdicts:
 
-| Verdict | Meaning |
-|---|---|
-| **take** | Applies as-is to this repo's vocabulary. |
-| **translate** | The intent applies; the wording, paths or commands do not. |
-| **skip (stack-bound)** | Touches an adopted path but is about the source's stack — a build script, a migration, a framework config. |
-| **skip (already have)** | This repo reached the same end state independently. |
-| **skip (not adopted)** | The path is in `declined` **and its recorded reason still holds** — if it doesn't, re-offer the path per Step 4a and move it to `adopted` if taken. Or the path is in neither list, which is Step 4a's other case. Never skip silently on either. |
-| **skip (diverged locally)** | This repo rewrote the file for its own stack — `scripts/vet.sh`, the watermark, anything the source marks `rewrite`. The source's edit is advice at best; read it for an idea, don't port it. |
+- **take** — applies as-is to this repo's vocabulary.
+- **translate** — the intent applies; the wording, paths or commands do not.
+- **skip (stack-bound)** — touches an adopted path but is about the source's
+  stack — a build script, a migration, a framework config.
+- **skip (already have)** — this repo reached the same end state independently.
+- **skip (not adopted)** — the path is in `declined` **and its recorded reason
+  still holds** — if it doesn't, re-offer the path per Step 4a and move it to
+  `adopted` if taken. Or the path is in neither list, which is Step 4a's other
+  case. Never skip silently on either.
+- **skip (diverged locally)** — this repo rewrote the file for its own stack —
+  `scripts/vet.sh`, the watermark, anything the source marks `rewrite`. The
+  source's edit is advice at best; read it for an idea, don't port it.
 
 **A subject marked `[attn adopters]` — or, in older commits, any prose to the
 same effect, such as `ADOPTERS, read body` — addresses this repo whatever its
@@ -260,10 +264,10 @@ first, and say so.
 A commit that adds a skill in neither `adopted` nor `declined` is an open
 question, and the answer belongs in the watermark so it is asked exactly once.
 
-Read the new skill's row in the source's catalog: `.claude/skills/update-muthur/catalog.md`
+Read the new skill's entry in the source's catalog: `.claude/skills/update-muthur/catalog.md`
 and its parts under `catalog/` are the source's inventory, read from the clone
-and never vendored, so it is current by construction. The row is found with
-``grep -n '^| `/<name>`' catalog.md catalog/*.md`` run in that directory, and an
+and never vendored, so it is current by construction. The entry is found with
+``grep -n '^- `/<name>`' catalog.md catalog/*.md`` run in that directory, and an
 opt-in path is looked up the same way. Surface the decision **with its criteria
 attached** rather than as a bare "upstream added `/foo`, want it?".
 
@@ -275,12 +279,12 @@ attached** rather than as a bare "upstream added `/foo`, want it?".
 
 Either way the question does not come back.
 
-**An opt-in row is offered by its own path, the same way**, even when a broader
-`adopted` entry such as `.claude/` already covers it. The catalog marks such a
-row `opt-in: ask`, as it does `.claude/costs/`, and a parent directory having
+**An opt-in entry is offered by its own path, the same way**, even when a broader
+`adopted` entry such as `.claude/` already covers it. The catalog marks such an
+entry `opt-in: ask`, as it does `.claude/costs/`, and a parent directory having
 been taken says nothing about whether the operator wants what it costs. Ask with
-the row's criteria, and record the answer as an entry of its own, under the
-row's path, in `adopted` or `declined`.
+the entry's criteria, and record the answer as an entry of its own, under the
+entry's path, in `adopted` or `declined`.
 
 ### Step 5 — Apply by intent, not by patch
 
