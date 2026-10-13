@@ -14,12 +14,9 @@ CACHE_KEEPALIVE_WAKES becomes MUTHUR_CACHE_KEEPALIVE_RENEWALS: the
 wakes that only keep the prompt cache warm. The wake after the last
 renewal parks the session through /relay without a successor. Unset,
 the count is 0, so the first wake parks. A negative count or lead is
-rejected like a malformed one.
-
-The keepalive's other two settings take the same MUTHUR_ prefix:
-MUTHUR_CACHE_KEEPALIVE switches it off, MUTHUR_CACHE_KEEPALIVE_LEAD
-sets how early a wake comes. A repo running muthur sets them beside
-its own variables, and the prefix says whose they are.
+rejected like a malformed one. The keepalive's other settings take
+the same prefix, MUTHUR_CACHE_KEEPALIVE and MUTHUR_CACHE_KEEPALIVE_LEAD,
+so a repo running muthur tells them apart from its own.
 
 The keepalive's contract states the cost that bounds the count: a
 renewal is two requests reading the whole cached conversation, 10% of
