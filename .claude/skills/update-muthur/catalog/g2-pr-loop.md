@@ -159,8 +159,9 @@
   pushing review-ready work.
   - **Requires:** your stack's own commands
   - **Pulls in:** `scripts/check-skill-catalog.sh` (G1),
-    `scripts/check-squash-message.sh`, `scripts/staged.sh`,
-    `scripts/check-claude-md-size.sh`, `scripts/check-muthur.sh` (never)
+    `scripts/check-markdown-wrap.sh` (G1), `scripts/check-squash-message.sh`,
+    `scripts/staged.sh`, `scripts/check-claude-md-size.sh`,
+    `scripts/check-muthur.sh` (never)
   - **Disposition:** **rewrite**
 - `scripts/run-parallel.sh` — Optional helper for `scripts/vet.sh`: run the
   checks concurrently, print output only for the ones that failed, and name

@@ -76,6 +76,37 @@ there is no condition under which it fails to apply.
   copy. `scripts/vet.sh` runs it while the rule above exists.
   - **Requires:** `bash`, `awk`, `git`
   - **Disposition:** adopt — **with `.claude/rules/markdown.md`**
+- `.claude/rules/markdown-wrap.md` — Tracked Markdown hard-wrapped at 80
+  columns, so one clause's edit diffs as one line, and text bound for a GitHub
+  body or comment left unwrapped, since GitHub renders its newlines. The wrap
+  and the exemption are the point and prettier is one way to get them: a project
+  with its own Markdown formatter keeps the rule's exemption, wires its own
+  tool, and drops the prettier files below, whose absence quiets the vet and
+  `install-deps.sh` lines keyed on `.prettierrc.json`.
+  - **Pulls in:** `scripts/prettier.sh`, `.prettierrc.json`, `.prettierignore`,
+    `.claude/hooks/format-md.sh`, `scripts/check-markdown-wrap.sh` (this group)
+  - **Disposition:** adopt — **optional: or your own formatter**
+- `scripts/prettier.sh` — Run prettier at the version it pins, through `npx`,
+  from the repo root; every caller goes through it.
+  - **Requires:** `node` with `npx`; registry access on first use
+  - **Disposition:** adopt — **with `.claude/rules/markdown-wrap.md`**
+- `.prettierrc.json` — `proseWrap: always` at 80 columns, fenced code and
+  frontmatter left alone, staged copies parsed as Markdown.
+  - **Disposition:** adopt — **with `.claude/rules/markdown-wrap.md`**
+- `.prettierignore` — The paths whose text GitHub renders: `docs/pr/`,
+  `docs/issue/`, the squash proposal, `tmp/`. Merge into yours if present.
+  - **Disposition:** adopt — **with `.claude/rules/markdown-wrap.md`**
+- `.claude/hooks/format-md.sh` — After each `Edit`/`Write`/`MultiEdit` of a
+  `.md` or staged `.md.staged` inside the project, wrap it through
+  `scripts/prettier.sh`; a prettier failure exits 2 so the agent sees it.
+  - **Requires:** `bash`, `jq`, `.claude/settings.json` wiring (G4)
+  - **Disposition:** adopt — **with `.claude/rules/markdown-wrap.md`**
+- `scripts/check-markdown-wrap.sh` — Fail on tracked Markdown prettier would
+  rewrap, reading a staged file through its copy. `scripts/vet.sh` runs it while
+  `.prettierrc.json` exists; `scripts/test_markdown_wrap.py` covers it and the
+  hook.
+  - **Requires:** `bash`, `git`
+  - **Disposition:** adopt — **with `.claude/rules/markdown-wrap.md`**
 - `.gitignore` — Take the `tmp/` entry and keep the rest of yours. `CLAUDE.md`'s
   "dev artifacts go under `tmp/`" principle depends on that path being ignored.
   - **Disposition:** adopt — merge one line

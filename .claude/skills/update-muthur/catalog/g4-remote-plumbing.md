@@ -23,7 +23,8 @@ the working tree clean, and behaves the same everywhere.
 - `.claude/hooks/install-deps.sh` — On session start, re-sync the install tree
   with the lockfile, the environment snapshot being built once and then cached.
   The install itself is a stub you fill in for your stack — `scripts/vet.sh`'s
-  paired site. Web/remote only.
+  paired site, and it fetches G1's pinned prettier while `.prettierrc.json`
+  exists. Web/remote only.
   - **Requires:** `bash`; web/remote sessions
   - **Disposition:** adopt — **fill in the install**
 - `.claude/hooks/lib.sh` — Sourced by every `UserPromptSubmit` hook here, by
@@ -72,7 +73,7 @@ the working tree clean, and behaves the same everywhere.
   - **Disposition:** adopt
 - `.claude/settings.json` — Project settings wiring the SessionStart,
   UserPromptSubmit, PermissionDenied and Stop hooks, plus the entries G1's
-  `file-tools-nudge.py`, G7, G8, G9 and G10 carry and the
+  `file-tools-nudge.py` and `format-md.sh`, G7, G8, G9 and G10 carry and the
   `scripts/muthur-sync.sh nudge` entry G0's `/update-muthur` does — drop that
   one with the skill. Merge into yours if you already have one.
   - **Disposition:** adopt — merge if present
