@@ -1,7 +1,7 @@
 Proposed squash title/body:
 
 ```
-feat: count keepalive renewals, parking the session by default (pr #181)
+feat: [attn adopters] count keepalive renewals, park by default (pr #181)
 ```
 
 ```
@@ -12,7 +12,7 @@ a setting, and its default is none.
 
 CACHE_KEEPALIVE_WAKES becomes MUTHUR_CACHE_KEEPALIVE_RENEWALS: the
 wakes that only keep the prompt cache warm. The wake after the last
-renewal parks the session through /relay without a successor. Unset,
+renewal parks the session through /relay park. Unset,
 the count is 0, so the first wake parks. A negative count or lead is
 rejected like a malformed one. The keepalive's other settings take
 the same prefix, MUTHUR_CACHE_KEEPALIVE and MUTHUR_CACHE_KEEPALIVE_LEAD,
@@ -25,6 +25,11 @@ a cold re-cache on the usual multipliers and 5% where the read rate is
 re-cache they insure against, 10-20 the whole of it, so more than 5 is
 not recommended. The cited re-cache ratio is 20-40 times a read, by
 model.
+
+Adopters: an environment that sets CACHE_KEEPALIVE, _LEAD or _WAKES
+keeps a setting nothing reads any more; ask your operator to rename
+each to its MUTHUR_ form, _WAKES becoming _RENEWALS, where they set
+it (settings.local.json's env, or the cloud environment's variables).
 
 Co-authored-by: Claude <noreply@anthropic.com>
 ```
