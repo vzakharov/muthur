@@ -3,8 +3,9 @@ description: >-
   Check once whether the branch's merge target (the branch its PR is based on)
   advanced or the PR landed since the branch was last attested, then hand any
   advance back to the enclosing flow to decide. While the PR is open, also
-  reconcile the `Proposed squash title/body:` comment `/finalize` left on it —
-  editing that comment in place when the branch has drifted from it. A manual
+  reconcile the `Proposed squash body:` comment `/finalize` left on it, and the
+  PR title it lands under — editing both in place when the branch has drifted
+  from them. A manual
   one-shot — run it when you return to a session whose branch is attested to see
   if the merge target moved out from under the branch. Pass an optional
   branch/PR target first (`/check-merge <branch|#PR|PR-url>`) to attach to that
@@ -18,7 +19,7 @@ Check **once** whether the branch's **merge target** has moved out from under th
 
 The check is **stateless** — it computes everything from git on each run, comparing the branch's own history against the freshly-fetched target tip. There's no baseline file to record or reset: the branch's last merge of the target _is_ the reference point, so once you merge a newer target in, the next `/check-merge` simply reports "contained".
 
-This skill **detects** movement and **hands back** to the enclosing flow (usually `/finalize`) — it does **not** decide what to do about a move, drive any re-merge, or re-attest. The "what to do when the base advanced" rules live in the enclosing flow. The one thing it does actively maintain is the squash-message PR comment: whenever the PR is open it reconciles the `Proposed squash title/body:` comment against the branch's current state and edits it in place if it drifted (Step 3).
+This skill **detects** movement and **hands back** to the enclosing flow (usually `/finalize`) — it does **not** decide what to do about a move, drive any re-merge, or re-attest. The "what to do when the base advanced" rules live in the enclosing flow. The one thing it does actively maintain is the squash record: whenever the PR is open it reconciles the `Proposed squash body:` comment and the PR title against the branch's current state and edits them in place if they drifted (Step 3).
 
 `/finalize` reaches this at its very end, just before it attests. It can also be invoked directly.
 
@@ -47,13 +48,13 @@ Do **not** decide here, and do **not** name a specific flow. State plainly what 
 
 The cycle always terminates: merging the advance in makes the next check "contained", and the merge (exit 20) / close (exit 21) outcome is always reachable on a later `/check-merge`.
 
-## Step 3: Reconcile the squash-message comment (PR open only)
+## Step 3: Reconcile the squash record (PR open only)
 
 Applies whenever the PR is still **open** — after a `contained` (exit `0`) check, or after the enclosing flow has merged an `advanced` (exit `10`) tip back in. Skip it for a landed/closed PR (exit `20`/`21`) and for a hard error (exit `1`).
 
-The copy-ready squash message rides the PR as a comment headed `Proposed squash title/body:` — two separate fenced code blocks (title, then body) sitting next to the merge button — posted when `/pr` opened the PR. It goes stale as the branch moves: a base-advanced re-merge pulls in work that shifts the essence, a `Closes #N`, or the body bullets; a recreated PR changes the `(pr #<n>)` suffix. This step keeps it current.
+The squash record is the PR title plus a comment headed `Proposed squash body:` — one fenced block sitting next to the merge button — posted when `/pr` opened the PR. Both go stale as the branch moves: a base-advanced re-merge pulls in work that shifts the essence, a `Closes #N`, or the body's paragraphs. This step keeps them current.
 
-Invoke `@.claude/skills/squash-message/SKILL.md` in **`update-only`** mode, passing the base the check resolved (the `target=…` the script printed) as the diff base. That skill recomputes the title/body from the branch's current committed state — including its draft-then-tighten pass — and edits the existing comment in place if it drifted. The reconcile may push a commit as well as edit the comment — `/squash-message` decides, from the working file it selects. `update-only` is what keeps this step from creating a proposal no earlier step made: absence is reported, not filled in. Report what it reports.
+Invoke `@.claude/skills/squash-message/SKILL.md` in **`update-only`** mode, passing the base the check resolved (the `target=…` the script printed) as the diff base. That skill recomputes the title/body from the branch's current committed state — including its draft-then-tighten pass — and edits the PR title and the existing comment in place if they drifted. The reconcile may push a commit as well as edit the comment — `/squash-message` decides, from the working file it selects. `update-only` is what keeps this step from creating a proposal no earlier step made: absence is reported, not filled in. Report what it reports.
 
 On the `advanced` (exit `10`) path the squash body depends on the merged-in work, so run this reconcile **after** the enclosing flow incorporates the advance (Step 2's hand-back) — before then the branch doesn't yet contain what will land. If the advance isn't merged in this turn, defer the reconcile to the next `/check-merge`, which will see `contained`.
 
