@@ -32,7 +32,7 @@ from datetime import date, datetime, timezone
 from pathlib import Path
 from typing import Dict, List, Optional
 
-from lib.estimate import SHARED_RATES, Rates, load_rates, parse_rates, with_added_roles
+from lib.estimate import Rates, load_rates, load_shared_rates, with_added_roles
 from lib.github import ADDED_ROLES, REPO, Client, GitHubError, remote_ledger
 from lib.hours import HoursTable
 from lib.period import FORMATS, KINDS, Period, PeriodError, month_of, period
@@ -390,7 +390,7 @@ def main() -> int:
             None if args.all_my_repos else list(dict.fromkeys(args.repo)),
             span,
             args.json,
-            parse_rates((COSTS / SHARED_RATES).read_text(encoding="utf-8")),
+            load_shared_rates(COSTS),
         )
     except GitHubError as error:
         print(f"costs: {error}", file=sys.stderr)

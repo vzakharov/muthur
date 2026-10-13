@@ -67,11 +67,15 @@ class Rates:
     added: Dict[str, AddedRole] = field(default_factory=dict)
 
 
+def _is_multiplier(value: Any) -> bool:
+    return is_number(value) and value > 0
+
+
 def _multipliers(table: Optional[Dict[str, Any]], where: str) -> Dict[str, float]:
     if not table:
         raise ShapeError(f"{where}: not a non-empty object")
     for name, multiplier in table.items():
-        if not is_number(multiplier) or multiplier <= 0:
+        if not _is_multiplier(multiplier):
             raise ShapeError(f"{where}: `{name}` is not a positive multiplier")
     return table
 
@@ -116,7 +120,7 @@ def with_added_roles(shared: Rates, text: str, where: str = REPO_RATES) -> Rates
         if not isinstance(entry, dict) or sorted(entry) != sorted(ADDED_ROLE_KEYS):
             raise ShapeError(f"{at}: not an object of exactly {', '.join(ADDED_ROLE_KEYS)}")
         multiplier = entry["multiplier"]
-        if not is_number(multiplier) or multiplier <= 0:
+        if not _is_multiplier(multiplier):
             raise ShapeError(f"{at}: `multiplier` is not positive")
         grade = required(read_string, entry, "grade", at)
         if grade not in shared.grades:
@@ -129,10 +133,14 @@ def with_added_roles(shared: Rates, text: str, where: str = REPO_RATES) -> Rates
     return Rates(roles=multipliers, grades=shared.grades, added=added)
 
 
+def load_shared_rates(costs: Path) -> Rates:
+    return parse_rates((costs / SHARED_RATES).read_text(encoding="utf-8"))
+
+
 def load_rates(costs: Path) -> Rates:
     """This repository's table: the shared one, plus its own roles where it
     carries a `rates.repo.json`."""
-    shared = parse_rates((costs / SHARED_RATES).read_text(encoding="utf-8"))
+    shared = load_shared_rates(costs)
     repo = costs / REPO_RATES
     return with_added_roles(shared, repo.read_text(encoding="utf-8")) if repo.is_file() else shared
 
