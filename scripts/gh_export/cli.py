@@ -10,7 +10,7 @@ from lib.github import detect_origin_repo, die
 # Mirrors `.claude/context-budget/hooks/post-tool-context-budget.sh`'s fixed
 # warning line and its override; a tree without the context budget still
 # measures a review against it.
-WARN_LINE_VARIABLE = "CONTEXT_BUDGET_WARN"
+WARN_LINE_VARIABLE = "MUTHUR_CONTEXT_BUDGET_WARN"
 DEFAULT_WARN_LINE = 200_000
 
 

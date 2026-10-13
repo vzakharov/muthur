@@ -2,13 +2,13 @@
 > is what marks a tree as the template rather than a repo that adopted it —
 > `scripts/check-skill-catalog.sh` and `/spinoff` both key on that. If you are
 > reading this in a repo that *adopted* this infrastructure, it rode along with
-> `.claude/skills/**` by mistake: **delete the file and its `catalog/` parts.** Do not prune its rows to
-> match your tree — that repairs the symptom (assertion 3 failing on rows you
+> `.claude/skills/**` by mistake: **delete the file and its `catalog/` parts.** Do not prune its entries to
+> match your tree — that repairs the symptom (assertion 3 failing on entries you
 > can never satisfy) and leaves the sentinel permanently wrong.
 
 # Catalog: what's here, and how much of it you need
 
-The per-item inventory of this repo's agent infrastructure. One row per skill,
+The per-item inventory of this repo's agent infrastructure. One entry per skill,
 script and file, carrying the criteria for deciding whether it belongs in your
 repo.
 
@@ -19,29 +19,37 @@ Two audiences:
   the inventory; it does not restate the steps.
 - **`/update-muthur`, on every run** — when a commit at the source adds a skill
   that is in neither your `adopted` nor your `declined` list, the sync reads that
-  skill's row here to surface the decision with its criteria attached.
+  skill's entry here to surface the decision with its criteria attached.
 
 Both audiences read it from a fresh clone of the source repo, which is what lets
 the banner's rule hold: no adopter needs a copy, so no copy can go stale.
 
-## How to read a row
+## How to read an entry
 
-| Column | Meaning |
-| --- | --- |
-| **Item** | `/name` is a skill (`.claude/skills/name/`); anything else is a repo-relative path. |
-| **What it does** | The one-liner. Descriptions live here and nowhere else. |
-| **Requires** | External conditions and tools that must hold for the item to work at all. |
-| **Pulls in** | Siblings it cannot work without. Copy these too; only `@`-references are machine-checked, so see [Closure](#closure-is-not-optional). |
-| **Disposition** | `adopt`, `rewrite`, or `never` — see below. |
+An entry is a top-level list item, `` - `item` — what it does ``, with its
+remaining fields as nested items:
 
-The **group** is the part a row lives in (`catalog/`) rather than a column: groups partition the
-inventory, so every item appears under exactly one, and
-`scripts/check-skill-catalog.sh` fails if a skill picks up a second row.
+- **Item** — the backticked token that opens the entry. `/name` is a skill
+  (`.claude/skills/name/`); anything else is a repo-relative path.
+- **What it does** — the one-liner after the dash. Descriptions live here and
+  nowhere else.
+- **Requires** — external conditions and tools that must hold for the item to
+  work at all.
+- **Pulls in** — siblings it cannot work without. Copy these too; only
+  `@`-references are machine-checked, so see
+  [Closure](#closure-is-not-optional).
+- **Disposition** — `adopt`, `rewrite`, or `never` — see below.
+
+A **Requires** or **Pulls in** with nothing to name is left out.
+
+The **group** is the part an entry lives in (`catalog/`) rather than a field:
+groups partition the inventory, so every item appears under exactly one, and
+`scripts/check-skill-catalog.sh` fails if a skill picks up a second entry.
 
 ### Three dispositions, not two
 
 - **adopt** — copy as-is.
-- **rewrite** — copy the shape, replace the contents for your repo. One row
+- **rewrite** — copy the shape, replace the contents for your repo. One entry
   carries it: `scripts/vet.sh`, whose exit turns on whether your repo has a stack
   yet, with [`.claude/rules/stack.md`](../../rules/stack.md) the contract's home.
   Elsewhere the word qualifies an **adopt** — `/update-muthur`'s watermark,
@@ -51,43 +59,59 @@ inventory, so every item appears under exactly one, and
 
 **`opt-in: ask` qualifies an adopt** whose cost lands on every session and whose
 worth turns on what the operator wants rather than on anything in the tree. Such
-a row is asked, never inferred from the profile: `ADOPTING.md` Step 2,
+an entry is asked, never inferred from the profile: `ADOPTING.md` Step 2,
 `/detemplate` Step 1 and `/update-muthur` Step 4a each put the question with the
-row attached, and record the answer so it is asked once. The row itself states
+entry attached, and record the answer so it is asked once. The entry itself states
 the cost and what a yes and a no each change in the tree.
 
 ## Groups
 
 Group membership is the coarse decision; **Requires** carries the orthogonal
-conditions, and any row can be escaped individually.
+conditions, and any entry can be escaped individually.
 
-| Group | Adopt when |
-| --- | --- |
-| [G0 — The sync path](catalog/g0-sync-path.md) | Always, unless you want a one-time snapshot and no future updates. The sync half ships unhydrated: filling in the watermark is what makes it runnable. |
-| [G1 — Prose & principles](catalog/g1-prose-principles.md) | Always. Zero external dependencies, no stack assumptions, no GitHub. |
-| [G2 — The PR loop](catalog/g2-pr-loop.md) | A change is a branch → PR → squash-merge, on GitHub, with `gh` and `$GH_TOKEN` reachable. **In a web/remote session, needs G4.** |
-| [G3 — Issue & backlog](catalog/g3-issue-backlog.md) | G2 **and** work is actually tracked as GitHub issues. Same web-session dependency on G4. |
-| [G4 — Remote-session plumbing](catalog/g4-remote-plumbing.md) | Sessions run on Claude Code web/remote. Inert locally — but a **prerequisite** of G2/G3/G5 on the web, not a nicety. Declinable at a stated cost. |
-| [G5 — CI & landing](catalog/g5-ci-landing.md) | CI runs on GitHub Actions, reachable via `gh`. `/watch-ci` additionally needs **G4** in a web session, not merely recommends it; the rest of the group works through the proxy unshimmed. |
-| [G6 — Stack stubs](catalog/g6-stack-stubs.md) | Per row, and only if you will hydrate it now. |
-| [G7 — Session cost ledger](catalog/g7-cost-ledger.md) | **The operator says yes when asked** — never by inference from the profile. |
-| [G8 — Context budget](catalog/g8-context-budget.md) | **The operator says yes when asked**, as G7. |
-| [G9 — Cold-cache guard](catalog/g9-cold-cache.md) | **The operator says yes when asked**, as G7. |
-| [G10 — Cache keepalive](catalog/g10-cache-keepalive.md) | **The operator says yes when asked**, as G7 — and **G7 is a prerequisite**, not a recommendation. |
-| [Never](catalog/never.md) | — |
+Each group, with when to adopt it:
+
+- [G0 — The sync path](catalog/g0-sync-path.md) — always, unless you want a
+  one-time snapshot and no future updates. The sync half ships unhydrated:
+  filling in the watermark is what makes it runnable.
+- [G1 — Prose & principles](catalog/g1-prose-principles.md) — always. Zero
+  external dependencies, no stack assumptions, no GitHub.
+- [G2 — The PR loop](catalog/g2-pr-loop.md) — a change is a branch → PR →
+  squash-merge, on GitHub, with `gh` and `$GH_TOKEN` reachable. **In a
+  web/remote session, needs G4.**
+- [G3 — Issue & backlog](catalog/g3-issue-backlog.md) — G2 **and** work is
+  actually tracked as GitHub issues. Same web-session dependency on G4.
+- [G4 — Remote-session plumbing](catalog/g4-remote-plumbing.md) — sessions run
+  on Claude Code web/remote. Inert locally — but a **prerequisite** of G2/G3/G5
+  on the web, not a nicety. Declinable at a stated cost.
+- [G5 — CI & landing](catalog/g5-ci-landing.md) — CI runs on GitHub Actions,
+  reachable via `gh`. `/watch-ci` additionally needs **G4** in a web session,
+  not merely recommends it; the rest of the group works through the proxy
+  unshimmed.
+- [G6 — Stack stubs](catalog/g6-stack-stubs.md) — per entry, and only if you
+  will hydrate it now.
+- [G7 — Session cost ledger](catalog/g7-cost-ledger.md) — **the operator says
+  yes when asked** — never by inference from the profile.
+- [G8 — Context budget](catalog/g8-context-budget.md) — **the operator says yes
+  when asked**, as G7.
+- [G9 — Cold-cache guard](catalog/g9-cold-cache.md) — **the operator says yes
+  when asked**, as G7.
+- [G10 — Cache keepalive](catalog/g10-cache-keepalive.md) — **the operator says
+  yes when asked**, as G7 — and **G7 is a prerequisite**, not a recommendation.
+- [Never](catalog/never.md) — under no condition.
 
 ## Closure is not optional
 
 A skill copied without the siblings it `@`-references leaves a pointer to a file
 that isn't there, and **that failure is silent**: the agent reads the surviving
-prose and skips the step they could not load. Resolve each group's **Pulls in**
-column before copying, then run `bash scripts/check-skill-catalog.sh` in your
+prose and skips the step they could not load. Resolve each entry's **Pulls in**
+before copying, then run `bash scripts/check-skill-catalog.sh` in your
 repo to prove nothing dangles.
 
 **The script proves `@`-references and nothing else.** A sibling read at a fixed
 path when the item runs — `operator-voice.sh` `cat`s an entry out of
 `.claude/voice/operators/` — breaks as silently as a dangling `@`-pointer, and
-the column is the only place that says so.
+the **Pulls in** field is the only place that says so.
 
 Four closure facts are counter-intuitive enough to state outright:
 
@@ -132,7 +156,7 @@ Four closure facts are counter-intuitive enough to state outright:
   omission — a path written here would be a guess about your tracker.
 - **`/override-gh` is pulled in by G0 and G3**, not just G4. See G4 above.
 
-Two G2 rows are adopter choices rather than defaults:
+Two G2 entries are adopter choices rather than defaults:
 
 - **`/go` is a local name, not a contract.** It reads ambiguously in a Go
   project, and this is a stack-agnostic template. Rename it to whatever your
@@ -142,9 +166,9 @@ Two G2 rows are adopter choices rather than defaults:
   the shipped name** — that is where a handoff block in a live plan file or PR
   comment might still say it. Never adopted `/implement` → take `/go` alone and
   put `.claude/skills/implement/` in `declined`: there is no downstream caller to
-  redirect, and the stub would be a permanent extra row standing in for a name
+  redirect, and the stub would be a permanent extra entry standing in for a name
   the repo never had. Already adopted it → ask the operator whether the backwards
-  compatibility is worth that extra row, and record either answer in
+  compatibility is worth that extra entry, and record either answer in
   `watermark.json` so the question does not come back. A **fork** is neither
   case and asks nothing: it carries `/implement` because it carries everything,
   and a tree one commit old has no plan file or PR comment old enough to say it,
@@ -153,8 +177,8 @@ Two G2 rows are adopter choices rather than defaults:
 **The `/issue` redirect is the same choice one group over.** It is worth taking
 only where `/issue` was already the shipped name — that is where a handoff block,
 a PR comment, or an operator's own muscle memory might still say it. Never
-adopted `/issue` → decline the row and put `.claude/skills/issue/` in `declined`:
-there is nothing to redirect, and the stub would be a permanent extra row
+adopted `/issue` → decline the entry and put `.claude/skills/issue/` in `declined`:
+there is nothing to redirect, and the stub would be a permanent extra entry
 standing in for a name the repo never had. **A first adoption is that case** —
 take `/take-issue` alone, and leave the redirect for a later sync to offer if the
 name ever does ship. Already adopted it → take the redirect, since the name
@@ -198,6 +222,6 @@ silently, in prose, forever.
 
 ## Keeping this file honest
 
-The one-row-per-skill invariant is machine-checked by
-`scripts/check-skill-catalog.sh`, so a skill added without a row here fails the
+The one-entry-per-skill invariant is machine-checked by
+`scripts/check-skill-catalog.sh`, so a skill added without an entry here fails the
 check rather than going unnoticed.

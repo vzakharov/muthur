@@ -12,14 +12,31 @@ The failure mode this exists to prevent is specific and common: reasoning about 
 
 ## Concerns that hold regardless of stack
 
-| Concern | What a hydrated version must handle |
-|---|---|
-| **Isolation** | Mount the thing under test on a scratch route or story that doesn't require navigating the real app to reach it. Reaching a deep UI state through six clicks makes the check expensive enough that it gets skipped. |
-| **Boot without secrets** | The preview has to come up against placeholder config — stub credentials, fixture data, whatever it takes. A preview that needs production keys is one nobody runs. Say plainly which parts are faked, so an observation about them isn't mistaken for an observation about the real thing. |
-| **Several widths** | Capture at more than one viewport. Most layout defects are width-dependent, and a single desktop screenshot is exactly the evidence that misses them. Pick the breakpoints the project actually claims to support. |
-| **Every colour scheme the app serves** | When the change is a colour, one scheme's screenshot is half the evidence: a value that reads correctly against a dark surface can be invisible against a light one. Don't expect the VM's OS preference to get you there — an app that picks its scheme from an explicit attribute or storage key, with one hardcoded default, serves that default no matter what the machine prefers. A hydrated version takes the scheme as an argument, seeds it before the first paint so nothing is captured mid-transition, and puts it in the filename so one scheme's shots don't overwrite the other's. |
-| **Keep artifacts out of the merge** | Screenshots are for the operator now, not for the repo forever. Put them under gitignored `tmp/`, or under `docs/remove-before-merging/` when they need to ride the branch for review — `/finalize` sweeps that tree before the PR goes ready. Never leave image files to land on the trunk. |
-| **Report what you saw, not what you rendered** | "Captured 3 screenshots" is not a finding. Say what the images show and whether it matches what was intended, and surface the ones that don't. |
+Each is something a hydrated version must handle.
+
+### Isolation
+
+Mount the thing under test on a scratch route or story that doesn't require navigating the real app to reach it. Reaching a deep UI state through six clicks makes the check expensive enough that it gets skipped.
+
+### Boot without secrets
+
+The preview has to come up against placeholder config — stub credentials, fixture data, whatever it takes. A preview that needs production keys is one nobody runs. Say plainly which parts are faked, so an observation about them isn't mistaken for an observation about the real thing.
+
+### Several widths
+
+Capture at more than one viewport. Most layout defects are width-dependent, and a single desktop screenshot is exactly the evidence that misses them. Pick the breakpoints the project actually claims to support.
+
+### Every colour scheme the app serves
+
+When the change is a colour, one scheme's screenshot is half the evidence: a value that reads correctly against a dark surface can be invisible against a light one. Don't expect the VM's OS preference to get you there — an app that picks its scheme from an explicit attribute or storage key, with one hardcoded default, serves that default no matter what the machine prefers. A hydrated version takes the scheme as an argument, seeds it before the first paint so nothing is captured mid-transition, and puts it in the filename so one scheme's shots don't overwrite the other's.
+
+### Keep artifacts out of the merge
+
+Screenshots are for the operator now, not for the repo forever. Put them under gitignored `tmp/`, or under `docs/remove-before-merging/` when they need to ride the branch for review — `/finalize` sweeps that tree before the PR goes ready. Never leave image files to land on the trunk.
+
+### Report what you saw, not what you rendered
+
+"Captured 3 screenshots" is not a finding. Say what the images show and whether it matches what was intended, and surface the ones that don't.
 
 ## Related
 

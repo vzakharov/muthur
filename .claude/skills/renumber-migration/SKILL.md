@@ -10,14 +10,31 @@ Fixing the collision that happens whenever two branches each add migration `0042
 
 ## Concerns that hold regardless of stack
 
-| Concern | What a hydrated version must handle |
-|---|---|
-| **Sequential numbers collide by construction** | Any scheme where the next migration is "highest + 1" collides across concurrent branches. This isn't an edge case; it's the normal cost of readable ordering. The skill exists because the collision is routine. |
-| **Detect the fork first** | Find the point where this branch's migrations diverged from the base's, and which numbers the base has since claimed. Everything downstream depends on getting this boundary right. |
-| **Adopt theirs, then renumber yours on top** | Take the base's migrations at their existing numbers — they've already run somewhere — and renumber this branch's on top of them so the sequence stays contiguous. Never renumber the ones that landed first. |
-| **Never renumber a migration that has already run** | The hard rule. If a migration has been applied in *any* environment, its identity is recorded there. Renumbering it makes the recorded history and the repository disagree, and the failure surfaces later, somewhere else, as a migration that mysteriously re-runs or is mysteriously skipped. |
-| **Re-parent the accompanying files** | Most migration tools keep more than the SQL: a journal, a schema snapshot, a checksum, a "previous migration" pointer. Renumbering the file and leaving those stale is the most common way this goes wrong. Name every such file in the hydrated version and say how each is regenerated. |
-| **Verify by replaying** | After renumbering, run the migrations from scratch against an empty database and confirm the resulting schema matches the snapshot. That replay is the only real proof the sequence is coherent. |
+Each is something a hydrated version must handle.
+
+### Sequential numbers collide by construction
+
+Any scheme where the next migration is "highest + 1" collides across concurrent branches. This isn't an edge case; it's the normal cost of readable ordering. The skill exists because the collision is routine.
+
+### Detect the fork first
+
+Find the point where this branch's migrations diverged from the base's, and which numbers the base has since claimed. Everything downstream depends on getting this boundary right.
+
+### Adopt theirs, then renumber yours on top
+
+Take the base's migrations at their existing numbers — they've already run somewhere — and renumber this branch's on top of them so the sequence stays contiguous. Never renumber the ones that landed first.
+
+### Never renumber a migration that has already run
+
+The hard rule. If a migration has been applied in *any* environment, its identity is recorded there. Renumbering it makes the recorded history and the repository disagree, and the failure surfaces later, somewhere else, as a migration that mysteriously re-runs or is mysteriously skipped.
+
+### Re-parent the accompanying files
+
+Most migration tools keep more than the SQL: a journal, a schema snapshot, a checksum, a "previous migration" pointer. Renumbering the file and leaving those stale is the most common way this goes wrong. Name every such file in the hydrated version and say how each is regenerated.
+
+### Verify by replaying
+
+After renumbering, run the migrations from scratch against an empty database and confirm the resulting schema matches the snapshot. That replay is the only real proof the sequence is coherent.
 
 ## Related
 

@@ -6,7 +6,7 @@
 # call is made rather than waiting in CLAUDE.md to be remembered.
 #
 # It points at the ladder rather than restating it: CLAUDE.md is resident, so
-# the rows are in context already and a copy here would only drift from them.
+# the rungs are in context already and a copy here would only drift from them.
 #
 # Only the first prompt. A later turn is a routing point only when it is the
 # first to ask for a change in a session still unrouted (CLAUDE.md
@@ -35,7 +35,7 @@ first_prompt || exit 0
 read -r -d '' notice <<'NOTICE' || true
 This is the session's opening prompt, so the route comes before the work: read
 CLAUDE.md § "Plan mode & questions in web sessions"'s entry ladder, say which
-row this prompt is, and enter the skill that row names. That route is what
+rung this prompt is, and enter the skill that rung names. That route is what
 carries a change through the plan-or-not call and the quality passes onto a PR.
 NOTICE
 

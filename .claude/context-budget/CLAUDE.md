@@ -19,8 +19,8 @@ plan".
   reading counts it then.
 - **Both lines are priced by what `/relay` saves over the next 100k tokens of
   work** (`finish`): the warning where that saving reaches $0, the
-  pause where it reaches `CONTEXT_BUDGET_PAUSE_SAVING` percent (default 20) of
-  what carrying on costs. The model is `.claude/costs/lib/restart.py`, via
+  pause where it reaches `MUTHUR_CONTEXT_BUDGET_PAUSE_SAVING` percent (default
+  20) of what carrying on costs. The model is `.claude/costs/lib/restart.py`, via
   `hooks/priced_line.py`, and the notice carries the dollars.
   - **Each is capped at its fixed line, 200k and 300k**, so pricing only ever
     moves a line earlier: context quality and the hard window are not cost
@@ -37,8 +37,8 @@ plan".
     recomputed per 10k of growth, since a Python start-up per tool call is what
     this bash hook avoids.
   - **Without the ledger's lib, on an unpriced model, or under
-    `CONTEXT_BUDGET_LINES=fixed`**, the lines are 200k and 300k and the hook
-    runs no Python.
+    `MUTHUR_CONTEXT_BUDGET_LINES=fixed`**, the lines are 200k and 300k and the
+    hook runs no Python.
 - **The main chain only.** A tool call carrying `agent_id` is a subagent's and
   is skipped, as are `isSidechain` records and the `<synthetic>` placeholder
   Claude Code writes for a turn no model served — whose zeroed usage would read
@@ -49,15 +49,38 @@ plan".
   it would otherwise repeat on every tool call.
 - **The operator is resolved only when a notice is about to fire**, with `gh api
   user`, since it costs a network call and the ordinary tool call has no use for
-  it. Their `auto-relay/<handle>` decides how the pause ends, and
-  `@.claude/skills/relay/SKILL.md` § "Auto-relay" owns what it means and who
-  writes it. A `gh` that cannot answer, or a token that is not a `User`'s, reads
-  as `off` and asks nothing: there is no one to have opted in and nowhere to
-  record an answer.
+  it — and not at all once `MUTHUR_MANUAL_CONTEXT_BUDGET_RELAY` has settled how
+  the pause ends. A `gh` that cannot answer, or a token that is not a `User`'s, has no
+  operator file to read and leaves the default.
 - **Anything unreadable is silence**, never an error: a missing notice costs a
   warning, a hook failing on every tool call costs the session.
 
-`CONTEXT_BUDGET_WARN` and `CONTEXT_BUDGET_PAUSE` each fix their line, in
-tokens, `CONTEXT_BUDGET_PAUSE_SAVING` moves the priced pause, and
-`CONTEXT_BUDGET_LINES=fixed` turns the pricing off — set them in
-`.claude/settings.local.json`'s `env` to tune without editing a tracked file.
+`MUTHUR_CONTEXT_BUDGET_WARN` and `MUTHUR_CONTEXT_BUDGET_PAUSE` each fix their
+line, in tokens, `MUTHUR_CONTEXT_BUDGET_PAUSE_SAVING` moves the priced pause, and
+`MUTHUR_CONTEXT_BUDGET_LINES=fixed` turns the pricing off — set them in
+`.claude/settings.local.json`'s `env`, or on the web among the cloud
+environment's variables, to tune without editing a tracked file.
+
+## Manual relay
+
+Either pause ends in `/relay`, run unasked and with no argument, and the relay's
+report says the session relayed on its own and how to have it ask first. Either
+of two switches set to `true` makes the pause end the turn offering the relay
+instead:
+
+- **`MUTHUR_MANUAL_CONTEXT_BUDGET_RELAY`, for an environment**, set where the
+  variables above are — on the web, the dialog that also holds the setup script. It is the
+  switch for launches nobody reopens, whose successor would be a session nobody
+  finds, and the only one for a session with no operator to resolve.
+- **`manual-relay/<handle>`, for an operator**, the handle being the one
+  `.claude/hooks/operator-voice.sh` resolves — the lowercased login of the
+  session's `User`-type GitHub token.
+  - **Only the operator's own words write it**, whenever they say it: write
+    `true`, commit it with their words quoted, and push; asked to have the
+    pause relay unasked again, delete the file the same way.
+  - **It applies wherever the tree carries it**: on this branch from the next
+    notice, and on every branch once it reaches the default branch. Say so when
+    you write it, since the operator's next session may start from a base that
+    does not have it yet.
+
+`yes`, `on` and `1` count as `true`; any other value leaves the default.

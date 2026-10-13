@@ -36,14 +36,16 @@ The checklist isn't frozen at creation — `/pr`'s refresh mode re-derives it ag
 
 ### Classify automatability (a table after the checklist)
 
-Keep the list itself **clean** — no inline tags or metadata on the items beyond the leading slug (legibility). Right after the checklist, emit a table with **one row per checklist item, in the same order**, keyed by that slug:
+Keep the list itself **clean** — no inline tags or metadata on the items beyond the leading slug (legibility). Right after the checklist, emit a table with **one row per checklist item, in the same order**, keyed by that slug — a table, because the PR body is read rendered on GitHub:
 
+```markdown
 | Item          | Automatable | Covered? | Notes                                                                      |
 | ------------- | ----------- | -------- | -------------------------------------------------------------------------- |
 | `stream`      | e2e         | ❌       | Drive the chat route, send a prompt, assert the reply streams in           |
 | `bad-input`   | integration | ✅       | `handler.test` — unknown id → 400 + the "not available" copy               |
 | `token-count` | unit        | ❌       | Counter returns the right count for multi-part input                       |
 | `empty-state` | manual-only | —        | Empty state must match the reference design pixel-for-pixel                |
+```
 
 Columns:
 

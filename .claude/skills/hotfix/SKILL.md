@@ -12,13 +12,25 @@ It exists because "is the trunk safe to ship right now?" is a question you canno
 
 ## Concerns that hold regardless of stack
 
-| Concern | Why it matters |
-|---|---|
-| **Branch off what's live, not the trunk** | The whole point is to avoid carrying unrelated in-flight work. Cut from the ref that represents production — a branch, a tag, the deployed SHA — never from the trunk. Hydration must name that ref precisely. |
-| **It bypasses the promotion path** | Whatever staged gauntlet the normal release runs, this skips most of it by design. Say explicitly which checks still apply. A hotfix that skips *everything* isn't fast, it's unreviewed. |
-| **Reconcile back into the trunk, or lose it** | A fix that only exists on the production ref gets overwritten by the next ordinary release. Merging it back into the trunk is part of the procedure, not a follow-up someone might remember — and the skill should not report success until it's done or explicitly deferred with an owner. |
-| **It needs a durable record** | Hotfixes happen under time pressure and are the changes least likely to be written down. Decide where the record goes (a notes file, an issue, a PR that stays open until reconciled) and make writing it non-optional. |
-| **Scope discipline** | The urgency that justifies the bypass applies to one fix. Anything that rides along on the branch inherits a review path it didn't earn. Keep the diff minimal and say so in the report. |
+### Branch off what's live, not the trunk
+
+The whole point is to avoid carrying unrelated in-flight work. Cut from the ref that represents production — a branch, a tag, the deployed SHA — never from the trunk. Hydration must name that ref precisely.
+
+### It bypasses the promotion path
+
+Whatever staged gauntlet the normal release runs, this skips most of it by design. Say explicitly which checks still apply. A hotfix that skips *everything* isn't fast, it's unreviewed.
+
+### Reconcile back into the trunk, or lose it
+
+A fix that only exists on the production ref gets overwritten by the next ordinary release. Merging it back into the trunk is part of the procedure, not a follow-up someone might remember — and the skill should not report success until it's done or explicitly deferred with an owner.
+
+### It needs a durable record
+
+Hotfixes happen under time pressure and are the changes least likely to be written down. Decide where the record goes (a notes file, an issue, a PR that stays open until reconciled) and make writing it non-optional.
+
+### Scope discipline
+
+The urgency that justifies the bypass applies to one fix. Anything that rides along on the branch inherits a review path it didn't earn. Keep the diff minimal and say so in the report.
 
 ## Related
 
