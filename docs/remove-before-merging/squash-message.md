@@ -10,17 +10,32 @@ paragraph is one physical line, so editing one clause rewrote the whole
 paragraph in the diff.
 
 All tracked Markdown is hard-wrapped at 80 columns by prettier, pinned
-in scripts/prettier.sh, run by a PostToolUse hook on each edited .md and
-checked by vet.sh. Files that become GitHub bodies or comments are
-exempt through .prettierignore, since GitHub renders their newlines as
-line breaks.
+in scripts/prettier.sh and run through npx, with no package.json to
+mark the repo as a JS project. A PostToolUse hook,
+.claude/hooks/format-md.sh, wraps each .md an agent edits;
+scripts/check-markdown-wrap.sh checks every tracked one in vet.sh; and
+install-deps.sh warms prettier up at session start. The convention is
+its own rule, .claude/rules/markdown-wrap.md, apart from the opt-in
+no-tables rule so that deleting that one keeps it.
+check-skill-catalog.sh now matches CLAUDE.md § citations split across
+lines.
+
+Text that becomes a GitHub body or comment stays unwrapped, since
+GitHub renders its newlines as line breaks: .prettierignore exempts
+docs/pr/, docs/issue/, the squash proposal and tmp/, and the hook skips
+files outside the tree. embeddedLanguageFormatting is off, so fenced
+templates and YAML frontmatter come through untouched.
 
 Adopters: split the sync at this commit. Port everything before it as
-usual; from this one take only the tooling, the hook entry, the vet and
-install-deps lines and the rule, never its reflow of existing Markdown;
-wrap your own Markdown with your own tooling (the prettier files here
-are optional), keeping the GitHub-bound exemptions; then port what
-follows as usual. No operator approval is needed.
+usual. From this commit take only the tooling (scripts/prettier.sh,
+.prettierrc.json, .prettierignore, .claude/hooks/format-md.sh,
+scripts/check-markdown-wrap.sh), the settings.json hook entry, the
+vet.sh and install-deps.sh lines, the rule file and the
+check-skill-catalog.sh citation fix, never its reflow of existing
+Markdown. Wrap your own Markdown with your own tooling (the prettier
+files are optional), keeping the GitHub-bound exemptions, then port
+what follows as usual. No operator approval is needed beyond what a
+sync already asks.
 
 Co-authored-by: Claude <noreply@anthropic.com>
 ```
