@@ -19,7 +19,7 @@ Check **once** whether the branch's **merge target** has moved out from under th
 
 The check is **stateless** — it computes everything from git on each run, comparing the branch's own history against the freshly-fetched target tip. There's no baseline file to record or reset: the branch's last merge of the target _is_ the reference point, so once you merge a newer target in, the next `/check-merge` simply reports "contained".
 
-This skill **detects** movement and **hands back** to the enclosing flow (usually `/finalize`) — it does **not** decide what to do about a move, drive any re-merge, or re-attest. The "what to do when the base advanced" rules live in the enclosing flow. The one thing it does actively maintain is the squash record: whenever the PR is open it reconciles the `Proposed squash body:` comment and the PR title against the branch's current state and edits it in place if it drifted (Step 3).
+This skill **detects** movement and **hands back** to the enclosing flow (usually `/finalize`) — it does **not** decide what to do about a move, drive any re-merge, or re-attest. The "what to do when the base advanced" rules live in the enclosing flow. The one thing it does actively maintain is the squash record: whenever the PR is open it reconciles the `Proposed squash body:` comment and the PR title against the branch's current state and edits them in place if they drifted (Step 3).
 
 `/finalize` reaches this at its very end, just before it attests. It can also be invoked directly.
 

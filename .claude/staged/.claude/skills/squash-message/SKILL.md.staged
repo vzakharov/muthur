@@ -266,10 +266,8 @@ it never sees the title: count its 72 chars yourself.
 number --jq .number`), list comments (`gh api
 repos/<owner>/<repo>/issues/<n>/comments --paginate`) and pick the one whose
    body leads with `Proposed squash` and whose `user.login` is yours (`gh api
-   user --jq .login`). The prefix stops short of the header's last word so a
-   comment posted under an earlier header is found and rewritten, not stacked
-   beside. If several match — an earlier run stacked duplicates — keep the
-   newest and `-X DELETE` the rest.
+   user --jq .login`). If several match — an earlier run stacked duplicates —
+   keep the newest and `-X DELETE` the rest.
 2. **Post or update.**
    - Found → PATCH that same comment: `gh api
 repos/<owner>/<repo>/issues/comments/<id> -X PATCH -F body=@<working file>`.
