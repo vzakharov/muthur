@@ -19,15 +19,18 @@ from dataclasses import replace
 from pathlib import Path
 
 from lib.estimate import (
+    AddedRole,
     Estimate,
     Part,
     Rates,
     checked,
     latest,
+    load_rates,
     parse_estimate,
     parse_rates,
     senior_hours,
     split_comment,
+    with_added_roles,
 )
 from lib.rows import ROOT, SessionCost, parse_session_cost, pending_estimate_path, read_row, row_text
 from lib.shape import ShapeError, to_json
@@ -111,6 +114,60 @@ class WhatAnEstimateMayHold(unittest.TestCase):
         for text in ('{"roles": {"a": 1}, "grades": {"b": 0}}', '{"roles": {"a": 1}}'):
             with self.assertRaises(ShapeError):
                 parse_rates(text)
+
+
+def adding(**roles: object) -> str:
+    return json.dumps({"roles": roles})
+
+
+ARTIST = {"multiplier": 0.9, "grade": "senior", "work": "a persona's reflections on songs"}
+
+
+class RolesARepositoryAdds(unittest.TestCase):
+    def test_join_the_shared_table_at_their_multiplier_and_their_one_grade(self) -> None:
+        rates = with_added_roles(RATES, adding(artist=ARTIST))
+        self.assertEqual(rates.roles, {**RATES.roles, "artist": 0.9})
+        self.assertEqual(rates.grades, RATES.grades)
+        self.assertEqual(rates.added, {"artist": AddedRole("senior", "a persona's reflections on songs")})
+
+    def test_book_at_their_grade_alone_and_land_in_its_hours(self) -> None:
+        rates = with_added_roles(RATES, adding(artist=ARTIST))
+        booked = estimate_of("t", Part(2, "senior", "artist"))
+        self.assertEqual(senior_hours(checked(booked, rates, "e"), rates), 2 * 0.9)
+        with self.assertRaisesRegex(ShapeError, "part 1: role `artist` is booked at `senior` only"):
+            checked(estimate_of("t", Part(2, "junior", "artist")), rates, "e")
+
+    def test_never_re_rate_a_role_the_shared_table_rates(self) -> None:
+        with self.assertRaisesRegex(ShapeError, "`copywriter`: rates.json rates this role already"):
+            with_added_roles(RATES, adding(copywriter=ARTIST))
+
+    def test_refuse_a_grade_the_shared_table_lacks_and_anything_but_roles(self) -> None:
+        for text, message in (
+            (adding(artist={**ARTIST, "grade": "wizard"}), "grade `wizard`"),
+            (json.dumps({"roles": {"artist": ARTIST}, "grades": {"wizard": 2}}), "only adds roles, not grades"),
+            (adding(artist={k: v for k, v in ARTIST.items() if k != "grade"}), "exactly multiplier, grade, work"),
+            (adding(artist={**ARTIST, "multiplier": 0}), "not positive"),
+            (adding(artist={**ARTIST, "work": " "}), "`work` is 0 characters"),
+            (adding(), "not a non-empty object"),
+            ("{", "not JSON"),
+        ):
+            with self.subTest(message), self.assertRaisesRegex(ShapeError, message):
+                with_added_roles(RATES, text)
+
+    def test_are_read_beside_the_shared_table_where_the_repository_carries_them(self) -> None:
+        with tempfile.TemporaryDirectory() as costs:
+            Path(costs, "rates.json").write_text(json.dumps({"roles": RATES.roles, "grades": RATES.grades}))
+            self.assertEqual(load_rates(Path(costs)), RATES)
+            Path(costs, "rates.repo.json").write_text(adding(artist=ARTIST))
+            self.assertEqual(load_rates(Path(costs)).roles["artist"], 0.9)
+
+    def test_rate_a_row_by_its_own_repository_s_table(self) -> None:
+        artist = replace(ROW, session_id="art", estimate=estimate_of("a", Part(1, "senior", "artist")))
+        rates = with_added_roles(RATES, adding(artist=ARTIST))
+        summary = effort_of([artist, replace(ROW, estimate=estimate_of("a"))], RATES, {"art": rates})
+        self.assertEqual(summary.overall.senior_hours, round(0.9 + 2 * 0.5, 2))
+        with self.assertRaisesRegex(ShapeError, "role `artist`"):
+            effort_of([artist], RATES)
 
 
 class WhichCopyWins(unittest.TestCase):
@@ -301,6 +358,11 @@ class TheCommand(unittest.TestCase):
         done = estimate("set", "a reason for the whole", "--part", "1", "senior", "developer", session=self.running)
         self.assertEqual(done.returncode, 2)
         self.assertFalse(pending_estimate_path(self.running).exists())
+
+    def test_rates_prints_the_table_estimates_are_checked_against(self) -> None:
+        done = estimate("rates", session=self.running)
+        self.assertEqual(done.returncode, 0, done.stderr)
+        self.assertEqual(json.loads(done.stdout), to_json(load_rates(COSTS)))
 
     def test_a_session_with_no_row_is_refused_rather_than_guessed_at(self) -> None:
         done = estimate("show", "--session", "no-such-session", session=self.running)

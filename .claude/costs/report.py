@@ -32,8 +32,8 @@ from datetime import date, datetime, timezone
 from pathlib import Path
 from typing import Dict, List, Optional
 
-from lib.estimate import Rates, parse_rates
-from lib.github import REPO, Client, GitHubError, remote_ledger
+from lib.estimate import SHARED_RATES, Rates, load_rates, parse_rates, with_added_roles
+from lib.github import ADDED_ROLES, REPO, Client, GitHubError, remote_ledger
 from lib.hours import HoursTable
 from lib.period import FORMATS, KINDS, Period, PeriodError, month_of, period
 from lib.pricing import parse_prices
@@ -252,14 +252,20 @@ class Status:
             sys.stderr.flush()
 
 
-def across_repos(only: Optional[List[str]], span: Optional[Period], as_json: bool, rates: Rates) -> int:
+def across_repos(only: Optional[List[str]], span: Optional[Period], as_json: bool, shared: Rates) -> int:
+    """Each row is rated by its own repository's table: `shared` — this
+    checkout's `rates.json` — plus whatever roles that repository adds."""
     status = Status()
     try:
         ledger = remote_ledger(Client(progress=status), only, None if span is None else span.months())
     finally:
         status.clear()
     rows = [row for row in ledger.rows if span is None or span.holds(row)]
-    totals = totals_of(rows, rates, ledger.repo_of, span or month_of(today()))
+    tables = {
+        repo: with_added_roles(shared, text, f"{repo}:{ADDED_ROLES}") for repo, text in ledger.added_roles.items()
+    }
+    rates_of = {session: tables[repo] for session, repo in ledger.repo_of.items() if repo in tables}
+    totals = totals_of(rows, shared, ledger.repo_of, span or month_of(today()), rates_of)
     repos = by_repo(rows, ledger.repo_of)
     if as_json:
         print(
@@ -377,12 +383,14 @@ def main() -> int:
         span = period(*named[0], today()) if named else None
     except PeriodError as error:
         parser.error(str(error))
-    rates = parse_rates((COSTS / "rates.json").read_text(encoding="utf-8"))
     if not (args.all_my_repos or args.repo):
-        return this_repo(span, args.json, rates)
+        return this_repo(span, args.json, load_rates(COSTS))
     try:
         return across_repos(
-            None if args.all_my_repos else list(dict.fromkeys(args.repo)), span, args.json, rates
+            None if args.all_my_repos else list(dict.fromkeys(args.repo)),
+            span,
+            args.json,
+            parse_rates((COSTS / SHARED_RATES).read_text(encoding="utf-8")),
         )
     except GitHubError as error:
         print(f"costs: {error}", file=sys.stderr)

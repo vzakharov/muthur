@@ -18,7 +18,7 @@ import sys
 from pathlib import Path
 from typing import List, Optional, Tuple
 
-from lib.estimate import latest, parse_rates
+from lib.estimate import latest, load_rates
 from lib.rows import ROOT, SESSIONS, SessionCost, parse_session_cost, read_pending_estimate, row_path
 from lib.shape import ShapeError
 
@@ -77,6 +77,9 @@ def main() -> int:
     running = os.environ.get("CLAUDE_CODE_SESSION_ID")
     base = merge_base()
     try:
+        # Read on every run, so a broken `rates.repo.json` fails the vet run
+        # rather than the next estimate.
+        rates = load_rates(COSTS)
         carried = branch_rows(base[1]) if base is not None else []
         missing = {row.session_id: row.opening_prompt for row in carried if row.estimate is None}
         missing.pop(running, None)
@@ -87,14 +90,14 @@ def main() -> int:
         return 1
 
     if missing:
-        rates = parse_rates((COSTS / "rates.json").read_text(encoding="utf-8"))
         print(f"{PROG}: {len(missing)} session(s) on this branch have no human-hour estimate.", file=sys.stderr)
         for session_id, what in missing.items():
             print(f"{PROG}:   {session_id} ({(what or 'no opening prompt')[:80]!r}):", file=sys.stderr)
             print(f"{PROG}:     {fix_for(session_id, running)}", file=sys.stderr)
+        fixed = "".join(f"; {role} at {added.grade} only" for role, added in rates.added.items())
         print(
             f"{PROG}: Each part is the hours one role at one grade would spend on the task, and why"
-            f" (roles: {', '.join(rates.roles)}; grades: {', '.join(rates.grades)}).",
+            f" (roles: {', '.join(rates.roles)}; grades: {', '.join(rates.grades)}{fixed}).",
             file=sys.stderr,
         )
         if base is not None:

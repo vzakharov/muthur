@@ -227,6 +227,15 @@ the reason for them. A revision replaces it, so its history is git's.
   per grade, a part being worth hours × both, and is applied when the report
   reads a row, so retuning one re-rates the whole history alike and the trend
   stays comparable with itself.
+- **A repository adds roles of its own in `rates.repo.json`**, beside
+  `rates.json`, so a sync of the shared table never collides with them. Each
+  is `{"multiplier", "grade", "work"}`: it is booked at that one grade, so its
+  hours land in that grade's column of the report and no estimate, command or
+  table has an ungraded path. The file only adds — a role `rates.json` rates
+  raises rather than re-rating every row booked under it, and once the shared
+  table takes a role up, the repository's entry is what has to go. `work` is
+  what the estimate notice puts in a sentence of its own, since a role merely
+  listed among the shared ones had its work booked under the nearest of them.
 - **Of the row's copy and a running session's pending one, the later wins.**
   That is how a `--session` edit to a running session's row survives its next
   `Stop`, and how the session's own later `set` overrides that edit.
@@ -284,7 +293,9 @@ ledger on the default branch of every repository the `gh` user can reach, and
 its ledger, not muthur's watermark: the ledger is opt-in, so a watermark alone
 has nothing to count. A row GitHub truncates stops the run, since a missing one
 understates every total it belongs to, and these rows are never written back:
-they are another branch's to change.
+they are another branch's to change. Each row is rated by this checkout's
+`rates.json` plus the `rates.repo.json` on its own repository's default branch,
+since it may name a role only that repository rates.
 
 ## What the totals do not cover
 
