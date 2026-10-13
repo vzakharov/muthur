@@ -1,7 +1,7 @@
 Proposed squash title/body:
 
 ```
-feat: prefix every env variable muthur reads with MUTHUR_ (pr #188)
+feat: [attn adopters] prefix muthur's env variables with MUTHUR_ (pr #188)
 ```
 
 ```
@@ -17,10 +17,10 @@ renamed with every hook, test, skill, catalog row and CLAUDE.md that
 states it. Variables other tools own (Claude Code's, GitHub's, OTEL_*)
 keep their names, as do the cache keepalive's, renamed by #181.
 
-Once ported, the hooks read only the MUTHUR_ names. Before porting,
-check your environment and .claude/settings.local.json for any of the
-old ones: if one is set, tell your operator it needs the MUTHUR_ form;
-if none is, port as is.
+Adopters: once ported, the hooks read only the MUTHUR_ names. Before
+porting, check your environment and .claude/settings.local.json for any
+of the old ones: if one is set, tell your operator it needs the MUTHUR_
+form; if none is, port as is.
 
 Co-authored-by: Claude <noreply@anthropic.com>
 ```
