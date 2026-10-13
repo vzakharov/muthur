@@ -2,8 +2,8 @@
 
 ## Goal
 
-Every tracked `.md` file diffs line by line: prose hard-wrapped at 80 columns
-by prettier (`proseWrap: always`), run automatically after every agent edit and
+Every tracked `.md` file diffs line by line: prose hard-wrapped at 80 columns by
+prettier (`proseWrap: always`), run automatically after every agent edit and
 checked by `scripts/vet.sh`. An unwrapped paragraph is one physical line, so
 editing one clause rewrites the whole paragraph in the diff.
 
@@ -13,8 +13,8 @@ is pure line breaks an adopter can skip outright.
 ## Depends on #189 landing first
 
 https://github.com/vzakharov/muthur/issues/189 replaces every table with lists
-or sections. prettier cannot wrap a table — a GFM row has to be one line — so
-it pads every cell to its column's widest instead, and a table with one
+or sections. prettier cannot wrap a table — a GFM row has to be one line — so it
+pads every cell to its column's widest instead, and a table with one
 paragraph-sized cell grows delimiter rows hundreds of dashes long. Reflowing
 after #189 means this PR touches no table.
 
@@ -63,18 +63,18 @@ and report, rather than reflowing over it.
    extension); the real files change once, at `/finalize`'s swap.
 
 3. **Reformat:** `scripts/prettier.sh --write` over every tracked `.md` and
-   every staged copy, as a single `style:` commit containing nothing else. Re-run
-   `scripts/check-claude-md-size.sh` against the staged CLAUDE.md.
+   every staged copy, as a single `style:` commit containing nothing else.
+   Re-run `scripts/check-claude-md-size.sh` against the staged CLAUDE.md.
 
 4. **Format automatically and check it.**
-   - `.claude/hooks/format-md.sh`, a `PostToolUse` hook on `Edit|Write|MultiEdit`
-     registered in `.claude/settings.json`: when the touched path is a `.md` or
-     a `.md.staged` copy, it runs `scripts/prettier.sh --write` on that one
-     file, which honours `.prettierignore`. Claude Code tells the agent a file
-     changed under a formatter, so the next edit works from the wrapped text. On
-     failure — say `npx` cannot reach the registry — it exits 2 with prettier's
-     message, so the agent sees it rather than the edit passing unformatted in
-     silence.
+   - `.claude/hooks/format-md.sh`, a `PostToolUse` hook on
+     `Edit|Write|MultiEdit` registered in `.claude/settings.json`: when the
+     touched path is a `.md` or a `.md.staged` copy, it runs
+     `scripts/prettier.sh --write` on that one file, which honours
+     `.prettierignore`. Claude Code tells the agent a file changed under a
+     formatter, so the next edit works from the wrapped text. On failure — say
+     `npx` cannot reach the registry — it exits 2 with prettier's message, so
+     the agent sees it rather than the edit passing unformatted in silence.
    - `scripts/vet.sh` runs `scripts/prettier.sh --check` over the tracked `.md`
      and the staged copies.
    - `.claude/hooks/install-deps.sh` runs `scripts/prettier.sh --version` once,
@@ -100,10 +100,10 @@ carries an `Adopters:` paragraph (`/squash-message` § "Format rules") telling
 their agent to split the sync at this commit, `C`:
 
 1. **Port `<watermark>..C^` as usual.**
-2. **From `C`, port only the tooling and the rule** — the files step 6
-   catalogs, the `settings.json` hook entry, the `vet.sh` and `install-deps.sh`
-   lines, the rule's new paragraph. Never port its reflow of existing `.md`
-   files as a diff.
+2. **From `C`, port only the tooling and the rule** — the files step 6 catalogs,
+   the `settings.json` hook entry, the `vet.sh` and `install-deps.sh` lines, the
+   rule's new paragraph. Never port its reflow of existing `.md` files as a
+   diff.
 3. **Wrap their own Markdown with their own tooling** — each adopter likely has
    a formatter already; the prettier files here are optional. The GitHub-bound
    exemptions hold whatever wraps.
@@ -121,9 +121,9 @@ None of this needs their operator's yes beyond what a sync already asks.
 ## Decisions
 
 - **prettier comes through `npx`, pinned in `scripts/prettier.sh`.** A root
-  `package.json` was ruled out because in a template it tells adopters this is
-  a JS project and collides with their own; the environment's unpinned
-  prettier, because the formatting would drift when the environment updates.
+  `package.json` was ruled out because in a template it tells adopters this is a
+  JS project and collides with their own; the environment's unpinned prettier,
+  because the formatting would drift when the environment updates.
 - **"Automatic" is the `PostToolUse` hook plus the vet check.** Formatting only
   at `/finalize` leaves the branch unwrapped until landing; a git pre-commit
   hook is untracked, so every clone would install it by hand.
@@ -137,6 +137,5 @@ None of this needs their operator's yes beyond what a sync already asks.
 - **One ignore list.** `.prettierignore` is the only statement of which files
   stay unwrapped; the hook and vet both go through prettier, which reads it, so
   neither repeats the paths.
-- **The rule file is shared with #189** rather than split into a second
-  Markdown rule: both conventions apply to the same files and load on the same
-  reads.
+- **The rule file is shared with #189** rather than split into a second Markdown
+  rule: both conventions apply to the same files and load on the same reads.

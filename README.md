@@ -6,28 +6,28 @@
 
 Agent-first infrastructure that survives being adapted.
 
-Fork it into any project, change it to fit that project, and keep pulling
-later improvements forward — the part a copied skill directory can't do.
+Fork it into any project, change it to fit that project, and keep pulling later
+improvements forward — the part a copied skill directory can't do.
 Stack-agnostic.
 
 What it is: a `CLAUDE.md` seed carrying only conventions that hold regardless of
-stack, **31 skills** (23 working out of the box, 8 stubs awaiting hydration) that
-compose into a plan → implement → PR → land loop, the path-scoped `.claude/rules/`
-mechanism, a SessionStart hook that makes `gh` work in remote sessions, and the
-scripts behind it all.
+stack, **31 skills** (23 working out of the box, 8 stubs awaiting hydration)
+that compose into a plan → implement → PR → land loop, the path-scoped
+`.claude/rules/` mechanism, a SessionStart hook that makes `gh` work in remote
+sessions, and the scripts behind it all.
 
 The "keep pulling" part runs on
 [`watermark.json`](.claude/skills/update-muthur/watermark.json), which records
 where your copy came from, the commit you last synced to, and what you adopted
-or declined.
-`/update-muthur` diffs the source since that commit and triages it one commit at a
-time against the copy you have since edited — so a skill you rewrote stays
-rewritten, a fix to one you left alone lands, and something you turned down is
-remembered rather than offered again.
+or declined. `/update-muthur` diffs the source since that commit and triages it
+one commit at a time against the copy you have since edited — so a skill you
+rewrote stays rewritten, a fix to one you left alone lands, and something you
+turned down is remembered rather than offered again.
 
 Per-item descriptions live in
-**[`.claude/skills/update-muthur/catalog.md`](.claude/skills/update-muthur/catalog.md)** — one entry
-per skill, script and file, grouped so you can tell how much of it you need:
+**[`.claude/skills/update-muthur/catalog.md`](.claude/skills/update-muthur/catalog.md)**
+— one entry per skill, script and file, grouped so you can tell how much of it
+you need:
 
 - **G0** — the sync path, both directions: `/update-muthur` pulls later changes
   forward (ships as a stub; hydrating it is filling in the watermark),
@@ -44,8 +44,8 @@ per skill, script and file, grouped so you can tell how much of it you need:
   polling scripts.
 - **G6** — seven stack-bound stubs — hydrate the ones you need, delete the rest.
 
-The Python scripts are stdlib-only (3.9+) and use `$GH_TOKEN` or `gh auth token`;
-the shell scripts need `gh`, `jq`, and `git`.
+The Python scripts are stdlib-only (3.9+) and use `$GH_TOKEN` or
+`gh auth token`; the shell scripts need `gh`, `jq`, and `git`.
 
 ## Why `/plan` and `/go` exist
 
@@ -57,13 +57,14 @@ and questions became prose that survives in the transcript.
 
 **The file turned out to be worth more than the bug it routed around** — enough
 that these stay whether or not the bug is still there. A plan on disk can carry
-sections native plan mode has nowhere to put, notably the mandatory **DRY notes**
-that force the reuse-vs-duplication call to be argued *before* implementation.
-Its filename doubles as the approval gate (`.draft.do-not-implement.md` until the
-operator says otherwise), and `/plan` publishes it as a draft PR, so the plan is
-reviewed as a diff — inline comments and threads — rather than as chat prose. The
-turn ends by handing over a copy-pasteable `/go <branch>` line, so the next
-session starts with the approval already recorded rather than re-litigated.
+sections native plan mode has nowhere to put, notably the mandatory **DRY
+notes** that force the reuse-vs-duplication call to be argued _before_
+implementation. Its filename doubles as the approval gate
+(`.draft.do-not-implement.md` until the operator says otherwise), and `/plan`
+publishes it as a draft PR, so the plan is reviewed as a diff — inline comments
+and threads — rather than as chat prose. The turn ends by handing over a
+copy-pasteable `/go <branch>` line, so the next session starts with the approval
+already recorded rather than re-litigated.
 
 ## Getting it
 
@@ -81,7 +82,8 @@ gh repo create <owner>/<your-new-repo> \
   --clone
 ```
 
-(Use `--private` for private repos.) Then open a session in the new repo and run:
+(Use `--private` for private repos.) Then open a session in the new repo and
+run:
 
 ```
 /detemplate <what you're building>
@@ -90,9 +92,9 @@ gh repo create <owner>/<your-new-repo> \
 The fork ships that skill for exactly this: it publishes the prune as a
 reviewable plan before anything is deleted, then deletes itself once the tree is
 a project. A session that opens in an undetemplated fork and is asked to build
-something routes there first on its own. [`ADOPTING.md` § Template
-fork](ADOPTING.md#template-fork) says what the run is in for, if you want to know
-before forking.
+something routes there first on its own.
+[`ADOPTING.md` § Template fork](ADOPTING.md#template-fork) says what the run is
+in for, if you want to know before forking.
 
 ### Adopt into an existing repo
 
@@ -107,15 +109,14 @@ The agent selects a subset against your repo's actual shape, mostly by
 inspection — expect them to ask only about your session type and your
 deploy/test surface.
 
-Either way, later changes here come forward with `/update-muthur`, whose
-shipped watermark already names this repo — you fill in the rest (see
+Either way, later changes here come forward with `/update-muthur`, whose shipped
+watermark already names this repo — you fill in the rest (see
 [`docs/adopting/sync.md`](docs/adopting/sync.md)). The infrastructure is
 adoptable **and** re-syncable; a fork is not a dead end.
 
-Took it? Say hello in
-[#168](https://github.com/vzakharov/muthur/issues/168) — a sentence on what
-you're building, or just that you're here. Both routes have your agent offer to
-post it for you.
+Took it? Say hello in [#168](https://github.com/vzakharov/muthur/issues/168) — a
+sentence on what you're building, or just that you're here. Both routes have
+your agent offer to post it for you.
 
 ## More
 

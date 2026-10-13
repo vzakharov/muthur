@@ -8,14 +8,15 @@ being a bargain.
 ## Reading a transcript
 
 Properties of `~/.claude/projects/<cwd-slug>/<session-id>.jsonl` that decide how
-`lib/pricing.py` reads it. Each is load-bearing: get one wrong and the totals are
-confidently incorrect rather than absent.
+`lib/pricing.py` reads it. Each is load-bearing: get one wrong and the totals
+are confidently incorrect rather than absent.
 
-- **A subagent's spend is in a different file.** `<session-id>/subagents/*.jsonl`
-  beside the transcript, one per agent — and it is the session's spend, billed to
-  whoever spawned it. A reading that opens the main file alone therefore prices
-  every delegating session short, and short in the one way nothing shows: the
-  result looks exactly like a session that delegated nothing.
+- **A subagent's spend is in a different file.**
+  `<session-id>/subagents/*.jsonl` beside the transcript, one per agent — and it
+  is the session's spend, billed to whoever spawned it. A reading that opens the
+  main file alone therefore prices every delegating session short, and short in
+  the one way nothing shows: the result looks exactly like a session that
+  delegated nothing.
 - **One API response is written as several records** — one per content block, so
   a turn that thought and called two tools writes three — and each carries that
   response's _whole_ `usage`. Records are deduplicated by `message.id`; summing
@@ -33,8 +34,8 @@ confidently incorrect rather than absent.
 - **Thinking tokens are already inside `output_tokens`.** They are reported for
   interest and billed once.
 - **An absent field may arrive as an explicit `null`.** `lib/shape.py` reads the
-  two alike, and a `<synthetic>` model — the placeholder Claude Code writes for a
-  turn no model served — is skipped rather than offered to the price table.
+  two alike, and a `<synthetic>` model — the placeholder Claude Code writes for
+  a turn no model served — is skipped rather than offered to the price table.
 
 An unpriced `(model, speed)` **raises**. A response silently counted as free
 makes every total downstream a lie, and the failure is loud precisely because
@@ -47,8 +48,8 @@ row there before its first session can be priced.
 Nothing in the transcript is the title Claude Code shows. Three fields stand in
 for one, all read out of the file:
 
-- **`openingPrompt`** — the session's first prompt, unwrapped from the envelope a
-  slash command arrives in, so it reads `/handle <branch>`.
+- **`openingPrompt`** — the session's first prompt, unwrapped from the envelope
+  a slash command arrives in, so it reads `/handle <branch>`.
 - **`prs`** — the numbers off the `pr-link` records, which is what groups the
   several sessions one pull request takes.
 - **`url`** — the address a person opens the session at. Its id is a different
@@ -68,24 +69,24 @@ the token and so may be the agent's own account.
 A row's `orientation` is what the session spent before it first **acted**, and
 each of its `compactions` carries the same measure from that boundary on, plus
 the re-reads the summary forced. They feed the call on whether a fresh session
-or a compact is the cheaper way to shed context. `lib/orientation.py` holds
-the definitions.
+or a compact is the cheaper way to shed context. `lib/orientation.py` holds the
+definitions.
 
 - **Acting is a write into the repository or a handover to the operator** — an
   `Edit`, `Write` or `NotebookEdit` under the directory the session started in
   and outside its `tmp/`, an `AskUserQuestion` or `ExitPlanMode`, or the
   session's own `end_turn`. A scratch write is how an agent finds its bearings,
-  not what it does with them. A subagent's `end_turn` only hands its result
-  back to whoever spawned it, but a subagent's edit counts: delegated work is
-  still the session starting work.
-- **The acting response is left out of the spend**, since its output is the
-  edit or the answer itself.
+  not what it does with them. A subagent's `end_turn` only hands its result back
+  to whoever spawned it, but a subagent's edit counts: delegated work is still
+  the session starting work.
+- **The acting response is left out of the spend**, since its output is the edit
+  or the answer itself.
 - **Timestamps order the responses, not file position**, because a subagent's
   spend sits in another file and its clock is what places it against the main
   file's.
 - **Each phase stops at the next boundary**, so no response is counted in two.
-- **A re-read is an exact repeat of a call made before the latest boundary** —
-  a `Read` of the same path and range with no write to it since, or a `Grep`,
+- **A re-read is an exact repeat of a call made before the latest boundary** — a
+  `Read` of the same path and range with no write to it since, or a `Grep`,
   `Glob` or `Bash` with the same input bar its `description` — counted once per
   boundary. Only the session's own calls count: a subagent starts with no
   context the summary could have dropped. The estimate is an estimate because a
@@ -113,28 +114,29 @@ fields. `lib/billed.py` joins them to the priced responses by request id.
 response and its event are both there, the table and the event price it alike
 once the event's output count stands in for the record's, so the response keeps
 the table's price and the event checks it; the row warns when the two drift
-apart. An event no response matches is such a call — a
-prompt suggestion, a compaction — and goes into `total` and `byRate` at the
-event's price, and into `telemetry.unseen` by its `query_source`, which takes
-values the documentation does not list (`sdk` for a web session's main thread,
-`prompt_suggestion`, `compact`). A compaction's `billedUsd` is the
-`compact`-tagged call nearest its boundary. An event does not split its cache
-write by TTL, so an unseen call's write is filed under the 5-minute tokens.
-Events are only as complete as the receiver's uptime: what Claude Code sent
-before it started, or after the row was written, is in no row. The hook also
-runs after every tool call, silent there, and starts a receiver that is
-missing. That covers a session that checked out a branch carrying the hook,
-which registers it with `SessionStart` already past, and a receiver that died.
+apart. An event no response matches is such a call — a prompt suggestion, a
+compaction — and goes into `total` and `byRate` at the event's price, and into
+`telemetry.unseen` by its `query_source`, which takes values the documentation
+does not list (`sdk` for a web session's main thread, `prompt_suggestion`,
+`compact`). A compaction's `billedUsd` is the `compact`-tagged call nearest its
+boundary. An event does not split its cache write by TTL, so an unseen call's
+write is filed under the 5-minute tokens. Events are only as complete as the
+receiver's uptime: what Claude Code sent before it started, or after the row was
+written, is in no row. The hook also runs after every tool call, silent there,
+and starts a receiver that is missing. That covers a session that checked out a
+branch carrying the hook, which registers it with `SessionStart` already past,
+and a receiver that died.
 
-**The export is the environment's to switch on, never the repository's.**
-Claude Code ignores its OpenTelemetry exporter variables in a project's
+**The export is the environment's to switch on, never the repository's.** Claude
+Code ignores its OpenTelemetry exporter variables in a project's
 `.claude/settings.json` (code.claude.com/docs/en/env-vars), reading them only
-from the process environment, user settings and managed settings — so, in a
-web session, the cloud environment's own variables. Where they do not point at
-the receiver, the hook starts nothing and prints a notice naming them; its list
-is the one home of what to set. Claude Code strips `OTEL_*` from every process
-it spawns, so the hook reads them from the `claude` process's own environment. `NO_PROXY` stays off it: the environment's own
-list already exempts `127.0.0.1`, and a value set beside the others replaces it.
+from the process environment, user settings and managed settings — so, in a web
+session, the cloud environment's own variables. Where they do not point at the
+receiver, the hook starts nothing and prints a notice naming them; its list is
+the one home of what to set. Claude Code strips `OTEL_*` from every process it
+spawns, so the hook reads them from the `claude` process's own environment.
+`NO_PROXY` stays off it: the environment's own list already exempts `127.0.0.1`,
+and a value set beside the others replaces it.
 
 ## Checking the arithmetic
 
@@ -150,26 +152,26 @@ file the row was priced from — so it was written at or before the moment the r
 was. A row coming out **under** it has missed a source. A row coming out over it
 means only that the session kept going, which every row's last turn does.
 
-Without events, a row misses what Claude Code counts and the transcript does
-not record as a response: prompt suggestions, which are full-context calls on
-the session's own model, and each compact's own request. They measured a few
-percent of a session's spend; reading a subagent's file short of its spend was
-seven, which is the failure this check exists to catch. A row with events has
-them in its total.
+Without events, a row misses what Claude Code counts and the transcript does not
+record as a response: prompt suggestions, which are full-context calls on the
+session's own model, and each compact's own request. They measured a few percent
+of a session's spend; reading a subagent's file short of its spend was seven,
+which is the failure this check exists to catch. A row with events has them in
+its total.
 
 **The usage panel is not a third opinion, and what breaks it is compaction.**
 Against a session that has never compacted it agrees to within 1%, and each
-compaction after that puts it out by tens of dollars across a window in which the
-transcript gains no responses at all. Its "Cost" also disagrees with its own
-Breakdown's cost row, by different factors on different cards — so the gap is not
-a unit or a stale rate, which would miss by one factor in both.
+compaction after that puts it out by tens of dollars across a window in which
+the transcript gains no responses at all. Its "Cost" also disagrees with its own
+Breakdown's cost row, by different factors on different cards — so the gap is
+not a unit or a stale rate, which would miss by one factor in both.
 anthropics/claude-code#95837 carries the measurements and asks which figure is
 authoritative.
 
 ## Running beside the harness's Stop check
 
-The harness registers its own `Stop` hook in `~/.claude/launcher-settings.json` —
-`stop-hook-git-check.sh`, which ends a turn with exit 2 on a tree that is
+The harness registers its own `Stop` hook in `~/.claude/launcher-settings.json`
+— `stop-hook-git-check.sh`, which ends a turn with exit 2 on a tree that is
 unclean, holds untracked files, or is ahead of its remote. **Hooks for one event
 run in parallel**, so writing and committing the row is work done while that
 check may be reading the tree.
@@ -182,20 +184,20 @@ push is in flight. `commit-tree` runs no commit hooks, which suits a file no
 formatter should rewrite, and signs only when asked, so the hook passes `-S`
 where `commit.gpgsign` is on.
 
-**The hook also waits the check out**, which leaves it only those two steps to guard.
-That check leaves nothing on disk — it reads the tree and writes to stderr — so
-its process is the only thing there is to wait on, and the hook polls for it by
-name at the last moment before anything it does can touch the tree. A match that
-is an **ancestor** of the hook is not the check: the check is a sibling, and an
-ancestor carrying the name is a shell that merely mentions it, so waiting on one
-would outlast the turn.
+**The hook also waits the check out**, which leaves it only those two steps to
+guard. That check leaves nothing on disk — it reads the tree and writes to
+stderr — so its process is the only thing there is to wait on, and the hook
+polls for it by name at the last moment before anything it does can touch the
+tree. A match that is an **ancestor** of the hook is not the check: the check is
+a sibling, and an ancestor carrying the name is a shell that merely mentions it,
+so waiting on one would outlast the turn.
 
 **What neither covers is a tree that was unclean before the hook started.** A
 hand run of `session_cost.py` rewrites the row in place, and a failed push
 leaves a commit the check will refuse on the _next_ turn, attributed to nobody.
-So the hook reads the tree after its own work and, where the row was part of what
-the check saw, exits 2 with one line naming it — the only channel a `Stop` hook
-has to the agent, spent solely where the check's own exit 2 is already
+So the hook reads the tree after its own work and, where the row was part of
+what the check saw, exits 2 with one line naming it — the only channel a `Stop`
+hook has to the agent, spent solely where the check's own exit 2 is already
 continuing the turn. It bails on a re-fired `Stop` (`stop_hook_active`) exactly
 as the harness's check does: two hooks that can both block and neither bail
 would hold the turn open forever.
@@ -215,42 +217,42 @@ adjusting quietly is what would leave the rest of this section false.
 
 ## Human-hour estimates
 
-A row's `estimate` says how much work the session's spend bought, so the
-ledger can price a unit of human work done by an agent and watch that price
-move — including whether the same work started costing more. It is the task
-split into parts, each the hours one role at one grade would spend on it and
-the reason for them. A revision replaces it, so its history is git's.
+A row's `estimate` says how much work the session's spend bought, so the ledger
+can price a unit of human work done by an agent and watch that price move —
+including whether the same work started costing more. It is the task split into
+parts, each the hours one role at one grade would spend on it and the reason for
+them. A revision replaces it, so its history is git's.
 `hooks/estimate-notice.sh` is the agent-facing home of when and how to set one.
 
 - **The unit is a senior-hour**: an hour of a senior developer, the role and
-  grade `rates.json` rates at 1. The table holds a multiplier per role and
-  per grade, a part being worth hours × both, and is applied when the report
-  reads a row, so retuning one re-rates the whole history alike and the trend
-  stays comparable with itself.
+  grade `rates.json` rates at 1. The table holds a multiplier per role and per
+  grade, a part being worth hours × both, and is applied when the report reads a
+  row, so retuning one re-rates the whole history alike and the trend stays
+  comparable with itself.
 - **Of the row's copy and a running session's pending one, the later wins.**
   That is how a `--session` edit to a running session's row survives its next
   `Stop`, and how the session's own later `set` overrides that edit.
 - **A branch lands with an estimate on every session it carries.**
   `check_estimates.py`, in the vet run, fails one without: the notice sets no
   deadline, and a `Stop` hook would ask before the size of the work is known.
-- **It sizes the task, never the session's pace.** It moves when the task
-  does — scope added, a difficulty no estimator would have foreseen, a relay
-  handing the rest on. A model that booked its own detours as extra hours would
-  hide exactly the regression the figure exists to show.
-- **A part's reason is the case for the team, not a summary of the work.**
-  What was done is already in the row and the commits; what nothing else
-  carries is why that part is that role, at that grade, for those hours — and
-  only that lets a reader check the figure rather than take it. It sits on the
-  part it justifies, so the one is never read without the other. An older row
-  carries one comment for the whole; where it names each part as
+- **It sizes the task, never the session's pace.** It moves when the task does —
+  scope added, a difficulty no estimator would have foreseen, a relay handing
+  the rest on. A model that booked its own detours as extra hours would hide
+  exactly the regression the figure exists to show.
+- **A part's reason is the case for the team, not a summary of the work.** What
+  was done is already in the row and the commits; what nothing else carries is
+  why that part is that role, at that grade, for those hours — and only that
+  lets a reader check the figure rather than take it. It sits on the part it
+  justifies, so the one is never read without the other. An older row carries
+  one comment for the whole; where it names each part as
   `<grade> <role>: <reason>`, the report moves it onto the parts, and where it
   does not, it stays as written, since placing it would be a guess.
 
 **What the figure cannot tell apart:** the estimator is the model under
 measurement, so a changed model may estimate differently too — a person's
 `--session` revision is the check, and the row's history in git shows which
-figures one touched; and a heavier `CLAUDE.md` or a new mandatory pass raises the dollars
-per senior-hour with no change to the model at all.
+figures one touched; and a heavier `CLAUDE.md` or a new mandatory pass raises
+the dollars per senior-hour with no change to the model at all.
 
 ## The report
 
@@ -262,9 +264,9 @@ with events, the dollars per senior-hour over the estimated rows, by month,
 week, day and model, and a period's estimated hours by role and grade, in plain
 hours; `--json` prints the lot. `--month`, `--week` or `--day`, each named or
 `cur` / `prev`, narrows the whole report to the sessions that started in it;
-without one, the hours cover the current UTC month. The spend is the
-branch's rather than each PR's, since a session that touched two would otherwise
-be counted twice.
+without one, the hours cover the current UTC month. The spend is the branch's
+rather than each PR's, since a session that touched two would otherwise be
+counted twice.
 
 **The totals are never written to disk.** They are wholly derived from the rows,
 so a file of them committed beside its own sources would be a merge conflict on
@@ -278,13 +280,13 @@ one as the report reads it, and the report names each one on stderr. Retiring a
 shape is therefore a change to the reader alone: the first report in each
 repository clears it, and those rewrites are ordinary changes to commit.
 
-**Across repositories, the rows are read off GitHub.** `--all-my-repos` reads the
-ledger on the default branch of every repository the `gh` user can reach, and
-`--repo` just the ones named, so nothing needs cloning. A repository counts by
-its ledger, not muthur's watermark: the ledger is opt-in, so a watermark alone
-has nothing to count. A row GitHub truncates stops the run, since a missing one
-understates every total it belongs to, and these rows are never written back:
-they are another branch's to change.
+**Across repositories, the rows are read off GitHub.** `--all-my-repos` reads
+the ledger on the default branch of every repository the `gh` user can reach,
+and `--repo` just the ones named, so nothing needs cloning. A repository counts
+by its ledger, not muthur's watermark: the ledger is opt-in, so a watermark
+alone has nothing to count. A row GitHub truncates stops the run, since a
+missing one understates every total it belongs to, and these rows are never
+written back: they are another branch's to change.
 
 ## What the totals do not cover
 
@@ -305,7 +307,7 @@ they are another branch's to change.
   away is thrown out of the ledger too — an undercount biased toward exactly the
   sessions that spent without delivering.
 - **Repositories the token cannot reach.** `--all-my-repos` sees what the `gh`
-  user sees, so an organization that enforces SAML SSO is out of reach until
-  the token is authorized for it.
-- **The trunk itself.** The hook declines to commit a row on `main` or
-  `master`, where there is no branch to carry it.
+  user sees, so an organization that enforces SAML SSO is out of reach until the
+  token is authorized for it.
+- **The trunk itself.** The hook declines to commit a row on `main` or `master`,
+  where there is no branch to carry it.

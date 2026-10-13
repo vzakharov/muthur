@@ -23,8 +23,8 @@ plainer. Neither tracks the other.
 
 - **Bare, at an answer that did not land.** Re-explain your own previous answer
   as a causal chain in plain words. The operator is telling you the last one
-  failed, so a longer version of it fails again; what was missing is the *why*,
-  not the *more*.
+  failed, so a longer version of it fails again; what was missing is the _why_,
+  not the _more_.
 - **With a question.** Answer that question under the rule, investigation
   included — find the cause before writing, not after being asked twice.
 
@@ -46,19 +46,19 @@ Either way the output is an answer, not a plan to produce one.
    example (§ "The example"), then the caveats if and only if they change what
    the reader should do.
 3. **Run the six defects below over that draft, then write it out again.** Each
-   has a tell you can see in your own text without knowing the subject — but only
-   in text you actually put down first.
+   has a tell you can see in your own text without knowing the subject — but
+   only in text you actually put down first.
 
 ## The example
 
 **Show one concrete case of what the answer says, whatever the answer is
 about.** A reader who lost the general statement usually follows a case, and
-"give me a concrete example" is the question they would most often ask next.
-The only answer that needs none is one already told as a scenario the reader
-could replay — "this test fails because of that line" is not one yet.
+"give me a concrete example" is the question they would most often ask next. The
+only answer that needs none is one already told as a scenario the reader could
+replay — "this test fails because of that line" is not one yet.
 
-- **The smallest thing that still shows it.** A few lines, two rows, one call and
-  what it returns — stripped of everything not carrying the point. Past that
+- **The smallest thing that still shows it.** A few lines, two rows, one call
+  and what it returns — stripped of everything not carrying the point. Past that
   size the reader is decoding the example instead of the idea.
 - **Invented is fine, and often better.** A made-up `f()` or a toy table shows
   the shape without the local detail a real case drags along. Use the real one
@@ -75,8 +75,8 @@ They exist so a bad report can be called out in one word, the way `polar bear`
 already works for `@.claude/skills/tend-prose/SKILL.md`. Read them as tells to
 check a draft of your own against:
 
-- **Symptom-as-finding** — the headline is a quoted error string or a metric
-  the system emitted.
+- **Symptom-as-finding** — the headline is a quoted error string or a metric the
+  system emitted.
 - **Buried lede** — counts, windows, method notes or caveats before the
   conclusion.
 - **Untranslated nouns** — jargon the reader does not use, where their own word
@@ -85,13 +85,13 @@ check a draft of your own against:
   followed.
 - **Fog** — uncertainty stated repeatedly and never resolved into "here's what
   would settle it".
-- **Receipt** — a reply *about* what the person said, where the thing they said
+- **Receipt** — a reply _about_ what the person said, where the thing they said
   wanted an answer — a joke acknowledged instead of returned, an aside filed
   instead of engaged.
 
 **The sixth is the odd one, and it earns its place by being the only one
 investigation cannot fix.** The other five are cured by knowing more: read the
-history, find the cause, say it in the right nouns. *Receipt* is cured by
+history, find the cause, say it in the right nouns. _Receipt_ is cured by
 answering the thing that was actually said. It is the same move as the rest one
 level up, at the scale of a conversation rather than a report — narrating a
 response instead of making it, which feels attentive and leaves the other person

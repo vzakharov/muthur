@@ -6,10 +6,10 @@ has two causes, and the PR's draft state tells them apart.
 
 ## Draft PR — nothing has been created yet
 
-A **draft** PR has not been through a finalize, so absence means not-yet-created:
-make `docs/remove-before-merging/squash-message.md` (create the tree; it carries
-no `.gitkeep`, since `git rm -r` is the sweep). This is the first creation, at
-PR-open. Step 5 commits and pushes it.
+A **draft** PR has not been through a finalize, so absence means
+not-yet-created: make `docs/remove-before-merging/squash-message.md` (create the
+tree; it carries no `.gitkeep`, since `git rm -r` is the sweep). This is the
+first creation, at PR-open. Step 5 commits and pushes it.
 
 ## Ready PR — a finalize may already have swept it
 
@@ -23,8 +23,8 @@ DEL=$(git log --diff-filter=D -1 --format=%H -- "$P")
 mkdir -p "$(dirname "$P")" && git show "$DEL^:$P" > "$P"
 ```
 
-The sweep ends the doc's life on the branch, not its history, so the last text it
-reached is still the starting point — which is what matters when an
+The sweep ends the doc's life on the branch, not its history, so the last text
+it reached is still the starting point — which is what matters when an
 operator-initiated `/check-merge` finds an advanced base carrying something the
 record should mention. Step 5's restored-file bullet governs what happens to it
 afterwards: committed, pushed, then swept again before the turn ends.
