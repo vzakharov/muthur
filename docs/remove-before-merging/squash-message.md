@@ -12,11 +12,11 @@ table without padding every cell to its column's widest.
 
 Every table outside a code fence is now a list, or ### sections where a
 row ran to paragraphs. CLAUDE.md's routing ladder is a numbered list,
-its rows now rungs, staged until /finalize swaps it in. The
-update-muthur catalog is one list item per entry, its fields nested
-beneath, and check-skill-catalog.sh reads an entry's first backticked
-token. Prose about the catalog says entry and field. /qa-checklist keeps
-its table, fenced, as a template for a PR body read rendered.
+its rows now rungs. The update-muthur catalog is one list item per
+entry, its fields nested beneath, and check-skill-catalog.sh reads an
+entry's first backticked token. Prose about the catalog says entry and
+field. /qa-checklist keeps its table, fenced, as a template for a PR
+body read rendered.
 
 .claude/rules/markdown.md states the convention and that exception, and
 scripts/check-markdown-tables.sh, which vet runs while the rule exists,
