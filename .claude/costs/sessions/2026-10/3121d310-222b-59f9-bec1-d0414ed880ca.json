@@ -1,0 +1,94 @@
+{
+  "estimate": {
+    "at": "2026-10-13T17:53:19.526Z",
+    "parts": [
+      {
+        "hours": 1.5,
+        "grade": "senior",
+        "role": "prompter",
+        "comment": "moving a rule between a skill and a hook's doc without leaving two homes takes judgement of where each agent looks at the moment it matters"
+      },
+      {
+        "hours": 1.0,
+        "grade": "middle",
+        "role": "developer",
+        "comment": "renaming a bash flag's semantics and its test suite is routine but must keep the stderr and precedence cases covered"
+      }
+    ],
+    "comment": null
+  },
+  "sessionId": "3121d310-222b-59f9-bec1-d0414ed880ca",
+  "branch": "claude/auto-relay-default-8o7x6i",
+  "cwd": "/home/user/muthur",
+  "openingPrompt": "/handle claude/auto-relay-default-8o7x6i",
+  "prs": [
+    182
+  ],
+  "url": "https://claude.ai/code/session_01FMTfCEbXR9pmGuyMwKtuap",
+  "operator": "vzakharov",
+  "firstResponseAt": "2026-10-13T17:24:41.308Z",
+  "lastResponseAt": "2026-10-13T17:56:07.076Z",
+  "pricesAsOf": "2026-10-06",
+  "claudeCodeTotalUsd": 0.58834,
+  "total": {
+    "inputTokens": 78,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 156897,
+    "cacheReadTokens": 5804719,
+    "outputTokens": 25232,
+    "thinkingTokens": 8306,
+    "responses": 39,
+    "costUsd": 2.9210718000000004
+  },
+  "ownTurns": {
+    "inputTokens": 78,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 156897,
+    "cacheReadTokens": 5804719,
+    "outputTokens": 25232,
+    "thinkingTokens": 8306,
+    "responses": 39,
+    "costUsd": 2.9210718000000004
+  },
+  "subagents": {
+    "inputTokens": 0,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 0,
+    "cacheReadTokens": 0,
+    "outputTokens": 0,
+    "thinkingTokens": 0,
+    "responses": 0,
+    "costUsd": 0.0
+  },
+  "byRate": {
+    "claude-opus-5-5/standard": {
+      "inputTokens": 78,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 156897,
+      "cacheReadTokens": 5804719,
+      "outputTokens": 25232,
+      "thinkingTokens": 8306,
+      "responses": 39,
+      "costUsd": 2.9210718000000004
+    }
+  },
+  "warnings": [],
+  "orientation": {
+    "endedBy": "Edit",
+    "endedOn": ".claude/context-budget/hooks/post-tool-context-budget.sh",
+    "endedAt": "2026-10-13T17:53:22.074Z",
+    "contextTokens": 154219,
+    "spend": {
+      "inputTokens": 32,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 107925,
+      "cacheReadTokens": 1798822,
+      "outputTokens": 9545,
+      "thinkingTokens": 6362,
+      "responses": 16,
+      "costUsd": 1.4141924000000001
+    }
+  },
+  "compactions": [],
+  "telemetry": null
+}
