@@ -29,7 +29,7 @@ roles="$(jq -r '.roles | keys_unsorted | join(", ")' <<<"$rates")"
 grades="$(jq -r '.grades | keys_unsorted | join(", ")' <<<"$rates")"
 usage="python3 $script set --part <hours> <grade> <role> \"<why, at most 280 characters>\" [--part ...]"
 # A repository's own role gets a sentence of its own, naming the work booked
-# under it: listed among the shared roles, its work went to the nearest of them.
+# under it: listed among the shared roles alone, its work goes to the nearest.
 added="$(jq -r '.added | to_entries | map(" This repository adds a role of its own: `\(.key)`, always `\(.value.grade)` — \(.value.work). Book that work under it, `--part <hours> \(.value.grade) \(.key)`, even where a shared role seems to fit.") | join("")' <<<"$rates")"
 
 # One line per paragraph: the agent reads it unwrapped, and a hard break inside

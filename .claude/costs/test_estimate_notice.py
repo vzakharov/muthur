@@ -2,7 +2,7 @@
 """Drives the estimate notice as the harness does — a payload on stdin — over a
 copy of the ledger's code, so a `rates.repo.json` can be laid beside it. What it
 protects is the line a repository's own role earns: a role merely listed among
-the shared ones had its work booked under the nearest of them.
+the shared ones has its work booked under the nearest of them.
 
 Run by path (`python3 .claude/costs/test_estimate_notice.py`), as `scripts/vet.sh`
 does.

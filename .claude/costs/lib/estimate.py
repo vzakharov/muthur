@@ -51,8 +51,7 @@ class AddedRole:
     grade only, so its hours land in that grade's column like any other."""
 
     grade: str
-    # The work booked under it, which the estimate notice spells out: a role
-    # merely listed among the shared ones loses that work to the nearest of them.
+    # The work booked under it, which the estimate notice spells out.
     work: str
 
 

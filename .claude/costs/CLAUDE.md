@@ -229,13 +229,10 @@ the reason for them. A revision replaces it, so its history is git's.
   stays comparable with itself.
 - **A repository adds roles of its own in `rates.repo.json`**, beside
   `rates.json`, so a sync of the shared table never collides with them. Each
-  is `{"multiplier", "grade", "work"}`: it is booked at that one grade, so its
-  hours land in that grade's column of the report and no estimate, command or
-  table has an ungraded path. The file only adds — a role `rates.json` rates
-  raises rather than re-rating every row booked under it, and once the shared
-  table takes a role up, the repository's entry is what has to go. `work` is
-  what the estimate notice puts in a sentence of its own, since a role merely
-  listed among the shared ones had its work booked under the nearest of them.
+  is `{"multiplier", "grade", "work"}`, booked at that one grade, so its hours land in that grade's column of the
+  report and no estimate, command or table has an ungraded path. The file only
+  adds (`with_added_roles` in `lib/estimate.py` says why), so once the shared
+  table takes a role up, the repository's entry is what has to go.
 - **Of the row's copy and a running session's pending one, the later wins.**
   That is how a `--session` edit to a running session's row survives its next
   `Stop`, and how the session's own later `set` overrides that edit.
