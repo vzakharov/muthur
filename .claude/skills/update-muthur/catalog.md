@@ -104,14 +104,14 @@ Each group, with when to adopt it:
 
 A skill copied without the siblings it `@`-references leaves a pointer to a file
 that isn't there, and **that failure is silent**: the agent reads the surviving
-prose and skips the step they could not load. Resolve each group's **Pulls in**
-column before copying, then run `bash scripts/check-skill-catalog.sh` in your
+prose and skips the step they could not load. Resolve each entry's **Pulls in**
+before copying, then run `bash scripts/check-skill-catalog.sh` in your
 repo to prove nothing dangles.
 
 **The script proves `@`-references and nothing else.** A sibling read at a fixed
 path when the item runs — `operator-voice.sh` `cat`s an entry out of
 `.claude/voice/operators/` — breaks as silently as a dangling `@`-pointer, and
-the column is the only place that says so.
+the **Pulls in** field is the only place that says so.
 
 Four closure facts are counter-intuitive enough to state outright:
 

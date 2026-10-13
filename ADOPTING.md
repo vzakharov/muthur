@@ -145,7 +145,7 @@ Not web/remote: skip the chapter, and Step 3 is done.
 Read [the catalog](.claude/skills/update-muthur/catalog.md) and decide group
 by group, using the Step 2 profile. Then, before copying, resolve each chosen
 group's **Pulls in**
-column — [Closure is not
+fields — [Closure is not
 optional](.claude/skills/update-muthur/catalog.md#closure-is-not-optional) explains what breaks if you
 don't, and lists the four counter-intuitive cases. Don't re-derive them.
 
