@@ -35,6 +35,6 @@ esac
 [ -f "$path" ] || exit 0
 
 if ! out="$("$root/scripts/prettier.sh" --write --log-level warn "$path" 2>&1)"; then
-  printf 'format-md: prettier could not wrap %s:\n%s\n' "$path" "$out" >&2
+  say "prettier could not wrap $path:"$'\n'"$out"
   exit 2
 fi
