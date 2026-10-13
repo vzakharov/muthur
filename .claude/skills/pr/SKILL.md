@@ -79,7 +79,7 @@ git diff --stat origin/<base>..HEAD
 
 **In plan-open mode the diff is one plan commit**, so the sections below are composed from the plan under `docs/plans/` rather than from the log. Every other mode composes from the commits.
 
-**Title**: conventional-commit format (`feat:`, `fix:`, `refactor:`, `docs:`, `chore:`, `style:`, `test:`, `ci:`, `perf:`). Reuse the subject of the lead commit when there's only one; for multi-commit branches, synthesize a subject that covers the whole branch. Keep under 70 chars.
+**Title**: the PR title is the squash title, so it follows `@.claude/skills/squash-message/SKILL.md`'s title rules, and Step 6 keeps it current from then on. Reuse the subject of the lead commit when there's only one; for multi-commit branches, synthesize a subject that covers the whole branch.
 
 **Body**: two sections.
 
@@ -135,7 +135,7 @@ gh api repos/<owner>/<repo>/pulls/<PR> -X PATCH -f title='…'
 
 Invoke `@.claude/skills/squash-message/SKILL.md` in default mode, passing the PR's base — load and follow it; do **not** inline-copy its steps, exactly as Step 4 delegates the QA checklist to `/qa-checklist`. That skill owns the format, the draft-then-tighten pass, where the draft is tracked, and when it must be re-synced.
 
-It runs after Step 5, where the PR number for the `(pr #N)` suffix is already in hand. It earns its place because the condensed title/body is the best quick lede for anyone opening the PR page — it answers "what is this?" in a few lines, complementary to the body's detail and QA checklist rather than a duplicate of them.
+It runs after Step 5, where the PR it posts to and retitles already exists. It earns its place because the condensed title/body is the best quick lede for anyone opening the PR page — it answers "what is this?" in a few lines, complementary to the body's detail and QA checklist rather than a duplicate of them.
 
 ## Step 7 — Report
 
