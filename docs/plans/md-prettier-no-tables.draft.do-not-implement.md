@@ -46,8 +46,21 @@ unwrapped and the reformat is a pure whitespace-and-emphasis commit.
 1. **Pin prettier in one place.** Add `scripts/prettier.sh`, a wrapper that runs
    `npx --yes prettier@3.8.1 "$@"` — the version lives only there. Add
    `.prettierrc.json` (`proseWrap: always`, `printWidth: 80`) and
-   `.prettierignore` (`tmp/`, `docs/issue/` — exported GitHub threads are quoted
-   verbatim and swept at `/finalize`). Nothing is reformatted yet.
+   `.prettierignore`. Nothing is reformatted yet.
+
+   **The ignore list is every file whose text becomes a GitHub issue or PR
+   body or a comment**, because GitHub renders a newline in those as a line
+   break, so hard-wrapped prose posts as ragged 80-column lines:
+   - `docs/pr/` — `scripts/pr-body.py`'s `body.md`, PATCHed back as the PR
+     body, and the exported PR threads beside it;
+   - `docs/issue/` — exported issue threads, quoted verbatim;
+   - `docs/remove-before-merging/squash-message.md` — posted as the squash
+     proposal comment;
+   - `tmp/` — where comment and review-reply drafts are written before
+     posting.
+
+   Text in a code fence inside a skill — a PR-body or comment template — is
+   already outside prettier's reach.
 
 2. **Convert every unfenced table** to a list, or to sections where a row is
    long enough to be a subsection of its own:
@@ -102,22 +115,48 @@ unwrapped and the reformat is a pure whitespace-and-emphasis commit.
 6. **Write the convention down where it loads.** A path-scoped
    `.claude/rules/markdown.md` (`paths: ["**/*.md"]`), so it arrives on the read
    of any Markdown file: no tables, lists or sections instead, the
-   GitHub-output exception, and that wrapping is prettier's job — never wrap or
-   unwrap by hand. And a guard in `scripts/vet.sh`: a small check that fails on
+   GitHub-output exception, that wrapping is prettier's job — never wrap or
+   unwrap by hand — and that text bound for an issue, a PR body or a comment is
+   never hard-wrapped, so a new home for such drafts goes into
+   `.prettierignore`. And a guard in `scripts/vet.sh`: a small check that fails on
    a table delimiter row outside a code fence in any tracked `.md`.
 
 7. **Catalog the new files** — `.prettierrc.json`, `.prettierignore`,
    `scripts/prettier.sh`, `.claude/hooks/format-md.sh`,
    `.claude/rules/markdown.md`, the table check — in the catalog group that
    carries the prose principles, so `/update-muthur` and `/detemplate` know
-   they exist.
+   they exist. The prettier wrapper, config and hook are marked optional for an
+   adopter that wraps with its own tooling; the rule and the table check are
+   not.
+
+## Adopters
+
+A sync that diffs across the reflow sees nearly every Markdown file rewritten
+line by line, and the changes that matter drown in "one line became four". So
+the squash is titled `[attn adopters]` and its body carries an `Adopters:`
+paragraph (`/squash-message` § "Format rules") that tells their agent to split
+the sync at this commit, `C`:
+
+1. **Port `<watermark>..C^` as usual** — every change up to the reflow,
+   readable line by line.
+2. **Read `C` itself with the reflow hidden** —
+   `git show -w --word-diff=plain --word-diff-regex='[^[:space:]]+' C` shows
+   only what changed in words: the tables become lists, the catalog's new
+   shape and its parser, the new rule and tooling. The only noise left is the
+   reflow's own marks — a `>` on each new continuation line of a blockquote and
+   `*em*` turned `_em_` — which their formatter produces or not on its own
+   terms. Port the rest; never port the reflow as a diff.
+3. **Wrap their own Markdown with their own tooling.** Each adopter likely
+   has a formatter already; the prettier wrapper and hook here are on offer,
+   not imposed — the catalog lists them as optional. Whatever wraps, the
+   GitHub-bound exceptions above hold for them too.
+4. **Port `C..<latest>` as usual** — both sides are wrapped by then, so the
+   diffs read line by line again.
+
+None of this needs their operator's yes beyond what a sync already asks.
 
 ## For the operator
 
-- **Every adopter's next `/update-muthur` sees all of this at once**: nearly
-  every Markdown file reflowed, plus a hook that reflows their own. Their local
-  edits to the same files will conflict on sync. That is the price of the
-  change, paid once.
 - **The environment setup script needs nothing** — `node`/`npx` are already
   there. `npx` fetches `prettier@3.8.1` through the proxy on first use and
   caches it.
@@ -136,28 +175,15 @@ unwrapped and the reformat is a pure whitespace-and-emphasis commit.
   setting to forbid tables, and markdownlint (which does) would add a second
   Markdown toolchain for one rule.
 
-## Open questions
+## Decisions
 
-Each has a recommendation, and the plan above is written with it in force.
-
-1. **Where prettier comes from.**
-   - a) _(recommended)_ `scripts/prettier.sh` running `npx --yes prettier@3.8.1`
-     — pinned, no `package.json`, which in a template would tell adopters this
-     is a JS project and collide with their own.
-   - b) a root `package.json` with prettier as a devDependency and a lockfile,
-     installed by `install-deps.sh` — offline-proof, but see a).
-   - c) whatever prettier the environment has — unpinned; the formatting drifts
-     when the environment updates.
-2. **What "automatically" means.**
-   - a) _(recommended)_ the `PostToolUse` hook plus the vet check.
-   - b) the vet check only, with `/finalize` running `--write` before it — no
-     reflow mid-session, but the branch carries unwrapped text until landing.
-   - c) a git pre-commit hook — not tracked by git, so every clone has to
-     install it by hand.
-3. **The catalog.**
-   - a) _(recommended)_ convert it like the rest and change the parser — it is
-     the biggest table set and the one that diffs worst.
-   - b) keep it as the one exception.
-4. **Guarding against new tables.**
-   - a) _(recommended)_ the path-scoped rule plus the vet check.
-   - b) the rule only.
+- **prettier comes through `npx`, pinned in `scripts/prettier.sh`.** A root
+  `package.json` was ruled out because in a template it tells adopters this is
+  a JS project and collides with their own; the environment's unpinned
+  prettier, because the formatting would drift when the environment updates.
+- **"Automatic" is the `PostToolUse` hook plus the vet check.** Formatting only
+  at `/finalize` leaves the branch unwrapped until landing; a git pre-commit
+  hook is untracked, so every clone would install it by hand.
+- **The catalog converts like everything else**, with its parser — it is the
+  biggest table set and the one that diffs worst.
+- **New tables are guarded twice**: the path-scoped rule and the vet check.
