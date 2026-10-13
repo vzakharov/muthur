@@ -37,7 +37,7 @@ from lib.github import REPO, Client, GitHubError, remote_ledger
 from lib.hours import HoursTable
 from lib.period import FORMATS, KINDS, Period, PeriodError, month_of, period
 from lib.pricing import parse_prices
-from lib.rows import SessionCost, read_row
+from lib.rows import SESSIONS, SessionCost, read_row
 from lib.shape import to_json
 from lib.totals import (
     Bucket,
@@ -53,7 +53,6 @@ from lib.totals import (
 )
 
 COSTS = Path(__file__).resolve().parent
-SESSIONS = COSTS / "sessions"
 
 # The tolerance for what Claude Code counts and no row can — the background
 # Haiku calls and each compact's own request, neither of which reaches the

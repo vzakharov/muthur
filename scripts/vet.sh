@@ -43,7 +43,8 @@
 #   the opt-in loop — the tests of the session cost ledger (`.claude/costs/`),
 #     the context budget hook (`.claude/context-budget/`), the cold-cache
 #     guard (`.claude/cold-cache/`) and the cache keepalive
-#     (`.claude/keepalive/`), run by path
+#     (`.claude/keepalive/`), and the ledger's `check_estimates.py`, which fails
+#     a session the branch carries with no human-hour estimate; run by path
 #     for `check-muthur.sh`'s reason. Each is opt-in, so the loop keys on its
 #     directory: a repo that said yes keeps it through the rewrite, and one that
 #     said no has nothing for it to find.
@@ -57,8 +58,8 @@ set -euo pipefail
 "$(dirname "$0")/staged.sh" check
 "$(dirname "$0")/check-claude-md-size.sh"
 "$(dirname "$0")/check-muthur.sh"
-for test in "$(dirname "$0")"/../.claude/{costs,context-budget,cold-cache,keepalive}/test_*.py; do
-  [ ! -f "$test" ] || python3 "$test"
+for check in "$(dirname "$0")"/../.claude/{costs,context-budget,cold-cache,keepalive}/{test,check}_*.py; do
+  [ ! -f "$check" ] || python3 "$check"
 done
 
 echo "vet: no stack-specific checks are configured; the checks above are the run." >&2

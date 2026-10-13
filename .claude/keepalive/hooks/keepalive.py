@@ -141,30 +141,40 @@ SUFFICIENT = (
 )
 
 
+STOP = "the operator's message asks to stop the keepalive (\"стоп\", \"stop\", in any words)"
+PARK = (
+    "If the operator's message asks to park the session (\"запаркуй\", \"park it\", in any words),"
+    " run `/relay park` per `.claude/skills/relay/SKILL.md`."
+)
+
+
 def context(data: Dict[str, Any], renewals: int, session: str, transcript: str) -> Optional[str]:
     if running(data.get("pid")):
         return (
-            f"A {MARK.lower()} watcher is running. If, as this turn ends, {SUFFICIENT},"
+            f"A {MARK.lower()} watcher is running. {PARK} If {STOP}, or if, as this turn ends, {SUFFICIENT},"
             " stop it with TaskStop (its id is in the Bash result that started it)."
         )
     spent = int(data.get("wakes", 0))
     if not data.get("fired"):
         return (
             f"As this turn's last action, {start_line(session, transcript)}"
-            f" Skip it when, at that point, {SUFFICIENT}."
+            f" Skip it when {STOP}, or when, at that point, {SUFFICIENT}."
         )
     if spent > renewals:
         return (
             f"{MARK}, last wake ({renewals} renewals spent): the prompt cache is about to expire"
-            " on an idle session, so park it. Run `/relay` per `.claude/skills/relay/SKILL.md`"
-            " § \"Without a successor\": commit the summary, start no session, and end the reply"
-            " with the `/relay take <branch>` line. Do not start the watcher again."
+            " on an idle session, so park it. Run `/relay park` per `.claude/skills/relay/SKILL.md`:"
+            " commit the summary, start no session, and end the reply with the `/relay take <branch>`"
+            " line. Do not start the watcher again."
         )
     return (
         f"{MARK}, renewal {spent} of {renewals}: this turn exists only to keep the prompt cache warm, so "
         + start_line(session, transcript)
-        + " Then reply in the conversation's language with one line of at most seven words"
-        f" saying so (e.g. «🕯 кеш продлён, {spent}/{renewals}»), and nothing else."
+        + " Then reply in the conversation's language with one line and nothing else: the cache"
+        " extended, which renewal of how many, and the two answers in plain words, no command names —"
+        " a word to park the session (record it and stop extending) and a word to just stop"
+        f" (e.g. «🕯 кеш продлён {spent}/{renewals} · скажи «запаркуй», чтобы зафиксировать и не"
+        " продлевать, или «стоп», чтобы просто остановить»)."
     )
 
 

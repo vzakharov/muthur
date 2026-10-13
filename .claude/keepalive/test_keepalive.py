@@ -114,6 +114,8 @@ class WhenAnOperatorPromptArrives(HookCase):
             out, _ = self.prompt()
             self.assertIn("watcher is running", out)
             self.assertIn("TaskStop", out)
+            self.assertIn("asks to stop the keepalive", out)
+            self.assertIn("asks to park the session", out)
         finally:
             watcher.kill()
             watcher.communicate()
@@ -135,16 +137,19 @@ class WhenTheWatcherWakesTheSession(HookCase):
         self.wake()
         out, _ = self.prompt(self.notice())
         self.assertIn("last wake (0 renewals spent)", out)
-        self.assertIn('"Without a successor"', out)
+        self.assertIn("Run `/relay park`", out)
         self.assertIn("Do not start the watcher again", out)
 
-    def test_a_renewal_asks_for_one_short_line_and_a_new_watcher(self) -> None:
+    def test_a_renewal_asks_for_one_line_with_the_way_out_and_a_new_watcher(self) -> None:
         self.session(ago=1)
         self.wake()
         self.assertEqual((self.data()["wakes"], self.data()["fired"], self.data()["pid"]), (1, True, None))
         out, _ = self.prompt(self.notice(), {"MUTHUR_CACHE_KEEPALIVE_RENEWALS": "5"})
         self.assertIn("renewal 1 of 5", out)
-        self.assertIn("at most seven words", out)
+        self.assertIn("one line and nothing else", out)
+        self.assertIn("plain words, no command names", out)
+        self.assertIn("a word to park the session", out)
+        self.assertIn("a word to just stop", out)
         self.assertIn("start the cache keepalive's watcher", out)
 
     def test_the_wake_after_the_last_renewal_parks_the_session(self) -> None:

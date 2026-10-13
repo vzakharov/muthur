@@ -20,13 +20,14 @@ rate is below the usual tenth of input (`.claude/costs/prices.json`).
   stopping one wakes nothing.
 - **Every wake is one visible line.** The harness rejects a turn with no visible
   output and forces a second request, so the instruction asks for one line
-  of at most seven words rather than silence.
+  rather than silence — and spends it on the two answers that end the spell,
+  in plain words an operator types without knowing the loop: one parks the
+  session (`/relay park`), one just stops. The hook maps both back.
 - **`MUTHUR_CACHE_KEEPALIVE_RENEWALS` (default 0) renewals per idle spell**,
-  which an operator prompt resets. The wake after the last one parks the
-  session — runs `/relay` without a successor (`@.claude/skills/relay/SKILL.md`
-  § "Without a successor"), and no watcher follows it — so by default the first
-  wake parks.
-  A renewal competes with that summary, which makes picking the work up cheap.
+  which an operator prompt resets. The wake after the last one runs `/relay
+  park` (`@.claude/skills/relay/SKILL.md`), and no watcher follows it — so by
+  default the first wake parks. A renewal competes with that summary, which
+  makes picking the work up cheap.
 - **More than 5 renewals is not recommended.** A renewal is two requests (the
   Bash call starting the next watcher, then the line), each reading the whole
   cached conversation, so it costs 2 ÷ 20 = 10% of a cold re-cache, or 5% where
