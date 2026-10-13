@@ -1,7 +1,7 @@
 #!/bin/bash
-# Run prettier at the one version this repo formats with: every caller — the
-# `PostToolUse` hook, `vet.sh`, `install-deps.sh` — goes through here, so the
-# pin lives in this file alone. Arguments pass straight to prettier.
+# Run prettier at the one version this repo formats with. Every caller goes
+# through here, so the pin lives in this file alone; arguments pass straight to
+# prettier.
 #
 # `npx` rather than a `package.json`, because a root `package.json` would tell
 # a project adopting this infrastructure that it is a JS project, and collide

@@ -28,12 +28,12 @@ the working tree clean, and behaves the same everywhere.
   - **Requires:** `bash`; web/remote sessions
   - **Disposition:** adopt — **fill in the install**
 - `.claude/hooks/lib.sh` — Sourced by every `UserPromptSubmit` hook here, by
-  `permission-denied-phrase.sh`, by the cost ledger's hooks (G7) and by the
-  context budget hook (G8): the payload read, the context-injecting JSON shape,
-  and the guards — a command being present, the prompt being the one a session
-  opens with, and the project root. Travels with the first such hook you adopt —
-  a hook that cannot source it skips itself rather than failing the turn, which
-  is a hook doing nothing at all.
+  `permission-denied-phrase.sh`, by G1's `format-md.sh`, by the cost ledger's
+  hooks (G7) and by the context budget hook (G8): the payload read, the
+  context-injecting JSON shape, and the guards — a command being present, the
+  prompt being the one a session opens with, and the project root. Travels with
+  the first such hook you adopt — a hook that cannot source it skips itself
+  rather than failing the turn, which is a hook doing nothing at all.
   - **Requires:** `bash`, `jq`
   - **Disposition:** adopt — **with any hook that sources it**
 - `.claude/hooks/operator-voice.sh` — On session start, name the operator —

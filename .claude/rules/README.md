@@ -22,8 +22,8 @@ The directory ships the loop's own two rules — `stack.md` (what `scripts/vet.s
 exits, and what a stack landing wires) and `staging.md` (editing a file that
 loads on every turn), each spanning paths no one directory holds — plus
 `markdown.md` (no tables), an opt-in, since whether a project's Markdown carries
-tables is its own call, and `markdown-wrap.md` (prettier's 80-column wrap),
-which goes with the prettier files when a project wraps with its own tooling.
+tables is its own call, and `markdown-wrap.md` (the 80-column wrap, and the
+GitHub-bound text it leaves alone), which holds whatever tool does the wrapping.
 Everything else here is yours: rules are mostly project-specific, and the
 reusable part is the mechanism. Add rule files as your conventions emerge.
 

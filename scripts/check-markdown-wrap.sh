@@ -1,9 +1,8 @@
 #!/bin/bash
-# Fail on tracked Markdown that prettier would rewrap, as `scripts/prettier.sh`
-# pins it and `.prettierrc.json` configures it; `vet.sh` runs this while that
-# config exists. A staged always-loaded file is checked through its staged copy,
-# since that is the text the branch will land, and the real file waits for
-# `/finalize`'s swap. `.prettierignore` exempts what GitHub renders.
+# Fail on tracked Markdown that prettier would rewrap; `vet.sh` runs this while
+# `.prettierrc.json` exists. A staged always-loaded file is checked through its
+# staged copy, since that is the text the branch will land. `.prettierignore`
+# exempts what GitHub renders.
 
 set -euo pipefail
 

@@ -13,9 +13,9 @@ paths:
 Tracked Markdown is hard-wrapped at 80 columns by prettier, so an edit to one
 clause diffs as one line rather than as its whole paragraph.
 `.claude/hooks/format-md.sh` wraps each `.md` an agent edits, and
-`scripts/vet.sh` checks the rest, both through `scripts/prettier.sh`.
+`scripts/vet.sh` checks every tracked one, both through `scripts/prettier.sh`.
 
 **Text bound for a GitHub issue or PR body, or a comment, is never wrapped**,
 because GitHub renders its newlines as line breaks. Such a draft goes under
-`tmp/` or outside the tree, where the hook does not reach; a new home for such
-drafts inside the tree goes into `.prettierignore`.
+`tmp/` or outside the tree, which nothing wraps; a new home for such drafts
+inside the tree goes into `.prettierignore`.

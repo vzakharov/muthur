@@ -3,11 +3,11 @@
 # just touched, through `scripts/prettier.sh`, so a session never leaves a
 # paragraph on one physical line for `vet.sh`'s check to find later.
 #
-# Only a `.md`, or a staged `.md.staged` copy, inside the project: a draft in
-# the scratchpad or anywhere else outside the tree is likely bound for GitHub,
-# which renders its newlines as line breaks. Inside the tree, `.prettierignore`
-# exempts the same kind of file. Claude Code reports the rewrite to the agent
-# as a change on disk, so its next edit starts from the wrapped text.
+# Markdown outside the project is left alone: a draft in the scratchpad or
+# elsewhere is likely bound for GitHub, which renders its newlines as line
+# breaks; inside, `.prettierignore` exempts that kind of file. Claude Code
+# reports the rewrite to the agent as a change on disk, so its next edit starts
+# from the wrapped text.
 #
 # A prettier failure exits 2 with prettier's message, which Claude Code shows
 # the agent: an edit that went through unwrapped in silence would surface only
