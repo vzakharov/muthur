@@ -89,8 +89,8 @@ class Session:
     def signed_in_as(self, login: str, kind: str = "User") -> None:
         self.identity = {"login": login, "type": kind}
 
-    def auto_relay(self, handle: str, setting: str) -> None:
-        path = self.root / ".claude" / "context-budget" / "auto-relay" / handle
+    def manual_relay(self, handle: str, setting: str) -> None:
+        path = self.root / ".claude" / "context-budget" / "manual-relay" / handle
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text(setting)
 
@@ -246,51 +246,62 @@ class WhetherThePauseRelaysOnItsOwn(BudgetTestCase):
         self.session.signed_in_as("Someone")
         for notice in self.notices():
             self.assert_relays(notice)
-            self.assertIn("how they turn that off", notice)
+            self.assertIn("how they have a pause ask first instead", notice)
 
-    def test_an_operators_off_keeps_the_offer(self) -> None:
+    def test_an_operators_true_keeps_the_offer(self) -> None:
         self.session.signed_in_as("Someone")
-        self.session.auto_relay("someone", "off\n")
+        self.session.manual_relay("someone", "true\n")
         for notice in self.notices():
             self.assert_offers(notice)
 
-    def test_an_operator_setting_that_is_not_off_is_the_default(self) -> None:
+    def test_an_operators_yes_is_a_true(self) -> None:
         self.session.signed_in_as("someone")
-        self.session.auto_relay("someone", "yes please")
+        self.session.manual_relay("someone", "Yes")
+        _, pause = self.notices()
+        self.assert_offers(pause)
+
+    def test_an_operator_setting_that_is_not_a_yes_is_the_default(self) -> None:
+        self.session.signed_in_as("someone")
+        self.session.manual_relay("someone", "false")
         _, pause = self.notices()
         self.assert_relays(pause)
 
-    def test_another_operators_off_is_not_this_ones(self) -> None:
+    def test_another_operators_true_is_not_this_ones(self) -> None:
         self.session.signed_in_as("someone")
-        self.session.auto_relay("someone-else", "off")
+        self.session.manual_relay("someone-else", "true")
         _, pause = self.notices()
         self.assert_relays(pause)
 
-    def test_the_environments_off_outranks_the_operators_on(self) -> None:
+    def test_the_environments_true_keeps_the_offer_whatever_the_operator_says(self) -> None:
         self.session.signed_in_as("someone")
-        self.session.auto_relay("someone", "on")
+        self.session.manual_relay("someone", "false")
         self.session.append(assistant(PAUSE + 1))
-        pause = self.session.notice({"MUTHUR_AUTO_RELAY": "off"})
+        pause = self.session.notice({"MUTHUR_MANUAL_RELAY": "true"})
         assert pause is not None
         self.assert_offers(pause)
 
-    def test_the_environments_on_leaves_the_operators_off(self) -> None:
+    def test_the_environments_false_leaves_the_operators_true(self) -> None:
         self.session.signed_in_as("someone")
-        self.session.auto_relay("someone", "off")
+        self.session.manual_relay("someone", "true")
         self.session.append(assistant(PAUSE + 1))
-        pause = self.session.notice({"MUTHUR_AUTO_RELAY": "on"})
+        pause = self.session.notice({"MUTHUR_MANUAL_RELAY": "false"})
         assert pause is not None
         self.assert_offers(pause)
 
-    def test_an_unknown_environment_value_reads_as_off(self) -> None:
+    def test_an_unknown_environment_value_is_named_and_leaves_the_default(self) -> None:
         self.session.append(assistant(PAUSE + 1))
-        result = self.session.tool_call({"MUTHUR_AUTO_RELAY": "no"})
-        self.assertIn("MUTHUR_AUTO_RELAY", result.stderr)
-        self.assert_offers(json.loads(result.stdout)["hookSpecificOutput"]["additionalContext"])
+        result = self.session.tool_call({"MUTHUR_MANUAL_RELAY": "ture"})
+        self.assertIn("MUTHUR_MANUAL_RELAY", result.stderr)
+        self.assert_relays(json.loads(result.stdout)["hookSpecificOutput"]["additionalContext"])
+
+    def test_a_no_is_not_named(self) -> None:
+        self.session.append(assistant(PAUSE + 1))
+        result = self.session.tool_call({"MUTHUR_MANUAL_RELAY": "off"})
+        self.assertNotIn("MUTHUR_MANUAL_RELAY", result.stderr)
 
     def test_a_bot_token_has_no_operator_setting_to_read(self) -> None:
         self.session.signed_in_as("claude[bot]", kind="Bot")
-        self.session.auto_relay("claude[bot]", "off")
+        self.session.manual_relay("claude[bot]", "true")
         _, pause = self.notices()
         self.assert_relays(pause)
 

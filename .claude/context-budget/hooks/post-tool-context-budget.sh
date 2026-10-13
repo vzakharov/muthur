@@ -90,25 +90,27 @@ mkdir -p "$state_dir" && printf '%s\n' "$level" >"$state_file" || {
   exit 0
 }
 
-# Auto-relay is on unless the environment or the operator turns it off. A value
-# that is neither was set by someone, so it reads as the switch they reached for.
-auto_relay=on
-case "${MUTHUR_AUTO_RELAY:-on}" in
-  on) ;;
-  off) auto_relay=off ;;
-  *)
-    say "MUTHUR_AUTO_RELAY must be \`on\` or \`off\`; read as \`off\`."
-    auto_relay=off
-    ;;
-esac
-# The operator is keyed as `.claude/hooks/operator-voice.sh` keys voice entries:
-# the lowercased login of a `User` token. Resolved only here, with a notice about
-# to go out, since that is an API call.
-if [ "$auto_relay" = on ]; then
+# A manual-relay switch is set only by a yes; a value that is neither a yes nor a
+# no is named on stderr, so a typo does not pass silently for the default.
+says_yes() {
+  case "$(printf '%s' "$2" | tr -d '[:space:]' | tr '[:upper:]' '[:lower:]')" in
+    true | yes | on | 1) return 0 ;;
+    '' | false | no | off | 0) return 1 ;;
+  esac
+  say "$1 is set only by \`true\`; read as unset."
+  return 1
+}
+manual_relay=
+if says_yes MUTHUR_MANUAL_RELAY "${MUTHUR_MANUAL_RELAY:-}"; then
+  manual_relay=1
+else
+  # The operator is keyed as `.claude/hooks/operator-voice.sh` keys voice entries:
+  # the lowercased login of a `User` token. Resolved only here, with a notice
+  # about to go out, since that is an API call.
   handle="$(gh api user 2>/dev/null | jq -r 'select(.type == "User") | .login | ascii_downcase' 2>/dev/null)"
   if [[ "$handle" =~ ^[a-z0-9-]+$ ]] \
-    && [ "$(tr -d '[:space:]' 2>/dev/null <"$root/.claude/context-budget/auto-relay/$handle")" = off ]; then
-    auto_relay=off
+    && says_yes "manual-relay/$handle" "$(cat "$root/.claude/context-budget/manual-relay/$handle" 2>/dev/null)"; then
+    manual_relay=1
   fi
 fi
 
@@ -122,9 +124,9 @@ relay='`/relay` (`@.claude/skills/relay/SKILL.md`), which hands the branch to a 
 room=$((pause - warn))
 last_step=20000
 
-# However a pause is reached, auto-relay decides how it ends.
-ends="tell the operator the session was paused for its context budget, and end the turn offering ${relay}"
-[ "$auto_relay" != on ] || ends="then, without asking and with no argument, run ${relay}. Do so because auto-relay is on (\`@.claude/skills/relay/SKILL.md\` § \"Auto-relay\"); its report tells the operator the session was paused for its context budget and relayed on its own, and how they turn that off"
+# However a pause is reached, it ends in the relay, asked first under manual relay.
+ends="then, without asking and with no argument, run ${relay}. Its report tells the operator the session was paused for its context budget and relayed on its own, and how they have a pause ask first instead (\`.claude/context-budget/CLAUDE.md\` § \"Manual relay\")"
+[ -z "$manual_relay" ] || ends="tell the operator the session was paused for its context budget, and end the turn offering ${relay}"
 paused="follow ${stopping}. Push, ${ends}; the new session resumes the paused plan."
 
 saving=
