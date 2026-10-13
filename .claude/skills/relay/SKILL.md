@@ -71,7 +71,7 @@ An operator message that lands here once the successor is running → load `@.cl
 
 ## `/relay park [<to-be first message>]` — hand off to nobody yet
 
-For an operator who will come back to the work later, not now: a successor started today is a session nobody is waiting for, and this one kept alive is a cache the keepalive (`.claude/keepalive/`) pays to keep warm. Its last wake parks unasked for the same reason, the session having idled for hours.
+For an operator who will come back to the work later, not now: a successor started today is a session nobody is waiting for, and this one kept alive is a cache the keepalive (`.claude/keepalive/`) pays to keep warm. Its last wake parks unasked for the same reason.
 
 Steps 1–2 as the handoff runs them, the argument becoming the Next step the same way; then no Step 3. The report gives the line the operator starts a new session with — `/relay take <branch>` in a fenced block holding only it — and the summary's size as Step 4 gives it.
 
