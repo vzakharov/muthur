@@ -1,0 +1,94 @@
+{
+  "estimate": {
+    "at": "2026-10-13T05:19:17.630Z",
+    "parts": [
+      {
+        "hours": 5.0,
+        "grade": "senior",
+        "role": "developer",
+        "comment": "a rate-table extension threaded through the CLI, vet check and a cross-repo GraphQL reader, where getting the add-only rule wrong silently re-rates history"
+      },
+      {
+        "hours": 1.0,
+        "grade": "senior",
+        "role": "prompter",
+        "comment": "the notice must change what another model books, which takes judgement of what it will and won't act on"
+      }
+    ],
+    "comment": null
+  },
+  "sessionId": "ad5eeae2-efde-517b-8911-3a7b892b11b6",
+  "branch": "claude/repo-estimate-roles-cwl9kz",
+  "cwd": "/home/user/muthur",
+  "openingPrompt": "Let an adopting repository add its own fixed-grade estimate roles #185 говорим по-русски",
+  "prs": [
+    186
+  ],
+  "url": "https://claude.ai/code/session_01W865PguVveCQFB7r9Y1jgM",
+  "operator": "vzakharov",
+  "firstResponseAt": "2026-10-13T05:12:51.458Z",
+  "lastResponseAt": "2026-10-13T05:22:47.240Z",
+  "pricesAsOf": "2026-10-06",
+  "claudeCodeTotalUsd": null,
+  "total": {
+    "inputTokens": 132,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 185676,
+    "cacheReadTokens": 11130056,
+    "outputTokens": 49579,
+    "thinkingTokens": 16477,
+    "responses": 66,
+    "costUsd": 4.703527200000001
+  },
+  "ownTurns": {
+    "inputTokens": 132,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 185676,
+    "cacheReadTokens": 11130056,
+    "outputTokens": 49579,
+    "thinkingTokens": 16477,
+    "responses": 66,
+    "costUsd": 4.703527200000001
+  },
+  "subagents": {
+    "inputTokens": 0,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 0,
+    "cacheReadTokens": 0,
+    "outputTokens": 0,
+    "thinkingTokens": 0,
+    "responses": 0,
+    "costUsd": 0.0
+  },
+  "byRate": {
+    "claude-opus-5-5/standard": {
+      "inputTokens": 132,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 185676,
+      "cacheReadTokens": 11130056,
+      "outputTokens": 49579,
+      "thinkingTokens": 16477,
+      "responses": 66,
+      "costUsd": 4.703527200000001
+    }
+  },
+  "warnings": [],
+  "orientation": {
+    "endedBy": "Edit",
+    "endedOn": ".claude/costs/lib/estimate.py",
+    "endedAt": "2026-10-13T05:15:25.235Z",
+    "contextTokens": 158915,
+    "spend": {
+      "inputTokens": 36,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 111863,
+      "cacheReadTokens": 1987774,
+      "outputTokens": 12346,
+      "thinkingTokens": 9459,
+      "responses": 18,
+      "costUsd": 1.5395228000000003
+    }
+  },
+  "compactions": [],
+  "telemetry": null
+}

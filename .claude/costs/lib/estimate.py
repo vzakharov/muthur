@@ -8,12 +8,16 @@ from __future__ import annotations
 
 import json
 import re
-from dataclasses import dataclass, replace
+from dataclasses import dataclass, field, replace
+from pathlib import Path
 from typing import Any, Dict, List, Mapping, Optional
 
 from lib.shape import ShapeError, is_number, read_number, read_object, read_string, required
 
 COMMENT_LIMIT = 280
+SHARED_RATES = "rates.json"
+REPO_RATES = "rates.repo.json"
+ADDED_ROLE_KEYS = ("multiplier", "grade", "work")
 
 
 @dataclass(frozen=True)
@@ -42,31 +46,102 @@ class Estimate:
 
 
 @dataclass(frozen=True)
+class AddedRole:
+    """A role one repository rates beside the shared table. It is booked at one
+    grade only, so its hours land in that grade's column like any other."""
+
+    grade: str
+    # The work booked under it, which the estimate notice spells out.
+    work: str
+
+
+@dataclass(frozen=True)
 class Rates:
     """Multipliers against an hour of the reference role at the reference
     grade — each table's `1` — which is what a senior-hour is."""
 
     roles: Dict[str, float]
     grades: Dict[str, float]
+    # The roles `rates.repo.json` adds, each in `roles` too at its multiplier.
+    added: Dict[str, AddedRole] = field(default_factory=dict)
+
+
+def _is_multiplier(value: Any) -> bool:
+    return is_number(value) and value > 0
 
 
 def _multipliers(table: Optional[Dict[str, Any]], where: str) -> Dict[str, float]:
     if not table:
         raise ShapeError(f"{where}: not a non-empty object")
     for name, multiplier in table.items():
-        if not is_number(multiplier) or multiplier <= 0:
+        if not _is_multiplier(multiplier):
             raise ShapeError(f"{where}: `{name}` is not a positive multiplier")
     return table
 
 
-def parse_rates(text: str, where: str = "rates.json") -> Rates:
-    rates = json.loads(text)
-    if not isinstance(rates, dict):
+def _json_object(text: str, where: str) -> Dict[str, Any]:
+    try:
+        value = json.loads(text)
+    except json.JSONDecodeError as error:
+        raise ShapeError(f"{where}: not JSON ({error})") from error
+    if not isinstance(value, dict):
         raise ShapeError(f"{where}: not an object")
+    return value
+
+
+def parse_rates(text: str, where: str = SHARED_RATES) -> Rates:
+    rates = _json_object(text, where)
     return Rates(
         roles=_multipliers(read_object(rates, "roles", where), f"{where} roles"),
         grades=_multipliers(read_object(rates, "grades", where), f"{where} grades"),
     )
+
+
+def with_added_roles(shared: Rates, text: str, where: str = REPO_RATES) -> Rates:
+    """The shared table plus the roles a repository's own file adds. The file
+    only adds: a role the shared table already rates raises rather than being
+    re-rated, which would re-rate every row booked under it, and a key it does
+    not know raises rather than being ignored, since a `grades` there would
+    otherwise read as a grade added."""
+    table = _json_object(text, where)
+    unknown = sorted(set(table) - {"roles"})
+    if unknown:
+        raise ShapeError(f"{where}: only adds roles, not {', '.join(unknown)}")
+    roles = read_object(table, "roles", where)
+    if not roles:
+        raise ShapeError(f"{where} roles: not a non-empty object")
+    multipliers = dict(shared.roles)
+    added: Dict[str, AddedRole] = {}
+    for name, entry in roles.items():
+        at = f"{where} roles `{name}`"
+        if name in shared.roles:
+            raise ShapeError(f"{at}: {SHARED_RATES} rates this role already; drop it from {where}")
+        if not isinstance(entry, dict) or sorted(entry) != sorted(ADDED_ROLE_KEYS):
+            raise ShapeError(f"{at}: not an object of exactly {', '.join(ADDED_ROLE_KEYS)}")
+        multiplier = entry["multiplier"]
+        if not _is_multiplier(multiplier):
+            raise ShapeError(f"{at}: `multiplier` is not positive")
+        grade = required(read_string, entry, "grade", at)
+        if grade not in shared.grades:
+            raise ShapeError(f"{at}: grade `{grade}` is not one of {', '.join(shared.grades)} ({SHARED_RATES})")
+        work = required(read_string, entry, "work", at).strip()
+        if not 0 < len(work) <= COMMENT_LIMIT:
+            raise ShapeError(f"{at}: `work` is {len(work)} characters, not 1–{COMMENT_LIMIT}")
+        multipliers[name] = multiplier
+        added[name] = AddedRole(grade=grade, work=work)
+    return Rates(roles=multipliers, grades=shared.grades, added=added)
+
+
+def load_shared_rates(costs: Path) -> Rates:
+    return parse_rates((costs / SHARED_RATES).read_text(encoding="utf-8"))
+
+
+def load_rates(costs: Path) -> Rates:
+    """This repository's table: the shared one, plus its own roles where it
+    carries a `rates.repo.json`."""
+    shared = load_shared_rates(costs)
+    repo = costs / REPO_RATES
+    return with_added_roles(shared, repo.read_text(encoding="utf-8")) if repo.is_file() else shared
 
 
 def checked(estimate: Estimate, rates: Rates, where: str) -> Estimate:
@@ -74,14 +149,18 @@ def checked(estimate: Estimate, rates: Rates, where: str) -> Estimate:
     report refuses a row edited by hand into one."""
     if not estimate.parts:
         raise ShapeError(f"{where}: no parts")
+    tables = SHARED_RATES if not rates.added else f"{SHARED_RATES}, {REPO_RATES}"
     for index, part in enumerate(estimate.parts):
         at = f"{where} part {index + 1}"
         if part.hours < 0:
             raise ShapeError(f"{at}: hours are {part.hours:g}, below zero")
         if part.role not in rates.roles:
-            raise ShapeError(f"{at}: role `{part.role}` is not one of {', '.join(rates.roles)} (rates.json)")
+            raise ShapeError(f"{at}: role `{part.role}` is not one of {', '.join(rates.roles)} ({tables})")
         if part.grade not in rates.grades:
-            raise ShapeError(f"{at}: grade `{part.grade}` is not one of {', '.join(rates.grades)} (rates.json)")
+            raise ShapeError(f"{at}: grade `{part.grade}` is not one of {', '.join(rates.grades)} ({SHARED_RATES})")
+        added = rates.added.get(part.role)
+        if added is not None and part.grade != added.grade:
+            raise ShapeError(f"{at}: role `{part.role}` is booked at `{added.grade}` only ({REPO_RATES})")
         if estimate.comment is None:
             _check_comment(part.comment, at)
         elif part.comment is not None:

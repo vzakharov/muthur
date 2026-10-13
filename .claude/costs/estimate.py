@@ -4,10 +4,13 @@
 Usage:
   python3 .claude/costs/estimate.py set --part <hours> <grade> <role> <why> [--part ...] [--session <id>]
   python3 .claude/costs/estimate.py show [--session <id>]
+  python3 .claude/costs/estimate.py rates
 
 Each `--part` is the hours one role at one grade would spend on the task, and
 why that role, at that grade, for those hours; the parts add up to the
-estimate, and `set` replaces the whole of it. Without
+estimate, and `set` replaces the whole of it. `rates` prints the table an
+estimate is checked against as JSON — `rates.json` plus the roles this
+repository's `rates.repo.json` adds, each at its one grade. Without
 `--session` the session is this one, read off `CLAUDE_CODE_SESSION_ID`: the
 estimate goes to `tmp/estimates/<id>.json`, and the row folds it in when the
 turn ends. Another session's id edits that session's committed row in place,
@@ -19,15 +22,16 @@ Stdlib only — Python 3.9+.
 from __future__ import annotations
 
 import argparse
+import json
 import os
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import List, Optional
 
-from lib.estimate import Estimate, Part, Rates, checked, senior_hours, latest, parse_rates
+from lib.estimate import Estimate, Part, Rates, checked, senior_hours, latest, load_rates
 from lib.rows import SESSIONS, read_pending_estimate, read_row, row_path, row_text, write_atomic, write_pending_estimate
-from lib.shape import ShapeError
+from lib.shape import ShapeError, to_json
 
 COSTS = Path(__file__).resolve().parent
 
@@ -65,14 +69,23 @@ def main() -> int:
     showing = commands.add_parser("show")
     for command in (setting, showing):
         command.add_argument("--session", help="another session's id; this one's by default")
+    commands.add_parser("rates")
     args = parser.parse_args()
+
+    try:
+        rates = load_rates(COSTS)
+    except ShapeError as error:
+        print(f"estimate: {error}", file=sys.stderr)
+        return 1
+    if args.command == "rates":
+        print(json.dumps(to_json(rates), ensure_ascii=False))
+        return 0
 
     current = os.environ.get("CLAUDE_CODE_SESSION_ID")
     session_id: Optional[str] = args.session or current
     if session_id is None:
         print("estimate: no CLAUDE_CODE_SESSION_ID; name the session with --session", file=sys.stderr)
         return 1
-    rates = parse_rates((COSTS / "rates.json").read_text(encoding="utf-8"))
     running = session_id == current
     path = row_path(session_id)
     if not running and path is None:
