@@ -344,5 +344,5 @@ Split by which working file Step 2 selected:
 
 Then report in a line or two which working file ran and which comment path —
 posted, edited (say what changed), already current, or absent under
-`update-only` — whether the PR title changed, and what Step 3 cut, if it cut
-anything worth naming.
+`update-only` — whether the PR title changed, the title block if the comment
+carries one, and what Step 3 cut, if it cut anything worth naming.
