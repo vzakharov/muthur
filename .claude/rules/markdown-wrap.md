@@ -11,11 +11,12 @@ paths:
 # Markdown wrapping
 
 Tracked Markdown is hard-wrapped at 80 columns by prettier, so an edit to one
-clause diffs as one line rather than as its whole paragraph.
-`.claude/hooks/format-md.sh` wraps each `.md` an agent edits, and
-`scripts/vet.sh` checks every tracked one, both through `scripts/prettier.sh`.
+clause diffs as one line rather than as its whole paragraph, and a file's line
+count reads as its length, as it does for code. `.claude/hooks/format-md.sh`
+wraps each `.md` an agent edits, and `scripts/vet.sh` checks every tracked one,
+both through `scripts/prettier.sh`.
 
 **Text bound for a GitHub issue or PR body, or a comment, is never wrapped**,
-because GitHub renders its newlines as line breaks. Such a draft goes under
-`tmp/` or outside the tree, which nothing wraps; a new home for such drafts
-inside the tree goes into `.prettierignore`.
+because GitHub renders its newlines as line breaks. `.prettierignore` lists
+every home such text has in the tree — the PR and issue exports and bodies, the
+squash proposal, and `tmp/` for a one-off draft — and a new home goes into it.
