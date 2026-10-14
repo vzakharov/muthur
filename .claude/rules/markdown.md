@@ -7,9 +7,9 @@ paths:
 
 # No tables in agent-facing Markdown
 
-Agent-facing Markdown, in CLAUDE.md § "Language"'s sense — the `CLAUDE.md`
-files and everything under `.claude/` — is read raw, by agents and in diffs, and
-a table row is one physical line, so editing any cell rewrites the whole row in
+Agent-facing Markdown, in CLAUDE.md § "Language"'s sense — the `CLAUDE.md` files
+and everything under `.claude/` — is read raw, by agents and in diffs, and a
+table row is one physical line, so editing any cell rewrites the whole row in
 the diff. What a table buys is the rendered grid, which nobody reading it raw
 sees. So:
 
@@ -20,8 +20,8 @@ sees. So:
 
 **Markdown a person reads rendered may use a table** where it reads best — a
 `README.md`, a doc under `docs/`, a PR body or comment on GitHub. Inside an
-agent-facing file, such output is written as a template inside a code fence,
-the way `/qa-checklist` shows its classification table.
+agent-facing file, such output is written as a template inside a code fence, the
+way `/qa-checklist` shows its classification table.
 
 `scripts/check-markdown-tables.sh`, which `scripts/vet.sh` runs while this file
 exists, fails on a table delimiter row outside a fence in the files this rule

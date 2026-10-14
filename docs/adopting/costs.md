@@ -21,7 +21,8 @@ the ledger starts on `127.0.0.1:4318`, and the list of variables is the one
 `.claude/costs/hooks/start-telemetry-receiver.sh` prints. Claude Code ignores
 them in a repository's `.claude/settings.json`, so no file you copy can set
 them: on web/remote they go in the environment's settings, beside the setup
-script [`web-remote.md`](web-remote.md#where-it-goes--tell-the-operator-this-not-just-the-settings)
+script
+[`web-remote.md`](web-remote.md#where-it-goes--tell-the-operator-this-not-just-the-settings)
 shows how to reach; locally, in `~/.claude/settings.json`'s `"env"` or the
 shell. Put the list in your report — outside a conversation about costs, no
 later session raises it.
@@ -35,10 +36,10 @@ the report, so a missing `tmp/telemetry/` is not read as a broken capture.
 
 Where they were set before the session started, the hook's `SessionStart` has
 already passed by the time it is copied in, and its `PostToolUse` registration
-starts the receiver at the next successful tool call instead. Where that has
-not happened, run it by hand from the repository's root, as a `SessionStart`
-so that it names whatever the `claude` process is still missing — a shell
-gets no `CLAUDE_PROJECT_DIR`, so the payload carries the directory:
+starts the receiver at the next successful tool call instead. Where that has not
+happened, run it by hand from the repository's root, as a `SessionStart` so that
+it names whatever the `claude` process is still missing — a shell gets no
+`CLAUDE_PROJECT_DIR`, so the payload carries the directory:
 
 ```bash
 printf '{"hook_event_name":"SessionStart","cwd":"%s"}' "$PWD" | .claude/costs/hooks/start-telemetry-receiver.sh

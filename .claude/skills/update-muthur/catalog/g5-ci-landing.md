@@ -1,18 +1,27 @@
-> ⛔ **Part of [the catalog](../catalog.md), never vendored** — delete `catalog/` wherever `catalog.md` is deleted.
+> ⛔ **Part of [the catalog](../catalog.md), never vendored** — delete
+> `catalog/` wherever `catalog.md` is deleted.
 
 # G5 — CI & landing
 
-- `/bootstrap-workflow-dispatch` — Register a `workflow_dispatch` workflow in Actions metadata with a one-shot branch-scoped push trigger, so `gh workflow run` stops 404ing on a branch whose workflow has not reached the default branch yet.
+- `/bootstrap-workflow-dispatch` — Register a `workflow_dispatch` workflow in
+  Actions metadata with a one-shot branch-scoped push trigger, so
+  `gh workflow run` stops 404ing on a branch whose workflow has not reached the
+  default branch yet.
   - **Requires:** GitHub Actions, `gh`, push access to the branch
   - **Pulls in:** `/test-on-gh` (G6), `/watch-ci`
   - **Disposition:** adopt
-- `/watch-ci` — Watch an in-flight GitHub Actions run incrementally, surfacing failures as they happen so fixes can go out mid-run.
-  - **Requires:** GitHub Actions, `gh`, `scripts/ci-watch-tick.sh`; **G4 on the web**
+- `/watch-ci` — Watch an in-flight GitHub Actions run incrementally, surfacing
+  failures as they happen so fixes can go out mid-run.
+  - **Requires:** GitHub Actions, `gh`, `scripts/ci-watch-tick.sh`; **G4 on the
+    web**
   - **Disposition:** adopt
-- `scripts/ci-watch-tick.sh` — One polling tick of a CI run: what changed since the last tick.
-  - **Requires:** `gh`, `jq`, `scripts/lib/watch-tick-common.sh`, `scripts/lib/gh-repo.sh` (G2)
+- `scripts/ci-watch-tick.sh` — One polling tick of a CI run: what changed since
+  the last tick.
+  - **Requires:** `gh`, `jq`, `scripts/lib/watch-tick-common.sh`,
+    `scripts/lib/gh-repo.sh` (G2)
   - **Disposition:** adopt
-- `scripts/lib/watch-tick-common.sh` — The watch loop's tick helpers: the elapsed-aware sleep between ticks, and the `--reset` state-file removal.
+- `scripts/lib/watch-tick-common.sh` — The watch loop's tick helpers: the
+  elapsed-aware sleep between ticks, and the `--reset` state-file removal.
   - **Requires:** `bash`
   - **Disposition:** adopt
 
@@ -20,10 +29,11 @@ The group's three CI-facing skills partition one timeline.
 `/bootstrap-workflow-dispatch` ends the moment `gh workflow run` stops 404ing,
 `/test-on-gh` is the dispatch that hits that 404 first, and `/watch-ci` watches
 the run a successful dispatch produces. `/test-on-gh` ships as a stub, so it is
-listed under [G6](g6-stack-stubs.md) with the other stubs — one entry, one group.
+listed under [G6](g6-stack-stubs.md) with the other stubs — one entry, one
+group.
 
-**G4 is a `/watch-ci` requirement, not a group-wide one** — it is `gh run
-watch`'s long-polling that the proxy blocks, counted among the costs of
+**G4 is a `/watch-ci` requirement, not a group-wide one** — it is
+`gh run watch`'s long-polling that the proxy blocks, counted among the costs of
 declining G4 in [that group](g4-remote-plumbing.md).
 `/bootstrap-workflow-dispatch` dispatches over REST
 (`POST /repos/{owner}/{repo}/actions/workflows/{id}/dispatches`) and works

@@ -1,0 +1,96 @@
+{
+  "estimate": {
+    "at": "2026-10-13T20:23:13.658Z",
+    "parts": [
+      {
+        "hours": 4.0,
+        "grade": "senior",
+        "role": "developer",
+        "comment": "pinning a formatter, wiring a PostToolUse hook, vet and install-deps across a template others sync from needs care with ignore lists and failure modes"
+      },
+      {
+        "hours": 1.5,
+        "grade": "middle",
+        "role": "editor",
+        "comment": "a repo-wide reflow has to be read once to confirm it changed no words"
+      }
+    ],
+    "comment": null
+  },
+  "sessionId": "3eb0d630-5790-5bee-91c2-d342297cff0a",
+  "branch": "claude/md-prettier-no-tables-5qxf9h",
+  "cwd": "/home/user/muthur",
+  "openingPrompt": "/go claude/md-prettier-no-tables-5qxf9h",
+  "prs": [
+    187
+  ],
+  "url": "https://claude.ai/code/session_012uo4RmMJ46ZKeThV456vR2",
+  "operator": "vzakharov",
+  "firstResponseAt": "2026-10-13T20:22:21.514Z",
+  "lastResponseAt": "2026-10-13T20:47:50.377Z",
+  "pricesAsOf": "2026-10-06",
+  "claudeCodeTotalUsd": null,
+  "total": {
+    "inputTokens": 262,
+    "cacheWrite5mTokens": 192098,
+    "cacheWrite1hTokens": 194664,
+    "cacheReadTokens": 18643967,
+    "outputTokens": 53932,
+    "thinkingTokens": 17252,
+    "responses": 131,
+    "costUsd": 7.3262834
+  },
+  "ownTurns": {
+    "inputTokens": 162,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 194664,
+    "cacheReadTokens": 13268813,
+    "outputTokens": 53068,
+    "thinkingTokens": 17237,
+    "responses": 81,
+    "costUsd": 5.2730826
+  },
+  "subagents": {
+    "inputTokens": 100,
+    "cacheWrite5mTokens": 192098,
+    "cacheWrite1hTokens": 0,
+    "cacheReadTokens": 5375154,
+    "outputTokens": 864,
+    "thinkingTokens": 15,
+    "responses": 50,
+    "costUsd": 2.0532008
+  },
+  "byRate": {
+    "claude-opus-5-5/standard": {
+      "inputTokens": 262,
+      "cacheWrite5mTokens": 192098,
+      "cacheWrite1hTokens": 194664,
+      "cacheReadTokens": 18643967,
+      "outputTokens": 53932,
+      "thinkingTokens": 17252,
+      "responses": 131,
+      "costUsd": 7.3262834
+    }
+  },
+  "warnings": [
+    "47 responses were written with the usage their stream started with — no `stop_reason`, as a subagent's transcript writes each one — and no event to correct it, so their output tokens are a floor"
+  ],
+  "orientation": {
+    "endedBy": "Edit",
+    "endedOn": "docs/plans/md-prettier-no-tables.in-progress.md",
+    "endedAt": "2026-10-13T20:22:56.552Z",
+    "contextTokens": 109979,
+    "spend": {
+      "inputTokens": 12,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 62777,
+      "cacheReadTokens": 525638,
+      "outputTokens": 1885,
+      "thinkingTokens": 395,
+      "responses": 6,
+      "costUsd": 0.6450916000000001
+    }
+  },
+  "compactions": [],
+  "telemetry": null
+}

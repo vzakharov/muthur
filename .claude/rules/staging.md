@@ -32,9 +32,9 @@ only the next session.
 - `scripts/staged.sh stage <path>…`, then commit that alone, before any edit:
   the copy is byte-identical, so every later commit reads as a diff against the
   original. Edit the copy, `.claude/staged/<path>.staged`, never the real file.
-- The `.staged` suffix is what keeps a copy inert: under its real name it
-  would load as a nested `CLAUDE.md`, rule or skill the first time a file
-  there is read. `vet` fails a file in `.claude/staged/` without it.
+- The `.staged` suffix is what keeps a copy inert: under its real name it would
+  load as a nested `CLAUDE.md`, rule or skill the first time a file there is
+  read. `vet` fails a file in `.claude/staged/` without it.
 - `scripts/staged.sh list` shows what is staged, each real path beside its copy.
 - `/finalize` runs `swap` before its quality passes, merging in anything the
   real file gained meanwhile, and nothing deletes a copy by hand.
@@ -46,9 +46,10 @@ only the next session.
 **`scripts/check-claude-md-size.sh` caps the CLAUDE.md a branch lands, with
 everything it `@`-imports**, each file's staged copy where there is one: a
 branch that takes the total past the ceiling lands it back at the lower target,
-and moving text into an import cuts nothing. The trim is a subagent's — it is never the PR's own
-work, and its cut-and-remeasure loop would spend the session's context — briefed
-with the target and CLAUDE.md § "About this file" as the test for what moves.
+and moving text into an import cuts nothing. The trim is a subagent's — it is
+never the PR's own work, and its cut-and-remeasure loop would spend the
+session's context — briefed with the target and CLAUDE.md § "About this file" as
+the test for what moves.
 
 The PR's file view shows a staged copy as a new file; its diff against the
 original is the range from the staging commit to the head.

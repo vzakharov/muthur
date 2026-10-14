@@ -4,8 +4,8 @@ description: Temporarily bootstrap a newly renamed or newly added `workflow_disp
 
 GitHub does not reliably expose a brand-new `workflow_dispatch` workflow to
 `gh workflow run` until that workflow has been seen by Actions metadata at least
-once. Before merge, the default branch still points at the old workflow set, so a
-feature branch can hit:
+once. Before merge, the default branch still points at the old workflow set, so
+a feature branch can hit:
 
 ```text
 HTTP 404: workflow <file>.yml not found on the default branch
@@ -81,14 +81,14 @@ git commit -m "ci: drop one-shot push trigger after workflow registration"
 git push -u origin "$(git branch --show-current)"
 ```
 
-Do not leave the bootstrap trigger in the final PR diff unless a human explicitly
-asks for it.
+Do not leave the bootstrap trigger in the final PR diff unless a human
+explicitly asks for it.
 
 ## Notes
 
 - The bootstrap run is a normal Actions run, not a dispatch run.
-- If you renamed the workflow file, the old filename may still 404 on the default
-  branch too; that does **not** mean the trick failed.
+- If you renamed the workflow file, the old filename may still 404 on the
+  default branch too; that does **not** mean the trick failed.
 
 ## Related
 
@@ -98,4 +98,4 @@ workflow is all it does.
 `@.claude/skills/test-on-gh/SKILL.md` (once hydrated) is the usual source of the
 blocked dispatch: a freshly written dispatch-only workflow is exactly what
 Actions has not seen yet. `@.claude/skills/watch-ci/SKILL.md` takes the other
-side, watching the run a *successful* dispatch produces.
+side, watching the run a _successful_ dispatch produces.

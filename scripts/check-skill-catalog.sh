@@ -262,8 +262,11 @@ while IFS= read -r hit; do
     fail "$src cites $target § \"$heading\" — no such heading"
   fi
 done < <(
-  grep -oHE '([A-Za-z0-9_.-]+/)*CLAUDE\.md\\?`? § \\?"[^"\\]+' "${sources[@]}" 2>/dev/null |
-    sort -u
+  # Wrapped Markdown can break a citation across lines, so each file is matched
+  # whole and every line break inside a match, with the next line's indent or
+  # blockquote marker, folds back to one space.
+  grep -ozHE '([A-Za-z0-9_.-]+/)*CLAUDE\.md\\?`?[[:space:]>]+§[[:space:]>]+\\?"[^"\\]+' "${sources[@]}" 2>/dev/null |
+    sed -zE 's/\n[[:space:]]*(>[[:space:]]*)*/ /g' | tr '\0' '\n' | sort -u
 )
 
 while IFS= read -r hit; do

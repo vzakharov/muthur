@@ -6,10 +6,10 @@ description: "STUB — not yet hydrated for this project. Pull the agent infrast
 > fill in `.claude/skills/update-muthur/watermark.json`: `lastSyncedSha` (the
 > source's HEAD when you cloned it), `lastSyncedAt`, and the real
 > `adopted`/`declined` sets for your repo. `repo` already names the template,
-> and needs changing only if you adopted from a repo that itself adopted from it.
-> Delete this banner once you have, and drop `STUB` from the description above.
-> If you took a one-time snapshot and do not intend to re-sync, delete the skill
-> instead.
+> and needs changing only if you adopted from a repo that itself adopted from
+> it. Delete this banner once you have, and drop `STUB` from the description
+> above. If you took a one-time snapshot and do not intend to re-sync, delete
+> the skill instead.
 >
 > **Hydration here is a handful of JSON fields, not a procedure.** Unlike the
 > other stubs, every step below this banner is usable exactly as written.
@@ -17,10 +17,10 @@ description: "STUB — not yet hydrated for this project. Pull the agent infrast
 ## What this skill is for
 
 A repo that took its agent infrastructure — `CLAUDE.md`, `.claude/`, `scripts/`,
-whatever else — from another repo has a **source** that keeps editing those files.
-This skill finds what changed there since the last sync, decides commit by commit
-what applies here, and ports the ones that do: *pull the vendored agent
-infrastructure forward from the repo I took it from.*
+whatever else — from another repo has a **source** that keeps editing those
+files. This skill finds what changed there since the last sync, decides commit
+by commit what applies here, and ports the ones that do: _pull the vendored
+agent infrastructure forward from the repo I took it from._
 
 This is a path-scoped diff, not a fork merge. It never tries to reconcile whole
 histories — it reads a bounded set of paths, commit by commit, and re-expresses
@@ -33,8 +33,8 @@ parent rather than the root. So `/update-muthur` in a repo two hops down still
 syncs from one hop up.
 
 **The verb splits: the command updates, the fields say synced.** `lastSyncedSha`
-and `lastSyncedAt` are on-disk in every downstream watermark, so renaming them to
-match orphans every adopter's file at once — and the prose below follows the
+and `lastSyncedAt` are on-disk in every downstream watermark, so renaming them
+to match orphans every adopter's file at once — and the prose below follows the
 fields, not the command.
 
 ## The watermark
@@ -61,52 +61,54 @@ fields, not the command.
 }
 ```
 
-- **`adopted`** — the paths you took, at whatever granularity is true: directories
-  or individual files, up to the degenerate everything-case. It is what turns a
-  wall of source commits into a handful of candidates.
+- **`adopted`** — the paths you took, at whatever granularity is true:
+  directories or individual files, up to the degenerate everything-case. It is
+  what turns a wall of source commits into a handful of candidates.
 - **`declined`** — path → why-not. This is what keeps re-sync quiet: without it,
   every sync re-offers every skill the repo already refused.
-- **`lineage`** — optional provenance: the whole ancestry, **root first**, so the
-  repo actually synced from leads and each later entry is one hop further from
-  it. Each entry names an ancestor and its HEAD **at the moment the next link was
-  created**. `@.claude/skills/spinoff/SKILL.md` is what writes it, and owns how.
+- **`lineage`** — optional provenance: the whole ancestry, **root first**, so
+  the repo actually synced from leads and each later entry is one hop further
+  from it. Each entry names an ancestor and its HEAD **at the moment the next
+  link was created**. `@.claude/skills/spinoff/SKILL.md` is what writes it, and
+  owns how.
 
-**Where the ancestry is complete, `lineage[0]` names the same repo as `repo`, and
-that is not duplication — the two SHAs are different facts.** `lastSyncedSha` is
-where this repo has synced *to*, and it advances on every sync; `lineage[0].atSha`
-is where it started *from*, and it never moves. They coincide until the first
-sync and diverge forever after, which is what earns the field its place: that
-first sync overwrites the only other trace of the birth point.
+**Where the ancestry is complete, `lineage[0]` names the same repo as `repo`,
+and that is not duplication — the two SHAs are different facts.**
+`lastSyncedSha` is where this repo has synced _to_, and it advances on every
+sync; `lineage[0].atSha` is where it started _from_, and it never moves. They
+coincide until the first sync and diverge forever after, which is what earns the
+field its place: that first sync overwrites the only other trace of the birth
+point.
 
 **An empty array means no ancestors; a missing one means nobody wrote them
 down.** The root ships `[]`, which is complete. A watermark filled in by hand
-from `docs/adopting/sync.md` has no `lineage` at all, and that gap is not recoverable from
-anything else in the file — so a partial array, its first entry naming something
-other than `repo`, is valid rather than malformed.
+from `docs/adopting/sync.md` has no `lineage` at all, and that gap is not
+recoverable from anything else in the file — so a partial array, its first entry
+naming something other than `repo`, is valid rather than malformed.
 
-**Nothing syncs from `lineage`.** This procedure reads `repo` and `lastSyncedSha`
-and nothing else. A sync that walked the ancestry would multiply the triage at
-every link, which is exactly the cost `/spinoff`'s always-point-at-the-root rule
-declines to pay.
+**Nothing syncs from `lineage`.** This procedure reads `repo` and
+`lastSyncedSha` and nothing else. A sync that walked the ancestry would multiply
+the triage at every link, which is exactly the cost `/spinoff`'s
+always-point-at-the-root rule declines to pay.
 
 **An `adopted` entry may be a bare path or a single-key `{path: note}` object.**
-Both are adopted and both filter the log identically — read the key when an entry
-is an object. The note records *how* the path lives here when that is not
+Both are adopted and both filter the log identically — read the key when an
+entry is an object. The note records _how_ the path lives here when that is not
 verbatim: ported to another language, split across files, generalized past the
 source's interface. It is not a soft decline. A path taken with a note still
 surfaces every upstream commit that touches it, which is the point — the local
-version is a re-expression, so upstream's later changes to the original are worth
-reading for the idea even though the file itself never lands. Expect `translate`
-rather than `take` on those commits, and treat the note as the standing statement
-of what the local re-expression already does differently.
+version is a re-expression, so upstream's later changes to the original are
+worth reading for the idea even though the file itself never lands. Expect
+`translate` rather than `take` on those commits, and treat the note as the
+standing statement of what the local re-expression already does differently.
 
-**A declined path is not declined forever.** Most reasons are conditions that can
-flip — *no CI yet*, *work isn't tracked as issues yet* — which is why the map
-stores prose instead of a bare list, and why reasons are written in the present
-tense. **Re-read them on every sync** and re-offer anything whose condition has
-stopped holding: a repo that declined the issue skills because it used Linear,
-and has since moved to GitHub issues, should be asked again. A reason that says
-`"never — …"` is the one that does not need re-reading.
+**A declined path is not declined forever.** Most reasons are conditions that
+can flip — _no CI yet_, _work isn't tracked as issues yet_ — which is why the
+map stores prose instead of a bare list, and why reasons are written in the
+present tense. **Re-read them on every sync** and re-offer anything whose
+condition has stopped holding: a repo that declined the issue skills because it
+used Linear, and has since moved to GitHub issues, should be asked again. A
+reason that says `"never — …"` is the one that does not need re-reading.
 
 A repo with two sources would make **`repo`** an array. Nothing here precludes
 that and nothing here builds it — and it is a separate question from `lineage`,
@@ -115,7 +117,7 @@ which is provenance nothing syncs from.
 **`lastSyncedSha` is the sync's boundary in the source, not the last commit
 taken.** For a whole sync that is the source's HEAD at Step 3; for a slice of a
 split one, the last source commit the slice triaged (Step 7). A commit triaged
-and skipped is *done*; the reasoning lives in that sync's PR body. A watermark
+and skipped is _done_; the reasoning lives in that sync's PR body. A watermark
 that only advanced to the last-taken commit would re-surface every skipped
 commit on every future run.
 
@@ -130,30 +132,30 @@ watermark.
 
 ### Never sync the watermark file itself
 
-`watermark.json` lives inside `.claude/`, which is inside `adopted` — so a
-naive sync overwrites this repo's watermark with the source's. That silently
-repoints the sync at a repo this one may not be able to clone and resets
-`lastSyncedSha` to a foreign history. **The failure surfaces one sync later, as
-an unresolvable SHA**, by which point the cause is several commits back.
+`watermark.json` lives inside `.claude/`, which is inside `adopted` — so a naive
+sync overwrites this repo's watermark with the source's. That silently repoints
+the sync at a repo this one may not be able to clone and resets `lastSyncedSha`
+to a foreign history. **The failure surfaces one sync later, as an unresolvable
+SHA**, by which point the cause is several commits back.
 
 Exclude it unconditionally, whatever `adopted` says.
 
 ### Never sync the source's cost rows
 
-`.claude/costs/sessions/` is the source's own ledger — what *its* sessions cost —
-and the one path in `.claude/costs/` that is data rather than machinery. A sync
-that ported it would add the source's spend to this repo's totals, and no later
-report could tell the two apart. Exclude it unconditionally too, whether or not
-this repo runs the ledger.
+`.claude/costs/sessions/` is the source's own ledger — what _its_ sessions cost
+— and the one path in `.claude/costs/` that is data rather than machinery. A
+sync that ported it would add the source's spend to this repo's totals, and no
+later report could tell the two apart. Exclude it unconditionally too, whether
+or not this repo runs the ledger.
 
 ### Judge the diff, not the commit message's "we"
 
-In a chain, commits arrive that the source itself took from *its* upstream,
-written in a third repo's vocabulary. A message saying "we do X here" is evidence
-about some repo — not necessarily the source, and never automatically this one.
-Read commits for intent; never let their first person settle whether the change
-applies. Step 5's "apply by intent, not by patch" already points this way; the
-chain is what makes it load-bearing.
+In a chain, commits arrive that the source itself took from _its_ upstream,
+written in a third repo's vocabulary. A message saying "we do X here" is
+evidence about some repo — not necessarily the source, and never automatically
+this one. Read commits for intent; never let their first person settle whether
+the change applies. Step 5's "apply by intent, not by patch" already points this
+way; the chain is what makes it load-bearing.
 
 ## Arguments
 
@@ -199,8 +201,8 @@ every command that needs to be inside it.
 cd tmp/muthur-source && git log --oneline <lastSyncedSha>..HEAD -- <adopted paths>
 ```
 
-`<adopted paths>` is every entry in `adopted`, taking the single key of any entry
-written as an object.
+`<adopted paths>` is every entry in `adopted`, taking the single key of any
+entry written as an object.
 
 Record `git rev-parse HEAD` **now**, before triage — that value is a whole
 sync's boundary regardless of how the triage goes.
@@ -209,9 +211,9 @@ sync's boundary regardless of how the triage goes.
 nothing on the list is never surfaced, which is right while the list is complete
 and silent when it isn't: the moment the source puts agent infrastructure
 somewhere new — a `.github/` workflow, another top-level directory — it stays
-invisible until the list names it. So run the log once unfiltered too (`git log
---oneline --name-only <lastSyncedSha>..HEAD`, skimmed for unfamiliar paths) and
-widen `adopted` in the same commit that bumps the watermark.
+invisible until the list names it. So run the log once unfiltered too
+(`git log --oneline --name-only <lastSyncedSha>..HEAD`, skimmed for unfamiliar
+paths) and widen `adopted` in the same commit that bumps the watermark.
 
 **A path in neither `adopted` nor `declined` is a decision, not noise** — see
 Step 4's `skip (not adopted)` verdict and Step 4a.
@@ -228,9 +230,9 @@ commit of the source's first-parent line — Step 7's boundary.
 ### Step 4 — Triage each candidate, from its commit message first
 
 Sources tend to write long commit messages that state the rationale. The message
-usually settles relevant-vs-not before any diff is opened, so read it (`git log
--1 --format=%B <sha>`) before `git show` — subject to the "judge the diff" caveat
-above. Verdicts:
+usually settles relevant-vs-not before any diff is opened, so read it
+(`git log -1 --format=%B <sha>`) before `git show` — subject to the "judge the
+diff" caveat above. Verdicts:
 
 - **take** — applies as-is to this repo's vocabulary.
 - **translate** — the intent applies; the wording, paths or commands do not.
@@ -256,7 +258,7 @@ never-chase rule holds for it as it does for the sync.
 
 **The source's fix may not be this repo's fix.** Split a commit's rationale
 before deciding: one commit can carry a change that addresses a defect this repo
-never had *and* a change that fixes one it does. Take the second half, drop the
+never had _and_ a change that fixes one it does. Take the second half, drop the
 first, and say so.
 
 ### Step 4a — New skills get offered, not taken
@@ -264,42 +266,43 @@ first, and say so.
 A commit that adds a skill in neither `adopted` nor `declined` is an open
 question, and the answer belongs in the watermark so it is asked exactly once.
 
-Read the new skill's entry in the source's catalog: `.claude/skills/update-muthur/catalog.md`
-and its parts under `catalog/` are the source's inventory, read from the clone
-and never vendored, so it is current by construction. The entry is found with
+Read the new skill's entry in the source's catalog:
+`.claude/skills/update-muthur/catalog.md` and its parts under `catalog/` are the
+source's inventory, read from the clone and never vendored, so it is current by
+construction. The entry is found with
 ``grep -n '^- `/<name>`' catalog.md catalog/*.md`` run in that directory, and an
 opt-in path is looked up the same way. Surface the decision **with its criteria
 attached** rather than as a bare "upstream added `/foo`, want it?".
 
 - **Taken** → add the path to `adopted` — as a `{path: note}` entry if it landed
-  as anything other than a verbatim copy — and **re-run the closure check**: a new
-  skill can `@`-reference a sibling this repo declined. `bash
-  scripts/check-skill-catalog.sh` is that check where it was adopted.
+  as anything other than a verbatim copy — and **re-run the closure check**: a
+  new skill can `@`-reference a sibling this repo declined.
+  `bash scripts/check-skill-catalog.sh` is that check where it was adopted.
 - **Declined** → add the path to `declined` with the reason.
 
 Either way the question does not come back.
 
-**An opt-in entry is offered by its own path, the same way**, even when a broader
-`adopted` entry such as `.claude/` already covers it. The catalog marks such an
-entry `opt-in: ask`, as it does `.claude/costs/`, and a parent directory having
-been taken says nothing about whether the operator wants what it costs. Ask with
-the entry's criteria, and record the answer as an entry of its own, under the
-entry's path, in `adopted` or `declined`.
+**An opt-in entry is offered by its own path, the same way**, even when a
+broader `adopted` entry such as `.claude/` already covers it. The catalog marks
+such an entry `opt-in: ask`, as it does `.claude/costs/`, and a parent directory
+having been taken says nothing about whether the operator wants what it costs.
+Ask with the entry's criteria, and record the answer as an entry of its own,
+under the entry's path, in `adopted` or `declined`.
 
 ### Step 5 — Apply by intent, not by patch
 
 `git cherry-pick` and `git apply` are useless here. The local files are
-de-vendored rewrites, not copies, so every hunk conflicts. Read the source's diff
-to understand what changed and why, then re-express it in this repo's vocabulary
-and file layout.
+de-vendored rewrites, not copies, so every hunk conflicts. Read the source's
+diff to understand what changed and why, then re-express it in this repo's
+vocabulary and file layout.
 
 ### Step 6 — Consistency sweep
 
 When a port renames a term, grep the old one across the whole of `adopted` —
-**including frontmatter `description:` lines**. Those are a separate surface from
-skill bodies: they are what the operator scans in the skills list and what an
-invocation matches against, so a stale description mis-advertises a skill whose
-every prose site is correct.
+**including frontmatter `description:` lines**. Those are a separate surface
+from skill bodies: they are what the operator scans in the skills list and what
+an invocation matches against, so a stale description mis-advertises a skill
+whose every prose site is correct.
 
 ### Step 7 — Bump the watermark, last
 
@@ -326,18 +329,19 @@ tail — `@.claude/skills/polish/SKILL.md` and `@.claude/skills/pr/SKILL.md` —
 whatever the `/task` outcome runs, `/go` ending in both.
 
 If this repo adopted the sync path without the PR loop, land the sync however it
-normally lands changes — the triage table still belongs wherever that record goes.
+normally lands changes — the triage table still belongs wherever that record
+goes.
 
 **The squash record names the change, not the sync.** The `<essence>`
 `@.claude/skills/squash-message/SKILL.md` asks a title for is what landed in
-*this* tree — `chore: one job per loop skill, and a size cap on squash bodies`,
-not `chore: sync the template forward to <source sha>`. A source SHA is a
-commit in another repository, unresolvable from the log it sits in, and "sync
-forward" names the transport: the second title sends every reader to the diff.
+_this_ tree — `chore: one job per loop skill, and a size cap on squash bodies`,
+not `chore: sync the template forward to <source sha>`. A source SHA is a commit
+in another repository, unresolvable from the log it sits in, and "sync forward"
+names the transport: the second title sends every reader to the diff.
 
 Provenance needs no prose. `watermark.json`'s `lastSyncedSha`, committed in Step
 7, is the precise record and the only one that survives the squash. "The repo we
-vendor from moved" is still the honest *why*, so it earns one clause of the
+vendor from moved" is still the honest _why_, so it earns one clause of the
 body's opening sentence and nothing more.
 
 ## Offered at session start
@@ -355,11 +359,11 @@ that a parallel session may claim the sync in between: a claim that exits 3
 after the yes means saying who holds the lock and dropping the offer.
 
 **So the lock is re-checked right before the offer is made**, because hours can
-pass between nudge and offer. The check is the `git ls-remote origin
-refs/heads/muthur-sync-lock-<lastSyncedSha:0:12>` the nudge prints, and it
-claims nothing. Any output means the sync was claimed, or landed and left its
-lock behind: drop the offer, and tell the operator nothing of it or of the
-check.
+pass between nudge and offer. The check is the
+`git ls-remote origin refs/heads/muthur-sync-lock-<lastSyncedSha:0:12>` the
+nudge prints, and it claims nothing. Any output means the sync was claimed, or
+landed and left its lock behind: drop the offer, and tell the operator nothing
+of it or of the check.
 
 **The operator hears of a sync once, and is never chased about it.** Once made,
 the offer is not repeated, reminded of, or called still open — in a later reply
@@ -369,11 +373,11 @@ over says the offer was made, and that session makes none.
 
 **On yes, the sync gets a session of its own.** `scripts/muthur-sync.sh claim`
 first, so nobody takes the lock while the session starts. Then, where
-`create_session` exists, spawn one on this repo with the prompt `/update-muthur
-claimed` and the title `🔄 muthur → <repo>`, `<repo>` being this repo's name
-without its owner: an operator syncing several adopters otherwise gets a session
-list of identical titles. Elsewhere, hand the operator that command to paste
-into one.
+`create_session` exists, spawn one on this repo with the prompt
+`/update-muthur claimed` and the title `🔄 muthur → <repo>`, `<repo>` being this
+repo's name without its owner: an operator syncing several adopters otherwise
+gets a session list of identical titles. Elsewhere, hand the operator that
+command to paste into one.
 
 ## Add what the next sync teaches you
 
