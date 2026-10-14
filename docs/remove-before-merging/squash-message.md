@@ -1,8 +1,4 @@
-Proposed squash title/body:
-
-```
-feat: [attn adopters] hard-wrap Markdown at 80 columns with prettier (pr #187)
-```
+Proposed squash body:
 
 ```
 Markdown here is read raw, by agents and in diffs, and an unwrapped
