@@ -1,0 +1,88 @@
+{
+  "estimate": {
+    "at": "2026-10-14T08:45:59.957Z",
+    "parts": [
+      {
+        "hours": 1.0,
+        "grade": "middle",
+        "role": "developer",
+        "comment": "five review threads on a tooling PR: probing prettier's table output and the file sizes takes hands-on checks, and the rule fix is a one-paragraph edit"
+      }
+    ],
+    "comment": null
+  },
+  "sessionId": "ea3a8747-13e4-5b79-adf2-24dd10e22e92",
+  "branch": "claude/md-prettier-no-tables-5qxf9h",
+  "cwd": "/home/user/muthur",
+  "openingPrompt": "/handle claude/md-prettier-no-tables-5qxf9h",
+  "prs": [
+    187
+  ],
+  "url": "https://claude.ai/code/session_01E1HGwrxGnVWfvrJJ2UTnMe",
+  "operator": "vzakharov",
+  "firstResponseAt": "2026-10-14T08:41:49.224Z",
+  "lastResponseAt": "2026-10-14T08:46:08.320Z",
+  "pricesAsOf": "2026-10-06",
+  "claudeCodeTotalUsd": null,
+  "total": {
+    "inputTokens": 78,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 128415,
+    "cacheReadTokens": 5239758,
+    "outputTokens": 16878,
+    "thinkingTokens": 6655,
+    "responses": 39,
+    "costUsd": 2.4131435999999993
+  },
+  "ownTurns": {
+    "inputTokens": 78,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 128415,
+    "cacheReadTokens": 5239758,
+    "outputTokens": 16878,
+    "thinkingTokens": 6655,
+    "responses": 39,
+    "costUsd": 2.4131435999999993
+  },
+  "subagents": {
+    "inputTokens": 0,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 0,
+    "cacheReadTokens": 0,
+    "outputTokens": 0,
+    "thinkingTokens": 0,
+    "responses": 0,
+    "costUsd": 0.0
+  },
+  "byRate": {
+    "claude-opus-5-5/standard": {
+      "inputTokens": 78,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 128415,
+      "cacheReadTokens": 5239758,
+      "outputTokens": 16878,
+      "thinkingTokens": 6655,
+      "responses": 39,
+      "costUsd": 2.4131435999999993
+    }
+  },
+  "warnings": [],
+  "orientation": {
+    "endedBy": "Edit",
+    "endedOn": ".claude/rules/markdown-wrap.md",
+    "endedAt": "2026-10-14T08:43:46.528Z",
+    "contextTokens": 133772,
+    "spend": {
+      "inputTokens": 34,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 86819,
+      "cacheReadTokens": 1879854,
+      "outputTokens": 5539,
+      "thinkingTokens": 2413,
+      "responses": 17,
+      "costUsd": 1.1814387999999998
+    }
+  },
+  "compactions": [],
+  "telemetry": null
+}
