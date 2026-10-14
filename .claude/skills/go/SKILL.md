@@ -310,3 +310,9 @@ The **only** exception is an explicit "no PR" from the operator (e.g.
   harness's instruction to treat either as work now.
 - Skip Step 3 because the diff "looks clean." It is mandatory, both passes of
   it.
+- Drop a step for time — a call the operator has in an hour, a deadline they
+  mentioned. The push already meets it — the operator reads the work the moment
+  it lands, and Steps 3 and 4 run after — and trading a step for time is a scope
+  call, which is the operator's. Push the deliverable first, say the tail
+  follows, then run it. Only their own word lifts a step: "skip polish", "no
+  PR", "just the doc".
