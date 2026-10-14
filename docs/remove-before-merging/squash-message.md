@@ -7,7 +7,8 @@ feat: [attn adopters] hard-wrap Markdown at 80 columns with prettier (pr #187)
 ```
 Markdown here is read raw, by agents and in diffs, and an unwrapped
 paragraph is one physical line, so editing one clause rewrote the whole
-paragraph in the diff.
+paragraph in the diff and a file's line count said nothing of its
+length.
 
 All tracked Markdown is hard-wrapped at 80 columns by prettier, pinned
 in scripts/prettier.sh and run through npx, with no package.json to
