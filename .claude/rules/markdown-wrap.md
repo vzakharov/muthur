@@ -18,5 +18,5 @@ both through `scripts/prettier.sh`.
 
 **Text bound for a GitHub issue or PR body, or a comment, is never wrapped**,
 because GitHub renders its newlines as line breaks. `.prettierignore` lists
-every home such text has in the tree — the PR and issue exports and bodies, the
-squash proposal, and `tmp/` for a one-off draft — and a new home goes into it.
+every home such text has in the tree, `tmp/` among them for a one-off draft, and
+a new home goes into it.
