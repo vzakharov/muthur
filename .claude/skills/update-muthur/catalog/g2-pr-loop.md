@@ -117,6 +117,14 @@
 - `scripts/check-merge.sh` — The git/GitHub polling behind `/check-merge`.
   - **Requires:** `gh`, `jq`, `git`, `scripts/lib/gh-repo.sh`
   - **Disposition:** adopt
+- `scripts/routine-branch.sh` — Put an unattended routine's run on the one open
+  draft PR it accumulates into, recognised by the paths it touches, or cut the
+  branch for a new one off the default branch. A routine skill's first step,
+  called as `scripts/routine-branch.sh <branch-prefix> <path>...` — a scheduled
+  filer, digest or inbox sweep whose runs pile into one review; nothing here
+  calls it.
+  - **Requires:** `gh`, `jq`, `git`, `scripts/lib/gh-repo.sh`
+  - **Disposition:** adopt — where the repo runs routines
 - `scripts/lib/gh-repo.sh` — Resolve `owner/repo` for `gh`, falling back to
   parsing the `origin` remote when a sandboxed proxy defeats `gh`'s own
   detection.
