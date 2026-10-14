@@ -173,8 +173,8 @@ def context(data: Dict[str, Any], renewals: int, session: str, transcript: str) 
         + " Then reply in the conversation's language with one line and nothing else: the cache"
         " extended, which renewal of how many, and the two answers in plain words, no command names —"
         " a word to park the session (record it and stop extending) and a word to just stop"
-        f" (e.g. «🕯 кеш продлён {spent}/{renewals} · скажи «запаркуй», чтобы зафиксировать и не"
-        " продлевать, или «стоп», чтобы просто остановить»)."
+        f' (e.g. "🕯 cache extended {spent}/{renewals} · say \'park\' to record it and stop'
+        " extending, or 'stop' to just stop\")."
     )
 
 

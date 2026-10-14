@@ -1,5 +1,5 @@
 ---
-description: Finalize (a.k.a. "prep merge") — land prep: verify there's a draft PR, run the quality passes (`/polish`), run the vet suite, merge the base branch, mark ready for review, propose a squash title/body, and post the attestation comment. Pass an optional branch/PR target first (`/finalize <branch|#PR|PR-url>`) to attach to that existing branch before finalizing. `/finalize no vet` is the docs-only mode; `/finalize and merge` squash-merges the PR as well, but only if the run turned up nothing to decide. An operator's ask to merge a branch not yet finalized — "merge", "мерджи", in any words — is `/finalize and merge`, and the reply opens by saying so.
+description: Finalize (a.k.a. "prep merge") — land prep: verify there's a draft PR, run the quality passes (`/polish`), run the vet suite, merge the base branch, mark ready for review, propose a squash body and settle the PR title it lands under, and post the attestation comment. Pass an optional branch/PR target first (`/finalize <branch|#PR|PR-url>`) to attach to that existing branch before finalizing. `/finalize no vet` is the docs-only mode; `/finalize and merge` squash-merges the PR as well, but only if the run turned up nothing to decide. An operator's ask to merge a branch not yet finalized — "merge", "мерджи", in any words — is `/finalize and merge`, and the reply opens by saying so.
 ---
 
 **Optional branch/PR target**: if the first token of the argument is a branch
@@ -167,10 +167,10 @@ Steps (stop on first unresolved failure):
    the PR opened and still tracked on the branch, so this is an **edit** to a
    live doc in light of the merge, any review comments and the final committed
    state — not a fresh composition. It owns the title/body format, the
-   draft-then-tighten pass, and both outputs (the PR comment beside the merge
-   button and the two fenced blocks in the transcript). Do not draft the message
-   inline here: printing an untightened first draft is the failure mode that
-   skill exists to prevent.
+   draft-then-tighten pass, and its outputs (the PR title, the body comment
+   beside the merge button, and both in the transcript). Do not draft the
+   message inline here: printing an untightened first draft is the failure mode
+   that skill exists to prevent.
 6. **Dispatch any CI-only bucket the diff reaches, then check the base.**
 
    If the project has hydrated `/test-on-gh`, decide from the diff whether it
@@ -383,8 +383,9 @@ Steps (stop on first unresolved failure):
      ordinary reason to want a human at the button.
    - **Step 5** — the reconcile rewrote the proposal in substance, or no
      proposal existed and this composed the first one. Either way the text about
-     to become the permanent `git log` record has had no reader but you. Only
-     what the run itself mechanically settles (`(pr #tbd)` → `(pr #N)`) is free.
+     to become the permanent `git log` record has had no reader but you. The
+     title counts the same way: a reconcile that rewrote the PR title in
+     substance stands the merge down.
    - **Step 6** — `/check-merge` returned anything but `contained`. An advanced
      base makes everything verified stale and its deliberation is a judgment; a
      merged or closed PR leaves nothing to merge.
@@ -409,21 +410,27 @@ Steps (stop on first unresolved failure):
    **Merging.** Step 7 goes up first: the record of what the merge rests on
    belongs on the PR before the merge, not after it. Then squash-merge with the
    title and body **step 5 settled**, verbatim; do not recompose them here. The
-   comment is the source, so read it back rather than reconstructing it:
+   PR and its comment are the source, so read both back rather than
+   reconstructing them:
 
    ```bash
+   gh pr view <n> --json title --jq '.title + " (#<n>)"' > tmp/squash-title.txt
    gh api repos/<owner>/<repo>/issues/comments/<id> --jq .body > tmp/proposal.md
    ```
 
-   Split its two fenced blocks into `tmp/squash-title.txt` and
-   `tmp/squash-body.txt`, then **print both and read them** — the title against
-   the `<type>: #<issue> <essence> (pr #<n>)` shape, the body ending at its
-   `Co-authored-by:` byline. A mis-split silently lands the attribution footer,
-   or the title block, inside the permanent record. Then:
+   Extract the comment's last fenced block — the body, after the title block a
+   one-commit PR carries — into `tmp/squash-body.txt`, then **print both files
+   and read them** — the title against the `<type>: #<issue> <essence> (#<n>)`
+   shape, the body ending at its `Co-authored-by:` byline. A mis-split silently
+   lands the attribution footer inside the permanent record. Then:
 
    ```bash
    gh pr merge <n> --squash --subject "$(cat tmp/squash-title.txt)" --body-file tmp/squash-body.txt
    ```
+
+   The subject is passed rather than left to GitHub's default, because a
+   repository whose `squash_merge_commit_title` is `COMMIT_OR_PR_TITLE` titles a
+   one-commit PR by that commit's subject.
 
    No `--admin`, no `--auto`, no `--delete-branch`, and nothing disabled to get
    the merge through. A refusal — branch protection, a required check still
