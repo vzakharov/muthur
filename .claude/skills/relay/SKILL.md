@@ -125,12 +125,13 @@ sending its text bills it twice.
   below, and model and permission mode inherited by omitting them. Confirm with
   `get_session` that it did not fail at start.
 - **The title names the work**, because it is what the operator finds the
-  session by in their list days later: a few words saying what the branch
-  changes, in the human-facing language (CLAUDE.md § "Language"), then
-  ` · relay <N>` with the summary's `<N>`. A PR or issue number, a branch name
-  or the `/relay take` line is not a title — nobody remembers what `pr #104`
-  was. This session's own title, from `get_session` with no id, is the starting
-  point when it already names the work.
+  session by in their list days later: `(<N>) ` with the summary's `<N>`, then a
+  few words saying what the branch changes, in the human-facing language
+  (CLAUDE.md § "Language"). The number leads because the session list cuts a
+  long title off at its end. A PR or issue number, a branch name or the
+  `/relay take` line is not a title — nobody remembers what `pr #104` was. This
+  session's own title, from `get_session` with no id, is the starting point when
+  it already names the work, its own leading `(<N>)` dropped.
 - **Local CLI**, where no such tool exists: the report gives the line to type
   after `/clear`, or `claude "/relay take <branch>"` in a new terminal on the
   same checkout.
