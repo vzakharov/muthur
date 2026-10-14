@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
 # Put an unattended routine's run on the one draft PR the routine accumulates
-# into, so the operator reviews whatever piled up in one sitting rather than a
-# PR per run.
+# into. A routine runs on a schedule — every day it reads the inbox, a
+# subreddit, a feed — faster than its operator can review a PR per run, so while
+# its draft is open each run adds to it, and the operator reviews whatever piled
+# up in one sitting.
 #
 # A PR belongs to the routine when it is an open draft touching a path that
 # starts with one of the given paths — a directory prefix, or an exact file. A
@@ -21,6 +23,12 @@
 #
 # Usage:
 #   scripts/routine-branch.sh <branch-prefix> <path>...
+#
+# Typical callers, each as its routine skill's first step:
+#   a daily inbox sweep recording what it triaged — `mail-sweep mail/`
+#     (a cursor it reads off merged or ready PRs stays its own lookup)
+#   a daily digest writing one dated file per run  — `digest digests/`
+#   a filer adding a record plus an index entry    — `cases cases/ CASES.md`
 #
 # Prints what it did, one `routine-branch:` line each. Any gh or git failure
 # exits non-zero with its error.
