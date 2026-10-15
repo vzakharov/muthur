@@ -1,0 +1,94 @@
+{
+  "total": {
+    "inputTokens": 110,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 161314,
+    "cacheReadTokens": 9077401,
+    "outputTokens": 37533,
+    "thinkingTokens": 7589,
+    "responses": 55,
+    "costUsd": 3.8570922000000007
+  },
+  "estimate": {
+    "at": "2026-10-15T18:31:11.306Z",
+    "parts": [
+      {
+        "hours": 2.5,
+        "grade": "senior",
+        "role": "developer",
+        "comment": "the readers' union on two transports and the ledger-side estimate edit: git ref and GraphQL traps a middle would get wrong"
+      },
+      {
+        "hours": 0.5,
+        "grade": "middle",
+        "role": "editor",
+        "comment": "finalize's sweep, SHA marker and revoke mode change with the source of truth"
+      }
+    ],
+    "comment": null
+  },
+  "sessionId": "469b3495-5a19-54b5-bfde-5e7d4e9d944f",
+  "branch": "claude/cost-ledger-branch-pz4s1a",
+  "cwd": "/home/user/muthur",
+  "openingPrompt": "/relay take claude/cost-ledger-branch-pz4s1a",
+  "prs": [
+    202
+  ],
+  "url": "https://claude.ai/code/session_016EVcpgqoYET5tQWnhgeQpM",
+  "operator": "vzakharov",
+  "firstResponseAt": "2026-10-15T18:24:21.468Z",
+  "lastResponseAt": "2026-10-15T18:31:51.267Z",
+  "pricesAsOf": "2026-10-06",
+  "claudeCodeTotalUsd": null,
+  "ownTurns": {
+    "inputTokens": 110,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 161314,
+    "cacheReadTokens": 9077401,
+    "outputTokens": 37533,
+    "thinkingTokens": 7589,
+    "responses": 55,
+    "costUsd": 3.8570922000000007
+  },
+  "subagents": {
+    "inputTokens": 0,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 0,
+    "cacheReadTokens": 0,
+    "outputTokens": 0,
+    "thinkingTokens": 0,
+    "responses": 0,
+    "costUsd": 0.0
+  },
+  "byRate": {
+    "claude-opus-5-5/standard": {
+      "inputTokens": 110,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 161314,
+      "cacheReadTokens": 9077401,
+      "outputTokens": 37533,
+      "thinkingTokens": 7589,
+      "responses": 55,
+      "costUsd": 3.8570922000000007
+    }
+  },
+  "warnings": [],
+  "orientation": {
+    "endedBy": "Edit",
+    "endedOn": ".claude/costs/lib/ledger.py",
+    "endedAt": "2026-10-15T18:25:25.740Z",
+    "contextTokens": 147347,
+    "spend": {
+      "inputTokens": 22,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 86662,
+      "cacheReadTokens": 1156861,
+      "outputTokens": 4401,
+      "thinkingTokens": 1883,
+      "responses": 11,
+      "costUsd": 1.0127761999999998
+    }
+  },
+  "compactions": [],
+  "telemetry": null
+}
