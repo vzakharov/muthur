@@ -14,13 +14,20 @@ comment names a SHA, which `/finalize` now writes into its marker. The
 hook reads that SHA once, caches it under `tmp/`, and treats any later
 commit outside `.claude/costs/sessions/` as an unfinalize.
 
-`report.py`, `--all-my-repos` and `check_estimates.py` read
-`cost-ledger` together with the default branch's tree, per session id,
-the later row winning. Main's existing rows count as they are, with no
-migration. A `report.py` older than this change undercounts a migrated
-repository, so run the cross-repo report from an updated checkout.
-`/finalize` sweeps the display copies with the rest of the working
-artifacts.
+`ledger.py backfill` copies every row any ref holds into the ledger,
+the latest per session winning. This repository ran it and dropped
+`.claude/costs/sessions/` from main. `/finalize` runs it over the
+branch before sweeping the display copies, and `/finalize revoke`
+withdraws an attestation. The readers union `cost-ledger` with the
+default branch's tree, so a repository that has not migrated yet still
+counts.
+
+Adopters: in the port's PR, run `python3 .claude/costs/ledger.py
+backfill`, check that the ledger holds every session your main does,
+then `git rm -r .claude/costs/sessions`. The backfill pushes a new
+branch to your origin, so ask your operator first. A `report.py` older
+than this change undercounts a migrated repository, so run
+`--all-my-repos` from an updated checkout.
 
 Co-authored-by: Claude <noreply@anthropic.com>
 ```
