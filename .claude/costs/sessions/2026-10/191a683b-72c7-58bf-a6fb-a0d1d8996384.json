@@ -1,13 +1,13 @@
 {
   "total": {
-    "inputTokens": 16,
+    "inputTokens": 40,
     "cacheWrite5mTokens": 0,
-    "cacheWrite1hTokens": 47852,
-    "cacheReadTokens": 687243,
-    "outputTokens": 3386,
-    "thinkingTokens": 1347,
-    "responses": 8,
-    "costUsd": 0.5880486
+    "cacheWrite1hTokens": 68991,
+    "cacheReadTokens": 2006511,
+    "outputTokens": 7070,
+    "thinkingTokens": 1736,
+    "responses": 20,
+    "costUsd": 1.0947902000000003
   },
   "estimate": {
     "at": "2026-10-15T11:46:48.400Z",
@@ -22,25 +22,25 @@
     "comment": null
   },
   "sessionId": "191a683b-72c7-58bf-a6fb-a0d1d8996384",
-  "branch": "claude/nice-allen-83pjkd",
+  "branch": "claude/relay-title-legacy-suffix-83pjkd",
   "cwd": "/home/user/muthur",
   "openingPrompt": "эм, это адоптеры не правильно поняли инструкцию про то что писать (N) слева, или у нас действительно написано писать *и* там *и* там?",
   "prs": [],
   "url": "https://claude.ai/code/session_017ww9UCKSEhHmpBbRESAT2c",
   "operator": "vzakharov",
   "firstResponseAt": "2026-10-15T11:46:26.372Z",
-  "lastResponseAt": "2026-10-15T11:51:04.652Z",
+  "lastResponseAt": "2026-10-15T12:47:02.130Z",
   "pricesAsOf": "2026-10-06",
   "claudeCodeTotalUsd": null,
   "ownTurns": {
-    "inputTokens": 16,
+    "inputTokens": 40,
     "cacheWrite5mTokens": 0,
-    "cacheWrite1hTokens": 47852,
-    "cacheReadTokens": 687243,
-    "outputTokens": 3386,
-    "thinkingTokens": 1347,
-    "responses": 8,
-    "costUsd": 0.5880486
+    "cacheWrite1hTokens": 68991,
+    "cacheReadTokens": 2006511,
+    "outputTokens": 7070,
+    "thinkingTokens": 1736,
+    "responses": 20,
+    "costUsd": 1.0947902000000003
   },
   "subagents": {
     "inputTokens": 0,
@@ -54,14 +54,14 @@
   },
   "byRate": {
     "claude-opus-5-5/standard": {
-      "inputTokens": 16,
+      "inputTokens": 40,
       "cacheWrite5mTokens": 0,
-      "cacheWrite1hTokens": 47852,
-      "cacheReadTokens": 687243,
-      "outputTokens": 3386,
-      "thinkingTokens": 1347,
-      "responses": 8,
-      "costUsd": 0.5880486
+      "cacheWrite1hTokens": 68991,
+      "cacheReadTokens": 2006511,
+      "outputTokens": 7070,
+      "thinkingTokens": 1736,
+      "responses": 20,
+      "costUsd": 1.0947902000000003
     }
   },
   "warnings": [],
