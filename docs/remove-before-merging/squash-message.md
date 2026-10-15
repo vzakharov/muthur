@@ -3,7 +3,8 @@ Proposed squash body:
 ```
 Rows reached the ledger only by merging into main, so the report missed
 abandoned branches, the turn that merges, turns after finalize and
-sessions run on main itself: about 18% of the spend when measured.
+sessions run on main itself: about 18% of this repository's spend when
+measured, and a different share elsewhere.
 
 The Stop hook now commits every row to an orphan `cost-ledger` branch,
 which is the source of truth. It retries a racing push on the new tip,
@@ -15,12 +16,13 @@ hook reads that SHA once, caches it under `tmp/`, and treats any later
 commit outside `.claude/costs/sessions/` as an unfinalize.
 
 `ledger.py backfill` copies every row any ref holds into the ledger,
-the latest per session winning. This repository ran it and dropped
-`.claude/costs/sessions/` from main. `/finalize` runs it over the
-branch before sweeping the display copies, and `/finalize revoke`
-withdraws an attestation. The readers union `cost-ledger` with the
-default branch's tree, so a repository that has not migrated yet still
-counts.
+the latest per session winning. This repository ran it, so the ledger
+already holds every row main does, and this change deletes
+`.claude/costs/sessions/`, which main loses as it lands. `/finalize`
+runs the backfill over the branch before sweeping the display copies,
+and `/finalize revoke` withdraws an attestation. The readers union
+`cost-ledger` with the default branch's tree, so a repository that has
+not migrated yet still counts.
 
 Adopters: in the port's PR, run `python3 .claude/costs/ledger.py
 backfill`, check that the ledger holds every session your main does,
