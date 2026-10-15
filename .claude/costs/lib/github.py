@@ -1,5 +1,7 @@
 """The ledger of every repository the `gh` user can see, read off each one's
-default branch through GitHub's GraphQL API, with no clone of anything.
+`cost-ledger` branch and default branch through GitHub's GraphQL API, with no
+clone of anything. The default branch's side is a repository that has not
+moved its rows onto the ledger branch yet.
 
 A repository qualifies by carrying a ledger, not muthur's watermark: the
 ledger is opt-in for adopters, so a watermark alone has nothing to count. The
@@ -19,6 +21,7 @@ import time
 from dataclasses import dataclass, field
 from typing import Any, Callable, Collection, Dict, List, Mapping, Optional, Sequence, Tuple
 
+from lib.ledger import BRANCH, union
 from lib.rows import SessionCost, reshape
 from lib.shape import ShapeError, read_object, read_string, required
 
@@ -32,6 +35,8 @@ RETRIES = 3
 REPO = re.compile(r"[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+")
 MONTH = re.compile(r"\d{4}-\d{2}")
 AFFILIATIONS = "[OWNER, COLLABORATOR, ORGANIZATION_MEMBER]"
+# Where a repository's rows can be, keyed by the alias each is queried under.
+SIDES = {"ledger": f"refs/heads/{BRANCH}", "tree": "HEAD"}
 
 # `(query, variables)` to the response, `data` and `errors` as GitHub sent them.
 Transport = Callable[[str, Mapping[str, Any]], Dict[str, Any]]
@@ -116,11 +121,14 @@ def repository(repo: str) -> str:
     return f"repository(owner: {literal(owner)}, name: {literal(name)})"
 
 
-REPO_FIELDS = f"""
-  nameWithOwner
-  ledger: object(expression: {literal("HEAD:" + LEDGER)}) {{ ... on Tree {{ entries {{ name type }} }} }}
-  watermark: object(expression: {literal("HEAD:" + WATERMARK)}) {{ __typename }}
-"""
+REPO_FIELDS = (
+    "\n  nameWithOwner\n"
+    + "".join(
+        f"  {alias}: object(expression: {literal(f'{rev}:{LEDGER}')}) {{ ... on Tree {{ entries {{ name type }} }} }}\n"
+        for alias, rev in SIDES.items()
+    )
+    + f"  watermark: object(expression: {literal('HEAD:' + WATERMARK)}) {{ __typename }}\n"
+)
 
 LISTING = f"""
 query($cursor: String) {{
@@ -140,7 +148,12 @@ query($cursor: String) {{
 @dataclass
 class Candidate:
     repo: str
-    months: List[str]
+    # The months each side that has a ledger holds, by the side's rev.
+    sides: Dict[str, List[str]]
+
+    @property
+    def months(self) -> List[str]:
+        return sorted({month for months in self.sides.values() for month in months})
 
 
 @dataclass
@@ -165,21 +178,20 @@ def _entries(tree: Any, where: str) -> Optional[List[Dict[str, Any]]]:
     return entries
 
 
-def _read_node(node: Any) -> Tuple[str, Optional[List[str]], bool]:
+def _read_node(node: Any) -> Tuple[str, Dict[str, List[str]], bool]:
     if not isinstance(node, dict):
         raise ShapeError("repository node: not an object")
     repo = required(read_string, node, "nameWithOwner", "repository node")
-    entries = _entries(node.get("ledger"), f"{repo} ledger")
-    months = (
-        None
-        if entries is None
-        else sorted(
-            entry["name"]
-            for entry in entries
-            if entry.get("type") == "tree" and MONTH.fullmatch(str(entry.get("name")))
-        )
-    )
-    return repo, months, node.get("watermark") is not None
+    sides: Dict[str, List[str]] = {}
+    for alias, rev in SIDES.items():
+        entries = _entries(node.get(alias), f"{repo} {rev}")
+        if entries is not None:
+            sides[rev] = sorted(
+                entry["name"]
+                for entry in entries
+                if entry.get("type") == "tree" and MONTH.fullmatch(str(entry.get("name")))
+            )
+    return repo, sides, node.get("watermark") is not None
 
 
 def _nodes(client: Client, only: Optional[Sequence[str]]) -> List[Any]:
@@ -209,21 +221,21 @@ def discover(client: Client, only: Optional[Sequence[str]] = None) -> Discovery:
     ledgers: List[Candidate] = []
     without_ledger: List[str] = []
     nodes = _nodes(client, only)
-    for repo, months, watermarked in sorted(map(_read_node, nodes), key=lambda read: read[0]):
-        if months is not None:
-            ledgers.append(Candidate(repo, months))
+    for repo, sides, watermarked in sorted(map(_read_node, nodes), key=lambda read: read[0]):
+        if sides:
+            ledgers.append(Candidate(repo, sides))
         elif only:
-            raise GitHubError(f"{repo}: no {LEDGER} on its default branch")
+            raise GitHubError(f"{repo}: no {LEDGER} on its {BRANCH} branch or its default branch")
         elif watermarked:
             without_ledger.append(repo)
     return Discovery(ledgers, without_ledger, len(nodes))
 
 
-def _month_query(pairs: Sequence[Tuple[str, str]]) -> str:
+def _month_query(trees: Sequence[Tuple[str, str, str]]) -> str:
     aliased = " ".join(
-        f"p{i}: {repository(repo)} {{ object(expression: {literal(f'HEAD:{LEDGER}/{month}')}) {{"
+        f"p{i}: {repository(repo)} {{ object(expression: {literal(f'{rev}:{LEDGER}/{month}')}) {{"
         " ... on Tree { entries { name type object { ... on Blob { isTruncated isBinary text } } } } } }"
-        for i, (repo, month) in enumerate(pairs)
+        for i, (repo, rev, month) in enumerate(trees)
     )
     return f"query {{ {aliased} }}"
 
@@ -236,24 +248,24 @@ def _row_text(entry: Dict[str, Any], where: str) -> str:
 
 
 def ledger_texts(client: Client, candidates: Sequence[Candidate]) -> List[Tuple[str, str, str]]:
-    """`(repo, where, text)` for each row of the candidates' months, read in
-    batches of month trees. A row GitHub truncates raises rather than going
-    missing."""
-    pairs = [(c.repo, m) for c in candidates for m in c.months]
+    """`(repo, where, text)` for each row of the candidates' months, on each
+    side, read in batches of month trees. A row GitHub truncates raises rather
+    than going missing."""
+    trees = [(c.repo, rev, m) for c in candidates for rev, months in c.sides.items() for m in months]
     texts: List[Tuple[str, str, str]] = []
-    for start in range(0, len(pairs), BATCH):
-        batch = pairs[start : start + BATCH]
+    for start in range(0, len(trees), BATCH):
+        batch = trees[start : start + BATCH]
         client.progress(
-            f"reading {_count(len(candidates), 'ledger')}: {start} of {_count(len(pairs), 'month')},"
+            f"reading {_count(len(candidates), 'ledger')}: {start} of {_count(len(trees), 'month')},"
             f" {_count(len(texts), 'row')} so far"
         )
         data = client.call(_month_query(batch))
-        for i, (repo, name) in enumerate(batch):
-            where = f"{repo}:{LEDGER}/{name}"
+        for i, (repo, rev, name) in enumerate(batch):
+            where = f"{repo}:{rev}:{LEDGER}/{name}"
             found = required(read_object, data, f"p{i}", where)
             entries = _entries(found.get("object"), where)
             if entries is None:
-                raise ShapeError(f"{where}: no longer a tree on the default branch")
+                raise ShapeError(f"{where}: no longer a tree")
             for entry in entries:
                 file = str(entry.get("name"))
                 if entry.get("type") == "blob" and file.endswith(".json"):
@@ -284,22 +296,28 @@ def remote_ledger(
     months: Optional[Collection[str]] = None,
 ) -> RemoteLedger:
     """Rows are reshaped in memory and never written back: this repository's
-    parser is the one in force, but the rows are another branch's to change. A
-    session id in two repositories — a fork carries its source's rows — is
-    counted in the first, by name."""
+    parser is the one in force, but the rows are another branch's to change.
+    Within a repository the two sides' copies of a row are one session, the
+    later copy winning. A session id in two repositories — a fork carries its
+    source's rows — is counted in the first, by name."""
     found = discover(client, only)
     client.progress(f"{_count(len(found.ledgers), 'ledger')} among {_count(found.seen, 'repository', 'repositories')}")
     wanted = [
-        Candidate(c.repo, [m for m in c.months if months is None or m in months])
+        Candidate(c.repo, {rev: [m for m in ms if months is None or m in months] for rev, ms in c.sides.items()})
         for c in found.ledgers
     ]
     repos = {c.repo: RepoLedger(c.repo, c.months) for c in wanted}
+    by_repo: Dict[str, List[Tuple[SessionCost, bool]]] = {}
+    for repo, where, text in ledger_texts(client, wanted):
+        row, changes = reshape(text, where)
+        by_repo.setdefault(repo, []).append((row, bool(changes)))
     rows: List[SessionCost] = []
     repo_of: Dict[str, str] = {}
     reshaped: Dict[str, int] = {}
-    for repo, where, text in ledger_texts(client, wanted):
-        row, changes = reshape(text, where)
-        if changes:
+    for repo, row, changed in (
+        (repo, row, changed) for repo, read in by_repo.items() for row, changed in union(read, lambda item: item[0])
+    ):
+        if changed:
             reshaped[repo] = reshaped.get(repo, 0) + 1
         first = repo_of.get(row.session_id)
         if first is not None:
