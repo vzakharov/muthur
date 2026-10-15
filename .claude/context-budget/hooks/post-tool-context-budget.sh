@@ -134,7 +134,7 @@ last_step=20000
 ends="then, without asking and with no argument, run ${relay}. Its report tells the operator the session was paused for its context budget and relayed on its own"
 # The offer is made until the operator answers it, and the answer is a file
 # whichever way it goes, so it is made once.
-[ -z "$unasked" ] || ends="${ends}, and ends by offering, in the operator's language and in words like these, \"if you'd rather I ask before relaying, say so\" — naming no file, setting or section, since their part is the answer alone. Whichever session hears that answer writes it, a no included, to \`${unasked}\` as \`.claude/context-budget/CLAUDE.md\` § \"Manual relay\" says, and the offer is not made again"
+[ -z "$unasked" ] || ends="${ends}, and ends by offering, in the operator's language and in words like these, \"if you'd rather I ask before relaying, say so\" — naming no file, setting or section, since their part is the answer alone. Whichever session hears that answer writes it, a no included, to \`${unasked}\` as \`.claude/context-budget/CLAUDE.md\` § \"Manual relay\" says"
 [ -z "$manual_relay" ] || ends="tell the operator the session was paused for its context budget, and end the turn offering ${relay}"
 paused="follow ${stopping}. Push, ${ends}; the new session resumes the paused plan."
 
