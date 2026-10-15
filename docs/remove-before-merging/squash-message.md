@@ -1,28 +1,28 @@
 Proposed squash title/body:
 
 ```
-feat: run repo hooks in sessions with several repositories attached (#199)
+feat: support sessions with several repositories attached (#199)
 ```
 
 ```
 A cloud session with several repositories attached starts in their
-parent directory, and Claude Code reads hooks only from that
-directory's settings; from each repo it takes CLAUDE.md, rules and
-skills but no hooks. So none of the repo hooks ran there: no gh
-shim, no operator entry, no dependency install, no Markdown wrapping,
-no cost rows.
+parent directory. Claude Code then loads none of the repos' hooks, and
+the skills, which run git, gh and scripts relative to the shell, have
+no current repo; where two repos carry a same-named skill, only the
+first source's copy is listed.
 
 scripts/multi-repo-hooks.py writes the parent's .claude/settings.json
 from every attached repo's hooks, each run with CLAUDE_PROJECT_DIR set
-to its own repo, and runs the SessionStart set at once, since the
-settings watcher only catches later events. Hooks acting on their own
-repo run per repo; session-wide ones run once; the #N export hooks
-are skipped, since a bare issue number names no repo. In a
-single-repo session it exits without writing anything.
+to its own repo: per repo where the hook acts on its repo, once for
+session-wide ones, skipped for the #N export hooks. It runs the
+SessionStart set at once, since the settings watcher only catches later
+events. A user-level hook from the environment setup script triggers
+it, and the agent runs it itself where that block is missing.
 
-The environment setup script triggers it through a user-level
-SessionStart hook, and a CLAUDE.md line has the agent run it by hand
-where the setup script lacks that block.
+scripts/find-repo.py resolves a branch, PR URL or #N to the one repo
+carrying it. An always-loaded rule has every skill resolve its target
+that way, cd into it on each Bash call, and follow that repo's own copy
+of the skill, so no skill text changes.
 
 Co-authored-by: Claude <noreply@anthropic.com>
 ```
