@@ -18,34 +18,15 @@ was a deliberate no-op and why. Everything else below still applies. (`no ci`
 and `no attest` are accepted spellings of this flag.)
 
 **`revoke` withdraws the attestation instead of making one** — for a branch that
-needs work again after it was finalized. It runs § "Revoke" below and nothing
-else.
+needs work again after it was finalized. Load
+`@.claude/skills/finalize/revoke.md` and run it, and nothing else.
 
-**`and merge` delegates the click, not the judgment.** Recognized anywhere in
-the argument (bare `merge` counts too), it asks you to squash-merge the PR
-yourself at step 8 — **but only if the run gives you no reason not to**.
-Standing down is an ordinary outcome of the flag rather than a failure of it,
-which is why the flag reaches step 8 as a condition to evaluate and not as an
-instruction to carry out. That step owns the gate, the merge and the report.
-
-**The flag is only ever the operator's to type, on work that already exists.**
-It says something about a specific diff, so it means nothing written before that
-diff did — which is why a caller that produces work in the same turn must not
-forward it, and `@.claude/skills/handle/SKILL.md` § "Argument shape" holds the
-merge back rather than passing it on. Any future caller answers the same
-question: was the flag written after the operator could have looked?
-
-**An operator's ask to merge a branch not yet finalized is
-`/finalize and merge`**, whatever words carry it — "merge", "мерджи", "land it".
-Finalized means the PR is ready for review and its
-`<!-- finalize-attestation -->` comment names the current head, give or take
-what step 7's last rule lets ride past it; anything short of that is a diff no
-run has verified, so merging it as asked would skip every gate this skill exists
-for. **Open the reply by saying you read the ask that way** — the operator asked
-for a click and is getting land prep, which can stand the merge down at step 8 —
-then run this skill with the flag. The paragraph above holds here too: an ask
-that also requests changes was written before the diff it would merge, so land
-prep runs and the merge is held.
+**`and merge`** — recognized anywhere in the argument, bare `merge` too — asks
+you to squash-merge the PR yourself at step 8, but only if the run gives you no
+reason not to. **An operator's ask to merge** a branch not yet finalized
+("merge", "мерджи", in any words) is this flag. Either way, load
+`@.claude/skills/finalize/merge.md` before anything else: it says how the reply
+opens, and the step-8 gate is its.
 
 **Pre-check**:
 
@@ -196,52 +177,12 @@ Steps (stop on first unresolved failure):
    - **contained** (no movement) → go to step 7, then **end the turn** so the
      session reads as idle; the operator can run `/check-merge` again when they
      return.
-   - **`origin/<base>` advanced** → run the **base-advanced deliberation**
-     below, then step 7.
+   - **`origin/<base>` advanced** → load and follow
+     `@.claude/skills/finalize/base-advanced.md`, then step 7.
    - **PR merged/closed** → the work landed — nothing more to do. This is
      **one** automatic check, not a loop: after acting on it once, end the turn
      rather than re-checking — further movement is the operator's `/check-merge`
      to catch on return.
-   - **Base-advanced deliberation** — when `origin/<base>` moves out from under
-     the branch, your local green no longer necessarily reflects what would
-     land. Depending on the project, nothing may re-check the merge afterwards
-     at all, so this deliberation is the last chance to catch it. A clean merge
-     (no conflicts) does **not** mean the code is compatible: semantic
-     incompatibilities (renamed exports used elsewhere, changed function
-     signatures, altered runtime invariants) merge cleanly and still break.
-     Whether to re-verify is your call, but make it deliberately — don't
-     reflexively skip it:
-     - You **MUST** read the incoming diff before deciding —
-       `git log --oneline <merge-base>..origin/<base>` and
-       `git diff <merge-base>..origin/<base> -- <areas this branch touched>`,
-       where `<merge-base>` is the base commit the branch already contains
-       (`/check-merge` prints it as `base=…`, or compute
-       `git merge-base HEAD origin/<base>`). Deciding without reading the diff
-       is not allowed.
-     - Weigh the same interactions step 2 warns about (a helper/util/component
-       that now duplicates something you wrote, a shared abstraction you should
-       route through instead of your local one, a renamed/moved symbol you still
-       reference the old way, a pattern this branch should now follow) **plus**
-       the semantic incompatibilities above.
-     - **Default to re-verify when unsure.** The test is _interaction_, not
-       _whether the base touched code_ — most advances touch some code, and that
-       alone doesn't warrant it. Skip re-verification when, having read the
-       diff, you can say why the incoming commits and this branch's changes
-       don't overlap: they're in different areas/modules, nothing this branch
-       imports or depends on was touched, and no symbol/signature/pattern this
-       branch uses was changed. If you can see a plausible interaction, or you
-       genuinely can't tell, re-verify.
-       - **Interacting or ambiguous** → re-run step 2
-         (`git merge origin/<base>`, applying any dedup/simplification it
-         opens), then step 1 (`./scripts/vet.sh`), push, and re-run any step-6
-         dispatch the diff still warrants. The two-shot rule does **not** apply
-         to these base-advanced re-runs; they're keeping the target current, not
-         fixing failures.
-       - **Demonstrably independent** → `git merge origin/<base>`, push, and run
-         `/check-merge` again when you return to confirm `origin/<base>` hasn't
-         moved since. Unrelated code changes qualify: e.g. the base reworks a
-         frontend modal while this branch changes a background job's retry
-         policy — both touch code, but they don't interact.
    - Do NOT merge the PR here — step 8 owns that, and only under `and merge` and
      the gate it states. Absent the flag the operator controls the final
      title/body and merge.
@@ -355,121 +296,5 @@ Steps (stop on first unresolved failure):
      for a commit that does.
 
 8. **Merge — under `and merge` only, and only if the run was uneventful.**
-   Without the flag, stop at step 7 and report.
-
-   One predicate governs, and the list below only spells out how it fails:
-   **merge only when the run's whole effect on the branch was step 3's sweep,
-   the staged swap, the quality passes' own edits, and whatever a tool's own
-   fixer rewrote, and every check it ran passed the first time it ran.** The
-   gate is evaluated once, here, by walking the run back against the list — not
-   decided step by step as the run goes.
-
-   **The quality passes are part of that predicate** because what they do by
-   construction is rewrite prose and fold duplication, leaving what the code
-   does alone — and a run of them that found something is the ordinary state of
-   a branch that reached land prep without `/go`, so a gate that fired on it
-   would fire on nearly every such branch. The boundary is behavior: a fold that
-   turns out to change what the code does is no longer a polish edit, and stands
-   the merge down like any other change you authored.
-
-   **Stand down if any of this happened**, at whichever step it happened:
-   - **The staged swap** — it stopped on a conflict. Resolving one is deciding
-     what the file says.
-   - **Pre-check** — `HEAD` was detached, or there was no PR and you created
-     one. A PR opened and merged inside one turn was never a reviewable object.
-     (A PR you flipped back to draft is fine — that is the ordinary
-     re-finalize.)
-   - **Step 1** — the vet run needed a change **you authored** to go green. A
-     tool's own fixer (`--fix`, a formatter rewriting its own output) that
-     clears it does not count; that is the autofix this flag allows. The test is
-     whether you had to read the failure and decide what to change.
-   - **Step 2** — any conflict, however trivially resolved; or you applied a
-     dedup/simplification the base merge opened, or surfaced one as ambiguous. A
-     clean merge that **brought commits in** is survivable, but step 1 vetted a
-     tree without them: re-run it, green first try, and stand down on any
-     interaction of the kind that step already has you reading the incoming diff
-     for.
-   - **Step 4** — a red CI run. Same autofix exception as step 1, plus one case
-     it does not cover: a red run that cleared itself on a re-run with no change
-     at all. "It was a flake" is a judgment, and an unexplained red is the most
-     ordinary reason to want a human at the button.
-   - **Step 5** — the reconcile rewrote the proposal in substance, or no
-     proposal existed and this composed the first one. Either way the text about
-     to become the permanent `git log` record has had no reader but you. The
-     title counts the same way: a reconcile that rewrote the PR title in
-     substance stands the merge down.
-   - **Step 6** — `/check-merge` returned anything but `contained`. An advanced
-     base makes everything verified stale and its deliberation is a judgment; a
-     merged or closed PR leaves nothing to merge.
-   - **Anywhere** — the two-shot rule engaged; the PR carries feedback nobody
-     answered — a fresh `python3 scripts/export-github-item.py <n>` whose
-     `## Awaiting an answer` count is not `none` (`rm -rf` the `docs/pr/<n>/` it
-     writes, the sweep having run), that heading being
-     `@.claude/skills/handle/SKILL.md` Step 2's tail test already run, and what
-     keeps a merge from burying an open thread; or you reached a point where you
-     would otherwise have asked the operator something.
-   - **Under `no vet`** — the mode is the operator's call and does not stand the
-     merge down, but its stated precondition is yours to check: if any check in
-     the vet run would have had something to say about this diff, the mode was
-     misapplied, and that misapplication is a stand-down.
-
-   The list is walked step by step so the verdict is auditable, and it is **not
-   exhaustive** — a procedure that grows a step grows a way for a run to be
-   eventful. So the predicate, not the list, is the verdict: **if the run made
-   you decide anything the passes above don't cover, stand down.** Deciding it
-   well is not the same as the operator having decided it.
-
-   **Merging.** Step 7 goes up first: the record of what the merge rests on
-   belongs on the PR before the merge, not after it. Then squash-merge with the
-   title and body **step 5 settled**, verbatim; do not recompose them here. The
-   PR and its comment are the source, so read both back rather than
-   reconstructing them:
-
-   ```bash
-   gh pr view <n> --json title --jq '.title + " (#<n>)"' > tmp/squash-title.txt
-   gh api repos/<owner>/<repo>/issues/comments/<id> --jq .body > tmp/proposal.md
-   ```
-
-   Extract the comment's last fenced block — the body, after the title block a
-   one-commit PR carries — into `tmp/squash-body.txt`, then **print both files
-   and read them** — the title against the `<type>: #<issue> <essence> (#<n>)`
-   shape, the body ending at its `Co-authored-by:` byline. A mis-split silently
-   lands the attribution footer inside the permanent record. Then:
-
-   ```bash
-   gh pr merge <n> --squash --subject "$(cat tmp/squash-title.txt)" --body-file tmp/squash-body.txt
-   ```
-
-   The subject is passed rather than left to GitHub's default, because a
-   repository whose `squash_merge_commit_title` is `COMMIT_OR_PR_TITLE` titles a
-   one-commit PR by that commit's subject.
-
-   No `--admin`, no `--auto`, no `--delete-branch`, and nothing disabled to get
-   the merge through. A refusal — branch protection, a required check still
-   pending, an un-mergeable head — is GitHub's answer and gets reported as a
-   stand-down, not routed around. Report the commit the squash landed on
-   `<base>`, then end the turn: the PR is no longer a place to do work.
-
-   **Standing down is a result and gets reported as one** — the condition that
-   fired, the step it fired at, and what would clear it. It goes in the turn's
-   report and nowhere else: the attestation already carries what the run found,
-   and a third PR comment announcing that you declined to merge is addressed to
-   the wrong reader. Then end the turn. Do not ask for permission to merge
-   anyway — the report is the ask, and a pending question pins a session the
-   operator may not return to for days.
-
-## Revoke
-
-`/finalize revoke` withdraws the attestation explicitly, for a finalized branch
-going back to work. A work commit past the attested SHA already reopens the
-branch for the cost ledger; this is the operator saying so before one exists.
-
-1. Find the attestation comment as step 7 does, and edit it in place: replace
-   the marker with `<!-- finalize-attestation revoked -->` and the body with
-   when and why it was revoked, the footer kept. No comment → nothing was
-   attested; say so and stop.
-2. `gh pr ready --undo`, so the PR reads as work in progress again.
-3. `rm -f tmp/costs/finalized/<branch>`, the ledger's cache of the attested SHA.
-
-Report the three in a line each. The next `/finalize` replaces the revoked
-comment like any other.
+   Without the flag, stop at step 7 and report. With it, walk the gate in
+   `@.claude/skills/finalize/merge.md`, which owns the merge and the report.
