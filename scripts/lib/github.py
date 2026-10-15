@@ -49,13 +49,18 @@ def gh_token() -> str:
     return token
 
 
-def detect_origin_repo() -> str | None:
+def detect_origin_repo(cwd: str | os.PathLike[str] | None = None) -> str | None:
     try:
         url = subprocess.check_output(
-            ["git", "remote", "get-url", "origin"], text=True
+            ["git", "remote", "get-url", "origin"], cwd=cwd, text=True
         ).strip()
     except (FileNotFoundError, subprocess.CalledProcessError):
         return None
+    return parse_repo_url(url)
+
+
+def parse_repo_url(url: str) -> str | None:
+    """`owner/repo` from a GitHub clone URL, or `None` for any other URL."""
     m = re.match(
         r"^(?:https://github\.com/|git@github\.com:)([^/]+)/([^/]+?)(?:\.git)?/?$",
         url,
