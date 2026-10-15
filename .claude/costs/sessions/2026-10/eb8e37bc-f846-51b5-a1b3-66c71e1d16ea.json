@@ -1,34 +1,28 @@
 {
   "total": {
-    "inputTokens": 84,
+    "inputTokens": 96,
     "cacheWrite5mTokens": 0,
-    "cacheWrite1hTokens": 174609,
-    "cacheReadTokens": 6890545,
-    "outputTokens": 32580,
-    "thinkingTokens": 11412,
-    "responses": 42,
-    "costUsd": 3.426917
+    "cacheWrite1hTokens": 191159,
+    "cacheReadTokens": 8303624,
+    "outputTokens": 37431,
+    "thinkingTokens": 12114,
+    "responses": 48,
+    "costUsd": 3.9390008000000005
   },
   "estimate": {
-    "at": "2026-10-15T18:03:34.175Z",
+    "at": "2026-10-15T18:16:09.473Z",
     "parts": [
-      {
-        "hours": 12.0,
-        "grade": "senior",
-        "role": "developer",
-        "comment": "git plumbing inside a Stop hook that races the harness check, a network-backed cache with local invalidation, and an idempotent backfill every adopter runs once: push races and ref traps a middle would ship broken"
-      },
       {
         "hours": 1.5,
         "grade": "senior",
         "role": "architect",
-        "comment": "migrating main off its rows while adopters lag behind needs the reader, finalize and backfill ordered so no row is lost in between"
+        "comment": "settling the fallback, unfinalize surface and a migration that leaves main without rows needed the reader, finalize and backfill ordered so no row is lost between them"
       },
       {
-        "hours": 2.0,
+        "hours": 0.5,
         "grade": "middle",
         "role": "editor",
-        "comment": "the ledger's CLAUDE.md, finalize's sweep and revoke mode, and the adopters' port note all change with the source of truth"
+        "comment": "the PR body and squash record had to carry an adopters' ask a port can act on"
       }
     ],
     "comment": null
@@ -43,18 +37,18 @@
   "url": "https://claude.ai/code/session_01TNVxArQP8m5nFYcXyYdWDG",
   "operator": "vzakharov",
   "firstResponseAt": "2026-10-15T17:50:59.437Z",
-  "lastResponseAt": "2026-10-15T18:03:46.803Z",
+  "lastResponseAt": "2026-10-15T18:16:49.929Z",
   "pricesAsOf": "2026-10-06",
-  "claudeCodeTotalUsd": 2.6047912,
+  "claudeCodeTotalUsd": 3.5349549999999996,
   "ownTurns": {
-    "inputTokens": 84,
+    "inputTokens": 96,
     "cacheWrite5mTokens": 0,
-    "cacheWrite1hTokens": 174609,
-    "cacheReadTokens": 6890545,
-    "outputTokens": 32580,
-    "thinkingTokens": 11412,
-    "responses": 42,
-    "costUsd": 3.426917
+    "cacheWrite1hTokens": 191159,
+    "cacheReadTokens": 8303624,
+    "outputTokens": 37431,
+    "thinkingTokens": 12114,
+    "responses": 48,
+    "costUsd": 3.9390008000000005
   },
   "subagents": {
     "inputTokens": 0,
@@ -68,14 +62,14 @@
   },
   "byRate": {
     "claude-opus-5-5/standard": {
-      "inputTokens": 84,
+      "inputTokens": 96,
       "cacheWrite5mTokens": 0,
-      "cacheWrite1hTokens": 174609,
-      "cacheReadTokens": 6890545,
-      "outputTokens": 32580,
-      "thinkingTokens": 11412,
-      "responses": 42,
-      "costUsd": 3.426917
+      "cacheWrite1hTokens": 191159,
+      "cacheReadTokens": 8303624,
+      "outputTokens": 37431,
+      "thinkingTokens": 12114,
+      "responses": 48,
+      "costUsd": 3.9390008000000005
     }
   },
   "warnings": [],
