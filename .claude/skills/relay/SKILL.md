@@ -116,13 +116,13 @@ The sections, in this order:
 
 ### Step 3 — Start the successor
 
-Its prompt is one line, `/relay take <branch> — <what now>`: the branch, then
-one sentence saying what the successor is about to do — the summary's Next step
-in plain words, in the human-facing language (CLAUDE.md § "Language"), a skill
-in it named bare. The prompt is the first thing on screen when the operator
-switches in from other work, and a branch name alone does not say what the
-session is for. The summary is not passed in the prompt: a tool call's argument
-is model output, so writing the file and then sending its text bills it twice.
+Its prompt is one line, `/relay take <branch> — <what now>`, `<what now>` being
+one sentence: the summary's Next step in plain words, in the human-facing
+language (CLAUDE.md § "Language"), a skill in it named bare. The prompt is what
+an operator switching in from other work sees first, and a branch name does not
+say what the session is for. The summary is not passed in the prompt: a tool
+call's argument is model output, so writing the file and then sending its text
+bills it twice.
 
 - **Web/remote**: `create_session` from the Claude Code Remote tools, with
   `source_url` the `origin` URL, `source_revision` the branch, a `title` per
@@ -188,11 +188,10 @@ the context the relay was run to free.
 
 1. **Attach** per `@.claude/skills/from-branch/SKILL.md` Steps 1–5 — the whole
    attach, which also covers a session already on the branch. The sentence after
-   the branch is the operator's caption for the session, not a task: Step 3
-   dispatches on the summary's Next step. Only where it asks for something the
-   Next step does not — an operator typing their own after a park — is that part
-   a follow-up, dispatched after the Next step as Step 3's first case dispatches
-   one.
+   the branch is a caption for the operator, not a task: Step 3 dispatches on
+   the summary's Next step. A part asking for something the Next step does not —
+   an operator's own words after a park — is a follow-up, dispatched after it
+   the way Step 3's first case dispatches one.
 2. **Read the current summary**:
    `ls docs/remove-before-merging/relay-*.md | sort -V | tail -1` names it —
    `-V`, or `relay-10` sorts before `relay-9` — and `Read` opens it. Anything in
