@@ -1,0 +1,88 @@
+{
+  "total": {
+    "inputTokens": 42,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 87029,
+    "cacheReadTokens": 2248542,
+    "outputTokens": 7524,
+    "thinkingTokens": 1718,
+    "responses": 21,
+    "costUsd": 1.2965884
+  },
+  "estimate": {
+    "at": "2026-10-15T05:24:29.881Z",
+    "parts": [
+      {
+        "hours": 0.5,
+        "grade": "middle",
+        "role": "developer",
+        "comment": "reordering one serializer's keys and its test is routine; the time is finding where the row is written and checking no reader depends on the order"
+      }
+    ],
+    "comment": null
+  },
+  "sessionId": "9aa3abc8-5cad-58a0-b6e7-ced57f7001d6",
+  "branch": "claude/cost-row-total-first-yeq47x",
+  "cwd": "/home/user/muthur",
+  "openingPrompt": "в json сессии, давай total будет идти первым ключом",
+  "prs": [
+    200
+  ],
+  "url": "https://claude.ai/code/session_01DGP4YcwqPkF3DiKTK88UWy",
+  "operator": "vzakharov",
+  "firstResponseAt": "2026-10-15T05:23:14.905Z",
+  "lastResponseAt": "2026-10-15T05:25:02.401Z",
+  "pricesAsOf": "2026-10-06",
+  "claudeCodeTotalUsd": null,
+  "ownTurns": {
+    "inputTokens": 42,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 87029,
+    "cacheReadTokens": 2248542,
+    "outputTokens": 7524,
+    "thinkingTokens": 1718,
+    "responses": 21,
+    "costUsd": 1.2965884
+  },
+  "subagents": {
+    "inputTokens": 0,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 0,
+    "cacheReadTokens": 0,
+    "outputTokens": 0,
+    "thinkingTokens": 0,
+    "responses": 0,
+    "costUsd": 0.0
+  },
+  "byRate": {
+    "claude-opus-5-5/standard": {
+      "inputTokens": 42,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 87029,
+      "cacheReadTokens": 2248542,
+      "outputTokens": 7524,
+      "thinkingTokens": 1718,
+      "responses": 21,
+      "costUsd": 1.2965884
+    }
+  },
+  "warnings": [],
+  "orientation": {
+    "endedBy": "Edit",
+    "endedOn": ".claude/costs/lib/rows.py",
+    "endedAt": "2026-10-15T05:23:38.856Z",
+    "contextTokens": 110047,
+    "spend": {
+      "inputTokens": 16,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 62415,
+      "cacheReadTokens": 701817,
+      "outputTokens": 1807,
+      "thinkingTokens": 611,
+      "responses": 8,
+      "costUsd": 0.6758874
+    }
+  },
+  "compactions": [],
+  "telemetry": null
+}
