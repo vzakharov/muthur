@@ -18,11 +18,8 @@ deliberately — don't reflexively skip it:
   `<merge-base>` is the base commit the branch already contains (`/check-merge`
   prints it as `base=…`, or compute `git merge-base HEAD origin/<base>`).
   Deciding without reading the diff is not allowed.
-- Weigh the same interactions step 2 warns about (a helper/util/component that
-  now duplicates something you wrote, a shared abstraction you should route
-  through instead of your local one, a renamed/moved symbol you still reference
-  the old way, a pattern this branch should now follow) **plus** the semantic
-  incompatibilities above.
+- Weigh the collisions `@.claude/skills/sync-branch/SKILL.md` Step 4 reads the
+  incoming diff for **plus** the semantic incompatibilities above.
 - **Default to re-verify when unsure.** The test is _interaction_, not _whether
   the base touched code_ — most advances touch some code, and that alone doesn't
   warrant it. Skip re-verification when, having read the diff, you can say why
@@ -30,13 +27,12 @@ deliberately — don't reflexively skip it:
   different areas/modules, nothing this branch imports or depends on was
   touched, and no symbol/signature/pattern this branch uses was changed. If you
   can see a plausible interaction, or you genuinely can't tell, re-verify.
-  - **Interacting or ambiguous** → re-run step 2 (`git merge origin/<base>`,
-    applying any dedup/simplification it opens), then step 1
-    (`./scripts/vet.sh`), push, and re-run any step-6 dispatch the diff still
-    warrants. The two-shot rule does **not** apply to these base-advanced
-    re-runs; they're keeping the target current, not fixing failures.
-  - **Demonstrably independent** → `git merge origin/<base>`, push, and run
-    `/check-merge` again when you return to confirm `origin/<base>` hasn't moved
-    since. Unrelated code changes qualify: e.g. the base reworks a frontend
-    modal while this branch changes a background job's retry policy — both touch
-    code, but they don't interact.
+  - **Interacting or ambiguous** → re-run step 2 (`/sync-branch`, which vets and
+    pushes), and re-run any step-6 dispatch the diff still warrants. The
+    two-shot rule does **not** apply to these base-advanced re-runs; they're
+    keeping the target current, not fixing failures.
+  - **Demonstrably independent** → `/sync-branch no vet`, and run `/check-merge`
+    again when you return to confirm `origin/<base>` hasn't moved since.
+    Unrelated code changes qualify: e.g. the base reworks a frontend modal while
+    this branch changes a background job's retry policy — both touch code, but
+    they don't interact.
