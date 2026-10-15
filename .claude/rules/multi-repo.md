@@ -53,9 +53,7 @@ ask when it names none.
   the loaded skill's base directory lies outside the target, `Read`
   `<repo>/.claude/skills/<name>/SKILL.md` and follow that copy from where you
   are; when the target has no such skill, say so and stop.
-- **Files are read and written by absolute path inside the target**, and a
-  `Read` of something in a directory comes before a `Write` there, which is what
-  delivers its nested conventions.
+- **Files are read and written by absolute path inside the target.**
 
 **Two costs the operator carries, said when they bite:** a skill collision goes
 to the first source, so the repository they work in belongs first in the

@@ -169,9 +169,9 @@ there. What `vet.sh` must exit, and why, is `.claude/rules/stack.md`.
 
 **When the primary working directory is not a git repository** — a cloud session
 with several repositories attached, starting in their parent — `Read`
-`<this repo>/.claude/rules/multi-repo.md` before anything else, once per
-session, from whichever attached repository carries it: no hook runs and no
-skill knows its repository until it has.
+`.claude/rules/multi-repo.md` in any attached repository that carries it, before
+anything else, once per session: no hook runs and no skill knows its repository
+until it has.
 
 ## Plan mode & questions in web sessions
 
