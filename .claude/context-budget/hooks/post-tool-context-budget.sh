@@ -90,27 +90,33 @@ mkdir -p "$state_dir" && printf '%s\n' "$level" >"$state_file" || {
   exit 0
 }
 
-# A manual-relay switch is set only by a yes; a value that is neither a yes nor a
-# no is named on stderr, so a typo does not pass silently for the default.
-says_yes() {
+# A manual-relay switch reads as `yes`, `no`, or empty for unset; a value that is
+# neither a yes nor a no is named on stderr, so a typo does not pass silently for
+# the default.
+switch() {
   case "$(printf '%s' "$2" | tr -d '[:space:]' | tr '[:upper:]' '[:lower:]')" in
-    true | yes | on | 1) return 0 ;;
-    '' | false | no | off | 0) return 1 ;;
+    true | yes | on | 1) echo yes ;;
+    false | no | off | 0) echo no ;;
+    '') ;;
+    *) say "$1 is neither a yes nor a no; read as unset." ;;
   esac
-  say "$1 is neither a yes nor a no; read as unset."
-  return 1
 }
-manual_relay=
-if says_yes MUTHUR_MANUAL_CONTEXT_BUDGET_RELAY "${MUTHUR_MANUAL_CONTEXT_BUDGET_RELAY:-}"; then
+# `unasked` holds the operator's switch path while they have no answer on record.
+manual_relay= unasked=
+if [ "$(switch MUTHUR_MANUAL_CONTEXT_BUDGET_RELAY "${MUTHUR_MANUAL_CONTEXT_BUDGET_RELAY:-}")" = yes ]; then
   manual_relay=1
 else
   # The operator is keyed as `.claude/hooks/operator-voice.sh` keys voice entries:
   # the lowercased login of a `User` token. Resolved only here, with a notice
   # about to go out, since that is an API call.
   handle="$(gh api user 2>/dev/null | jq -r 'select(.type == "User") | .login | ascii_downcase' 2>/dev/null)"
-  if [[ "$handle" =~ ^[a-z0-9-]+$ ]] \
-    && says_yes "manual-relay/$handle" "$(cat "$root/.claude/context-budget/manual-relay/$handle" 2>/dev/null)"; then
-    manual_relay=1
+  if [[ "$handle" =~ ^[a-z0-9-]+$ ]]; then
+    operator_switch=".claude/context-budget/manual-relay/$handle"
+    case "$(switch "manual-relay/$handle" "$(cat "$root/$operator_switch" 2>/dev/null)")" in
+      yes) manual_relay=1 ;;
+      no) ;;
+      *) unasked="$operator_switch" ;;
+    esac
   fi
 fi
 
@@ -125,7 +131,10 @@ room=$((pause - warn))
 last_step=20000
 
 # However a pause is reached, it ends in the relay, asked first under manual relay.
-ends="then, without asking and with no argument, run ${relay}. Its report tells the operator the session was paused for its context budget and relayed on its own, and how they have a pause ask first instead (\`.claude/context-budget/CLAUDE.md\` § \"Manual relay\")"
+ends="then, without asking and with no argument, run ${relay}. Its report tells the operator the session was paused for its context budget and relayed on its own"
+# The offer is made until the operator answers it, and the answer is a file
+# whichever way it goes, so it is made once.
+[ -z "$unasked" ] || ends="${ends}, and ends by offering, in the operator's language and in words like these, \"if you'd rather I ask before relaying, say so\" — naming no file, setting or section, since their part is the answer alone. Whichever session hears that answer writes it, a no included, to \`${unasked}\` as \`.claude/context-budget/CLAUDE.md\` § \"Manual relay\" says, and the offer is not made again"
 [ -z "$manual_relay" ] || ends="tell the operator the session was paused for its context budget, and end the turn offering ${relay}"
 paused="follow ${stopping}. Push, ${ends}; the new session resumes the paused plan."
 

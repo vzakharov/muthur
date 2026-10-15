@@ -233,6 +233,7 @@ class WhenTheNoticesFire(BudgetTestCase):
 class WhetherThePauseRelaysOnItsOwn(BudgetTestCase):
     AUTO = "without asking and with no argument, run `/relay`"
     OFFER = "offering `/relay`"
+    ASK_FIRST = "if you'd rather I ask before relaying, say so"
 
     def assert_relays(self, notice: str) -> None:
         self.assertIn(self.AUTO, notice)
@@ -246,7 +247,29 @@ class WhetherThePauseRelaysOnItsOwn(BudgetTestCase):
         self.session.signed_in_as("Someone")
         for notice in self.notices():
             self.assert_relays(notice)
-            self.assertIn("how they have a pause ask first instead", notice)
+
+    def test_an_operator_with_no_answer_is_offered_the_switch(self) -> None:
+        self.session.signed_in_as("Someone")
+        for notice in self.notices():
+            self.assertIn(self.ASK_FIRST, notice)
+            self.assertIn("`.claude/context-budget/manual-relay/someone`", notice)
+
+    def test_an_operators_no_is_an_answer_and_ends_the_offer(self) -> None:
+        self.session.signed_in_as("someone")
+        self.session.manual_relay("someone", "false\n")
+        _, pause = self.notices()
+        self.assert_relays(pause)
+        self.assertNotIn(self.ASK_FIRST, pause)
+
+    def test_an_unreadable_answer_is_offered_again(self) -> None:
+        self.session.signed_in_as("someone")
+        self.session.manual_relay("someone", "maybe")
+        _, pause = self.notices()
+        self.assertIn(self.ASK_FIRST, pause)
+
+    def test_with_no_operator_there_is_nothing_to_offer(self) -> None:
+        _, pause = self.notices()
+        self.assertNotIn(self.ASK_FIRST, pause)
 
     def test_an_operators_true_keeps_the_offer(self) -> None:
         self.session.signed_in_as("Someone")
