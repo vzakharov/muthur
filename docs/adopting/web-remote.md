@@ -221,6 +221,16 @@ jq -s '.[0] * .[1]' ~/.claude/settings.json - > /tmp/claude-settings.json <<'EOF
 }
 EOF
 mv /tmp/claude-settings.json ~/.claude/settings.json
+
+# A session with several repositories attached runs none of their hooks; the
+# repositories' own scripts/multi-repo-hooks.py wires them in, and this hook
+# only finds one. Appended to any SessionStart hooks already there, replacing
+# an earlier copy of itself; in a single-repo session the glob finds nothing.
+jq --arg cmd 'for f in "$CLAUDE_PROJECT_DIR"/*/scripts/multi-repo-hooks.py; do [ -f "$f" ] && exec python3 "$f"; done; exit 0' \
+  '.hooks.SessionStart = [(.hooks.SessionStart // [])[] | select(any(.hooks[]; .command | contains("multi-repo-hooks.py")) | not)]
+    + [{"hooks": [{"type": "command", "command": $cmd, "timeout": 600}]}]' \
+  ~/.claude/settings.json > /tmp/claude-settings.json
+mv /tmp/claude-settings.json ~/.claude/settings.json
 ```
 
 What carries over to any stack, and what to check before adapting it:
@@ -243,6 +253,9 @@ What carries over to any stack, and what to check before adapting it:
 7. **Check the `autoMode` block landed** from inside a session:
    `claude auto-mode config | grep -E "Ephemeral Container Files|Session Branch Cleanup"`
    prints both rules only if the classifier has them.
+8. **The multi-repo hook stays as written.** It names no repository, so it
+   carries over unchanged, and its 600-second `timeout` covers each attached
+   repository's dependency install running in turn.
 
 Adapt it, fill in your pins, and hand the operator the finished text. Say
 plainly in your report that this is the one step you could not apply yourself.
@@ -275,6 +288,19 @@ proxy, so the proxied path is the supported one; if the gateway starts enforcing
 the same policy, every `gh` call through the shim fails at once, and the tell is
 the shim failing where the binary on its `exec` line, called directly with the
 proxy in place, succeeds.
+
+**A session with several repositories attached is held together from outside the
+platform.** Claude Code runs none of the repositories' hooks there, lists one
+copy of each same-named skill, and loads every repository's `CLAUDE.md` in full.
+The setup script's hook above, `scripts/multi-repo-hooks.py`,
+`scripts/find-repo.py` and `.claude/rules/multi-repo.md` cover the first two;
+the third, a full copy of the standing context per attached repository, nothing
+in a repository can remove — tracked upstream at
+[anthropics/claude-code#102311](https://github.com/anthropics/claude-code/issues/102311).
+Without the setup-script hook, the rule has the agent run the generator on its
+first turn — after the start event has passed, so it relays the `SessionStart`
+hooks' output itself. A `/relay` successor starts with the target repository
+alone.
 
 Note what is _not_ on this list: `gh pr ready` and the `search/*` block are not
 gaps in the infrastructure. Both work once the shim is in, so they are costs of
