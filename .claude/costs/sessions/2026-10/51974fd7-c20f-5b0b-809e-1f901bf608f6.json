@@ -1,0 +1,104 @@
+{
+  "sessionId": "51974fd7-c20f-5b0b-809e-1f901bf608f6",
+  "branch": "claude/human-hour-estimates-832s9l",
+  "cwd": "/home/user/muthur",
+  "openingPrompt": "/relay take claude/human-hour-estimates-832s9l",
+  "prs": [
+    137
+  ],
+  "url": "https://claude.ai/code/session_01TupPLyPvBC3TKNzbq8ko4u",
+  "operator": "vzakharov",
+  "firstResponseAt": "2026-10-04T05:49:06.864Z",
+  "lastResponseAt": "2026-10-04T06:25:24.813Z",
+  "pricesAsOf": "2026-09-23",
+  "claudeCodeTotalUsd": 3.293856000000001,
+  "total": {
+    "inputTokens": 604,
+    "cacheWrite5mTokens": 977,
+    "cacheWrite1hTokens": 164578,
+    "cacheReadTokens": 7387014,
+    "outputTokens": 37136,
+    "thinkingTokens": 7265,
+    "responses": 50,
+    "costUsd": 3.546978800000001
+  },
+  "ownTurns": {
+    "inputTokens": 98,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 164578,
+    "cacheReadTokens": 7194590,
+    "outputTokens": 37128,
+    "thinkingTokens": 7265,
+    "responses": 49,
+    "costUsd": 3.498494000000001
+  },
+  "subagents": {
+    "inputTokens": 0,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 0,
+    "cacheReadTokens": 0,
+    "outputTokens": 0,
+    "thinkingTokens": 0,
+    "responses": 0,
+    "costUsd": 0.0
+  },
+  "byRate": {
+    "claude-opus-5-5/standard": {
+      "inputTokens": 604,
+      "cacheWrite5mTokens": 977,
+      "cacheWrite1hTokens": 164578,
+      "cacheReadTokens": 7387014,
+      "outputTokens": 37136,
+      "thinkingTokens": 7265,
+      "responses": 50,
+      "costUsd": 3.546978800000001
+    }
+  },
+  "warnings": [],
+  "orientation": {
+    "endedBy": "Write",
+    "endedOn": ".claude/costs/lib/estimate.py",
+    "endedAt": "2026-10-04T05:50:21.611Z",
+    "contextTokens": 125918,
+    "spend": {
+      "inputTokens": 22,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 80270,
+      "cacheReadTokens": 1064204,
+      "outputTokens": 5983,
+      "thinkingTokens": 3905,
+      "responses": 11,
+      "costUsd": 0.9747488
+    }
+  },
+  "compactions": [],
+  "telemetry": {
+    "events": 50,
+    "matched": 49,
+    "matchedTableUsd": 3.498494000000001,
+    "matchedEventUsd": 3.4984940000000004,
+    "unseen": {
+      "prompt_suggestion": {
+        "inputTokens": 506,
+        "cacheWrite5mTokens": 977,
+        "cacheWrite1hTokens": 0,
+        "cacheReadTokens": 192424,
+        "outputTokens": 8,
+        "thinkingTokens": 0,
+        "responses": 1,
+        "costUsd": 0.04848480000000001
+      }
+    }
+  },
+  "estimate": {
+    "at": "2026-10-04T05:52:43.113Z",
+    "parts": [
+      {
+        "hours": 3.0,
+        "grade": "senior",
+        "role": "developer"
+      }
+    ],
+    "comment": "Ledger estimates reshaped into parts by role and grade: rate table for roles, one estimate per row, daily report buckets, CLI, hook text, docs and tests to match."
+  }
+}

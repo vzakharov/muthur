@@ -1,0 +1,75 @@
+{
+  "estimate": null,
+  "sessionId": "b96d559c-8897-5f82-b58f-fc44e6d1b500",
+  "branch": "claude/dreamy-bardeen-mbt6yh",
+  "cwd": "/home/user/muthur",
+  "openingPrompt": "/finalize & merge claude/music-songs-route-ub8ny7",
+  "prs": [],
+  "url": "https://claude.ai/code/session_01CZ9cbpYLxJCyGdygoVAZDf",
+  "operator": "vzakharov",
+  "firstResponseAt": "2026-10-13T18:26:45.613Z",
+  "lastResponseAt": "2026-10-13T18:27:22.030Z",
+  "pricesAsOf": "2026-10-06",
+  "claudeCodeTotalUsd": null,
+  "total": {
+    "inputTokens": 10,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 59391,
+    "cacheReadTokens": 447525,
+    "outputTokens": 2386,
+    "thinkingTokens": 1086,
+    "responses": 5,
+    "costUsd": 0.6123930000000001
+  },
+  "ownTurns": {
+    "inputTokens": 10,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 59391,
+    "cacheReadTokens": 447525,
+    "outputTokens": 2386,
+    "thinkingTokens": 1086,
+    "responses": 5,
+    "costUsd": 0.6123930000000001
+  },
+  "subagents": {
+    "inputTokens": 0,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 0,
+    "cacheReadTokens": 0,
+    "outputTokens": 0,
+    "thinkingTokens": 0,
+    "responses": 0,
+    "costUsd": 0.0
+  },
+  "byRate": {
+    "claude-opus-5-5/standard": {
+      "inputTokens": 10,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 59391,
+      "cacheReadTokens": 447525,
+      "outputTokens": 2386,
+      "thinkingTokens": 1086,
+      "responses": 5,
+      "costUsd": 0.6123930000000001
+    }
+  },
+  "warnings": [],
+  "orientation": {
+    "endedBy": "end_turn",
+    "endedOn": null,
+    "endedAt": "2026-10-13T18:27:22.030Z",
+    "contextTokens": 105689,
+    "spend": {
+      "inputTokens": 8,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 58985,
+      "cacheReadTokens": 342244,
+      "outputTokens": 1099,
+      "thinkingTokens": 429,
+      "responses": 4,
+      "costUsd": 0.5623408000000001
+    }
+  },
+  "compactions": [],
+  "telemetry": null
+}

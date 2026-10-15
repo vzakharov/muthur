@@ -1,0 +1,58 @@
+{
+  "sessionId": "dd57f04a-64f7-581c-9ad8-16e11381e0bb",
+  "branch": "claude/muthur-self-update-0izdlm",
+  "cwd": "/home/user/muthur",
+  "openingPrompt": "/handle claude/muthur-self-update-0izdlm",
+  "prs": [
+    114
+  ],
+  "url": "https://claude.ai/code/session_01JRUMXLF7TjRQNxmGzV5zzo",
+  "operator": "vzakharov",
+  "firstResponseAt": "2026-09-26T00:45:54.161Z",
+  "lastResponseAt": "2026-09-26T01:04:41.145Z",
+  "pricesAsOf": "2026-09-23",
+  "claudeCodeTotalUsd": null,
+  "total": {
+    "inputTokens": 186,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 275360,
+    "cacheReadTokens": 12790754,
+    "outputTokens": 49716,
+    "thinkingTokens": 15908,
+    "responses": 93,
+    "costUsd": 5.7560948
+  },
+  "ownTurns": {
+    "inputTokens": 186,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 275360,
+    "cacheReadTokens": 12790754,
+    "outputTokens": 49716,
+    "thinkingTokens": 15908,
+    "responses": 93,
+    "costUsd": 5.7560948
+  },
+  "subagents": {
+    "inputTokens": 0,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 0,
+    "cacheReadTokens": 0,
+    "outputTokens": 0,
+    "thinkingTokens": 0,
+    "responses": 0,
+    "costUsd": 0.0
+  },
+  "byRate": {
+    "claude-opus-5-5/standard": {
+      "inputTokens": 186,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 275360,
+      "cacheReadTokens": 12790754,
+      "outputTokens": 49716,
+      "thinkingTokens": 15908,
+      "responses": 93,
+      "costUsd": 5.7560948
+    }
+  },
+  "warnings": []
+}

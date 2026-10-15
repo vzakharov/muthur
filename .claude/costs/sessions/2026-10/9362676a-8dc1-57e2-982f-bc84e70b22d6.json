@@ -1,0 +1,88 @@
+{
+  "estimate": {
+    "at": "2026-10-14T07:54:04.516Z",
+    "parts": [
+      {
+        "hours": 0.25,
+        "grade": "junior",
+        "role": "developer",
+        "comment": "a one-string swap in a hook with its own tests; anyone who can run them can make it"
+      }
+    ],
+    "comment": null
+  },
+  "sessionId": "9362676a-8dc1-57e2-982f-bc84e70b22d6",
+  "branch": "claude/keepalive-english-example-xfh12k",
+  "cwd": "/home/user/muthur",
+  "openingPrompt": "Keepalive: give the renewal-line example in English #193",
+  "prs": [
+    194
+  ],
+  "url": "https://claude.ai/code/session_019Th2wwDAMnPXvVFZoKWVAv",
+  "operator": "vzakharov",
+  "firstResponseAt": "2026-10-14T07:53:15.995Z",
+  "lastResponseAt": "2026-10-14T08:04:48.596Z",
+  "pricesAsOf": "2026-10-06",
+  "claudeCodeTotalUsd": 1.3500454000000002,
+  "total": {
+    "inputTokens": 80,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 106783,
+    "cacheReadTokens": 4800438,
+    "outputTokens": 11658,
+    "thinkingTokens": 1787,
+    "responses": 40,
+    "costUsd": 2.0478316
+  },
+  "ownTurns": {
+    "inputTokens": 80,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 106783,
+    "cacheReadTokens": 4800438,
+    "outputTokens": 11658,
+    "thinkingTokens": 1787,
+    "responses": 40,
+    "costUsd": 2.0478316
+  },
+  "subagents": {
+    "inputTokens": 0,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 0,
+    "cacheReadTokens": 0,
+    "outputTokens": 0,
+    "thinkingTokens": 0,
+    "responses": 0,
+    "costUsd": 0.0
+  },
+  "byRate": {
+    "claude-opus-5-5/standard": {
+      "inputTokens": 80,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 106783,
+      "cacheReadTokens": 4800438,
+      "outputTokens": 11658,
+      "thinkingTokens": 1787,
+      "responses": 40,
+      "costUsd": 2.0478316
+    }
+  },
+  "warnings": [],
+  "orientation": {
+    "endedBy": "Edit",
+    "endedOn": ".claude/keepalive/hooks/keepalive.py",
+    "endedAt": "2026-10-14T07:53:40.187Z",
+    "contextTokens": 101723,
+    "spend": {
+      "inputTokens": 14,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 55075,
+      "cacheReadTokens": 586895,
+      "outputTokens": 1263,
+      "thinkingTokens": 293,
+      "responses": 7,
+      "costUsd": 0.5832950000000001
+    }
+  },
+  "compactions": [],
+  "telemetry": null
+}

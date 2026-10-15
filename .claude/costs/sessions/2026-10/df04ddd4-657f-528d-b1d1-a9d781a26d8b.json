@@ -1,0 +1,94 @@
+{
+  "estimate": {
+    "at": "2026-10-08T17:44:53.627Z",
+    "parts": [
+      {
+        "hours": 3.0,
+        "grade": "senior",
+        "role": "prompter",
+        "comment": "the convention has to read right to agents on both ends of a sync, in trees that never saw the new text, and the consent gate must hold in every path"
+      },
+      {
+        "hours": 1.0,
+        "grade": "middle",
+        "role": "copywriter",
+        "comment": "the welcome issue and the hello guidance are public, read by strangers deciding whether to speak up"
+      }
+    ],
+    "comment": null
+  },
+  "sessionId": "df04ddd4-657f-528d-b1d1-a9d781a26d8b",
+  "branch": "claude/adopters-say-hello-clccqp",
+  "cwd": "/home/user/muthur",
+  "openingPrompt": "я заметил, что у нас уже пять звёздочек. Давай попросим адоптеров рассказать (или хотя бы заявить) о себе, типа: 1- создаём ветку в наших собственных Issues (we…",
+  "prs": [
+    167
+  ],
+  "url": "https://claude.ai/code/session_01DeLCERe45ASpP2V5Fxrs6r",
+  "operator": "vzakharov",
+  "firstResponseAt": "2026-10-08T17:43:05.657Z",
+  "lastResponseAt": "2026-10-08T18:02:44.036Z",
+  "pricesAsOf": "2026-10-06",
+  "claudeCodeTotalUsd": null,
+  "total": {
+    "inputTokens": 180,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 189617,
+    "cacheReadTokens": 16038083,
+    "outputTokens": 50296,
+    "thinkingTokens": 13159,
+    "responses": 90,
+    "costUsd": 5.731192599999997
+  },
+  "ownTurns": {
+    "inputTokens": 180,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 189617,
+    "cacheReadTokens": 16038083,
+    "outputTokens": 50296,
+    "thinkingTokens": 13159,
+    "responses": 90,
+    "costUsd": 5.731192599999997
+  },
+  "subagents": {
+    "inputTokens": 0,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 0,
+    "cacheReadTokens": 0,
+    "outputTokens": 0,
+    "thinkingTokens": 0,
+    "responses": 0,
+    "costUsd": 0.0
+  },
+  "byRate": {
+    "claude-opus-5-5/standard": {
+      "inputTokens": 180,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 189617,
+      "cacheReadTokens": 16038083,
+      "outputTokens": 50296,
+      "thinkingTokens": 13159,
+      "responses": 90,
+      "costUsd": 5.731192599999997
+    }
+  },
+  "warnings": [],
+  "orientation": {
+    "endedBy": "Write",
+    "endedOn": "docs/plans/adopters-say-hello.draft.do-not-implement.md",
+    "endedAt": "2026-10-08T17:44:58.890Z",
+    "contextTokens": 137349,
+    "spend": {
+      "inputTokens": 24,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 91892,
+      "cacheReadTokens": 1252075,
+      "outputTokens": 9718,
+      "thinkingTokens": 7686,
+      "responses": 12,
+      "costUsd": 1.1800069999999998
+    }
+  },
+  "compactions": [],
+  "telemetry": null
+}

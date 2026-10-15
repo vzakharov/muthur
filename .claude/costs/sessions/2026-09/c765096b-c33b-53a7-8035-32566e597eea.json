@@ -1,0 +1,58 @@
+{
+  "sessionId": "c765096b-c33b-53a7-8035-32566e597eea",
+  "branch": "claude/elephant-and-pizza-04z3ht",
+  "cwd": "/home/user/muthur",
+  "openingPrompt": "хочу придумать новую систему выполнения мегапланов, отличную от разбиения на issues. для твоего понимания можешь взять пулл #1 из vzakharov/goodspeed-knowledge-…",
+  "prs": [
+    110
+  ],
+  "url": "https://claude.ai/code/session_01U7MeUVPqtRDgMQ4kjiHQcb",
+  "operator": "vzakharov",
+  "firstResponseAt": "2026-09-24T18:57:27.533Z",
+  "lastResponseAt": "2026-09-25T09:33:43.884Z",
+  "pricesAsOf": "2026-09-23",
+  "claudeCodeTotalUsd": 5.8095349999999994,
+  "total": {
+    "inputTokens": 146,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 342665,
+    "cacheReadTokens": 11483467,
+    "outputTokens": 67641,
+    "thinkingTokens": 25193,
+    "responses": 73,
+    "costUsd": 6.391417400000001
+  },
+  "ownTurns": {
+    "inputTokens": 146,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 342665,
+    "cacheReadTokens": 11483467,
+    "outputTokens": 67641,
+    "thinkingTokens": 25193,
+    "responses": 73,
+    "costUsd": 6.391417400000001
+  },
+  "subagents": {
+    "inputTokens": 0,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 0,
+    "cacheReadTokens": 0,
+    "outputTokens": 0,
+    "thinkingTokens": 0,
+    "responses": 0,
+    "costUsd": 0.0
+  },
+  "byRate": {
+    "claude-opus-5-5/standard": {
+      "inputTokens": 146,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 342665,
+      "cacheReadTokens": 11483467,
+      "outputTokens": 67641,
+      "thinkingTokens": 25193,
+      "responses": 73,
+      "costUsd": 6.391417400000001
+    }
+  },
+  "warnings": []
+}

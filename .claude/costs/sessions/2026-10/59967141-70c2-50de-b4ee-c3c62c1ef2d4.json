@@ -1,0 +1,94 @@
+{
+  "estimate": {
+    "at": "2026-10-09T17:41:18.469Z",
+    "parts": [
+      {
+        "hours": 0.5,
+        "grade": "middle",
+        "role": "copywriter",
+        "comment": "rewording one paragraph of a commit body to name the real cost of a bug needs a careful reader, not a developer"
+      },
+      {
+        "hours": 0.5,
+        "grade": "middle",
+        "role": "developer",
+        "comment": "land prep on a small script change: run the checks, sweep artifacts, attest"
+      }
+    ],
+    "comment": null
+  },
+  "sessionId": "59967141-70c2-50de-b4ee-c3c62c1ef2d4",
+  "branch": "claude/mid-turn-session-images-l2b8m2",
+  "cwd": "/home/user/muthur",
+  "openingPrompt": "/handle & finalize claude/mid-turn-session-images-l2b8m2",
+  "prs": [
+    176
+  ],
+  "url": "https://claude.ai/code/session_01Xto9p6taxhu164C1CTfMFn",
+  "operator": "vzakharov",
+  "firstResponseAt": "2026-10-09T17:37:08.040Z",
+  "lastResponseAt": "2026-10-09T17:51:20.197Z",
+  "pricesAsOf": "2026-10-06",
+  "claudeCodeTotalUsd": 1.640323,
+  "total": {
+    "inputTokens": 74,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 114900,
+    "cacheReadTokens": 4569178,
+    "outputTokens": 11123,
+    "thinkingTokens": 2544,
+    "responses": 37,
+    "costUsd": 2.0557916
+  },
+  "ownTurns": {
+    "inputTokens": 74,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 114900,
+    "cacheReadTokens": 4569178,
+    "outputTokens": 11123,
+    "thinkingTokens": 2544,
+    "responses": 37,
+    "costUsd": 2.0557916
+  },
+  "subagents": {
+    "inputTokens": 0,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 0,
+    "cacheReadTokens": 0,
+    "outputTokens": 0,
+    "thinkingTokens": 0,
+    "responses": 0,
+    "costUsd": 0.0
+  },
+  "byRate": {
+    "claude-opus-5-5/standard": {
+      "inputTokens": 74,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 114900,
+      "cacheReadTokens": 4569178,
+      "outputTokens": 11123,
+      "thinkingTokens": 2544,
+      "responses": 37,
+      "costUsd": 2.0557916
+    }
+  },
+  "warnings": [],
+  "orientation": {
+    "endedBy": "Edit",
+    "endedOn": "docs/remove-before-merging/squash-message.md",
+    "endedAt": "2026-10-09T17:37:56.079Z",
+    "contextTokens": 114920,
+    "spend": {
+      "inputTokens": 20,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 69268,
+      "cacheReadTokens": 920252,
+      "outputTokens": 2116,
+      "thinkingTokens": 326,
+      "responses": 10,
+      "costUsd": 0.7805944
+    }
+  },
+  "compactions": [],
+  "telemetry": null
+}

@@ -1,0 +1,93 @@
+{
+  "sessionId": "0edd4139-405e-5add-9b91-251c573f03cd",
+  "branch": "claude/cost-subject-orientation-5rrxs4",
+  "cwd": "/home/user/muthur",
+  "openingPrompt": "а давай-ка в session cost (new) писать 1.23 USD, incl 0.75 USD orientation или типа того",
+  "prs": [
+    120
+  ],
+  "url": "https://claude.ai/code/session_01S1727DecvZVVr3hmWFNBYH",
+  "operator": "vzakharov",
+  "firstResponseAt": "2026-09-26T02:26:14.708Z",
+  "lastResponseAt": "2026-09-26T02:33:01.373Z",
+  "pricesAsOf": "2026-09-23",
+  "claudeCodeTotalUsd": null,
+  "total": {
+    "inputTokens": 574,
+    "cacheWrite5mTokens": 636,
+    "cacheWrite1hTokens": 106231,
+    "cacheReadTokens": 4106058,
+    "outputTokens": 12204,
+    "thinkingTokens": 2591,
+    "responses": 35,
+    "costUsd": 1.9225235999999999
+  },
+  "ownTurns": {
+    "inputTokens": 68,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 106231,
+    "cacheReadTokens": 3974105,
+    "outputTokens": 12188,
+    "thinkingTokens": 2591,
+    "responses": 34,
+    "costUsd": 1.888701
+  },
+  "subagents": {
+    "inputTokens": 0,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 0,
+    "cacheReadTokens": 0,
+    "outputTokens": 0,
+    "thinkingTokens": 0,
+    "responses": 0,
+    "costUsd": 0.0
+  },
+  "byRate": {
+    "claude-opus-5-5/standard": {
+      "inputTokens": 574,
+      "cacheWrite5mTokens": 636,
+      "cacheWrite1hTokens": 106231,
+      "cacheReadTokens": 4106058,
+      "outputTokens": 12204,
+      "thinkingTokens": 2591,
+      "responses": 35,
+      "costUsd": 1.9225235999999999
+    }
+  },
+  "warnings": [],
+  "orientation": {
+    "endedBy": "Edit",
+    "endedOn": ".claude/costs/hooks/stop-session-cost.sh",
+    "endedAt": "2026-09-26T02:26:38.037Z",
+    "contextTokens": 103247,
+    "spend": {
+      "inputTokens": 12,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 59914,
+      "cacheReadTokens": 477599,
+      "outputTokens": 1298,
+      "thinkingTokens": 386,
+      "responses": 6,
+      "costUsd": 0.6008398
+    }
+  },
+  "compactions": [],
+  "telemetry": {
+    "events": 35,
+    "matched": 34,
+    "matchedTableUsd": 1.888701,
+    "matchedEventUsd": 1.8887010000000002,
+    "unseen": {
+      "prompt_suggestion": {
+        "inputTokens": 506,
+        "cacheWrite5mTokens": 636,
+        "cacheWrite1hTokens": 0,
+        "cacheReadTokens": 131953,
+        "outputTokens": 16,
+        "thinkingTokens": 0,
+        "responses": 1,
+        "costUsd": 0.0338226
+      }
+    }
+  }
+}

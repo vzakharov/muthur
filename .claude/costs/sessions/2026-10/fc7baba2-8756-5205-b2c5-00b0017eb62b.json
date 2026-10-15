@@ -1,0 +1,94 @@
+{
+  "estimate": {
+    "at": "2026-10-07T09:01:34.882Z",
+    "parts": [
+      {
+        "hours": 0.75,
+        "grade": "middle",
+        "role": "developer",
+        "comment": "a flag rename across docs and a case-insensitive parse with a test are routine, mechanical edits"
+      },
+      {
+        "hours": 0.5,
+        "grade": "senior",
+        "role": "architect",
+        "comment": "judging whether two GitHub clients should share code takes knowing the package layout and catalog groups"
+      }
+    ],
+    "comment": null
+  },
+  "sessionId": "fc7baba2-8756-5205-b2c5-00b0017eb62b",
+  "branch": "claude/costs-siblings-8f5s0a",
+  "cwd": "/home/user/muthur",
+  "openingPrompt": "/relay take claude/costs-siblings-8f5s0a",
+  "prs": [
+    160
+  ],
+  "url": "https://claude.ai/code/session_01BRSonGg6pkyCEBB7r5Z5Pv",
+  "operator": "vzakharov",
+  "firstResponseAt": "2026-10-07T08:53:22.255Z",
+  "lastResponseAt": "2026-10-07T09:19:49.857Z",
+  "pricesAsOf": "2026-09-23",
+  "claudeCodeTotalUsd": 2.6660729999999995,
+  "total": {
+    "inputTokens": 126,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 134783,
+    "cacheReadTokens": 9307103,
+    "outputTokens": 22070,
+    "thinkingTokens": 3742,
+    "responses": 63,
+    "costUsd": 3.3815886
+  },
+  "ownTurns": {
+    "inputTokens": 126,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 134783,
+    "cacheReadTokens": 9307103,
+    "outputTokens": 22070,
+    "thinkingTokens": 3742,
+    "responses": 63,
+    "costUsd": 3.3815886
+  },
+  "subagents": {
+    "inputTokens": 0,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 0,
+    "cacheReadTokens": 0,
+    "outputTokens": 0,
+    "thinkingTokens": 0,
+    "responses": 0,
+    "costUsd": 0.0
+  },
+  "byRate": {
+    "claude-opus-5-5/standard": {
+      "inputTokens": 126,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 134783,
+      "cacheReadTokens": 9307103,
+      "outputTokens": 22070,
+      "thinkingTokens": 3742,
+      "responses": 63,
+      "costUsd": 3.3815886
+    }
+  },
+  "warnings": [],
+  "orientation": {
+    "endedBy": "end_turn",
+    "endedOn": null,
+    "endedAt": "2026-10-07T08:53:39.846Z",
+    "contextTokens": 96372,
+    "spend": {
+      "inputTokens": 6,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 41275,
+      "cacheReadTokens": 234523,
+      "outputTokens": 763,
+      "thinkingTokens": 199,
+      "responses": 3,
+      "costUsd": 0.3923886000000001
+    }
+  },
+  "compactions": [],
+  "telemetry": null
+}

@@ -1,0 +1,94 @@
+{
+  "total": {
+    "inputTokens": 96,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 191159,
+    "cacheReadTokens": 8303624,
+    "outputTokens": 37431,
+    "thinkingTokens": 12114,
+    "responses": 48,
+    "costUsd": 3.9390008000000005
+  },
+  "estimate": {
+    "at": "2026-10-15T18:16:09.473Z",
+    "parts": [
+      {
+        "hours": 1.5,
+        "grade": "senior",
+        "role": "architect",
+        "comment": "settling the fallback, unfinalize surface and a migration that leaves main without rows needed the reader, finalize and backfill ordered so no row is lost between them"
+      },
+      {
+        "hours": 0.5,
+        "grade": "middle",
+        "role": "editor",
+        "comment": "the PR body and squash record had to carry an adopters' ask a port can act on"
+      }
+    ],
+    "comment": null
+  },
+  "sessionId": "eb8e37bc-f846-51b5-a1b3-66c71e1d16ea",
+  "branch": "claude/cost-ledger-branch-pz4s1a",
+  "cwd": "/home/user/muthur",
+  "openingPrompt": "/relay take claude/cost-ledger-branch-pz4s1a давай делать",
+  "prs": [
+    202
+  ],
+  "url": "https://claude.ai/code/session_01TNVxArQP8m5nFYcXyYdWDG",
+  "operator": "vzakharov",
+  "firstResponseAt": "2026-10-15T17:50:59.437Z",
+  "lastResponseAt": "2026-10-15T18:16:49.929Z",
+  "pricesAsOf": "2026-10-06",
+  "claudeCodeTotalUsd": 3.5349549999999996,
+  "ownTurns": {
+    "inputTokens": 96,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 191159,
+    "cacheReadTokens": 8303624,
+    "outputTokens": 37431,
+    "thinkingTokens": 12114,
+    "responses": 48,
+    "costUsd": 3.9390008000000005
+  },
+  "subagents": {
+    "inputTokens": 0,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 0,
+    "cacheReadTokens": 0,
+    "outputTokens": 0,
+    "thinkingTokens": 0,
+    "responses": 0,
+    "costUsd": 0.0
+  },
+  "byRate": {
+    "claude-opus-5-5/standard": {
+      "inputTokens": 96,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 191159,
+      "cacheReadTokens": 8303624,
+      "outputTokens": 37431,
+      "thinkingTokens": 12114,
+      "responses": 48,
+      "costUsd": 3.9390008000000005
+    }
+  },
+  "warnings": [],
+  "orientation": {
+    "endedBy": "Write",
+    "endedOn": "docs/plans/cost-ledger-branch.draft.do-not-implement.md",
+    "endedAt": "2026-10-15T17:53:45.620Z",
+    "contextTokens": 169508,
+    "spend": {
+      "inputTokens": 44,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 121972,
+      "cacheReadTokens": 2891742,
+      "outputTokens": 11427,
+      "thinkingTokens": 7829,
+      "responses": 22,
+      "costUsd": 1.7828404
+    }
+  },
+  "compactions": [],
+  "telemetry": null
+}

@@ -1,0 +1,94 @@
+{
+  "estimate": {
+    "at": "2026-10-08T21:17:40.200Z",
+    "parts": [
+      {
+        "hours": 3.0,
+        "grade": "senior",
+        "role": "developer",
+        "comment": "the lock is a concurrency primitive on a remote ref: the lease, the holder check and a test that really races need someone who knows git push semantics"
+      },
+      {
+        "hours": 0.5,
+        "grade": "middle",
+        "role": "editor",
+        "comment": "the offer rules and skill prose must stay in step with the script"
+      }
+    ],
+    "comment": null
+  },
+  "sessionId": "cfec1268-9b41-5689-8a2b-83e2578d5afd",
+  "branch": "claude/sync-lock-handover-xxmrou",
+  "cwd": "/home/user/muthur",
+  "openingPrompt": "muthur-sync: a new-session sync's lock names the offering session, not the syncing one #172 тут на русском",
+  "prs": [
+    173
+  ],
+  "url": "https://claude.ai/code/session_01R9QTaBdNXsLNj8m44pSWZW",
+  "operator": "vzakharov",
+  "firstResponseAt": "2026-10-08T21:13:40.767Z",
+  "lastResponseAt": "2026-10-08T21:20:01.836Z",
+  "pricesAsOf": "2026-10-06",
+  "claudeCodeTotalUsd": null,
+  "total": {
+    "inputTokens": 82,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 115875,
+    "cacheReadTokens": 5095250,
+    "outputTokens": 24572,
+    "thinkingTokens": 6481,
+    "responses": 41,
+    "costUsd": 2.437818
+  },
+  "ownTurns": {
+    "inputTokens": 82,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 115875,
+    "cacheReadTokens": 5095250,
+    "outputTokens": 24572,
+    "thinkingTokens": 6481,
+    "responses": 41,
+    "costUsd": 2.437818
+  },
+  "subagents": {
+    "inputTokens": 0,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 0,
+    "cacheReadTokens": 0,
+    "outputTokens": 0,
+    "thinkingTokens": 0,
+    "responses": 0,
+    "costUsd": 0.0
+  },
+  "byRate": {
+    "claude-opus-5-5/standard": {
+      "inputTokens": 82,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 115875,
+      "cacheReadTokens": 5095250,
+      "outputTokens": 24572,
+      "thinkingTokens": 6481,
+      "responses": 41,
+      "costUsd": 2.437818
+    }
+  },
+  "warnings": [],
+  "orientation": {
+    "endedBy": "Edit",
+    "endedOn": "scripts/muthur-sync.sh",
+    "endedAt": "2026-10-08T21:14:26.933Z",
+    "contextTokens": 110410,
+    "spend": {
+      "inputTokens": 16,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 59901,
+      "cacheReadTokens": 662694,
+      "outputTokens": 1720,
+      "thinkingTokens": 457,
+      "responses": 8,
+      "costUsd": 0.6462108000000001
+    }
+  },
+  "compactions": [],
+  "telemetry": null
+}

@@ -1,0 +1,93 @@
+{
+  "sessionId": "9b3f2654-750d-54ff-8217-d4362759ac8a",
+  "branch": "claude/auto-relay-1ip808",
+  "cwd": "/home/user/muthur",
+  "openingPrompt": "давай сделаем настройку авторелей на уровне репы: в таком случае релей по порогу бюджета контекста выполняется автоматически. при этом нужно чтобы за рулём был …",
+  "prs": [
+    125
+  ],
+  "url": "https://claude.ai/code/session_01MRvUPZcYHGSBovh4vY3izt",
+  "operator": "vzakharov",
+  "firstResponseAt": "2026-09-30T15:44:25.458Z",
+  "lastResponseAt": "2026-09-30T16:25:01.772Z",
+  "pricesAsOf": "2026-09-23",
+  "claudeCodeTotalUsd": 3.587828600000001,
+  "total": {
+    "inputTokens": 1702,
+    "cacheWrite5mTokens": 2509,
+    "cacheWrite1hTokens": 187065,
+    "cacheReadTokens": 15544429,
+    "outputTokens": 57835,
+    "thinkingTokens": 16394,
+    "responses": 95,
+    "costUsd": 5.788985800000002
+  },
+  "ownTurns": {
+    "inputTokens": 184,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 187065,
+    "cacheReadTokens": 14934109,
+    "outputTokens": 57807,
+    "thinkingTokens": 16394,
+    "responses": 92,
+    "costUsd": 5.640217800000002
+  },
+  "subagents": {
+    "inputTokens": 0,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 0,
+    "cacheReadTokens": 0,
+    "outputTokens": 0,
+    "thinkingTokens": 0,
+    "responses": 0,
+    "costUsd": 0.0
+  },
+  "byRate": {
+    "claude-opus-5-5/standard": {
+      "inputTokens": 1702,
+      "cacheWrite5mTokens": 2509,
+      "cacheWrite1hTokens": 187065,
+      "cacheReadTokens": 15544429,
+      "outputTokens": 57835,
+      "thinkingTokens": 16394,
+      "responses": 95,
+      "costUsd": 5.788985800000002
+    }
+  },
+  "warnings": [],
+  "orientation": {
+    "endedBy": "Write",
+    "endedOn": "docs/plans/auto-relay.draft.do-not-implement.md",
+    "endedAt": "2026-09-30T15:46:37.575Z",
+    "contextTokens": 114354,
+    "spend": {
+      "inputTokens": 20,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 72181,
+      "cacheReadTokens": 875297,
+      "outputTokens": 8875,
+      "thinkingTokens": 6954,
+      "responses": 10,
+      "costUsd": 0.9300874000000001
+    }
+  },
+  "compactions": [],
+  "telemetry": {
+    "events": 95,
+    "matched": 92,
+    "matchedTableUsd": 5.640217800000002,
+    "matchedEventUsd": 5.640217800000002,
+    "unseen": {
+      "prompt_suggestion": {
+        "inputTokens": 1518,
+        "cacheWrite5mTokens": 2509,
+        "cacheWrite1hTokens": 0,
+        "cacheReadTokens": 610320,
+        "outputTokens": 28,
+        "thinkingTokens": 0,
+        "responses": 3,
+        "costUsd": 0.148768
+      }
+    }
+  }
+}

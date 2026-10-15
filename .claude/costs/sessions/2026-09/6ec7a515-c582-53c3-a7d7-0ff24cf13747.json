@@ -1,0 +1,113 @@
+{
+  "sessionId": "6ec7a515-c582-53c3-a7d7-0ff24cf13747",
+  "branch": "claude/cold-cache-guard-ytr7vo",
+  "cwd": "/home/user/muthur",
+  "openingPrompt": "/go claude/cold-cache-guard-ytr7vo This session is a relay from https://claude.ai/code/session_01W5Z6hYnVH1dMZ9VQFNBpyH — read docs/remove-before-merging/relay.…",
+  "prs": [
+    109
+  ],
+  "url": "https://claude.ai/code/session_01KKrHiPfZWBgj1SznNTxdZX",
+  "operator": "vzakharov",
+  "firstResponseAt": "2026-09-30T15:12:22.089Z",
+  "lastResponseAt": "2026-09-30T16:35:21.840Z",
+  "pricesAsOf": "2026-09-23",
+  "claudeCodeTotalUsd": 8.818836,
+  "total": {
+    "inputTokens": 2635,
+    "cacheWrite5mTokens": 4877,
+    "cacheWrite1hTokens": 493396,
+    "cacheReadTokens": 19666087,
+    "outputTokens": 81351,
+    "thinkingTokens": 23839,
+    "responses": 96,
+    "costUsd": 9.5538774
+  },
+  "ownTurns": {
+    "inputTokens": 184,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 493396,
+    "cacheReadTokens": 18822757,
+    "outputTokens": 81298,
+    "thinkingTokens": 23839,
+    "responses": 92,
+    "costUsd": 9.338415399999999
+  },
+  "subagents": {
+    "inputTokens": 0,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 0,
+    "cacheReadTokens": 0,
+    "outputTokens": 0,
+    "thinkingTokens": 0,
+    "responses": 0,
+    "costUsd": 0.0
+  },
+  "byRate": {
+    "claude-opus-5-5/standard": {
+      "inputTokens": 1702,
+      "cacheWrite5mTokens": 4877,
+      "cacheWrite1hTokens": 493396,
+      "cacheReadTokens": 19666087,
+      "outputTokens": 81332,
+      "thinkingTokens": 23839,
+      "responses": 95,
+      "costUsd": 9.5528494
+    },
+    "claude-haiku-4-5-20251001/standard": {
+      "inputTokens": 933,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 0,
+      "cacheReadTokens": 0,
+      "outputTokens": 19,
+      "thinkingTokens": 0,
+      "responses": 1,
+      "costUsd": 0.001028
+    }
+  },
+  "warnings": [],
+  "orientation": {
+    "endedBy": "Write",
+    "endedOn": ".claude/costs/lib/restart.py",
+    "endedAt": "2026-09-30T15:16:49.422Z",
+    "contextTokens": 167143,
+    "spend": {
+      "inputTokens": 52,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 123746,
+      "cacheReadTokens": 3125542,
+      "outputTokens": 14497,
+      "thinkingTokens": 9406,
+      "responses": 26,
+      "costUsd": 1.9052244000000005
+    }
+  },
+  "compactions": [],
+  "telemetry": {
+    "events": 88,
+    "matched": 84,
+    "matchedTableUsd": 8.600169399999997,
+    "matchedEventUsd": 8.600169399999997,
+    "unseen": {
+      "prompt_suggestion": {
+        "inputTokens": 1518,
+        "cacheWrite5mTokens": 4877,
+        "cacheWrite1hTokens": 0,
+        "cacheReadTokens": 843330,
+        "outputTokens": 34,
+        "thinkingTokens": 0,
+        "responses": 3,
+        "costUsd": 0.214434
+      },
+      "generate_session_title": {
+        "inputTokens": 933,
+        "cacheWrite5mTokens": 0,
+        "cacheWrite1hTokens": 0,
+        "cacheReadTokens": 0,
+        "outputTokens": 19,
+        "thinkingTokens": 0,
+        "responses": 1,
+        "costUsd": 0.001028
+      }
+    }
+  }
+}

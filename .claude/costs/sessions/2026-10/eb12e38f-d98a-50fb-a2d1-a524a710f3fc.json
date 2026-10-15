@@ -1,0 +1,88 @@
+{
+  "estimate": {
+    "at": "2026-10-09T14:30:41.659Z",
+    "parts": [
+      {
+        "hours": 2.5,
+        "grade": "middle",
+        "role": "developer",
+        "comment": "a narrow fix in an undocumented client format: tracing the mid-turn record shape out of a minified bundle, then a filter change and an end-to-end test"
+      }
+    ],
+    "comment": null
+  },
+  "sessionId": "eb12e38f-d98a-50fb-a2d1-a524a710f3fc",
+  "branch": "claude/mid-turn-session-images-l2b8m2",
+  "cwd": "/home/user/muthur",
+  "openingPrompt": "session-images hook misses images sent mid-turn #175",
+  "prs": [
+    176
+  ],
+  "url": "https://claude.ai/code/session_01BwFufA1ZM3KaWe1yYwhn2o",
+  "operator": "vzakharov",
+  "firstResponseAt": "2026-10-09T14:27:16.172Z",
+  "lastResponseAt": "2026-10-09T14:31:58.989Z",
+  "pricesAsOf": "2026-10-06",
+  "claudeCodeTotalUsd": null,
+  "total": {
+    "inputTokens": 90,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 121282,
+    "cacheReadTokens": 5548343,
+    "outputTokens": 17035,
+    "thinkingTokens": 3894,
+    "responses": 45,
+    "costUsd": 2.4209845999999993
+  },
+  "ownTurns": {
+    "inputTokens": 90,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 121282,
+    "cacheReadTokens": 5548343,
+    "outputTokens": 17035,
+    "thinkingTokens": 3894,
+    "responses": 45,
+    "costUsd": 2.4209845999999993
+  },
+  "subagents": {
+    "inputTokens": 0,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 0,
+    "cacheReadTokens": 0,
+    "outputTokens": 0,
+    "thinkingTokens": 0,
+    "responses": 0,
+    "costUsd": 0.0
+  },
+  "byRate": {
+    "claude-opus-5-5/standard": {
+      "inputTokens": 90,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 121282,
+      "cacheReadTokens": 5548343,
+      "outputTokens": 17035,
+      "thinkingTokens": 3894,
+      "responses": 45,
+      "costUsd": 2.4209845999999993
+    }
+  },
+  "warnings": [],
+  "orientation": {
+    "endedBy": "Edit",
+    "endedOn": "scripts/extract-session-images.py",
+    "endedAt": "2026-10-09T14:29:12.748Z",
+    "contextTokens": 124229,
+    "spend": {
+      "inputTokens": 46,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 79068,
+      "cacheReadTokens": 2372924,
+      "outputTokens": 6047,
+      "thinkingTokens": 2341,
+      "responses": 23,
+      "costUsd": 1.2282528000000001
+    }
+  },
+  "compactions": [],
+  "telemetry": null
+}
