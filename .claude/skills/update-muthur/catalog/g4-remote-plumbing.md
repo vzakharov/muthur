@@ -71,6 +71,36 @@ the working tree clean, and behaves the same everywhere.
   a manifest row carrying the prompt each arrived with. Stdlib-only, idempotent.
   - **Requires:** `python3` ≥3.9, `scripts/lib/media.py` (G2)
   - **Disposition:** adopt
+- `scripts/multi-repo-hooks.py` — In a cloud session with several repositories
+  attached, which loads none of their hooks, write the parent's
+  `.claude/settings.json` from every repository's own hooks, each run with
+  `CLAUDE_PROJECT_DIR` set to its repository — per repository, once, or skipped
+  by a list in the script — then run their `SessionStart` hooks. Exits silently
+  anywhere else. Run by a setup-script hook (`docs/adopting/web-remote.md`), or
+  by the agent per the rule below.
+  - **Requires:** `python3` ≥3.9, web/remote sessions
+  - **Pulls in:** `scripts/lib/session.py`
+  - **Disposition:** adopt
+- `scripts/find-repo.py` — Print the attached repository a branch, `#N` or
+  GitHub URL belongs to, or exit naming the candidates; in a single-repo session
+  it prints that repository without looking.
+  - **Requires:** `python3` ≥3.9, `git`; `gh` for `#N`
+  - **Pulls in:** `scripts/lib/session.py`, `scripts/lib/github.py` (G2)
+  - **Disposition:** adopt
+- `scripts/lib/session.py` — The session's root and its attached repositories,
+  so the two scripts above never disagree about which repositories a session
+  holds. Single-repo outside `CLAUDE_CODE_REMOTE=true`, whatever sits beside the
+  clone.
+  - **Requires:** `python3` ≥3.9
+  - **Disposition:** adopt — **with either script above**
+- `.claude/rules/multi-repo.md` — What a multi-repo session does before any
+  skill runs: wire the hooks, resolve each target with `find-repo.py`, `cd` into
+  it on every Bash call, and follow the target's own copy of a skill. Scoped to
+  its own scripts' paths, so a `CLAUDE.md` pointer is what loads it.
+  - **Requires:** the pointer in `CLAUDE.md` § "Sessions with several
+    repositories"
+  - **Pulls in:** both scripts above
+  - **Disposition:** adopt
 - `.claude/settings.json` — Project settings wiring the SessionStart,
   UserPromptSubmit, PermissionDenied and Stop hooks, plus the entries G1's
   `file-tools-nudge.py` and `format-md.sh`, G7, G8, G9 and G10 carry and the
