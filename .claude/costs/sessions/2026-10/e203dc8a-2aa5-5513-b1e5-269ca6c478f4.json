@@ -1,0 +1,88 @@
+{
+  "total": {
+    "inputTokens": 72,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 107505,
+    "cacheReadTokens": 4415437,
+    "outputTokens": 14569,
+    "thinkingTokens": 4945,
+    "responses": 36,
+    "costUsd": 2.0347953999999997
+  },
+  "estimate": {
+    "at": "2026-10-15T19:09:43.453Z",
+    "parts": [
+      {
+        "hours": 1.0,
+        "grade": "senior",
+        "role": "prompter",
+        "comment": "the line every relay sends has to read for a person yet leave the successor's dispatch on the summary, which takes judgement of how agents parse an argument"
+      }
+    ],
+    "comment": null
+  },
+  "sessionId": "e203dc8a-2aa5-5513-b1e5-269ca6c478f4",
+  "branch": "claude/relay-take-caption-vhewk1",
+  "cwd": "/home/user/muthur",
+  "openingPrompt": "когда агент передаёт сессию следующей, он начинает общение с вот такого сообщения. в принципе для работы подагента это достаточно -- всё есть в сводке, но когда…",
+  "prs": [
+    206
+  ],
+  "url": "https://claude.ai/code/session_01Lrba1QnQSfxUkpjdNcYcaY",
+  "operator": "vzakharov",
+  "firstResponseAt": "2026-10-15T19:08:34.140Z",
+  "lastResponseAt": "2026-10-15T19:14:02.681Z",
+  "pricesAsOf": "2026-10-06",
+  "claudeCodeTotalUsd": null,
+  "ownTurns": {
+    "inputTokens": 72,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 107505,
+    "cacheReadTokens": 4415437,
+    "outputTokens": 14569,
+    "thinkingTokens": 4945,
+    "responses": 36,
+    "costUsd": 2.0347953999999997
+  },
+  "subagents": {
+    "inputTokens": 0,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 0,
+    "cacheReadTokens": 0,
+    "outputTokens": 0,
+    "thinkingTokens": 0,
+    "responses": 0,
+    "costUsd": 0.0
+  },
+  "byRate": {
+    "claude-opus-5-5/standard": {
+      "inputTokens": 72,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 107505,
+      "cacheReadTokens": 4415437,
+      "outputTokens": 14569,
+      "thinkingTokens": 4945,
+      "responses": 36,
+      "costUsd": 2.0347953999999997
+    }
+  },
+  "warnings": [],
+  "orientation": {
+    "endedBy": "Edit",
+    "endedOn": ".claude/skills/relay/SKILL.md",
+    "endedAt": "2026-10-15T19:09:21.804Z",
+    "contextTokens": 110755,
+    "spend": {
+      "inputTokens": 20,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 61590,
+      "cacheReadTokens": 928755,
+      "outputTokens": 4162,
+      "thinkingTokens": 2649,
+      "responses": 10,
+      "costUsd": 0.761791
+    }
+  },
+  "compactions": [],
+  "telemetry": null
+}

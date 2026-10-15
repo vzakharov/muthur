@@ -1,0 +1,94 @@
+{
+  "total": {
+    "inputTokens": 54,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 116482,
+    "cacheReadTokens": 3276232,
+    "outputTokens": 15219,
+    "thinkingTokens": 4207,
+    "responses": 27,
+    "costUsd": 1.8916983999999997
+  },
+  "estimate": {
+    "at": "2026-10-15T18:15:15.698Z",
+    "parts": [
+      {
+        "hours": 1.5,
+        "grade": "middle",
+        "role": "developer",
+        "comment": "a bash hook's switch goes tri-state, with tests pinning each answer path"
+      },
+      {
+        "hours": 1.0,
+        "grade": "senior",
+        "role": "prompter",
+        "comment": "the notice text steers what an agent tells an operator and when it writes their answer down"
+      }
+    ],
+    "comment": null
+  },
+  "sessionId": "87660351-1ca3-5a2f-8b22-3bfdcd9ab0bb",
+  "branch": "claude/offer-manual-relay-once",
+  "cwd": "/home/user/muthur",
+  "openingPrompt": "/task",
+  "prs": [
+    203
+  ],
+  "url": "https://claude.ai/code/session_01937kLuo3YSkZxpbmXMuvK6",
+  "operator": "vzakharov",
+  "firstResponseAt": "2026-10-15T18:13:29.377Z",
+  "lastResponseAt": "2026-10-15T18:34:16.083Z",
+  "pricesAsOf": "2026-10-06",
+  "claudeCodeTotalUsd": 1.7411191999999998,
+  "ownTurns": {
+    "inputTokens": 54,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 116482,
+    "cacheReadTokens": 3276232,
+    "outputTokens": 15219,
+    "thinkingTokens": 4207,
+    "responses": 27,
+    "costUsd": 1.8916983999999997
+  },
+  "subagents": {
+    "inputTokens": 0,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 0,
+    "cacheReadTokens": 0,
+    "outputTokens": 0,
+    "thinkingTokens": 0,
+    "responses": 0,
+    "costUsd": 0.0
+  },
+  "byRate": {
+    "claude-opus-5-5/standard": {
+      "inputTokens": 54,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 116482,
+      "cacheReadTokens": 3276232,
+      "outputTokens": 15219,
+      "thinkingTokens": 4207,
+      "responses": 27,
+      "costUsd": 1.8916983999999997
+    }
+  },
+  "warnings": [],
+  "orientation": {
+    "endedBy": "Edit",
+    "endedOn": ".claude/context-budget/hooks/post-tool-context-budget.sh",
+    "endedAt": "2026-10-15T18:14:25.559Z",
+    "contextTokens": 119064,
+    "spend": {
+      "inputTokens": 18,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 69606,
+      "cacheReadTokens": 869659,
+      "outputTokens": 4995,
+      "thinkingTokens": 3367,
+      "responses": 9,
+      "costUsd": 0.8307518
+    }
+  },
+  "compactions": [],
+  "telemetry": null
+}
