@@ -121,9 +121,8 @@ def json_text(value: Any) -> str:
 
 
 def row_text(cost: SessionCost) -> str:
-    """`total` leads the row, so opening one shows what the session cost before
-    anything else, and `estimate` follows it, so a pull request's diff of the
-    row opens on the one field a person sets."""
+    """A row opens on what the session cost, `total`, then on `estimate`, the
+    one field a person sets."""
     row = to_json(cost)
     return _dumped({"total": row.pop("total"), "estimate": row.pop("estimate"), **row})
 
