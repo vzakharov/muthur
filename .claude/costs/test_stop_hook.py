@@ -24,7 +24,9 @@ from test_pricing import PRICE_TABLE, response
 COSTS = Path(__file__).resolve().parent
 LIB = COSTS.parent / "hooks" / "lib.sh"
 HOOK = ".claude/costs/hooks/stop-session-cost.sh"
+SESSIONS = ".claude/costs/sessions"
 SESSION = "sess"
+ROW = f"{SESSIONS}/2026-03/{SESSION}.json"
 
 class Clone:
     """A branch pushed to a bare `origin`, carrying the ledger's code and nothing
@@ -38,6 +40,18 @@ class Clone:
         self.transcript = base / "transcript.jsonl"
         self.home.mkdir()
         self.responses = 0
+
+        # GitHub, as `lib/github.py` reaches it: a `gh` that answers with
+        # whatever `answer` left for it, and fails where it left nothing.
+        self.answer_file = self.home / "graphql.json"
+        gh = self.home / "bin" / "gh"
+        gh.parent.mkdir()
+        gh.write_text(
+            "#!/bin/sh\ncat >/dev/null\n"
+            f"[ -f '{self.answer_file}' ] || {{ echo 'gh: offline' >&2; exit 1; }}\n"
+            f"cat '{self.answer_file}'\n"
+        )
+        gh.chmod(0o755)
 
         subprocess.run(["git", "init", "-q", "--bare", str(self.origin)], check=True)
         subprocess.run(["git", "init", "-q", "-b", "main", str(self.root)], check=True)
@@ -76,7 +90,46 @@ class Clone:
         ).stdout.strip()
 
     def env(self) -> dict:
-        return {"PATH": "/usr/bin:/bin", "HOME": str(self.home), "GIT_CONFIG_NOSYSTEM": "1"}
+        return {"PATH": f"{self.home / 'bin'}:/usr/bin:/bin", "HOME": str(self.home), "GIT_CONFIG_NOSYSTEM": "1"}
+
+    def origin_git(self, *args: str) -> str:
+        return subprocess.run(
+            ["git", "-C", str(self.origin), *args], capture_output=True, text=True, check=True
+        ).stdout.strip()
+
+    def ledger_files(self) -> List[str]:
+        return self.origin_git("ls-tree", "-r", "--name-only", "cost-ledger").splitlines()
+
+    def seed_ledger(self) -> str:
+        """`cost-ledger` on origin as an empty orphan root."""
+        empty = self.git("hash-object", "-t", "tree", "-w", "/dev/null")
+        root = self.git("commit-tree", empty, "-m", "root")
+        self.git("push", "-q", "origin", f"{root}:refs/heads/cost-ledger")
+        return root
+
+    def other_row(self, parent: str) -> str:
+        """Another session's row committed on `parent`, and not pushed."""
+        staged = self.root.parent / "other.json"
+        staged.write_text(json.dumps({"sessionId": "other"}))
+        return subprocess.run(
+            ["python3", str(self.root / ".claude" / "costs" / "ledger.py"), "commit-row",
+             parent, f"{SESSIONS}/2026-03/other.json", str(staged)],
+            capture_output=True, text=True, check=True, env=self.env(),
+        ).stdout.strip()
+
+    def answer(self, *comments: str) -> None:
+        """GitHub's answer to the attestation query: one PR carrying `comments`."""
+        nodes = [{"body": body} for body in comments]
+        pulls = {"nodes": [{"comments": {"nodes": nodes}}]}
+        self.answer_file.write_text(json.dumps({"data": {"repository": {"pullRequests": pulls}}}))
+
+    def cache(self, sha: str) -> Path:
+        """`sha` cached as the branch's attestation, the way a yes from GitHub
+        leaves it."""
+        cached = self.root / "tmp" / "costs" / "finalized" / "feature"
+        cached.parent.mkdir(parents=True, exist_ok=True)
+        cached.write_text(sha + "\n")
+        return cached
 
     def respond(self, **fields: str) -> None:
         """One more priced turn in the transcript, so the next row differs."""
@@ -153,7 +206,7 @@ class StopHookTest(unittest.TestCase):
             self.clone.git("log", "-1", "--format=%s"),
             "chore: session cost (new) 0.01 USD, incl. 0.00 USD orientation",
         )
-        self.assertEqual(self.clone.files_in("HEAD"), [".claude/costs/sessions/2026-03/sess.json"])
+        self.assertEqual(self.clone.files_in("HEAD"), [ROW])
 
     def test_a_new_session_s_subject_names_what_it_spent_before_acting(self) -> None:
         # A response that neither edits nor ends the turn, ahead of the one that
@@ -220,7 +273,7 @@ class StopHookTest(unittest.TestCase):
         self.assertEqual(result.returncode, 2)
         self.assertIn("committed and pushed", result.stderr)
         self.assertEqual(self.clone.git("diff", "--cached", "--name-only"), "work.txt")
-        self.assertEqual(self.clone.files_in("HEAD"), [".claude/costs/sessions/2026-03/sess.json"])
+        self.assertEqual(self.clone.files_in("HEAD"), [ROW])
 
     def test_a_row_left_dirty_is_named_to_the_agent_where_a_check_read_it(self) -> None:
         self.clone.register_check()
@@ -272,6 +325,107 @@ class StopHookTest(unittest.TestCase):
         self.assertIn("missing.git", result.stderr)
         self.assertEqual(self.clone.status(), "")
         self.assertEqual(self.clone.git("rev-list", "--count", "origin/feature..HEAD"), "1")
+
+
+class LedgerWriteTest(unittest.TestCase):
+    """Where the row goes: `cost-ledger` always, the branch until it is
+    finalized."""
+
+    def setUp(self) -> None:
+        base = tempfile.TemporaryDirectory()
+        self.addCleanup(base.cleanup)
+        self.clone = Clone(Path(base.name))
+
+    def stop(self) -> None:
+        result = self.clone.stop()
+        self.assertEqual((result.returncode, result.stderr), (0, ""))
+
+    def test_the_first_row_roots_the_ledger(self) -> None:
+        self.stop()
+        self.assertEqual(self.clone.ledger_files(), [ROW])
+        self.assertEqual(self.clone.origin_git("rev-list", "--count", "cost-ledger"), "1")
+
+    def test_a_row_lands_on_the_ledger_s_tip_beside_the_rows_it_holds(self) -> None:
+        root = self.clone.seed_ledger()
+        self.clone.git("push", "-q", "origin", f"{self.clone.other_row(root)}:refs/heads/cost-ledger")
+        self.stop()
+        self.assertEqual(self.clone.ledger_files(), [f"{SESSIONS}/2026-03/other.json", ROW])
+        self.assertEqual(self.clone.origin_git("rev-list", "--count", "cost-ledger"), "3")
+
+    def test_a_writer_that_takes_the_tip_first_loses_no_row(self) -> None:
+        # The other session's push lands while this one's is being received, so
+        # this one is refused as no longer a fast-forward and has to rebuild.
+        other = self.clone.other_row(self.clone.seed_ledger())
+        raced = self.clone.root.parent / "raced"
+        probe = self.clone.origin / "hooks" / "pre-receive"
+        probe.write_text(
+            "#!/bin/sh\n"
+            "unset GIT_DIR GIT_QUARANTINE_PATH GIT_OBJECT_DIRECTORY GIT_ALTERNATE_OBJECT_DIRECTORIES\n"
+            "while read old new ref; do\n"
+            f"  [ \"$ref\" = refs/heads/cost-ledger ] && [ ! -e '{raced}' ] || continue\n"
+            f"  touch '{raced}'\n"
+            f"  git -C '{self.clone.root}' push -q origin '{other}:refs/heads/cost-ledger'\n"
+            "done\n"
+        )
+        probe.chmod(0o755)
+        self.stop()
+        self.assertTrue(raced.exists())
+        self.assertEqual(self.clone.ledger_files(), [f"{SESSIONS}/2026-03/other.json", ROW])
+
+    def test_the_trunk_s_row_goes_to_the_ledger_alone(self) -> None:
+        self.clone.git("checkout", "-q", "main")
+        before = self.clone.git("rev-parse", "HEAD")
+        self.stop()
+        self.assertEqual(self.clone.ledger_files(), [ROW])
+        self.assertEqual(self.clone.git("rev-parse", "HEAD"), before)
+        self.assertEqual(self.clone.origin_git("rev-parse", "main"), before)
+        self.assertEqual(self.clone.status(), "")
+
+    def test_an_unfinalized_branch_carries_a_copy(self) -> None:
+        self.stop()
+        self.assertEqual(self.clone.files_in("HEAD"), [ROW])
+        self.assertEqual(self.clone.ledger_files(), [ROW])
+
+    def test_a_branch_attested_on_github_carries_none_and_the_yes_is_cached(self) -> None:
+        head = self.clone.git("rev-parse", "HEAD")
+        self.clone.answer(f"Attested.\n<!-- finalize-attestation {head} -->")
+        self.stop()
+        self.assertEqual(self.clone.git("rev-parse", "HEAD"), head)
+        self.assertEqual(self.clone.ledger_files(), [ROW])
+        cached = self.clone.root / "tmp" / "costs" / "finalized" / "feature"
+        self.assertEqual(cached.read_text().strip(), head)
+
+    def test_a_revoked_attestation_is_none(self) -> None:
+        head = self.clone.git("rev-parse", "HEAD")
+        self.clone.answer(f"<!-- finalize-attestation {head} -->", "<!-- finalize-attestation revoked -->")
+        self.stop()
+        self.assertEqual(self.clone.files_in("HEAD"), [ROW])
+
+    def test_a_cached_attestation_needs_no_github(self) -> None:
+        head = self.clone.git("rev-parse", "HEAD")
+        self.clone.cache(head)
+        self.stop()
+        self.assertEqual(self.clone.git("rev-parse", "HEAD"), head)
+        self.assertEqual(self.clone.ledger_files(), [ROW])
+
+    def test_rows_committed_after_the_attestation_leave_it_standing(self) -> None:
+        attested = self.clone.git("rev-parse", "HEAD")
+        self.stop()
+        self.clone.cache(attested)
+        self.clone.respond()
+        after_row = self.clone.git("rev-parse", "HEAD")
+        self.stop()
+        self.assertEqual(self.clone.git("rev-parse", "HEAD"), after_row)
+
+    def test_a_work_commit_after_the_attestation_brings_the_copy_back(self) -> None:
+        cached = self.clone.cache(self.clone.git("rev-parse", "HEAD"))
+        (self.clone.root / "work.txt").write_text("more\n")
+        self.clone.git("add", "work.txt")
+        self.clone.git("commit", "-q", "-m", "work")
+        self.clone.git("push", "-q", "origin", "feature")
+        self.stop()
+        self.assertEqual(self.clone.files_in("HEAD"), [ROW])
+        self.assertFalse(cached.exists())
 
 
 if __name__ == "__main__":
