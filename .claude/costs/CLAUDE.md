@@ -5,6 +5,39 @@ Claude API rates. The subscription price hides that number, and the point of
 having it is to know the size of the bill before subscription pricing stops
 being a bargain.
 
+## Where rows live
+
+**`cost-ledger` is the source of truth**: an orphan branch on `origin` holding
+every row at its usual path, named once in `lib/ledger.py`. The default branch
+carries none. The `Stop` hook writes the row there every turn, on every branch
+and the trunk alike, so a session counts whether or not its work merges.
+
+**A branch also carries a display copy until it is finalized**, so its PR's diff
+shows what the work cost. Finalized means the PR's last
+`<!-- finalize-attestation <sha> -->` names a SHA that `HEAD` still contains,
+and nothing after it touches more than rows. GitHub is asked until the answer is
+yes, and the yes is cached in `tmp/costs/finalized/<branch>`; a work commit
+after the SHA sends the question back. `/finalize` carries the copies into the
+ledger and deletes them before the branch lands, and `/finalize revoke`
+withdraws the attestation.
+
+**Readers union the ledger with the default branch's tree**, one row per session
+id, the later by `lib/ledger.py`'s `recency` winning. The tree side is how a
+repository that has not migrated still counts, and how a copy that reached the
+trunk without `/finalize` is counted once.
+
+What each failure costs:
+
+- **A push that loses the ledger's tip** to another session re-reads it and
+  rebuilds, up to three tries; rows never collide, so a rebuild loses none.
+  After the third, or on a failed fetch, the hook blocks the stop once with
+  git's message. The next turn's row covers the missed one, so only a session's
+  last turn can be lost, and only when nobody acts on the block.
+- **A GitHub query that fails** counts as not finalized: the turn writes its
+  display copy and the next asks again. It is the ledger's one silent fallback,
+  approved for that call site alone, and its worst case is a copy on a branch
+  that merges after it, which the union counts once.
+
 ## Reading a transcript
 
 Properties of `~/.claude/projects/<cwd-slug>/<session-id>.jsonl` that decide how
@@ -180,17 +213,16 @@ check may be reading the tree.
 committed in a throwaway index, and pushed before the branch moves; only then do
 the branch, the index entry and the file follow. So the tree differs from `HEAD`
 only between the ref move and the rename, and is never ahead of `origin` while a
-push is in flight. `commit-tree` runs no commit hooks, which suits a file no
-formatter should rewrite, and signs only when asked, so the hook passes `-S`
-where `commit.gpgsign` is on.
+push is in flight.
 
 **The hook also waits the check out**, which leaves it only those two steps to
 guard. That check leaves nothing on disk — it reads the tree and writes to
 stderr — so its process is the only thing there is to wait on, and the hook
 polls for it by name at the last moment before anything it does can touch the
-tree. A match that is an **ancestor** of the hook is not the check: the check is
-a sibling, and an ancestor carrying the name is a shell that merely mentions it,
-so waiting on one would outlast the turn.
+tree, which is after the ledger write: that touches no file in it. A match that
+is an **ancestor** of the hook is not the check: the check is a sibling, and an
+ancestor carrying the name is a shell that merely mentions it, so waiting on one
+would outlast the turn.
 
 **What neither covers is a tree that was unclean before the hook started.** A
 hand run of `session_cost.py` rewrites the row in place, and a failed push
@@ -275,24 +307,24 @@ double-counts every session both of them saw. The rows themselves never collide:
 one file per session id.
 
 **The rows can be.** A row in a shape the ledger no longer writes — a key it
-dropped, an estimate comment its parts now carry — is rewritten in the current
-one as the report reads it, and the report names each one on stderr. Retiring a
-shape is therefore a change to the reader alone: the first report in each
-repository clears it, and those rewrites are ordinary changes to commit.
+dropped, an estimate comment its parts now carry — is read in the current one. A
+tree row is rewritten on disk, named on stderr, an ordinary change to commit; a
+ledger row is reshaped in memory only, since writing it back would be a commit
+on another branch. So the reader keeps every shape the ledger still holds a row
+in.
 
 **Across repositories, the rows are read off GitHub.** `--all-my-repos` reads
-the ledger on the default branch of every repository the `gh` user can reach,
-and `--repo` just the ones named, so nothing needs cloning. A repository counts
-by its ledger, not muthur's watermark: the ledger is opt-in, so a watermark
-alone has nothing to count. A row GitHub truncates stops the run, since a
-missing one understates every total it belongs to, and these rows are never
-written back: they are another branch's to change.
+`cost-ledger` and the default branch's tree of every repository the `gh` user
+can reach, unioned per repository as above, and `--repo` just the ones named, so
+nothing needs cloning. A `report.py` older than the ledger branch reads the tree
+alone and undercounts a migrated repository. A repository counts by its ledger,
+not muthur's watermark: the ledger is opt-in, so a watermark alone has nothing
+to count. A row GitHub truncates stops the run, since a missing one understates
+every total it belongs to, and these rows are never written back: they are
+another branch's to change.
 
 ## What the totals do not cover
 
-- **The turn that merges.** `/finalize and merge` merges within its turn and the
-  row lands after, on a branch already merged — so that turn's spend reaches
-  neither the trunk nor any later merge.
 - **Each compact, without events.** The transcript records the compaction call
   without its `usage` — the boundary record carries `preTokens`, the summary
   arrives as a `user` record — so only the events price it. One compaction of a
@@ -303,11 +335,6 @@ written back: they are another branch's to change.
   prints the table's age and how many rows were priced under an older one. The
   unpriced-pair error catches a **new** `(model, speed)` pair and is blind to a
   number that changed; the `cost-state` comparison above is what covers that.
-- **Abandoned branches.** Rows reach the trunk by merge, so work that is thrown
-  away is thrown out of the ledger too — an undercount biased toward exactly the
-  sessions that spent without delivering.
 - **Repositories the token cannot reach.** `--all-my-repos` sees what the `gh`
   user sees, so an organization that enforces SAML SSO is out of reach until the
   token is authorized for it.
-- **The trunk itself.** The hook declines to commit a row on `main` or `master`,
-  where there is no branch to carry it.

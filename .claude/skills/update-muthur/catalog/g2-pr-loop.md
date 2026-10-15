@@ -48,7 +48,9 @@
 - `/finalize` — Land prep: swap in staged copies, the quality passes, vet, merge
   the base, sweep working artifacts, flip to ready, reconcile the squash
   message, attest — and, on `and merge`, merge the PR when the run turned up
-  nothing to decide.
+  nothing to decide. Carries `merge.md`, that gate and the merge;
+  `base-advanced.md`, the call on re-verifying when the base moved; and
+  `revoke.md`, withdrawing an attestation.
   - **Requires:** `gh`, `scripts/vet.sh`, `scripts/staged.sh`
   - **Pulls in:** `/polish` (G1); `/check-merge`, `/from-branch`, `/plan`,
     `/squash-message`, `/sync-branch`; **conditionally** `/take-issue` (G3),

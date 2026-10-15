@@ -142,11 +142,11 @@ Exclude it unconditionally, whatever `adopted` says.
 
 ### Never sync the source's cost rows
 
-`.claude/costs/sessions/` is the source's own ledger — what _its_ sessions cost
-— and the one path in `.claude/costs/` that is data rather than machinery. A
-sync that ported it would add the source's spend to this repo's totals, and no
-later report could tell the two apart. Exclude it unconditionally too, whether
-or not this repo runs the ledger.
+A source that has not migrated its rows to its ledger branch still carries them
+in `.claude/costs/sessions/`, the one path in `.claude/costs/` that is data
+rather than machinery: porting it would add the source's spend to this repo's
+totals, and no later report could tell the two apart. Exclude it unconditionally
+too, whether or not this repo runs the ledger.
 
 ### Judge the diff, not the commit message's "we"
 

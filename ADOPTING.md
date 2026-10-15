@@ -159,8 +159,7 @@ or its `catalog/` parts
 ([the `never` entries](.claude/skills/update-muthur/catalog/never.md)), which
 taking `/update-muthur` otherwise brings along inside its directory. Each
 `opt-in: ask` entry goes by its answer: on a yes, copy its path and merge the
-`.claude/settings.json` entries its catalog entry names — `.claude/costs/`
-without this repo's own cost rows under `sessions/`, then
+`.claude/settings.json` entries its catalog entry names — `.claude/costs/`, then
 [`docs/adopting/costs.md`](docs/adopting/costs.md); on a no, record a decline,
 and leave its path out even where a directory you copy holds it. Then continue
 to the shared tail.
