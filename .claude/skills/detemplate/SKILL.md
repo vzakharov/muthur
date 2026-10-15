@@ -104,8 +104,7 @@ five that decide the individual G6 entries; the language decision; one question
 per catalog entry marked `opt-in: ask`, each asked with the cost its entry
 states; and the hello. A fork carries every `opt-in: ask` entry wired on, so a
 no deletes the entry's path, its `.claude/settings.json` entries and its
-`scripts/vet.sh` loop. The ledger's yes changes the tree too: it empties
-`.claude/costs/sessions/` of this template's own rows.
+`scripts/vet.sh` loop.
 
 **The hello is asked by `docs/adopting/hello.md`, read now**, since Step 5.2
 deletes it before the plan runs: the question shows the drafted post word for

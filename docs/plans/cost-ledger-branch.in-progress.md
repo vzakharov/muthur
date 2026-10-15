@@ -199,15 +199,29 @@ Done in the third session:
   marker, the reworded "moved only by sessions/" rule, § "Revoke".
 - **Step 8** needs nothing: `/check-merge` never reads the marker, only git.
 
+Done in the fourth session:
+
+- **Step 9, the backfill.** `ledger.py backfill` over every ref carried 141
+  sessions into `cost-ledger` (54b827c); every id on main (113), on this branch
+  and on any fetched ref is there, and a second run carries nothing.
+- **Step 10.** The hook tests' GitHub seam is a fake `gh` on the `Clone`'s
+  `PATH`, so no production code changed for it. `LedgerWriteTest` covers the
+  orphan root, an existing tip, a racing writer, the trunk, an attested, a
+  revoked and a cached attestation, row-only commits after it and a work commit
+  after it. `test_finalized.py` checks the marker parse through a stub
+  `Transport`.
+- **Step 11.** `.claude/costs/CLAUDE.md` § "Where rows live"; the report and "do
+  not cover" sections; the G7 catalog entry, `ADOPTING.md`, `/detemplate`.
+  `/update-muthur`'s carve-out and `muthur-sync.sh`'s exclusion stay, reworded
+  for a source that has not migrated yet: a chain's upstream can still carry
+  rows in its tree. `check-repo-identity.sh` keeps its exclusion too, since
+  display copies still quote opening prompts.
+
 Left:
 
-- **Steps 9–11** as written above.
-- The hook tests reach GitHub: `stop-plan` on the test's `feature` branch parses
-  the bare origin's path as a repo and runs `gh`, which fails and falls back to
-  display. Step 10 needs a seam there (a test transport, or no query when origin
-  is not on GitHub) and tests for the finalized cache.
-- Any test that runs a command which pushes must run in a `Clone`, never the
-  real checkout (see the step 5 note).
+- **Step 9's `git rm -r .claude/costs/sessions`**, which the auto-mode
+  classifier refused; it waits on the operator naming it.
+- The squash body's `Adopters:` paragraph, at `/finalize`.
 
 ## Decided
 
