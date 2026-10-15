@@ -180,17 +180,34 @@ Done (through 4281ba5):
   the stop once with git's whole message. The 13 existing hook tests pass, one
   renamed: an unreachable origin is now reported as the ledger missing the row.
 
+Done in the third session:
+
+- **Step 5**, and the `--session` addition. `lib/ledger.py` gained `path_of` and
+  `copies`; `previous(session_id)` unions the copies, passing over an unreadable
+  one. `estimate.py --session` edits the ledger (fetching first) and a tree copy
+  where there is one. `check_estimates.py` also counts the ledger's rows whose
+  `branch` is the current one, and `running_is_estimated` uses `latest_row`.
+  `test_estimate.py`'s command tests run in `test_stop_hook`'s `Clone`: in the
+  real checkout, the `--session` test pushed its fixture row to the real ledger
+  (removed in 0de5f18 on `cost-ledger`).
+- **Step 6.** `report.py` `ledger_rows` + union; `lib/github.py` `SIDES`
+  (`refs/heads/cost-ledger` and `HEAD`), `Candidate.sides`, per-repository union
+  before the cross-repository dedup. Checked live:
+  `report.py --repo vzakharov/muthur` reads both sides.
+- **Step 7**, on the staged copy
+  `.claude/staged/.claude/skills/finalize/SKILL.md.staged`: the sweep, the SHA
+  marker, the reworded "moved only by sessions/" rule, § "Revoke".
+- **Step 8** needs nothing: `/check-merge` never reads the marker, only git.
+
 Left:
 
-- **Steps 5–11** as written above. Two additions found on the way:
-  - `estimate.py --session` for a session whose row is only on the ledger:
-    commit the edited row to the ledger with `ledger.append` (`recency` already
-    makes the edit win). `check_estimates.running_is_estimated` and
-    `session_cost.previous` should both use `ledger.latest_row`.
-  - The hook tests reach GitHub: `stop-plan` on the test's `feature` branch
-    parses the bare origin's path as a repo and runs `gh`, which fails and falls
-    back to display. Step 10 needs a seam there (a test transport, or no query
-    when origin is not on GitHub) and tests for the finalized cache.
+- **Steps 9–11** as written above.
+- The hook tests reach GitHub: `stop-plan` on the test's `feature` branch parses
+  the bare origin's path as a repo and runs `gh`, which fails and falls back to
+  display. Step 10 needs a seam there (a test transport, or no query when origin
+  is not on GitHub) and tests for the finalized cache.
+- Any test that runs a command which pushes must run in a `Clone`, never the
+  real checkout (see the step 5 note).
 
 ## Decided
 
