@@ -168,15 +168,17 @@ base directory, three levels below the repo root that carries `scripts/`.
 
 ### 6. The multi-repo rule — one place, not every skill
 
-The rule lives in `.claude/rules/multi-repo.md` (no `paths:`), with a pointer
-line in `CLAUDE.md`. It has to be in context from a multi-repo session's first
-turn, before any skill or hook runs, and the pointer is what guarantees that:
-`CLAUDE.md` is the one home verified to arrive there, while an always-loaded
-rule file from an attached repo is not. So the pointer carries the trigger
-itself, not just a reference — when the working directory is above the repos,
-`Read` `.claude/rules/multi-repo.md` before anything else — and the rule file
-arriving on its own merely makes that `Read` redundant. The rule holds when the
-session's working directory is above the repos:
+The rule lives in `.claude/rules/multi-repo.md`, with a pointer line in
+`CLAUDE.md`. Its `paths:` name only its own two scripts: with none it would load
+on every turn of every single-repo session, and once per attached repository in
+a multi-repo one — the N+1 cost again. It has to be in context from a multi-repo
+session's first turn, before any skill or hook runs, and the pointer is what
+guarantees that: `CLAUDE.md` is the one home verified to arrive there, while an
+always-loaded rule file from an attached repo is not. So the pointer carries the
+trigger itself, not just a reference — when the working directory is above the
+repos, `Read` `.claude/rules/multi-repo.md` before anything else — and the rule
+file arriving on its own merely makes that `Read` redundant. The rule holds when
+the session's working directory is above the repos:
 
 - **Every skill that acts on a branch, PR or issue first resolves its target
   repo** with `find-repo.py`, and remembers it for the rest of the task.
@@ -268,14 +270,21 @@ says when the workaround can go.
     `start-telemetry-receiver.sh` (one port) and `post-tool-context-budget.sh`
     (a session-wide reading) run once.
 
+- **§ 5** — `scripts/find-repo.py`, exiting 1 on no match, 2 on several, 3 when
+  a lookup failed. `detect_origin_repo` reads `remote.origin.url` as configured,
+  since `git remote get-url` applies `url.*.insteadOf`.
+- **§ 6** — `.claude/rules/multi-repo.md` and the pointer in the staged
+  `CLAUDE.md`.
+- **§ 7** — both test files, the setup-script block (no matcher, so a resume
+  reruns it; ends `exit 0`, since the glob's miss would otherwise fail the hook
+  in every single-repo session), the Known gaps paragraph, the catalog entries.
+- **§ 8** — filed as
+  [anthropics/claude-code#102311](https://github.com/anthropics/claude-code/issues/102311),
+  citing #88871 (nested repositories' hooks, locally) and #95710 (`origin` in
+  multi-repo sessions) as related.
+
 ### Left
 
-- Tests for both scripts (§ 7), then `find-repo.py` (§ 5).
-- The rule file and the `CLAUDE.md` pointer (§ 6) — the pointer through
-  `scripts/staged.sh stage CLAUDE.md`.
-- `docs/adopting/web-remote.md` (the setup-script block needs a hook `timeout`
-  of about 600: `install-deps` took 37 s here, past the 60 s default's comfort
-  once three repos install), the catalog entries, the upstream issue (§ 8).
 - `/polish`, then `/pr` refresh mode.
 
 ## Open questions
