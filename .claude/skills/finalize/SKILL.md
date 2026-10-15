@@ -109,20 +109,11 @@ duplication like any other.
 Steps (stop on first unresolved failure):
 
 1. **Vet**: `./scripts/vet.sh`. Fix and rerun until green.
-2. **Merge the base branch**: `git fetch origin && git merge origin/<base>`
-   (`<base>` from the Pre-check). Resolve conflicts; if you can't, ask. A clean
-   merge (no conflicts) is not the end of the thought: review what the base
-   brought in and consider whether it **overlaps** with this branch's change or
-   opens an **optimization**. Git only flags textual conflicts — it won't tell
-   you the base added a helper/util/component that now duplicates something you
-   wrote, introduced a shared abstraction you should route through instead of
-   your local one, renamed or moved a symbol you still reference the old way, or
-   changed a pattern this branch should now follow for consistency. Skim the
-   merged-in diff (`git log --oneline ORIG_HEAD..origin/<base>`,
-   `git diff ORIG_HEAD origin/<base> -- <areas you touched>`) for these. If you
-   spot a clear, low-risk dedup/simplification, apply it and commit; if it's
-   ambiguous or large, surface it to the user rather than silently shipping the
-   redundancy.
+2. **Merge the base branch**: load `@.claude/skills/sync-branch/SKILL.md` and
+   follow it, passing `no vet` in `no vet` mode. It owns the merge — the
+   conflicts committed as git left them, the resolution in a commit of its own,
+   the read of what the base brought in for overlaps and optimizations — and the
+   vet run over the merged tree. If you can't resolve a conflict, ask.
 3. **Working-artifact cleanup**: some directories ride the branch for in-flight
    review but must never land on the base. Sweep the two below **now**, deleting
    each **entire** tree (not just the current session's subfolder) and including
@@ -214,11 +205,8 @@ Steps (stop on first unresolved failure):
        (`/check-merge` prints it as `base=…`, or compute
        `git merge-base HEAD origin/<base>`). Deciding without reading the diff
        is not allowed.
-     - Weigh the same interactions step 2 warns about (a helper/util/component
-       that now duplicates something you wrote, a shared abstraction you should
-       route through instead of your local one, a renamed/moved symbol you still
-       reference the old way, a pattern this branch should now follow) **plus**
-       the semantic incompatibilities above.
+     - Weigh the collisions `@.claude/skills/sync-branch/SKILL.md` Step 4 reads
+       the incoming diff for **plus** the semantic incompatibilities above.
      - **Default to re-verify when unsure.** The test is _interaction_, not
        _whether the base touched code_ — most advances touch some code, and that
        alone doesn't warrant it. Skip re-verification when, having read the
@@ -227,13 +215,11 @@ Steps (stop on first unresolved failure):
        imports or depends on was touched, and no symbol/signature/pattern this
        branch uses was changed. If you can see a plausible interaction, or you
        genuinely can't tell, re-verify.
-       - **Interacting or ambiguous** → re-run step 2
-         (`git merge origin/<base>`, applying any dedup/simplification it
-         opens), then step 1 (`./scripts/vet.sh`), push, and re-run any step-6
-         dispatch the diff still warrants. The two-shot rule does **not** apply
-         to these base-advanced re-runs; they're keeping the target current, not
-         fixing failures.
-       - **Demonstrably independent** → `git merge origin/<base>`, push, and run
+       - **Interacting or ambiguous** → re-run step 2 (`/sync-branch`, which
+         vets and pushes), and re-run any step-6 dispatch the diff still
+         warrants. The two-shot rule does **not** apply to these base-advanced
+         re-runs; they're keeping the target current, not fixing failures.
+       - **Demonstrably independent** → `/sync-branch no vet`, and run
          `/check-merge` again when you return to confirm `origin/<base>` hasn't
          moved since. Unrelated code changes qualify: e.g. the base reworks a
          frontend modal while this branch changes a background job's retry
@@ -373,8 +359,8 @@ Steps (stop on first unresolved failure):
      whether you had to read the failure and decide what to change.
    - **Step 2** — any conflict, however trivially resolved; or you applied a
      dedup/simplification the base merge opened, or surfaced one as ambiguous. A
-     clean merge that **brought commits in** is survivable, but step 1 vetted a
-     tree without them: re-run it, green first try, and stand down on any
+     clean merge that **brought commits in** is survivable when `/sync-branch`'s
+     vet run over the merged tree went green first try; stand down on any
      interaction of the kind that step already has you reading the incoming diff
      for.
    - **Step 4** — a red CI run. Same autofix exception as step 1, plus one case
