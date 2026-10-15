@@ -280,8 +280,8 @@ says when the workaround can go.
   in every single-repo session), the Known gaps paragraph, the catalog entries.
 - **§ 8** — filed as
   [anthropics/claude-code#102311](https://github.com/anthropics/claude-code/issues/102311),
-  citing #88871 (nested repositories' hooks, locally) and #95710 (`origin` in
-  multi-repo sessions) as related.
+  about the context cost alone: hooks, skill collisions and source order are
+  this repo's own workaround, the operator's call, so they stay out of it.
 
 ### Left
 

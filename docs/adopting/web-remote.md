@@ -295,12 +295,12 @@ copy of each same-named skill, and loads every repository's `CLAUDE.md` in full.
 The setup script's hook above, `scripts/multi-repo-hooks.py`,
 `scripts/find-repo.py` and `.claude/rules/multi-repo.md` cover the first two;
 the third, a full copy of the standing context per attached repository, nothing
-in a repository can remove. Without the setup-script hook, the rule has the
-agent run the generator on its first turn — after the start event has passed, so
-it relays the `SessionStart` hooks' output itself. A `/relay` successor starts
-with the target repository alone. Tracked upstream at
-[anthropics/claude-code#102311](https://github.com/anthropics/claude-code/issues/102311),
-the thread that will say when any of this can go.
+in a repository can remove — tracked upstream at
+[anthropics/claude-code#102311](https://github.com/anthropics/claude-code/issues/102311).
+Without the setup-script hook, the rule has the agent run the generator on its
+first turn — after the start event has passed, so it relays the `SessionStart`
+hooks' output itself. A `/relay` successor starts with the target repository
+alone.
 
 Note what is _not_ on this list: `gh pr ready` and the `search/*` block are not
 gaps in the infrastructure. Both work once the shim is in, so they are costs of
