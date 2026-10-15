@@ -213,9 +213,7 @@ check may be reading the tree.
 committed in a throwaway index, and pushed before the branch moves; only then do
 the branch, the index entry and the file follow. So the tree differs from `HEAD`
 only between the ref move and the rename, and is never ahead of `origin` while a
-push is in flight. `commit-tree` runs no commit hooks, which suits a file no
-formatter should rewrite, and signs only when asked, so the hook passes `-S`
-where `commit.gpgsign` is on.
+push is in flight.
 
 **The hook also waits the check out**, which leaves it only those two steps to
 guard. That check leaves nothing on disk — it reads the tree and writes to

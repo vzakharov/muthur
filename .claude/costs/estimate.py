@@ -11,8 +11,8 @@ estimate, and `set` replaces the whole of it. Without
 `--session` the session is this one, read off `CLAUDE_CODE_SESSION_ID`: the
 estimate goes to `tmp/estimates/<id>.json`, and the row folds it in when the
 turn ends. Another session's id edits that session's row on the `cost-ledger`
-branch, pushing it, and rewrites a copy in the tree beside it, which is a change
-to commit like any other.
+branch, pushing it, and any copy of it in the tree, which is a change to commit
+like any other.
 
 Stdlib only — Python 3.9+.
 """
@@ -53,8 +53,8 @@ def parts_of(raw: List[List[str]]) -> List[Part]:
 
 
 def edit(row: SessionCost) -> None:
-    """The ledger takes the edited row, and a tree copy is rewritten beside it
-    so the branch's display copy shows the same."""
+    """The ledger takes the edited row, and the tree's copy, where there is
+    one, is rewritten to match."""
     text = row_text(row)
     path = row_path(row.session_id)
     if path is not None:

@@ -16,8 +16,9 @@ says which. `--json` prints the whole breakdown for whoever wants to keep one
 anyway. `CLAUDE.md` beside this file carries what the totals leave out.
 
 `--all-my-repos` reads every repository the `gh` user can see that carries a
-ledger, on its `cost-ledger` branch or its default branch, and `--repo` (repeatable) just the ones named, off
-GitHub rather than this checkout, adding a table by repository.
+ledger, on its `cost-ledger` branch or its default branch, and `--repo`
+(repeatable) just the ones named, off GitHub rather than this checkout, adding a
+table by repository.
 
 Stdlib only — Python 3.9+.
 """
@@ -225,7 +226,7 @@ def ledger_rows(span: Optional[Period]) -> List[SessionCost]:
 
 def this_repo(span: Optional[Period], as_json: bool, rates: Rates) -> int:
     """The ledger's rows and the tree's, one per session: the tree's side is a
-    branch's display copies, or a checkout from before the ledger existed."""
+    branch's display copies, or rows a repository still keeps in its tree."""
     months = sorted(p for p in SESSIONS.iterdir() if p.is_dir()) if SESSIONS.is_dir() else []
     shown = [m for m in months if span is None or m.name in span.months()]
     tree = [row for shown_month in shown for row in rows_in(shown_month)]

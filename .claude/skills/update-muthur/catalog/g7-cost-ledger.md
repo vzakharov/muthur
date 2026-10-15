@@ -22,9 +22,9 @@ session — so the entry is `opt-in: ask`.
   receiver listening on `127.0.0.1:4318` for the whole session, whose exporter
   variables go in the environment's settings by hand, since Claude Code ignores
   them in `.claude/settings.json` — `hooks/start-telemetry-receiver.sh` names
-  them until they are set. Arrives with no rows, the first session's rooting the
-  repo's `cost-ledger`; four `.claude/settings.json` hook entries to merge, and
-  a `scripts/vet.sh` loop running its tests and `check_estimates.py`, which
+  them until they are set. Arrives with no rows — the first session's row roots
+  the repo's `cost-ledger` — four `.claude/settings.json` hook entries to merge,
+  and a `scripts/vet.sh` loop running its tests and `check_estimates.py`, which
   fails a branch carrying a session with no estimate.
   - **Requires:** `bash`, `jq`, `git`, `python3` ≥3.9; `gh` for
     `report.py --all-my-repos` and `--repo` alone

@@ -282,8 +282,8 @@ Steps (stop on first unresolved failure):
    edit it in place; it is sticky, keyed on the `<!-- finalize-attestation`
    marker, and the marker is how you find it (mechanic below the templates). The
    marker carries the head's full SHA, which the cost ledger's `Stop` hook
-   parses (`.claude/costs/lib/finalized.py`) to stop writing rows onto a
-   finalized branch:
+   parses (`.claude/costs/lib/finalized.py`) to stop writing display copies onto
+   a finalized branch:
 
    ```md
    <!-- finalize-attestation <full-head-sha> -->

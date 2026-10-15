@@ -1,7 +1,7 @@
 """The ledger of every repository the `gh` user can see, read off each one's
 `cost-ledger` branch and default branch through GitHub's GraphQL API, with no
-clone of anything. The default branch's side is a repository that has not
-moved its rows onto the ledger branch yet.
+clone of anything. The default branch's side counts a repository whose rows are
+still in its tree.
 
 A repository qualifies by carrying a ledger, not muthur's watermark: the
 ledger is opt-in for adopters, so a watermark alone has nothing to count. The
