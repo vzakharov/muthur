@@ -38,6 +38,34 @@ Any argument other than `full` is focus guidance and rides through to both
 passes unchanged — including a lens name, which is `/tend-prose`'s to read.
 `full` is this skill's own, and § "The floor" below says what it does.
 
+## Who runs it: a fresh subagent
+
+**The passes never run in the session that wrote the work.** Its author reads
+the diff with the change's history in mind, so a comment narrating the edit, or
+two blocks it remembers as different, reads fine to it and not to a reviewer. A
+subagent has only the diff, as the reviewer will.
+
+So the session that loads this skill launches one `general-purpose` subagent, in
+the foreground (`run_in_background: false`) since it edits and commits the
+working tree, and touches nothing until it returns. It hands over:
+
+- this file's path, to follow from § "Scope" on — this section is the caller's,
+  so the subagent does not recurse into it;
+- the argument, verbatim;
+- the plan under `docs/plans/`, when the branch has one, as the record of
+  intent.
+
+Nothing else: no account of what was built or why. Intent the subagent cannot
+recover from the plan, the diff and the code is intent a reviewer will not
+recover either, which is a finding in itself.
+
+**It reports, and the session relays.** The report carries what each pass
+changed with its commits, the calls `/dry` leaves for the operator, and the
+prose it would have cut or rewritten but for intent it could not establish —
+each of those as a question, not an edit. The session answers the questions its
+own context settles and acts on them; the rest go to the operator with `/dry`'s
+calls.
+
 ## Scope: the branch, not the session
 
 Both passes carry their own scope ladders and both bottom out at unpushed work
