@@ -264,11 +264,12 @@ class StopHookTest(unittest.TestCase):
         result = self.clone.stop(active=True)
         self.assertEqual(result.returncode, 0)
 
-    def test_a_failed_push_is_reported_as_committed_but_not_pushed(self) -> None:
+    def test_an_unreachable_origin_is_reported_as_the_ledger_missing_the_row(self) -> None:
         self.clone.git("remote", "set-url", "origin", str(self.clone.root.parent / "missing.git"))
         result = self.clone.stop()
         self.assertEqual(result.returncode, 2)
-        self.assertIn("committed but not pushed", result.stderr)
+        self.assertIn("did not take this turn's row", result.stderr)
+        self.assertIn("missing.git", result.stderr)
         self.assertEqual(self.clone.status(), "")
         self.assertEqual(self.clone.git("rev-list", "--count", "origin/feature..HEAD"), "1")
 
