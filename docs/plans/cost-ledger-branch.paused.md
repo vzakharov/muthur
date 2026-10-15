@@ -156,6 +156,42 @@ the code and closes what that session left open.
     `report.py` older than this change undercounts a migrated repository under
     `--all-my-repos`, so the cross-repo report runs from an updated checkout.
 
+## Progress
+
+Done (through 4281ba5):
+
+- **Step 1.** The push works: `cost-ledger` exists on origin, rooted at ec2bfe9,
+  an orphan commit with an empty tree. It stays as the ledger's root rather than
+  being thrown away; the backfill builds on it.
+- **Step 2.** `lib/ledger.py` and the `ledger.py` CLI (`backfill`, `fetch`,
+  `stop-plan`, `commit-row`, `append-row`). The commit plumbing and the
+  row-commit subject moved from the hook into `lib/ledger.py`, so the branch
+  write calls `ledger.py commit-row` too: one copy of the signing and
+  throwaway-index rules. `union` picks by `recency` = (`lastResponseAt`,
+  `estimate.at`), so an estimate edited onto a finished row wins a tie. Also
+  `latest_row(session_id)`, tree plus local ledger copy, for steps 5–6.
+  `backfill` has not been run yet.
+- **Step 3.** `lib/finalized.py`. The marker regex already reads
+  `<!-- finalize-attestation <sha>|revoked -->`.
+- **Step 4.** The hook: `ledger fetch` (a failed fetch skips the ledger write,
+  since the row would be priced without the ledger's estimate), price,
+  `append-row`, `stop-plan`, and only then the harness-check wait and the
+  display copy. On the trunk it writes the ledger alone. A ledger error blocks
+  the stop once with git's whole message. The 13 existing hook tests pass, one
+  renamed: an unreachable origin is now reported as the ledger missing the row.
+
+Left:
+
+- **Steps 5–11** as written above. Two additions found on the way:
+  - `estimate.py --session` for a session whose row is only on the ledger:
+    commit the edited row to the ledger with `ledger.append` (`recency` already
+    makes the edit win). `check_estimates.running_is_estimated` and
+    `session_cost.previous` should both use `ledger.latest_row`.
+  - The hook tests reach GitHub: `stop-plan` on the test's `feature` branch
+    parses the bare origin's path as a repo and runs `gh`, which fails and falls
+    back to display. Step 10 needs a seam there (a test transport, or no query
+    when origin is not on GitHub) and tests for the finalized cache.
+
 ## Decided
 
 - **The query fails → not finalized** (operator: «1a»), as step 3 states.
