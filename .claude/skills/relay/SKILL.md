@@ -120,9 +120,7 @@ Its prompt is one line, `/relay take <branch> — <what now>`, `<what now>` bein
 one sentence: the summary's Next step in plain words, in the human-facing
 language (CLAUDE.md § "Language"), a skill in it named bare. The prompt is what
 an operator switching in from other work sees first, and a branch name does not
-say what the session is for. The summary is not passed in the prompt: a tool
-call's argument is model output, so writing the file and then sending its text
-bills it twice.
+say what the session is for.
 
 - **Web/remote**: `create_session` from the Claude Code Remote tools, with
   `source_url` the `origin` URL, `source_revision` the branch, a `title` per
