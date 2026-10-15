@@ -1,5 +1,5 @@
 ---
-description: Finalize (a.k.a. "prep merge") — land prep: verify there's a draft PR, run the quality passes (`/polish`), run the vet suite, merge the base branch, mark ready for review, propose a squash body and settle the PR title it lands under, and post the attestation comment. Pass an optional branch/PR target first (`/finalize <branch|#PR|PR-url>`) to attach to that existing branch before finalizing. `/finalize no vet` is the docs-only mode; `/finalize and merge` squash-merges the PR as well, but only if the run turned up nothing to decide. An operator's ask to merge a branch not yet finalized — "merge", "мерджи", in any words — is `/finalize and merge`, and the reply opens by saying so.
+description: Finalize (a.k.a. "prep merge") — land prep: verify there's a draft PR, run the quality passes (`/polish`), run the vet suite, merge the base branch, mark ready for review, propose a squash body and settle the PR title it lands under, and post the attestation comment. Pass an optional branch/PR target first (`/finalize <branch|#PR|PR-url>`) to attach to that existing branch before finalizing. `/finalize no vet` is the docs-only mode; `/finalize revoke` withdraws an attestation; `/finalize and merge` squash-merges the PR as well, but only if the run turned up nothing to decide. An operator's ask to merge a branch not yet finalized — "merge", "мерджи", in any words — is `/finalize and merge`, and the reply opens by saying so.
 ---
 
 **Optional branch/PR target**: if the first token of the argument is a branch
@@ -16,6 +16,10 @@ usual.
 **not** skip step 7: the attestation still goes up, stating that verification
 was a deliberate no-op and why. Everything else below still applies. (`no ci`
 and `no attest` are accepted spellings of this flag.)
+
+**`revoke` withdraws the attestation instead of making one** — for a branch that
+needs work again after it was finalized. It runs § "Revoke" below and nothing
+else.
 
 **`and merge` delegates the click, not the judgment.** Recognized anywhere in
 the argument (bare `merge` counts too), it asks you to squash-merge the PR
@@ -246,12 +250,17 @@ Steps (stop on first unresolved failure):
    after `scripts/staged.sh check --empty` passes, since a copy still under
    `.claude/staged/` carries a change that would otherwise land as a stray
    duplicate of the file it stands for; a failure means run the swap above,
-   never delete the copy. Then `git rm -r` the **entire** tree, not just the
-   `squash-message.md` that `@.claude/skills/squash-message/SKILL.md` tracks
-   there: the directory's name is a standing declaration that nothing inside it
-   may land, so a screenshot or anything else an agent parked there goes with
-   it. Paired with the earlier add, the deletion cancels out in the squash. Push
-   it before step 7 so the SHA the attestation names is the branch's final head.
+   never delete the copy. Where the cost ledger ships, the session rows go in
+   the same commit: `python3 .claude/costs/ledger.py backfill HEAD` first,
+   because a branch that merged the ledger in mid-flight carries rows the
+   `cost-ledger` branch never received, then `git rm -r .claude/costs/sessions`
+   — they are display copies, and the trunk carries none. Then `git rm -r` the
+   **entire** tree, not just the `squash-message.md` that
+   `@.claude/skills/squash-message/SKILL.md` tracks there: the directory's name
+   is a standing declaration that nothing inside it may land, so a screenshot or
+   anything else an agent parked there goes with it. Paired with the earlier
+   add, the deletion cancels out in the squash. Push it before step 7 so the SHA
+   the attestation names is the branch's final head.
 
    **Why this tree goes last, after everything else.** The squash proposal is a
    live doc for the whole time the PR is in flight: every edit to it — a review
@@ -270,11 +279,14 @@ Steps (stop on first unresolved failure):
 
 7. **Attest** — the last act, and the only durable record that this branch was
    verified beyond whatever CI reports. Post it on the PR — or, on a re-run,
-   edit it in place; it is sticky, keyed on the `<!-- finalize-attestation -->`
-   marker, and the marker is how you find it (mechanic below the templates):
+   edit it in place; it is sticky, keyed on the `<!-- finalize-attestation`
+   marker, and the marker is how you find it (mechanic below the templates). The
+   marker carries the head's full SHA, which the cost ledger's `Stop` hook
+   parses (`.claude/costs/lib/finalized.py`) to stop writing rows onto a
+   finalized branch:
 
    ```md
-   <!-- finalize-attestation -->
+   <!-- finalize-attestation <full-head-sha> -->
 
    ### Attestation
 
@@ -291,7 +303,7 @@ Steps (stop on first unresolved failure):
    that there was nothing to verify:
 
    ```md
-   <!-- finalize-attestation -->
+   <!-- finalize-attestation <full-head-sha> -->
 
    ### Attestation — none required
 
@@ -306,7 +318,7 @@ Steps (stop on first unresolved failure):
    `@.claude/skills/squash-message/SKILL.md` § "Emit" uses for its own sticky
    comment — list the PR's comments
    (`gh api repos/<owner>/<repo>/issues/<n>/comments --paginate`), pick the one
-   whose body contains `<!-- finalize-attestation -->`, and
+   whose body contains `<!-- finalize-attestation`, and
    `gh api repos/<owner>/<repo>/issues/comments/<id> -X PATCH -F body=@<file>`
    that id; post a new comment only when no match exists.
    `gh pr comment --edit-last` looks like the tool for this and is not: it
@@ -337,10 +349,10 @@ Steps (stop on first unresolved failure):
    - End the body with the attribution footer the repo requires of every GitHub
      comment.
    - **A head that moved only by `.claude/costs/sessions/` is still the head you
-     verified.** Where the cost ledger runs, its `Stop` hook commits the turn's
-     row after the turn ends, so the branch usually sits one
-     `chore: session cost` commit past the attested SHA. That commit touches no
-     verified path; re-attest only for a commit that does.
+     verified.** The cost ledger's `Stop` hook relies on it: it stops writing a
+     branch's display copy once the marker's SHA holds, and treats a commit
+     touching anything else past that SHA as the branch reopened. Re-attest only
+     for a commit that does.
 
 8. **Merge — under `and merge` only, and only if the run was uneventful.**
    Without the flag, stop at step 7 and report.
@@ -445,3 +457,19 @@ Steps (stop on first unresolved failure):
    the wrong reader. Then end the turn. Do not ask for permission to merge
    anyway — the report is the ask, and a pending question pins a session the
    operator may not return to for days.
+
+## Revoke
+
+`/finalize revoke` withdraws the attestation explicitly, for a finalized branch
+going back to work. A work commit past the attested SHA already reopens the
+branch for the cost ledger; this is the operator saying so before one exists.
+
+1. Find the attestation comment as step 7 does, and edit it in place: replace
+   the marker with `<!-- finalize-attestation revoked -->` and the body with
+   when and why it was revoked, the footer kept. No comment → nothing was
+   attested; say so and stop.
+2. `gh pr ready --undo`, so the PR reads as work in progress again.
+3. `rm -f tmp/costs/finalized/<branch>`, the ledger's cache of the attested SHA.
+
+Report the three in a line each. The next `/finalize` replaces the revoked
+comment like any other.
