@@ -18,8 +18,8 @@ was a deliberate no-op and why. Everything else below still applies. (`no ci`
 and `no attest` are accepted spellings of this flag.)
 
 **`revoke` withdraws the attestation instead of making one** — for a branch that
-needs work again after it was finalized. Load
-`@.claude/skills/finalize/revoke.md` and run it, and nothing else.
+needs work again after it was finalized. It runs
+`@.claude/skills/finalize/revoke.md` and nothing else.
 
 **`and merge`** — recognized anywhere in the argument, bare `merge` too — asks
 you to squash-merge the PR yourself at step 8, but only if the run gives you no
