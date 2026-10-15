@@ -238,6 +238,46 @@ says when the workaround can go.
   `source_url`, so the successor is a single-repo session that has lost the
   others.
 
+## Progress
+
+### Done
+
+- **§ 1** — `scripts/lib/session.py`: `Session.detect(anchor)` gives the root
+  and the attached repos. Multi-repo means two or more clones under a root that
+  is not itself a work tree, and only with `CLAUDE_CODE_REMOTE=true` — locally
+  the session is always the calling script's own repo, so a `~/code` full of
+  clones is never mistaken for one. `scripts/lib/github.py` gained
+  `parse_repo_url` and a `cwd` argument on `detect_origin_repo`, for § 5.
+- **§ 2–3** — `scripts/multi-repo-hooks.py`, run live in the planning session
+  (muthur + vovazakharov.com + life) with `--primary muthur`: it wrote
+  `/home/user/.claude/settings.json`, printed the operator entry, installed
+  `vovazakharov.com`'s 733 packages, printed `vovazakharov.com`'s muthur-sync
+  nudge, and the context-budget `PostToolUse` hook fired on the very next tool
+  call — the settings watcher confirmed end to end. Choices made while building
+  it:
+  - the foreign-file guard is a sidecar `multi-repo-hooks.sha256` beside the
+    generated file, since Claude Code validates `settings.json` and an extra key
+    in it is a risk;
+  - when a real `SessionStart` hook runs the script, the payload it received is
+    passed through to the hooks; otherwise one of the same shape is built;
+  - `SessionStart` hooks run only when the file on disk changed (or
+    `--run-session-start`): an unchanged file means Claude Code loaded it at
+    this start and runs them itself;
+  - the cost family is split: `stop-session-cost.sh` and `estimate-notice.sh`
+    per repo (each repo's vet checks its own estimate), while
+    `start-telemetry-receiver.sh` (one port) and `post-tool-context-budget.sh`
+    (a session-wide reading) run once.
+
+### Left
+
+- Tests for both scripts (§ 7), then `find-repo.py` (§ 5).
+- The rule file and the `CLAUDE.md` pointer (§ 6) — the pointer through
+  `scripts/staged.sh stage CLAUDE.md`.
+- `docs/adopting/web-remote.md` (the setup-script block needs a hook `timeout`
+  of about 600: `install-deps` took 37 s here, past the 60 s default's comfort
+  once three repos install), the catalog entries, the upstream issue (§ 8).
+- `/polish`, then `/pr` refresh mode.
+
 ## Open questions
 
 1. **What runs the generator?**
