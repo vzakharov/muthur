@@ -1,0 +1,94 @@
+{
+  "total": {
+    "inputTokens": 78,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 158120,
+    "cacheReadTokens": 6360566,
+    "outputTokens": 39339,
+    "thinkingTokens": 16581,
+    "responses": 39,
+    "costUsd": 3.3241652
+  },
+  "estimate": {
+    "at": "2026-10-15T18:23:34.334Z",
+    "parts": [
+      {
+        "hours": 7.0,
+        "grade": "senior",
+        "role": "developer",
+        "comment": "the shared ledger plumbing, finalized detection and the dual-write Stop hook: git plumbing racing the harness check and other sessions' pushes"
+      },
+      {
+        "hours": 0.25,
+        "grade": "middle",
+        "role": "editor",
+        "comment": "the plan's progress record a successor resumes from"
+      }
+    ],
+    "comment": null
+  },
+  "sessionId": "edea4457-cfa9-576e-897f-2c24b3afc573",
+  "branch": "claude/cost-ledger-branch-pz4s1a",
+  "cwd": "/home/user/muthur",
+  "openingPrompt": "/relay take claude/cost-ledger-branch-pz4s1a",
+  "prs": [
+    202
+  ],
+  "url": "https://claude.ai/code/session_01EjjbAbLxx8qNg1XKJm3Et7",
+  "operator": "vzakharov",
+  "firstResponseAt": "2026-10-15T18:16:56.785Z",
+  "lastResponseAt": "2026-10-15T18:24:17.709Z",
+  "pricesAsOf": "2026-10-06",
+  "claudeCodeTotalUsd": null,
+  "ownTurns": {
+    "inputTokens": 78,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 158120,
+    "cacheReadTokens": 6360566,
+    "outputTokens": 39339,
+    "thinkingTokens": 16581,
+    "responses": 39,
+    "costUsd": 3.3241652
+  },
+  "subagents": {
+    "inputTokens": 0,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 0,
+    "cacheReadTokens": 0,
+    "outputTokens": 0,
+    "thinkingTokens": 0,
+    "responses": 0,
+    "costUsd": 0.0
+  },
+  "byRate": {
+    "claude-opus-5-5/standard": {
+      "inputTokens": 78,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 158120,
+      "cacheReadTokens": 6360566,
+      "outputTokens": 39339,
+      "thinkingTokens": 16581,
+      "responses": 39,
+      "costUsd": 3.3241652
+    }
+  },
+  "warnings": [],
+  "orientation": {
+    "endedBy": "Edit",
+    "endedOn": "docs/plans/cost-ledger-branch.in-progress.md",
+    "endedAt": "2026-10-15T18:17:15.780Z",
+    "contextTokens": 117374,
+    "spend": {
+      "inputTokens": 14,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 59760,
+      "cacheReadTokens": 662351,
+      "outputTokens": 1346,
+      "thinkingTokens": 120,
+      "responses": 7,
+      "costUsd": 0.6375261999999999
+    }
+  },
+  "compactions": [],
+  "telemetry": null
+}
