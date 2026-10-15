@@ -59,6 +59,16 @@ cost rows, cold-cache, keepalive, `permission-denied-phrase`, `#N` export or
   the environment it has in a single-repo session.
 - The repos are cloned before `SessionStart` fires — a single-repo session's
   hooks run from the clone (`$CLAUDE_PROJECT_DIR/.claude/hooks/…`).
+- **What reaches a multi-repo session's first turn from the repos.** Every
+  attached repo's `CLAUDE.md` was in the opening context, with its `@`-imports
+  (`.claude/voice/voice.md`), because the platform sets
+  `CLAUDE_CODE_ADDITIONAL_DIRECTORIES_CLAUDE_MD=1`. Path-scoped `.claude/rules/`
+  files from the repos arrived on a `Read` of a file they cover. An
+  always-loaded rule (no `paths:`) from an attached repo is **not verified**:
+  none of the three repos has one, and the docs list rules as loading under that
+  same variable without saying more. The agent also knows it is in a multi-repo
+  session from turn one: the environment block names a primary working directory
+  that "is a git repository: false".
 
 ## Approach
 
@@ -101,9 +111,10 @@ path; anything not listed runs once.
   - `format-md.sh`, `file-tools-nudge.py` — check that the path is inside their
     root;
   - the cost family (`stop-session-cost.sh`, `start-telemetry-receiver.sh`,
-    `estimate-notice.sh`, `post-tool-context-budget.sh`) — per open question 2,
-    written with option (a) in force: a row lands in every repo and is committed
-    only where the session commits work.
+    `estimate-notice.sh`, `post-tool-context-budget.sh`) — a row lands in every
+    repo and is committed only where the session commits work. The accepted
+    cost: each repo's row carries the whole session's cost, so a sum across
+    repos counts a shared session more than once.
 - **Once** — session-wide, from the primary repo when `--primary` names it, else
   the alphabetically first repo carrying the hook: `gh-shim.sh`,
   `operator-voice.sh`, `cold_cache.py`, `keepalive.py`, `plan-mode-notice.sh`,
@@ -154,9 +165,10 @@ base directory, three levels below the repo root that carries `scripts/`.
 
 ### 6. The multi-repo rule — one place, not every skill
 
-One always-loaded file, `.claude/rules/multi-repo.md` (no `paths:`), with a
-pointer line in `CLAUDE.md` (per open question 3's option (a)). It holds when
-the session's working directory is above the repos:
+The rule has to be in context from a multi-repo session's first turn, before any
+skill or hook runs — so its home is whatever open question 3 settles, and
+`CLAUDE.md` is the one home verified to arrive there. It holds when the
+session's working directory is above the repos:
 
 - **Every skill that acts on a branch, PR or issue first resolves its target
   repo** with `find-repo.py`, and remembers it for the rest of the task.
@@ -204,25 +216,23 @@ the session's working directory is above the repos:
      the agent noticing, and does not rerun by itself after a container rebuild.
    - c) The setup script only — reliable, but without it a multi-repo session
      silently stays hookless.
-2. **Cost rows in a multi-repo session:**
-   - a) **A row in every repo, committed only where work was** (recommended) —
-     no new logic; the price is double counting in a cross-repo sum.
-   - b) The primary repo only — the first source is now a known notion, but the
-     setup-script path cannot read it, so the generator would fall back to
-     alphabetical there.
-3. **Where the multi-repo rule lives:**
-   - a) **`.claude/rules/multi-repo.md` plus a pointer line in `CLAUDE.md`**
-     (recommended) — the same always-loaded cost, a shorter `CLAUDE.md`.
-   - b) The whole rule in `CLAUDE.md`.
-4. **One PR or two?** Hooks (§ 2–4) and skills (§ 5–6) share only
-   `scripts/lib/`.
-   - a) **One PR** (recommended) — they share the session-root module and the
-     rule file, and the operator dogfoods both in the same multi-repo session.
-   - b) Two PRs, hooks first — each smaller to review; the second waits for the
-     first's `scripts/lib/`.
+2. _(answered: a row in every repo — § 3.)_
+3. **Where the multi-repo rule lives** — waits on question 1, since the rule
+   carries the generator's fallback and so must be in context on turn one:
+   - a) **`.claude/rules/multi-repo.md` (no `paths:`) plus a pointer line in
+     `CLAUDE.md`** (recommended, if a first multi-repo session shows the rule
+     file in its opening context) — the same always-loaded cost, a shorter
+     `CLAUDE.md`.
+   - b) The whole rule in `CLAUDE.md` — the one home verified to load from every
+     attached repo on turn one; the fallback if (a)'s check fails.
+4. _(answered: one PR.)_
 
-The plan is written with the recommendations in force; the questions stay open
-until answered.
+The plan is written with the recommendations in force; questions 1 and 3 stay
+open until answered.
+
+Resolved: cost rows go to every repo rather than a primary one, which the
+setup-script path could not have read anyway; hooks and skills ship in one PR,
+since they share `scripts/lib/` and are dogfooded in the same session.
 
 ## DRY notes
 
