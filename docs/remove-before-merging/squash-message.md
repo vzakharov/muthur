@@ -16,8 +16,10 @@ polish: floor stays below them, and relays the rest.
 
 The skill splits along the same line: SKILL.md is the launcher every
 caller loads, and polish/passes.md holds the procedure, which only the
-subagent reads. /go, /finalize and /update-muthur inherit the change
-through the skill as a whole.
+subagent reads. The calling session's context so stops paying for the
+procedure, the diff, and the /dry and /tend-prose skills, which counts
+most at /finalize, late in a session's budget. /go, /finalize and
+/update-muthur inherit the change through the skill as a whole.
 
 Co-authored-by: Claude <noreply@anthropic.com>
 ```
