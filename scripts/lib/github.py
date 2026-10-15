@@ -50,9 +50,11 @@ def gh_token() -> str:
 
 
 def detect_origin_repo(cwd: str | os.PathLike[str] | None = None) -> str | None:
+    # The URL as configured, not `git remote get-url`'s: that applies
+    # `url.*.insteadOf`, so a mirror rewrite would hide which repository it is.
     try:
         url = subprocess.check_output(
-            ["git", "remote", "get-url", "origin"], cwd=cwd, text=True
+            ["git", "config", "--get", "remote.origin.url"], cwd=cwd, text=True
         ).strip()
     except (FileNotFoundError, subprocess.CalledProcessError):
         return None
