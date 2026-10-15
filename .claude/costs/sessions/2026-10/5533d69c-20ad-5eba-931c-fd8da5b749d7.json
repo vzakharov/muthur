@@ -1,0 +1,94 @@
+{
+  "total": {
+    "inputTokens": 156,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 181441,
+    "cacheReadTokens": 12724330,
+    "outputTokens": 48063,
+    "thinkingTokens": 16166,
+    "responses": 78,
+    "costUsd": 4.958277999999998
+  },
+  "estimate": {
+    "at": "2026-10-15T18:56:12.343Z",
+    "parts": [
+      {
+        "hours": 0.5,
+        "grade": "senior",
+        "role": "developer",
+        "comment": "settling the design needs working knowledge of git's merge internals (committed markers, modify/delete conflicts, remerge-diff) and of how GitHub renders merge commits"
+      },
+      {
+        "hours": 2.0,
+        "grade": "senior",
+        "role": "prompter",
+        "comment": "rewriting a merge procedure two interlocking skills share, with its trigger phrasing and cross-references, takes judgement of how agents read and misread skills"
+      }
+    ],
+    "comment": null
+  },
+  "sessionId": "5533d69c-20ad-5eba-931c-fd8da5b749d7",
+  "branch": "claude/reviewable-merge-resolution-cfaq6a",
+  "cwd": "/home/user/muthur",
+  "openingPrompt": "а гит позволяет гипотетически закоммитить с конфликтами мерджа? юс кейс: работаю над пиаром, потом мерджу в него мейн, вылезает куча конфликтов, агент их чинит,…",
+  "prs": [
+    204
+  ],
+  "url": "https://claude.ai/code/session_017HMU66J3WepToqyWrdR18Q",
+  "operator": "vzakharov",
+  "firstResponseAt": "2026-10-15T18:33:05.678Z",
+  "lastResponseAt": "2026-10-15T19:26:20.108Z",
+  "pricesAsOf": "2026-10-06",
+  "claudeCodeTotalUsd": 4.1452364,
+  "ownTurns": {
+    "inputTokens": 156,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 181441,
+    "cacheReadTokens": 12724330,
+    "outputTokens": 48063,
+    "thinkingTokens": 16166,
+    "responses": 78,
+    "costUsd": 4.958277999999998
+  },
+  "subagents": {
+    "inputTokens": 0,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 0,
+    "cacheReadTokens": 0,
+    "outputTokens": 0,
+    "thinkingTokens": 0,
+    "responses": 0,
+    "costUsd": 0.0
+  },
+  "byRate": {
+    "claude-opus-5-5/standard": {
+      "inputTokens": 156,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 181441,
+      "cacheReadTokens": 12724330,
+      "outputTokens": 48063,
+      "thinkingTokens": 16166,
+      "responses": 78,
+      "costUsd": 4.958277999999998
+    }
+  },
+  "warnings": [],
+  "orientation": {
+    "endedBy": "end_turn",
+    "endedOn": null,
+    "endedAt": "2026-10-15T18:33:23.808Z",
+    "contextTokens": 88543,
+    "spend": {
+      "inputTokens": 6,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 41072,
+      "cacheReadTokens": 221243,
+      "outputTokens": 1565,
+      "thinkingTokens": 873,
+      "responses": 3,
+      "costUsd": 0.40414859999999997
+    }
+  },
+  "compactions": [],
+  "telemetry": null
+}
