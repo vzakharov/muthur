@@ -1,9 +1,3 @@
-> ⛔ **DRAFT — DO NOT IMPLEMENT.** This plan is not approved. Do not edit source
-> while this file is named `*.draft.do-not-implement.md` — prep and spikes go in
-> `tmp/`. On an explicit operator go-ahead, `git mv` it to `*.in-progress.md`
-> and delete this banner (quoting the go-ahead in the commit) _before_ touching
-> code.
-
 # Sessions with several repositories attached
 
 ## Cause
@@ -213,6 +207,30 @@ session's working directory is above the repos:
     session, the refusal to overwrite a foreign file;
   - `scripts/test_find_repo.py` — branch, URL and `#N` resolution against
     fixture repos with local bare remotes, the ambiguous and not-found exits.
+
+### 8. An upstream issue on `anthropics/claude-code`
+
+What this plan works around is the platform's to fix, and one part of it no repo
+can: every attached repo's `CLAUDE.md` loads whole, unmerged, so a session's
+standing context grows by a full copy per repo however short each file is — an
+N+1 cost on the context, not a prose problem. One issue, filed after searching
+for an existing one to comment on instead:
+
+- **The context cost** — the numbers from § "Verified by hand", and the ask:
+  load a file whose content is identical across repos once, or let a repo mark
+  its `CLAUDE.md` as shared with another.
+- **Hooks** — a multi-repo session loads none of a repo's hooks, documented but
+  with no supported per-repo path; the ask: run each repo's hooks with
+  `CLAUDE_PROJECT_DIR` set to that repo, or let `settings.json` opt in.
+- **Skill collisions** — same-named skills collapse to the first source's copy,
+  undocumented; the ask: document it, or namespace by repo.
+- **The session's repo order** is visible only through `get_session`; the ask:
+  expose it to hooks and scripts (an environment variable naming the sources in
+  order).
+
+The issue links this PR as the workaround in use; the plan's
+`docs/adopting/web-remote.md` paragraph links the issue back as the thread that
+says when the workaround can go.
 
 ## Out of scope — proposed as separate issues
 
