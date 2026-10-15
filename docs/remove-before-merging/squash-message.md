@@ -1,8 +1,4 @@
-Proposed squash title/body:
-
-```
-feat: support sessions with several repositories attached (#199)
-```
+Proposed squash body:
 
 ```
 A cloud session with several repositories attached starts in their
@@ -17,12 +13,16 @@ to its own repo: per repo where the hook acts on its repo, once for
 session-wide ones, skipped for the #N export hooks. It runs the
 SessionStart set at once, since the settings watcher only catches later
 events. A user-level hook from the environment setup script triggers
-it, and the agent runs it itself where that block is missing.
+it, and the agent runs it itself where that hook is missing.
 
 scripts/find-repo.py resolves a branch, PR URL or #N to the one repo
-carrying it. An always-loaded rule has every skill resolve its target
-that way, cd into it on each Bash call, and follow that repo's own copy
-of the skill, so no skill text changes.
+carrying it. .claude/rules/multi-repo.md has every skill resolve its
+target that way, cd into it on each Bash call, and follow that repo's
+own copy of the skill, so no skill text changes. The rule is scoped to
+its own scripts and loaded through a CLAUDE.md pointer, so it costs a
+single-repo session nothing. What no repo can work around — each
+attached repo's CLAUDE.md loading in full — is
+anthropics/claude-code#102311.
 
 Co-authored-by: Claude <noreply@anthropic.com>
 ```
