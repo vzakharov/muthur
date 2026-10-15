@@ -32,8 +32,8 @@ Nothing else: no account of what was built or why.
 **It reports, and the session relays.** Answer the intent questions this
 session's context settles and act on them, committed under the type the edit
 would carry anyway: a `polish:` subject would put the edit below the next run's
-floor unreviewed. The rest go to the operator with `/dry`'s calls. The `polish:`
-type and the floor it marks are `passes.md` § "The floor"'s.
+floor (`passes.md` § "The floor"), unreviewed. The rest go to the operator with
+`/dry`'s calls.
 
 ## Where it runs
 
