@@ -1,0 +1,86 @@
+{
+  "total": {
+    "inputTokens": 36,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 63461,
+    "cacheReadTokens": 1776849,
+    "outputTokens": 8902,
+    "thinkingTokens": 2614,
+    "responses": 18,
+    "costUsd": 1.0412418
+  },
+  "estimate": {
+    "at": "2026-10-15T12:05:35.036Z",
+    "parts": [
+      {
+        "hours": 1.5,
+        "grade": "senior",
+        "role": "analyst",
+        "comment": "answering it means knowing how rows reach main and measuring what the remote branches hold beyond it — git plumbing across ~170 refs plus judgement of the ledger's design, not a lookup"
+      }
+    ],
+    "comment": null
+  },
+  "sessionId": "105d9313-7fb1-5749-8d06-648b4eb84865",
+  "branch": "claude/gallant-lovelace-pz4s1a",
+  "cwd": "/home/user/muthur",
+  "openingPrompt": "интересно, может наш pnpm costs ловить ветки, которые никогда не были смерджены? по сути, если косты были, то они были, вне зависимости от того дошло ли это до …",
+  "prs": [],
+  "url": "https://claude.ai/code/session_01NgUZSXMZuxiwQHduuBy6yC",
+  "operator": "vzakharov",
+  "firstResponseAt": "2026-10-15T12:01:51.987Z",
+  "lastResponseAt": "2026-10-15T12:05:57.929Z",
+  "pricesAsOf": "2026-10-06",
+  "claudeCodeTotalUsd": null,
+  "ownTurns": {
+    "inputTokens": 36,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 63461,
+    "cacheReadTokens": 1776849,
+    "outputTokens": 8902,
+    "thinkingTokens": 2614,
+    "responses": 18,
+    "costUsd": 1.0412418
+  },
+  "subagents": {
+    "inputTokens": 0,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 0,
+    "cacheReadTokens": 0,
+    "outputTokens": 0,
+    "thinkingTokens": 0,
+    "responses": 0,
+    "costUsd": 0.0
+  },
+  "byRate": {
+    "claude-opus-5-5/standard": {
+      "inputTokens": 36,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 63461,
+      "cacheReadTokens": 1776849,
+      "outputTokens": 8902,
+      "thinkingTokens": 2614,
+      "responses": 18,
+      "costUsd": 1.0412418
+    }
+  },
+  "warnings": [],
+  "orientation": {
+    "endedBy": "end_turn",
+    "endedOn": null,
+    "endedAt": "2026-10-15T12:05:57.929Z",
+    "contextTokens": 110518,
+    "spend": {
+      "inputTokens": 34,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 63096,
+      "cacheReadTokens": 1666698,
+      "outputTokens": 6571,
+      "thinkingTokens": 1603,
+      "responses": 17,
+      "costUsd": 0.9696636000000002
+    }
+  },
+  "compactions": [],
+  "telemetry": null
+}
