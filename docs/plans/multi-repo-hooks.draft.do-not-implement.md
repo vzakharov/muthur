@@ -69,6 +69,15 @@ cost rows, cold-cache, keepalive, `permission-denied-phrase`, `#N` export or
   same variable without saying more. The agent also knows it is in a multi-repo
   session from turn one: the environment block names a primary working directory
   that "is a git repository: false".
+- **Those files arrive whole, once per repo, nothing merged.** The three
+  `CLAUDE.md` files and their three `voice.md` imports sat back to back in one
+  system block — about 89 KB, roughly 22–25k tokens against about 8k for a
+  single-repo session — though most of it is the same muthur text three times.
+  Where the copies disagree (`life`'s commit prefixes name an area of life, the
+  others' a change type), the agent picks by which repo the work belongs to.
+  This is the platform's cost of attaching repos together, not one this plan can
+  remove; a shorter `CLAUDE.md` is the only lever, and it pays once per attached
+  repo.
 
 ## Approach
 
@@ -165,9 +174,14 @@ base directory, three levels below the repo root that carries `scripts/`.
 
 ### 6. The multi-repo rule — one place, not every skill
 
-The rule has to be in context from a multi-repo session's first turn, before any
-skill or hook runs — so its home is whatever open question 3 settles, and
-`CLAUDE.md` is the one home verified to arrive there. It holds when the
+The rule lives in `.claude/rules/multi-repo.md` (no `paths:`), with a pointer
+line in `CLAUDE.md`. It has to be in context from a multi-repo session's first
+turn, before any skill or hook runs, and the pointer is what guarantees that:
+`CLAUDE.md` is the one home verified to arrive there, while an always-loaded
+rule file from an attached repo is not. So the pointer carries the trigger
+itself, not just a reference — when the working directory is above the repos,
+`Read` `.claude/rules/multi-repo.md` before anything else — and the rule file
+arriving on its own merely makes that `Read` redundant. The rule holds when the
 session's working directory is above the repos:
 
 - **Every skill that acts on a branch, PR or issue first resolves its target
@@ -217,22 +231,18 @@ session's working directory is above the repos:
    - c) The setup script only — reliable, but without it a multi-repo session
      silently stays hookless.
 2. _(answered: a row in every repo — § 3.)_
-3. **Where the multi-repo rule lives** — waits on question 1, since the rule
-   carries the generator's fallback and so must be in context on turn one:
-   - a) **`.claude/rules/multi-repo.md` (no `paths:`) plus a pointer line in
-     `CLAUDE.md`** (recommended, if a first multi-repo session shows the rule
-     file in its opening context) — the same always-loaded cost, a shorter
-     `CLAUDE.md`.
-   - b) The whole rule in `CLAUDE.md` — the one home verified to load from every
-     attached repo on turn one; the fallback if (a)'s check fails.
+3. _(answered: a rule file plus a pointer in `CLAUDE.md` — § 6.)_
 4. _(answered: one PR.)_
 
-The plan is written with the recommendations in force; questions 1 and 3 stay
-open until answered.
+The plan is written with the recommendations in force; question 1 stays open
+until answered.
 
 Resolved: cost rows go to every repo rather than a primary one, which the
 setup-script path could not have read anyway; hooks and skills ship in one PR,
-since they share `scripts/lib/` and are dogfooded in the same session.
+since they share `scripts/lib/` and are dogfooded in the same session; the rule
+goes to its own file rather than whole into `CLAUDE.md`, which every attached
+repo loads in full, with a pointer there that names the `Read` so the rule
+reaches turn one whether or not the file auto-loads.
 
 ## DRY notes
 
