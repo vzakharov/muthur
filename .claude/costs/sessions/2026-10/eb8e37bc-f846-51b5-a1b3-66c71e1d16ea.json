@@ -1,0 +1,100 @@
+{
+  "total": {
+    "inputTokens": 64,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 146790,
+    "cacheReadTokens": 4730471,
+    "outputTokens": 21541,
+    "thinkingTokens": 8491,
+    "responses": 32,
+    "costUsd": 2.5514902000000004
+  },
+  "estimate": {
+    "at": "2026-10-15T17:53:33.097Z",
+    "parts": [
+      {
+        "hours": 10.0,
+        "grade": "senior",
+        "role": "developer",
+        "comment": "git plumbing inside a Stop hook that races the harness check, plus a network-backed cache with local invalidation: push races and ref traps a middle would ship broken"
+      },
+      {
+        "hours": 1.5,
+        "grade": "senior",
+        "role": "architect",
+        "comment": "open forks (fallback on network failure, unfinalize surface, backfill) must be settled against the repo's durability rules before code"
+      },
+      {
+        "hours": 1.5,
+        "grade": "middle",
+        "role": "editor",
+        "comment": "the ledger's CLAUDE.md, the finalize step and the update-muthur note need rewriting to match the new source of truth"
+      }
+    ],
+    "comment": null
+  },
+  "sessionId": "eb8e37bc-f846-51b5-a1b3-66c71e1d16ea",
+  "branch": "claude/cost-ledger-branch-pz4s1a",
+  "cwd": "/home/user/muthur",
+  "openingPrompt": "/relay take claude/cost-ledger-branch-pz4s1a давай делать",
+  "prs": [
+    202
+  ],
+  "url": "https://claude.ai/code/session_01TNVxArQP8m5nFYcXyYdWDG",
+  "operator": "vzakharov",
+  "firstResponseAt": "2026-10-15T17:50:59.437Z",
+  "lastResponseAt": "2026-10-15T17:55:26.072Z",
+  "pricesAsOf": "2026-10-06",
+  "claudeCodeTotalUsd": null,
+  "ownTurns": {
+    "inputTokens": 64,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 146790,
+    "cacheReadTokens": 4730471,
+    "outputTokens": 21541,
+    "thinkingTokens": 8491,
+    "responses": 32,
+    "costUsd": 2.5514902000000004
+  },
+  "subagents": {
+    "inputTokens": 0,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 0,
+    "cacheReadTokens": 0,
+    "outputTokens": 0,
+    "thinkingTokens": 0,
+    "responses": 0,
+    "costUsd": 0.0
+  },
+  "byRate": {
+    "claude-opus-5-5/standard": {
+      "inputTokens": 64,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 146790,
+      "cacheReadTokens": 4730471,
+      "outputTokens": 21541,
+      "thinkingTokens": 8491,
+      "responses": 32,
+      "costUsd": 2.5514902000000004
+    }
+  },
+  "warnings": [],
+  "orientation": {
+    "endedBy": "Write",
+    "endedOn": "docs/plans/cost-ledger-branch.draft.do-not-implement.md",
+    "endedAt": "2026-10-15T17:53:45.620Z",
+    "contextTokens": 169508,
+    "spend": {
+      "inputTokens": 44,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 121972,
+      "cacheReadTokens": 2891742,
+      "outputTokens": 11427,
+      "thinkingTokens": 7829,
+      "responses": 22,
+      "costUsd": 1.7828404
+    }
+  },
+  "compactions": [],
+  "telemetry": null
+}
