@@ -30,7 +30,7 @@ from pathlib import Path
 
 from lib.finalized import finalized
 from lib.github import Client
-from lib.ledger import BRANCH, LedgerError, append_row, backfill, commit, every_ref, fetch, row_subject, text_at
+from lib.ledger import BRANCH, LedgerError, append_row, backfill, commit, every_ref, fetch, row_change
 
 TRUNKS = ("", "main", "master")
 
@@ -60,10 +60,9 @@ def main() -> int:
             display = args.branch not in TRUNKS and not finalized(args.branch, Client())
             print(f"display={'yes' if display else 'no'}")
         elif args.command == "commit-row":
-            text = args.file.read_text(encoding="utf-8")
-            before = text_at(args.parent, args.path)
-            if before != text:
-                print(commit(args.parent, {args.path: text}, row_subject(before, text)))
+            rows, message = row_change(args.parent, args.path, args.file.read_text(encoding="utf-8"))
+            if rows:
+                print(commit(args.parent, rows, message))
         else:
             append_row(args.path, args.file.read_text(encoding="utf-8"))
     except LedgerError as error:

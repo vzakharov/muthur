@@ -41,10 +41,14 @@ def run(*args: str, input: Optional[bytes] = None, env: Optional[Mapping[str, st
     )
 
 
+def stderr(done: subprocess.CompletedProcess) -> str:
+    return done.stderr.decode(errors="replace").strip()
+
+
 def git(*args: str, input: Optional[str] = None, env: Optional[Mapping[str, str]] = None) -> str:
     done = run(*args, input=None if input is None else input.encode(), env=env)
     if done.returncode != 0:
-        raise LedgerError(f"git {args[0]}: {done.stderr.decode(errors='replace').strip()}")
+        raise LedgerError(f"git {args[0]}: {stderr(done)}")
     return done.stdout.decode()
 
 
@@ -65,7 +69,7 @@ def fetch() -> Optional[str]:
     if listed.returncode == 2:
         return None
     if listed.returncode != 0:
-        raise LedgerError(f"reading {BRANCH} on origin: {listed.stderr.decode(errors='replace').strip()}")
+        raise LedgerError(f"reading {BRANCH} on origin: {stderr(listed)}")
     git("fetch", "-q", "origin", f"+refs/heads/{BRANCH}:{REMOTE_REF}")
     return resolve(REMOTE_REF)
 
@@ -85,7 +89,7 @@ def rows_at(rev: str) -> List[Tuple[str, str]]:
         return []
     done = run("cat-file", "--batch", input="".join(f"{blob}\n" for blob, _ in listed).encode())
     if done.returncode != 0:
-        raise LedgerError(f"git cat-file: {done.stderr.decode(errors='replace').strip()}")
+        raise LedgerError(f"git cat-file: {stderr(done)}")
     out, at, rows = done.stdout, 0, []
     for _, path in listed:
         header_end = out.index(b"\n", at)
@@ -200,16 +204,19 @@ def append(plan: Plan) -> Optional[str]:
         if pushed.returncode == 0:
             git("update-ref", REMOTE_REF, built)
             return built
-        error = pushed.stderr.decode(errors="replace").strip()
+        error = stderr(pushed)
     raise LedgerError(f"pushing to {BRANCH} failed {TRIES} times: {error}")
 
 
-def append_row(path: str, text: str) -> Optional[str]:
-    def plan(tip: Optional[str]) -> Tuple[Dict[str, str], str]:
-        before = text_at(tip, path) if tip else None
-        return ({} if before == text else {path: text}), row_subject(before, text)
+def row_change(parent: Optional[str], path: str, text: str) -> Tuple[Dict[str, str], str]:
+    """What committing `text` at `path` onto `parent` changes — nothing where
+    `parent` already holds it — and the commit's message."""
+    before = text_at(parent, path) if parent else None
+    return ({} if before == text else {path: text}), row_subject(before, text)
 
-    return append(plan)
+
+def append_row(path: str, text: str) -> Optional[str]:
+    return append(lambda tip: row_change(tip, path, text))
 
 
 def every_ref() -> List[str]:
