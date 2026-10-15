@@ -85,12 +85,15 @@ def main(argv: list[str]) -> int:
         print(session.repos[0])
         return 0
     found = matches(session, target)
-    names = ", ".join(r.name for r in session.repos)
     if len(found) == 1:
         print(found[0])
         return 0
     if not found:
-        print(f"find-repo: {target} is in none of the attached repositories: {names}", file=sys.stderr)
+        print(
+            f"find-repo: {target} is in none of the attached repositories: "
+            + session.names,
+            file=sys.stderr,
+        )
         return 1
     print(
         f"find-repo: {target} is in several attached repositories: "

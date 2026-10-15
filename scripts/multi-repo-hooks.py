@@ -235,10 +235,9 @@ def main(argv: list[str]) -> int:
     primary = session.repo_named(args.primary) if args.primary else None
     settings = build(session, primary)
     changed = write(session, settings)
-    names = ", ".join(r.name for r in session.repos)
     print(
         f"multi-repo-hooks: {session.root}/.claude/settings.json "
-        f"{'written' if changed else 'already current'} for {names}."
+        f"{'written' if changed else 'already current'} for {session.names}."
     )
     if changed or args.run_session_start:
         received = "" if sys.stdin.isatty() else sys.stdin.read()

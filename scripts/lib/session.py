@@ -36,6 +36,10 @@ class Session:
     def multi_repo(self) -> bool:
         return len(self.repos) > 1
 
+    @property
+    def names(self) -> str:
+        return ", ".join(r.name for r in self.repos)
+
     @classmethod
     def detect(cls, anchor: Path) -> Session:
         """The session around `anchor`, the repository the calling script lives in.
@@ -62,6 +66,5 @@ class Session:
             if repo.name == name or str(repo) == name:
                 return repo
         raise ValueError(
-            f"no attached repository named {name!r}; attached: "
-            + ", ".join(r.name for r in self.repos)
+            f"no attached repository named {name!r}; attached: {self.names}"
         )
