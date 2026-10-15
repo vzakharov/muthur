@@ -53,7 +53,8 @@
   `revoke.md`, withdrawing an attestation.
   - **Requires:** `gh`, `scripts/vet.sh`, `scripts/staged.sh`
   - **Pulls in:** `/polish` (G1); `/check-merge`, `/from-branch`, `/plan`,
-    `/squash-message`; **conditionally** `/take-issue` (G3), `/watch-ci` (G5)
+    `/squash-message`, `/sync-branch`; **conditionally** `/take-issue` (G3),
+    `/watch-ci` (G5)
   - **Disposition:** adopt
 - `/from-branch` — Attach the session to an existing branch or PR, abandoning
   the auto-created session branch.
@@ -111,8 +112,8 @@
   - **Requires:** `gh`, `scripts/check-merge.sh`
   - **Pulls in:** `/finalize`, `/from-branch`, `/squash-message`
   - **Disposition:** adopt
-- `/sync-branch` — Bring a branch up to date with its merge target, resolving
-  mechanically and logically in one merge commit.
+- `/sync-branch` — Bring a branch up to date with its merge target: conflicts
+  committed as git left them, then resolved in a commit of their own.
   - **Requires:** `gh`, `scripts/vet.sh`
   - **Pulls in:** `/check-merge`
   - **Disposition:** adopt
