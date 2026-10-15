@@ -121,10 +121,11 @@ def json_text(value: Any) -> str:
 
 
 def row_text(cost: SessionCost) -> str:
-    """`estimate` leads the row, so a pull request's diff of it opens on the one
-    field a person sets."""
+    """A row opens on what the session cost, `total`, then on what the work was
+    worth, `estimate` — the one field set by a command rather than read off
+    the transcript."""
     row = to_json(cost)
-    return _dumped({"estimate": row.pop("estimate"), **row})
+    return _dumped({"total": row.pop("total"), "estimate": row.pop("estimate"), **row})
 
 
 def write_atomic(out: Path, contents: str) -> None:

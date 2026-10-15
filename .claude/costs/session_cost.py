@@ -36,6 +36,7 @@ from lib.pricing import (
     summarise_transcript,
 )
 from lib.estimate import latest
+from lib.ledger import copies, union
 from lib.rows import (
     ROOT,
     SessionCost,
@@ -49,21 +50,20 @@ from lib.shape import ShapeError
 COSTS = Path(__file__).resolve().parent
 
 
-def previous(row: Path) -> Optional[SessionCost]:
+def previous(session_id: str) -> Optional[SessionCost]:
     """An unwritten-tail warning and the estimate are what no run can recompute
-    from the transcript, so a rewrite reads them back from the last one. An unreadable row
-    loses it rather than failing the write — the rewrite is what repairs it —
-    and says so."""
-    if not row.exists():
-        return None
-    try:
-        return parse_session_cost(row.read_text(encoding="utf-8"), str(row))
-    except (ShapeError, json.JSONDecodeError) as error:
-        print(
-            f"session-cost: {error}; rewriting the row from the transcript alone",
-            file=sys.stderr,
-        )
-        return None
+    from the transcript, so a rewrite reads them back from the last one — the
+    later of the tree's copy and the ledger's, since a finalized branch's tree
+    has none. An unreadable copy is passed over rather than failing the write
+    — the rewrite is what repairs it — and says so."""
+    rows = []
+    for where, text in copies(session_id):
+        try:
+            rows.append(parse_session_cost(text, where))
+        except (ShapeError, json.JSONDecodeError) as error:
+            print(f"session-cost: {error}; rewriting the row without that copy", file=sys.stderr)
+    kept = union(rows, lambda row: row)
+    return kept[0] if kept else None
 
 
 def events_at(path: Path) -> Optional[Dict[str, Event]]:
@@ -105,7 +105,7 @@ def main() -> int:
     )
 
     out = COSTS / "sessions" / month_of(cost) / f"{cost.session_id}.json"
-    before = previous(out)
+    before = previous(cost.session_id)
     if before is not None:
         carried = [w for w in before.warnings if is_unwritten_tail(w) and w not in cost.warnings]
         cost.warnings = carried + cost.warnings

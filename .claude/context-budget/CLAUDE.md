@@ -64,9 +64,8 @@ environment's variables, to tune without editing a tracked file.
 ## Manual relay
 
 Either pause ends in `/relay`, run unasked and with no argument, and the relay's
-report says the session relayed on its own and how to have it ask first. Either
-of two switches set to `true` makes the pause end the turn offering the relay
-instead:
+report says the session relayed on its own. Either of two switches set to `true`
+makes the pause end the turn offering the relay instead:
 
 - **`MUTHUR_MANUAL_CONTEXT_BUDGET_RELAY`, for an environment**, set where the
   variables above are — on the web, the dialog that also holds the setup script.
@@ -76,9 +75,16 @@ instead:
 - **`manual-relay/<handle>`, for an operator**, the handle being the one
   `.claude/hooks/operator-voice.sh` resolves — the lowercased login of the
   session's `User`-type GitHub token.
-  - **Only the operator's own words write it**, whenever they say it: write
-    `true`, commit it with their words quoted, and push; asked to have the pause
-    relay unasked again, delete the file the same way.
+  - **The relay's report asks for it, once.** While the operator's file holds
+    neither a yes nor a no, the notice has the report offer it in plain words —
+    "if you'd rather I ask before relaying, say so" — naming no file: the
+    operator's part is the answer, never an edit. With no operator resolved
+    there is nowhere to keep an answer, and nothing is offered.
+  - **Only the operator's own words write it, a no included**, whenever they say
+    it and in whichever session hears it, the relayed one or its successor:
+    write `true` or `false`, commit it with their words quoted, and push,
+    merging first if the other session pushed meanwhile. A later change of mind
+    rewrites the file the same way.
   - **It applies wherever the tree carries it**: on this branch from the next
     notice, and on every branch once it reaches the default branch. Say so when
     you write it, since the operator's next session may start from a base that

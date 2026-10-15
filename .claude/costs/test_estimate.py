@@ -10,7 +10,7 @@ does, which puts this directory on `sys.path` for `lib`.
 from __future__ import annotations
 
 import json
-import os
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -29,10 +29,12 @@ from lib.estimate import (
     senior_hours,
     split_comment,
 )
-from lib.rows import ROOT, SessionCost, parse_session_cost, pending_estimate_path, read_row, row_text
+from lib.ledger import BRANCH
+from lib.rows import ROOT, SessionCost, parse_session_cost, read_row, row_text
 from lib.shape import ShapeError, to_json
 from lib.tally import Tally
 from lib.totals import effort_of, main_model
+from test_stop_hook import Clone
 
 RATES = Rates(roles={"copywriter": 0.5, "developer": 1}, grades={"junior": 0.4, "senior": 1})
 COSTS = Path(__file__).resolve().parent
@@ -125,10 +127,10 @@ class RowsCarryTheirEstimate(unittest.TestCase):
         row = replace(ROW, estimate=estimate_of("a", Part(1, "junior", "developer"), Part(2, "senior", "copywriter")))
         self.assertEqual(parse_session_cost(json.dumps(to_json(row))), row)
 
-    def test_a_row_is_written_with_its_estimate_first(self) -> None:
+    def test_a_row_is_written_opening_on_its_total_then_its_estimate(self) -> None:
         row = replace(ROW, estimate=estimate_of("a"))
         written = row_text(row)
-        self.assertEqual(next(iter(json.loads(written))), "estimate")
+        self.assertEqual(list(json.loads(written))[:2], ["total", "estimate"])
         self.assertEqual(parse_session_cost(written), row)
 
     def test_a_row_from_before_estimates_reads_as_having_none(self) -> None:
@@ -235,38 +237,42 @@ class TheReportsRatio(unittest.TestCase):
             effort_of([replace(ROW, estimate=estimate_of("a", Part(1, "wizard", "developer")))], RATES)
 
 
-def estimate(*args: str, session: str) -> subprocess.CompletedProcess[str]:
-    return subprocess.run(
-        [sys.executable, str(COSTS / "estimate.py"), *args],
-        env={**os.environ, "CLAUDE_CODE_SESSION_ID": session},
-        capture_output=True,
-        text=True,
-    )
-
-
 class TheCommand(unittest.TestCase):
+    """`estimate.py` run in a clone with a bare `origin`, since editing another
+    session's row pushes it to that origin's ledger."""
+
+    running = "running-session"
+    finished = "finished-session"
+    path = ".claude/costs/sessions/2026-01/finished-session.json"
+
     def setUp(self) -> None:
-        # Session ids no real session has, so a run never touches a real row.
-        self.running = f"test-running-{os.getpid()}"
-        self.finished = f"test-finished-{os.getpid()}"
-        self.month = Path(tempfile.mkdtemp(dir=COSTS / "sessions", prefix="test-"))
-        self.row = self.month / f"{self.finished}.json"
-        self.row.write_text(row_text(replace(ROW, session_id=self.finished)), encoding="utf-8")
+        self.base = Path(tempfile.mkdtemp())
+        self.clone = Clone(self.base)
 
     def tearDown(self) -> None:
-        self.row.unlink(missing_ok=True)
-        self.month.rmdir()
-        pending_estimate_path(self.running).unlink(missing_ok=True)
+        shutil.rmtree(self.base)
+
+    def estimate(self, *args: str) -> subprocess.CompletedProcess[str]:
+        return subprocess.run(
+            [sys.executable, str(self.clone.root / ".claude" / "costs" / "estimate.py"), *args],
+            env={**self.clone.env(), "CLAUDE_CODE_SESSION_ID": self.running},
+            capture_output=True,
+            text=True,
+        )
+
+    def pending(self) -> Path:
+        return self.clone.root / "tmp" / "estimates" / f"{self.running}.json"
+
+    def ledger_row(self) -> SessionCost:
+        text = self.clone.git("show", f"origin/{BRANCH}:{self.path}")
+        return parse_session_cost(text)
 
     def test_a_running_session_s_estimate_waits_under_tmp_for_its_row(self) -> None:
-        done = estimate(
-            "set", "--part", "3", "senior", "developer", "a reason", "--part", "1", "junior", "editor", " another ",
-            session=self.running,
+        done = self.estimate(
+            "set", "--part", "3", "senior", "developer", "a reason", "--part", "1", "junior", "editor", " another "
         )
         self.assertEqual(done.returncode, 0, done.stderr)
-        pending = pending_estimate_path(self.running)
-        self.assertTrue(pending.is_relative_to(ROOT / "tmp"))
-        written = parse_estimate(json.loads(pending.read_text(encoding="utf-8")), "pending")
+        written = parse_estimate(json.loads(self.pending().read_text(encoding="utf-8")), "pending")
         assert written is not None
         self.assertEqual(
             written,
@@ -275,36 +281,49 @@ class TheCommand(unittest.TestCase):
 
     def test_a_later_set_replaces_the_estimate_whole(self) -> None:
         for hours in ("3", "5"):
-            estimate("set", "--part", hours, "senior", "developer", "why", session=self.running)
-        written = parse_estimate(json.loads(pending_estimate_path(self.running).read_text(encoding="utf-8")), "p")
+            self.estimate("set", "--part", hours, "senior", "developer", "why")
+        written = parse_estimate(json.loads(self.pending().read_text(encoding="utf-8")), "p")
         assert written is not None
         self.assertEqual(written.parts, [Part(5, "senior", "developer", "why")])
 
-    def test_another_session_s_estimate_lands_in_its_committed_row(self) -> None:
-        done = estimate(
-            "set", "--part", "1", "junior", "developer", "after the fact", "--session", self.finished,
-            session=self.running,
-        )
+    def test_another_session_s_estimate_lands_on_the_ledger_and_the_tree_copy(self) -> None:
+        tree = self.clone.root / self.path
+        tree.parent.mkdir(parents=True)
+        tree.write_text(row_text(replace(ROW, session_id=self.finished)), encoding="utf-8")
+        done = self.estimate("set", "--part", "1", "junior", "developer", "after the fact", "--session", self.finished)
         self.assertEqual(done.returncode, 0, done.stderr)
-        row = parse_session_cost(self.row.read_text(encoding="utf-8"))
-        assert row.estimate is not None
-        self.assertEqual(row.estimate.parts, [Part(1, "junior", "developer", "after the fact")])
-        self.assertFalse(pending_estimate_path(self.running).exists())
+        for row in (parse_session_cost(tree.read_text(encoding="utf-8")), self.ledger_row()):
+            assert row.estimate is not None
+            self.assertEqual(row.estimate.parts, [Part(1, "junior", "developer", "after the fact")])
+        self.assertFalse(self.pending().exists())
+
+    def test_a_row_only_the_ledger_holds_is_edited_there(self) -> None:
+        staged = self.base / "row.json"
+        staged.write_text(row_text(replace(ROW, session_id=self.finished)), encoding="utf-8")
+        ledger = [sys.executable, str(self.clone.root / ".claude" / "costs" / "ledger.py")]
+        subprocess.run([*ledger, "append-row", self.path, str(staged)], env=self.clone.env(), check=True)
+        done = self.estimate("set", "--part", "2", "senior", "editor", "after the fact", "--session", self.finished)
+        self.assertEqual(done.returncode, 0, done.stderr)
+        estimate = self.ledger_row().estimate
+        assert estimate is not None
+        self.assertEqual(estimate.parts, [Part(2, "senior", "editor", "after the fact")])
+        self.assertFalse((self.clone.root / self.path).exists())
 
     def test_a_refused_estimate_writes_nothing(self) -> None:
-        done = estimate("set", "--part", "1", "wizard", "developer", "x", session=self.running)
+        done = self.estimate("set", "--part", "1", "wizard", "developer", "x")
         self.assertEqual(done.returncode, 1)
         self.assertIn("wizard", done.stderr)
-        self.assertFalse(pending_estimate_path(self.running).exists())
+        self.assertFalse(self.pending().exists())
 
     def test_a_part_without_its_reason_is_refused_whatever_else_is_given(self) -> None:
-        done = estimate("set", "a reason for the whole", "--part", "1", "senior", "developer", session=self.running)
+        done = self.estimate("set", "a reason for the whole", "--part", "1", "senior", "developer")
         self.assertEqual(done.returncode, 2)
-        self.assertFalse(pending_estimate_path(self.running).exists())
+        self.assertFalse(self.pending().exists())
 
     def test_a_session_with_no_row_is_refused_rather_than_guessed_at(self) -> None:
-        done = estimate("show", "--session", "no-such-session", session=self.running)
+        done = self.estimate("show", "--session", "no-such-session")
         self.assertEqual(done.returncode, 1)
+        self.assertIn("no row", done.stderr)
 
 
 if __name__ == "__main__":
