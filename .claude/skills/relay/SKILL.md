@@ -116,9 +116,13 @@ The sections, in this order:
 
 ### Step 3 — Start the successor
 
-Its prompt is one line, `/relay take <branch>`. The summary is not passed in the
-prompt: a tool call's argument is model output, so writing the file and then
-sending its text bills it twice.
+Its prompt is one line, `/relay take <branch> — <what now>`: the branch, then
+one sentence saying what the successor is about to do — the summary's Next step
+in plain words, in the human-facing language (CLAUDE.md § "Language"), a skill
+in it named bare. The prompt is the first thing on screen when the operator
+switches in from other work, and a branch name alone does not say what the
+session is for. The summary is not passed in the prompt: a tool call's argument
+is model output, so writing the file and then sending its text bills it twice.
 
 - **Web/remote**: `create_session` from the Claude Code Remote tools, with
   `source_url` the `origin` URL, `source_revision` the branch, a `title` per
@@ -133,8 +137,8 @@ sending its text bills it twice.
   session's own title, from `get_session` with no id, is the starting point when
   it already names the work, its own leading `(<N>)` dropped.
 - **Local CLI**, where no such tool exists: the report gives the line to type
-  after `/clear`, or `claude "/relay take <branch>"` in a new terminal on the
-  same checkout.
+  after `/clear`, or `claude "<the line>"` in a new terminal on the same
+  checkout.
 
 ### Step 4 — Report and stop
 
@@ -159,8 +163,8 @@ parks unasked for the same reason.
 
 Steps 1–2 as the handoff runs them, the argument becoming the Next step the same
 way; then no Step 3. The report gives the line the operator starts a new session
-with — `/relay take <branch>` in a fenced block holding only it — and the
-summary's size as Step 4 gives it.
+with — Step 3's line, its sentence included, in a fenced block holding only it —
+and the summary's size as Step 4 gives it.
 
 A parked session keeps no keepalive: `TaskStop` a running watcher and start
 none.
@@ -180,10 +184,15 @@ Reach for it only for a detail the summary dropped and no lower-numbered
 searches it there: read inline, a long session's transcript costs the successor
 the context the relay was run to free.
 
-## `/relay take <branch>` — pick up
+## `/relay take <branch> [— <what now>]` — pick up
 
 1. **Attach** per `@.claude/skills/from-branch/SKILL.md` Steps 1–5 — the whole
-   attach, which also covers a session already on the branch.
+   attach, which also covers a session already on the branch. The sentence after
+   the branch is the operator's caption for the session, not a task: Step 3
+   dispatches on the summary's Next step. Only where it asks for something the
+   Next step does not — an operator typing their own after a park — is that part
+   a follow-up, dispatched after the Next step as Step 3's first case dispatches
+   one.
 2. **Read the current summary**:
    `ls docs/remove-before-merging/relay-*.md | sort -V | tail -1` names it —
    `-V`, or `relay-10` sorts before `relay-9` — and `Read` opens it. Anything in
