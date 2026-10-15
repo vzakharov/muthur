@@ -114,12 +114,27 @@ def union(items: Iterable[T], row_of: Callable[[T], SessionCost]) -> List[T]:
     return [item for item, _ in kept.values()]
 
 
-def latest_row(session_id: str) -> Optional[SessionCost]:
-    """The session's row as the tree and the local copy of the ledger hold it,
-    the later of the two."""
+def path_of(session_id: str) -> Optional[str]:
+    """Where the local copy of the ledger files the session's row, if it has
+    one."""
+    if resolve(REMOTE_REF) is None:
+        return None
+    listed = git("ls-tree", "-r", "--name-only", "--full-tree", REMOTE_REF, "--", PREFIX).splitlines()
+    return next((path for path in listed if path.endswith(f"/{session_id}.json")), None)
+
+
+def copies(session_id: str) -> List[Tuple[str, str]]:
+    """`(where, text)` for each copy of the session's row: the tree's and the
+    local copy of the ledger's."""
     found = [(str(path), path.read_text(encoding="utf-8")) for path in sorted(SESSIONS.glob(f"*/{session_id}.json"))]
-    found += [(f"{BRANCH}:{path}", text) for path, text in rows_at(REMOTE_REF) if path.endswith(f"/{session_id}.json")]
-    rows = union((parse_session_cost(text, where) for where, text in found), lambda row: row)
+    held = path_of(session_id)
+    text = text_at(REMOTE_REF, held) if held is not None else None
+    return found + ([(f"{BRANCH}:{held}", text)] if text is not None else [])
+
+
+def latest_row(session_id: str) -> Optional[SessionCost]:
+    """The later of the session's copies, by `recency`."""
+    rows = union((parse_session_cost(text, where) for where, text in copies(session_id)), lambda row: row)
     return rows[0] if rows else None
 
 
