@@ -20,7 +20,9 @@ the latest per session winning. This repository ran it, so the ledger
 already holds every row main does, and this change deletes
 `.claude/costs/sessions/`, which main loses as it lands. `/finalize`
 runs the backfill over the branch before sweeping the display copies,
-and `/finalize revoke` withdraws an attestation. The readers union
+and `/finalize revoke` withdraws an attestation; revoke, the merge gate
+and the base-advanced call load from pages beside its SKILL.md, which
+keeps only the path every run takes. The readers union
 `cost-ledger` with the default branch's tree, so a repository that has
 not migrated yet still counts.
 
