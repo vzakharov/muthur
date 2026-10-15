@@ -165,6 +165,14 @@ there. What `vet.sh` must exit, and why, is `.claude/rules/stack.md`.
   what it was invoked for; either becomes its work only when the operator asks,
   or passes `and finalize`.
 
+## Sessions with several repositories
+
+**When the primary working directory is not a git repository** — a cloud session
+with several repositories attached, starting in their parent — `Read`
+`.claude/rules/multi-repo.md` in any attached repository that carries it, before
+anything else, once per session: no hook runs and no skill knows its repository
+until it has.
+
 ## Plan mode & questions in web sessions
 
 In web/remote sessions the plan-mode approval UI and `AskUserQuestion` re-emit
