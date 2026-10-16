@@ -28,11 +28,14 @@ deliberately — don't reflexively skip it:
   touched, and no symbol/signature/pattern this branch uses was changed. If you
   can see a plausible interaction, or you genuinely can't tell, re-verify.
   - **Interacting or ambiguous** → re-run step 2 (`/sync-branch`, which vets and
-    pushes), and re-run any step-6 dispatch the diff still warrants. The
-    two-shot rule does **not** apply to these base-advanced re-runs; they're
-    keeping the target current, not fixing failures.
+    pushes) and with it the whole of step 1 it re-runs, and re-run any step-6
+    dispatch the diff still warrants. The two-shot rule does **not** apply to
+    these base-advanced re-runs; they're keeping the target current, not fixing
+    failures.
   - **Demonstrably independent** → `/sync-branch no vet`, and run `/check-merge`
-    again when you return to confirm `origin/<base>` hasn't moved since.
-    Unrelated code changes qualify: e.g. the base reworks a frontend modal while
-    this branch changes a background job's retry policy — both touch code, but
-    they don't interact.
+    again when you return to confirm `origin/<base>` hasn't moved since. The
+    merged head is then one step 1 never ran on, so step 7 keeps `Verified`
+    naming the pre-merge head and states the merge on top with the reason it was
+    judged independent. Unrelated code changes qualify: e.g. the base reworks a
+    frontend modal while this branch changes a background job's retry policy —
+    both touch code, but they don't interact.

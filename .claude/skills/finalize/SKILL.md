@@ -94,11 +94,23 @@ duplication like any other.
 Steps (stop on first unresolved failure):
 
 1. **Vet**: `./scripts/vet.sh`. Fix and rerun until green.
+
+   **This step is the branch's whole local verification** — the vet run plus
+   anything a project adds here, such as a release gate over a clean checkout —
+   and step 7 vouches only for a head it ran on. A merge that brings base
+   commits in makes a head nobody has built, however green both sides were
+   alone, so **after any such merge this step runs again, all of it, on the
+   merged head** before the run goes on. `/sync-branch`'s own vet run counts as
+   the re-run's `./scripts/vet.sh`; in a project whose step 1 is the vet alone,
+   that leaves nothing more to run. `no vet` skips the re-run as it skips this
+   step.
+
 2. **Merge the base branch**: load `@.claude/skills/sync-branch/SKILL.md` and
    follow it, passing `no vet` in `no vet` mode. It owns the merge — the
    conflicts committed as git left them, the resolution in a commit of its own,
    the read of what the base brought in for overlaps and optimizations — and the
-   vet run over the merged tree. If you can't resolve a conflict, ask.
+   vet run over the merged tree. If you can't resolve a conflict, ask. When it
+   brought commits in, re-run step 1 per the rule there.
 3. **Working-artifact cleanup**: some directories ride the branch for in-flight
    review but must never land on the base. Sweep the two below **now**, deleting
    each **entire** tree (not just the current session's subfolder) and including
@@ -228,8 +240,16 @@ Steps (stop on first unresolved failure):
    - CI on this PR — **<green (run link) | nothing runs on a PR in this repo>**
    - CI-only buckets — **<dispatched and passed (run link) | not dispatched: the diff doesn't reach them | /test-on-gh is an unhydrated stub>**
 
+   <If the head is past the verified commit: "<head-short-sha> merges `<base>` @ <base-short-sha> on top, judged independent of this branch and not re-verified: <why>.">
+
    <If nothing runs on a PR here: "No workflow runs on a PR; this comment is the verification record.">
    ```
+
+   `Verified <short-sha>` names the last head step 1 ran on, and the marker
+   names the branch's final head; the two differ only after
+   `@.claude/skills/finalize/base-advanced.md` judged a late advance
+   independent, and the extra line says so. Anything that trusts the attestation
+   as a green light compares the two.
 
    In `no vet` mode the comment still goes up — same marker, same place — saying
    that there was nothing to verify:
