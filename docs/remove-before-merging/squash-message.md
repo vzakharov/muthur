@@ -17,10 +17,10 @@ commits in re-runs all of it on the merged head, vet.sh excepted where
 skips the re-run, so the attestation's `Verified <sha>` names the
 commit step 1 last ran on and a line names the unchecked merge on top.
 
-A polish subagent reads only the diff, so a span the operator put back
-was cut again on the next run. The session now records such a call as
-an Operator-keep trailer, and the passes raise findings against a kept
-span as questions. The context budget's fixed caps rise to 300k and
+A polish run reads the diff since the last polish: commit, so a cut the
+operator put back read as fresh prose and was cut again. The restore is
+now itself a polish: commit on top of the run, which makes it the next
+run's floor. The context budget's fixed caps rise to 300k and
 400k, and each notice says whether price, cap or a hand-set variable
 put its line there, since dollars beside a cap read as a case for
 relaying where carrying on was cheaper.
