@@ -1,13 +1,13 @@
 {
   "total": {
-    "inputTokens": 118,
+    "inputTokens": 140,
     "cacheWrite5mTokens": 117595,
-    "cacheWrite1hTokens": 169670,
-    "cacheReadTokens": 8951147,
-    "outputTokens": 42011,
-    "thinkingTokens": 12483,
-    "responses": 59,
-    "costUsd": 4.5762564
+    "cacheWrite1hTokens": 193334,
+    "cacheReadTokens": 11521826,
+    "outputTokens": 46635,
+    "thinkingTokens": 12936,
+    "responses": 70,
+    "costUsd": 5.372272200000001
   },
   "estimate": {
     "at": "2026-10-16T09:52:22.710Z",
@@ -37,18 +37,18 @@
   "url": "https://claude.ai/code/session_018PKX9MsoCNHu6mJqNvr1AP",
   "operator": "vzakharov",
   "firstResponseAt": "2026-10-16T09:47:06.040Z",
-  "lastResponseAt": "2026-10-16T11:45:14.472Z",
+  "lastResponseAt": "2026-10-16T12:17:15.826Z",
   "pricesAsOf": "2026-10-06",
-  "claudeCodeTotalUsd": 3.5421105999999996,
+  "claudeCodeTotalUsd": 4.797134799999999,
   "ownTurns": {
-    "inputTokens": 98,
+    "inputTokens": 120,
     "cacheWrite5mTokens": 0,
-    "cacheWrite1hTokens": 169670,
-    "cacheReadTokens": 8102054,
-    "outputTokens": 41845,
-    "thinkingTokens": 12483,
-    "responses": 49,
-    "costUsd": 3.8150627999999998
+    "cacheWrite1hTokens": 193334,
+    "cacheReadTokens": 10672733,
+    "outputTokens": 46469,
+    "thinkingTokens": 12936,
+    "responses": 60,
+    "costUsd": 4.611078600000001
   },
   "subagents": {
     "inputTokens": 20,
@@ -62,18 +62,18 @@
   },
   "byRate": {
     "claude-opus-5-5/standard": {
-      "inputTokens": 118,
+      "inputTokens": 140,
       "cacheWrite5mTokens": 117595,
-      "cacheWrite1hTokens": 169670,
-      "cacheReadTokens": 8951147,
-      "outputTokens": 42011,
-      "thinkingTokens": 12483,
-      "responses": 59,
-      "costUsd": 4.5762564
+      "cacheWrite1hTokens": 193334,
+      "cacheReadTokens": 11521826,
+      "outputTokens": 46635,
+      "thinkingTokens": 12936,
+      "responses": 70,
+      "costUsd": 5.372272200000001
     }
   },
   "warnings": [
-    "10 responses were written with the usage their stream started with — no `stop_reason`, as a subagent's transcript writes each one — and no event to correct it, so their output tokens are a floor"
+    "11 responses were written with the usage their stream started with — no `stop_reason`, as a subagent's transcript writes each one — and no event to correct it, so their output tokens are a floor"
   ],
   "orientation": {
     "endedBy": "Edit",
