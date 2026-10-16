@@ -1,0 +1,90 @@
+{
+  "total": {
+    "inputTokens": 54,
+    "cacheWrite5mTokens": 85383,
+    "cacheWrite1hTokens": 73314,
+    "cacheReadTokens": 2846246,
+    "outputTokens": 7245,
+    "thinkingTokens": 1446,
+    "responses": 27,
+    "costUsd": 1.7277922000000003
+  },
+  "estimate": {
+    "at": "2026-10-16T10:34:25.877Z",
+    "parts": [
+      {
+        "hours": 0.1,
+        "grade": "senior",
+        "role": "prompter",
+        "comment": "land prep re-reads the rule and the squash record against the final diff, which takes someone who knows how agents read the relay skill"
+      }
+    ],
+    "comment": null
+  },
+  "sessionId": "d2f1ce1d-33a8-5526-bdd4-61b519d46446",
+  "branch": "claude/relay-keep-session-title-b6rbbu",
+  "cwd": "/home/user/muthur",
+  "openingPrompt": "/relay take claude/relay-keep-session-title-b6rbbu — finalize and merge PR #209, after checking this session kept its predecessor's title with only the (1) adde…",
+  "prs": [
+    209
+  ],
+  "url": "https://claude.ai/code/session_01A2Egou879WnopdJcMw2Kky",
+  "operator": "vzakharov",
+  "firstResponseAt": "2026-10-16T10:33:48.748Z",
+  "lastResponseAt": "2026-10-16T10:39:53.066Z",
+  "pricesAsOf": "2026-10-06",
+  "claudeCodeTotalUsd": null,
+  "ownTurns": {
+    "inputTokens": 44,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 73314,
+    "cacheReadTokens": 2542972,
+    "outputTokens": 7175,
+    "thinkingTokens": 1446,
+    "responses": 22,
+    "costUsd": 1.2387824000000003
+  },
+  "subagents": {
+    "inputTokens": 10,
+    "cacheWrite5mTokens": 85383,
+    "cacheWrite1hTokens": 0,
+    "cacheReadTokens": 303274,
+    "outputTokens": 70,
+    "thinkingTokens": 0,
+    "responses": 5,
+    "costUsd": 0.48900980000000005
+  },
+  "byRate": {
+    "claude-opus-5-5/standard": {
+      "inputTokens": 54,
+      "cacheWrite5mTokens": 85383,
+      "cacheWrite1hTokens": 73314,
+      "cacheReadTokens": 2846246,
+      "outputTokens": 7245,
+      "thinkingTokens": 1446,
+      "responses": 27,
+      "costUsd": 1.7277922000000003
+    }
+  },
+  "warnings": [
+    "5 responses were written with the usage their stream started with — no `stop_reason`, as a subagent's transcript writes each one — and no event to correct it, so their output tokens are a floor"
+  ],
+  "orientation": {
+    "endedBy": "end_turn",
+    "endedOn": null,
+    "endedAt": "2026-10-16T10:39:53.066Z",
+    "contextTokens": 131251,
+    "spend": {
+      "inputTokens": 52,
+      "cacheWrite5mTokens": 85383,
+      "cacheWrite1hTokens": 72907,
+      "cacheReadTokens": 2715404,
+      "outputTokens": 6619,
+      "thinkingTokens": 1386,
+      "responses": 26,
+      "costUsd": 1.6858398
+    }
+  },
+  "compactions": [],
+  "telemetry": null
+}
