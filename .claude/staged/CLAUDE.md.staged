@@ -50,7 +50,8 @@ review-ready work. It runs at milestones, with `/finalize` as the canonical
 caller, **not before every commit** on a feature branch. A CI failure it should
 have caught is a signal to extend it. **A check too slow for it** — a production
 build, a run over a clean checkout of the committed head — **that no CI runs on
-every PR goes in `/finalize`'s step 1, beside it.**
+every PR goes in `/finalize`'s step 1, beside it**, which re-runs whole after
+any merge that brings base commits in.
 
 **A stack landing, or any toolchain change, has three sites to wire**:
 `scripts/vet.sh`, `.claude/hooks/install-deps.sh`, and the environment setup
