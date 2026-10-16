@@ -292,7 +292,7 @@ nudge() {
   held="$(lock_sha)"
   if [ -n "$held" ]; then
     fetch_lock "$held"
-    # This branch is the sync, which lands when its PR merges.
+    # Silent on the branch the lock names: that branch is the sync itself.
     local branch stuck
     branch="$(trailer "$held" Branch)"
     [ -z "$branch" ] || [ "$branch" != "$(git symbolic-ref --quiet --short HEAD || true)" ] || exit 0
