@@ -1,0 +1,96 @@
+{
+  "total": {
+    "inputTokens": 66,
+    "cacheWrite5mTokens": 85767,
+    "cacheWrite1hTokens": 96945,
+    "cacheReadTokens": 3505578,
+    "outputTokens": 12233,
+    "thinkingTokens": 4680,
+    "responses": 33,
+    "costUsd": 2.1504345999999996
+  },
+  "estimate": {
+    "at": "2026-10-16T06:07:44.299Z",
+    "parts": [
+      {
+        "hours": 0.75,
+        "grade": "senior",
+        "role": "copywriter",
+        "comment": "turning process jargon into plain prose for the operator and rewriting a permanent commit record takes judgement of voice"
+      },
+      {
+        "hours": 0.25,
+        "grade": "senior",
+        "role": "developer",
+        "comment": "the CI question needs someone who knows how GitHub runs pull_request workflows against the merge ref"
+      }
+    ],
+    "comment": null
+  },
+  "sessionId": "bc2d15d0-00df-538a-9361-40753a8e3a71",
+  "branch": "fix/finalize-attest-verified-head",
+  "cwd": "/home/user/muthur",
+  "openingPrompt": "/handle fix/finalize-attest-verified-head",
+  "prs": [
+    207
+  ],
+  "url": "https://claude.ai/code/session_01KF18K8Ya73wyBdv4pK1at8",
+  "operator": "vzakharov",
+  "firstResponseAt": "2026-10-16T06:06:10.913Z",
+  "lastResponseAt": "2026-10-16T06:09:48.178Z",
+  "pricesAsOf": "2026-10-06",
+  "claudeCodeTotalUsd": null,
+  "ownTurns": {
+    "inputTokens": 50,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 96945,
+    "cacheReadTokens": 2968571,
+    "outputTokens": 12002,
+    "thinkingTokens": 4680,
+    "responses": 25,
+    "costUsd": 1.6095142
+  },
+  "subagents": {
+    "inputTokens": 16,
+    "cacheWrite5mTokens": 85767,
+    "cacheWrite1hTokens": 0,
+    "cacheReadTokens": 537007,
+    "outputTokens": 231,
+    "thinkingTokens": 0,
+    "responses": 8,
+    "costUsd": 0.5409204000000001
+  },
+  "byRate": {
+    "claude-opus-5-5/standard": {
+      "inputTokens": 66,
+      "cacheWrite5mTokens": 85767,
+      "cacheWrite1hTokens": 96945,
+      "cacheReadTokens": 3505578,
+      "outputTokens": 12233,
+      "thinkingTokens": 4680,
+      "responses": 33,
+      "costUsd": 2.1504345999999996
+    }
+  },
+  "warnings": [
+    "6 responses were written with the usage their stream started with — no `stop_reason`, as a subagent's transcript writes each one — and no event to correct it, so their output tokens are a floor"
+  ],
+  "orientation": {
+    "endedBy": "Edit",
+    "endedOn": "docs/remove-before-merging/squash-message.md",
+    "endedAt": "2026-10-16T06:07:41.443Z",
+    "contextTokens": 128697,
+    "spend": {
+      "inputTokens": 24,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 79711,
+      "cacheReadTokens": 1209695,
+      "outputTokens": 5060,
+      "thinkingTokens": 3196,
+      "responses": 12,
+      "costUsd": 0.9809230000000002
+    }
+  },
+  "compactions": [],
+  "telemetry": null
+}
