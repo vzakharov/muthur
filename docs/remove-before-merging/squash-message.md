@@ -10,16 +10,20 @@ attested the merged head, so two branches each green alone could land
 as a red trunk.
 
 CLAUDE.md's Vetting section now names /finalize step 1 as the home of a
-check too slow for vet.sh that no CI runs on every PR. Step 1 is the
-branch's whole local verification, and any merge that brings base
-commits in re-runs all of it on the merged head - vet.sh excepted,
-since /sync-branch has just run it there. The base-advanced interacting
-path re-runs it the same way, and the and-merge gate reads that re-run.
+check too slow for vet.sh that no CI runs on every PR, and step 1 is
+the branch's whole local verification: any merge that brings base
+commits in re-runs all of it on the merged head, vet.sh excepted where
+/sync-branch has just run it. A late advance judged independent still
+skips the re-run, so the attestation's `Verified <sha>` names the
+commit step 1 last ran on and a line names the unchecked merge on top.
 
-A late base advance judged independent still skips the re-run, so the
-attestation's `Verified <sha>` names the commit step 1 last ran on,
-the marker the final head, and a line between them names the unchecked
-merge and why it was judged independent.
+A polish subagent reads only the diff, so a span the operator put back
+was cut again on the next run. The session now records such a call as
+an Operator-keep trailer, and the passes raise findings against a kept
+span as questions. The context budget's fixed caps rise to 300k and
+400k, and each notice says whether price, cap or a hand-set variable
+put its line there, since dollars beside a cap read as a case for
+relaying where carrying on was cheaper.
 
 Adopters: a check too slow for vet.sh that runs anywhere but /finalize
 step 1 - a CI job that no longer runs on PRs, a manual habit, another
