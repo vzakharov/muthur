@@ -35,12 +35,11 @@ would carry anyway: a `polish:` subject would put the edit below the next run's
 floor (`passes.md` § "The floor"), unreviewed. The rest go to the operator with
 `/dry`'s calls.
 
-**Undoing a run's edit is itself a `polish:` commit** — `polish: restore <what>`
-— when the operator wants something the passes changed put back. What it
-restores is text that run already read, so the commit becoming the next run's
-floor is what keeps the cut from being made again. It goes straight on top of
-the run: anything committed in between would sink below the floor with it,
-unreviewed.
+**Putting back what a run changed, on the operator's ask, is itself a `polish:`
+commit** — `polish: restore <what>`. That run already read what it restores, so
+the commit becoming the next run's floor keeps the cut from being made again. It
+goes straight on top of the run: anything committed in between would sink below
+the floor with it, unreviewed.
 
 ## Where it runs
 
