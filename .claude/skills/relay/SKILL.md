@@ -126,14 +126,17 @@ say what the session is for.
   `source_url` the `origin` URL, `source_revision` the branch, a `title` per
   below, and model and permission mode inherited by omitting them. Confirm with
   `get_session` that it did not fail at start.
-- **The title names the work**, because it is what the operator finds the
-  session by in their list days later: `(<N>) ` with the summary's `<N>`, then a
-  few words saying what the branch changes, in the human-facing language
-  (CLAUDE.md § "Language"). The number leads because the session list cuts a
-  long title off at its end. A PR or issue number, a branch name or the
-  `/relay take` line is not a title — nobody remembers what `pr #104` was. This
-  session's own title, from `get_session` with no id, is the starting point when
-  it already names the work, its own leading `(<N>)` dropped.
+- **The title is this session's own, renumbered**: from `get_session` with no
+  id, its leading `(<M>) ` replaced by `(<N>) ` with the summary's `<N>`, or
+  `(<N>) ` prepended where it has none — and not one other character changed, no
+  rewording, translating or trimming. The operator finds the work in their
+  session list days later, and a chain of relays reads there as one name
+  counting up; a successor titled afresh is a stranger in that list. The number
+  leads because the list cuts a long title off at its end. Only a session with
+  no title of its own gets one composed: `(<N>) ` and a few words saying what
+  the branch changes, in the human-facing language (CLAUDE.md § "Language") —
+  never a PR or issue number, a branch name or the `/relay take` line, since
+  nobody remembers what `pr #104` was.
 - **Local CLI**, where no such tool exists: the report gives the line to type
   after `/clear`, or `claude "<the line>"` in a new terminal on the same
   checkout.
