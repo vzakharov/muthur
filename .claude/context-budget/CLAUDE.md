@@ -22,9 +22,10 @@ where it stands, a last step aside. What the agent does on each notice is
   it reaches `MUTHUR_CONTEXT_BUDGET_PAUSE_SAVING` percent (default 20) of what
   carrying on costs. The model is `.claude/costs/lib/restart.py`, via
   `hooks/priced_line.py`, and the notice carries the dollars.
-  - **Each is capped at its fixed line, 200k and 300k**, so pricing only ever
+  - **Each is capped at its fixed line, 300k and 400k**, so pricing only ever
     moves a line earlier: context quality and the hard window are not cost
-    questions.
+    questions. The notice says which set the line it reports, since dollars
+    beside a cap read as a case for relaying where carrying on is cheaper.
   - **The requests a slice takes** are this session's own since its last
     boundary, per token of growth; the `REQUESTS_PER_TOKEN` estimate stands in
     until it has grown `MIN_GROWTH`.
@@ -37,8 +38,8 @@ where it stands, a last step aside. What the agent does on each notice is
     recomputed per 10k of growth, since a Python start-up per tool call is what
     this bash hook avoids.
   - **Without the ledger's lib, on an unpriced model, or under
-    `MUTHUR_CONTEXT_BUDGET_LINES=fixed`**, the lines are 200k and 300k and the
-    hook runs no Python.
+    `MUTHUR_CONTEXT_BUDGET_LINES=fixed`**, the lines are those caps and the hook
+    runs no Python.
 - **The main chain only.** A tool call carrying `agent_id` is a subagent's and
   is skipped, as are `isSidechain` records and the `<synthetic>` placeholder
   Claude Code writes for a turn no model served — whose zeroed usage would read

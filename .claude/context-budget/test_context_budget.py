@@ -17,8 +17,8 @@ import unittest
 from pathlib import Path
 
 HOOK = Path(__file__).resolve().parent / "hooks" / "post-tool-context-budget.sh"
-WARN = 200_000
-PAUSE = 300_000
+WARN = 300_000
+PAUSE = 400_000
 
 
 def assistant(context: int, *, sidechain: bool = False, model: str = "claude-x") -> dict:
@@ -158,7 +158,7 @@ class WhenTheNoticesFire(BudgetTestCase):
         self.session.append(assistant(WARN + 5_000))
         notice = self.session.notice()
         assert notice is not None
-        self.assertIn("~205k", notice)
+        self.assertIn(f"~{(WARN + 5_000) // 1_000}k", notice)
         self.assertIn("warning line", notice)
         self.session.append(tool_result(), assistant(WARN + 9_000))
         self.assertIsNone(self.session.notice())
@@ -360,6 +360,7 @@ class ThePricedLines(BudgetTestCase):
         notice = self.session.notice()
         assert notice is not None
         self.assertLess(self.line(notice, "warning"), 150_000)
+        self.assertIn("where relaying starts to cost less than carrying on", notice)
         self.assertIn("Relaying now costs ~$", notice)
         self.assertIn("over the next 100k tokens of work", notice)
         self.assertIn("reorientation priced from this session's own orientation", notice)
@@ -369,6 +370,7 @@ class ThePricedLines(BudgetTestCase):
         notice = self.session.notice()
         assert notice is not None
         self.assertLess(self.line(notice, "pause"), 200_000)
+        self.assertIn("where relaying saves 20% of what carrying on costs", notice)
         self.assertIn("saves ~$", notice)
 
     def test_a_larger_pause_saving_moves_the_pause_out(self) -> None:
@@ -392,18 +394,25 @@ class ThePricedLines(BudgetTestCase):
         self.reach(WARN + 1)
         notice = self.session.notice(fixed)
         assert notice is not None
-        self.assertIn("200k warning line", notice)
+        self.assertIn(f"{WARN // 1_000}k warning line", notice)
         self.assertNotIn("Relaying now costs", notice)
         self.assertFalse((self.session.root / "tmp" / "context-budget" / "sess.line").exists())
 
     def test_the_fixed_lines_cap_the_priced_ones(self) -> None:
-        # A single response gives no growth to measure and prices a line past 200k.
+        # A single response gives no growth to measure and prices a line past its cap.
         self.session.transcript.write_text("")
-        self.session.append(priced("open", 43_000, 0))
-        self.reach(WARN + 1)
-        notice = self.session.notice()
+        self.session.append(priced("open", 43_000, 0), priced("r1", WARN + 1, 1))
+        # A relay saving 90% is priced past the pause cap, so the warning stands.
+        notice = self.session.notice({"MUTHUR_CONTEXT_BUDGET_PAUSE_SAVING": "90"})
         assert notice is not None
-        self.assertIn("200k warning line", notice)
+        self.assertIn(f"{WARN // 1_000}k warning line — its fixed cap", notice)
+        self.assertIn("rather than for cost", notice)
+
+    def test_a_hand_set_line_says_so(self) -> None:
+        self.reach(150_000)
+        notice = self.session.notice({"MUTHUR_CONTEXT_BUDGET_WARN": "140000", "MUTHUR_CONTEXT_BUDGET_LINES": "fixed"})
+        assert notice is not None
+        self.assertIn("140k warning line — set by MUTHUR_CONTEXT_BUDGET_WARN", notice)
 
     def test_an_unknown_mode_is_refused(self) -> None:
         self.reach(WARN + 1)

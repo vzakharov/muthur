@@ -206,7 +206,9 @@ plan file `/finalize` sweeps.
 
 Work through the plan on the current branch. Follow the plan as approved; if
 reality forces a material deviation, note it to the operator rather than
-silently reshaping scope.
+silently reshaping scope. The plan file is the exception to durable prose, being
+transient: keep it current as the work deviates, with checklist items in
+forward-looking voice.
 
 Commit/push discipline is already governed by CLAUDE.md — don't reinvent it
 here:

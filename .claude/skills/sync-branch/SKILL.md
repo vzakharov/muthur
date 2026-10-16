@@ -161,7 +161,9 @@ pushing a branch triggers no test run. That is why the full vet run happens here
 and not just a type-check: a merge can type-check cleanly and still behave
 differently. If the merge pulled in changes on a surface the vet run doesn't
 cover (a bucket that only runs in CI), dispatch that bucket too — `/test-on-gh`,
-if the project has hydrated it.
+if the project has hydrated it. A check too slow for the vet run is left to
+`@.claude/skills/finalize/SKILL.md` step 1, which re-runs it on the merged head
+before anything is attested.
 
 ### Step 6 — Push, then report for after-the-fact review
 

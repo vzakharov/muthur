@@ -35,6 +35,12 @@ would carry anyway: a `polish:` subject would put the edit below the next run's
 floor (`passes.md` § "The floor"), unreviewed. The rest go to the operator with
 `/dry`'s calls.
 
+**Putting back what a run changed, on the operator's ask, is itself a `polish:`
+commit** — `polish: restore <what>`. That run already read what it restores, so
+the commit becoming the next run's floor keeps the cut from being made again. It
+goes straight on top of the run: anything committed in between would sink below
+the floor with it, unreviewed.
+
 ## Where it runs
 
 - **`@.claude/skills/go/SKILL.md` Step 3** — after implementing, before the PR.

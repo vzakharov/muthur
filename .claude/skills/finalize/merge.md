@@ -61,10 +61,9 @@ like any other change you authored.
   you had to read the failure and decide what to change.
 - **Step 2** — any conflict, however trivially resolved; or you applied a
   dedup/simplification the base merge opened, or surfaced one as ambiguous. A
-  clean merge that **brought commits in** is survivable when `/sync-branch`'s
-  vet run over the merged tree went green first try; stand down on any
-  interaction of the kind that step already has you reading the incoming diff
-  for.
+  clean merge that **brought commits in** is survivable when step 1's re-run
+  over the merged tree went green first try; stand down on any interaction of
+  the kind that step already has you reading the incoming diff for.
 - **Step 4** — a red CI run. Same autofix exception as step 1, plus one case it
   does not cover: a red run that cleared itself on a re-run with no change at
   all. "It was a flake" is a judgment, and an unexplained red is the most
