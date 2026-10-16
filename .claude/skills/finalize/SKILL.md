@@ -101,8 +101,7 @@ Steps (stop on first unresolved failure):
    commits in makes a head nobody has built, however green both sides were
    alone, so **after any such merge this step runs again, all of it, on the
    merged head** before the run goes on. `/sync-branch`'s own vet run counts as
-   the re-run's `./scripts/vet.sh`; in a project whose step 1 is the vet alone,
-   that leaves nothing more to run. `no vet` skips the re-run as it skips this
+   the re-run's `./scripts/vet.sh`. `no vet` skips the re-run as it skips this
    step.
 
 2. **Merge the base branch**: load `@.claude/skills/sync-branch/SKILL.md` and
@@ -245,11 +244,11 @@ Steps (stop on first unresolved failure):
    <If nothing runs on a PR here: "No workflow runs on a PR; this comment is the verification record.">
    ```
 
-   `Verified <short-sha>` names the last head step 1 ran on, and the marker
-   names the branch's final head; the two differ only after
+   `Verified <short-sha>` is the last head step 1 ran on and the marker is the
+   final head. They differ only after
    `@.claude/skills/finalize/base-advanced.md` judged a late advance
-   independent, and the extra line says so. Anything that trusts the attestation
-   as a green light compares the two.
+   independent, so anything that trusts the attestation as a green light
+   compares the two.
 
    In `no vet` mode the comment still goes up — same marker, same place — saying
    that there was nothing to verify:
