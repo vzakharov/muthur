@@ -141,11 +141,6 @@ there. What `vet.sh` must exit, and why, is `.claude/rules/stack.md`.
   only where it is significantly better, such as one mechanical substitution
   across dozens of files; a file piped into another command or read inside a
   `$(…)` is data being processed, not read.
-- **Don't run Bash with `run_in_background`.** Always run commands
-  synchronously, even long ones. Background tasks have a tendency to stall
-  without an obvious reason — set a long `timeout` on a normal foreground call
-  instead. The cache keepalive's watcher is the one exception, started exactly
-  as its hook says (`.claude/keepalive/CLAUDE.md`).
 - **An auto-mode denial is routine, and the reply that meets it carries the way
   past it.** In that same reply, hand the operator a fenced message to send back
   that names the denied action exactly — command, file, target — unsoftened, in
