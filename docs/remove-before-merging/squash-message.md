@@ -1,25 +1,26 @@
 Proposed squash body:
 
 ```
-/finalize verifies at step 1 and merges the base afterwards, so a merge
-that brought commits in produced a head nobody had built. /sync-branch's
-own vet covered that head, but anything else a project put in step 1 -
-an adopter's release gate - never ran on it, and step 7 attested it
-anyway: two branches green alone could land as a red trunk.
+/finalize runs its checks at step 1 and merges the base at step 2, so
+a merge that brought base commits in left a tree step 1 never checked.
+/sync-branch runs ./scripts/vet.sh on that tree itself, but a project
+that adds checks of its own to step 1 - a release build from a clean
+checkout, say - never had those run on it, and step 7 attested it
+anyway: two branches, each green alone, could land as a red trunk.
 
-Step 1 is now the branch's whole local verification, and any merge that
-brings base commits in re-runs all of it on the merged head, with
-/sync-branch's vet standing in for the vet part. The base-advanced
-deliberation's interacting path re-runs it the same way, and the
-and-merge gate reads that re-run. Merging before step 1 was not enough
-on its own, since a late base advance at step 6 merges after
-verification regardless.
+Now any merge that brings base commits in re-runs every step-1 check
+on the merged tree, vet.sh excepted, since /sync-branch has just run
+it there. The base-advanced deliberation's interacting path re-runs
+them the same way, and the and-merge gate reads that re-run. Merging
+before step 1 was not enough on its own, since a late base advance at
+step 6 merges after the checks regardless.
 
-A late advance judged independent still skips the re-run, so the
-attestation now keeps `Verified <sha>` on the head step 1 ran on, the
-marker on the final head, and a line naming the merge on top and why
-it was judged independent - anything trusting the attestation can tell
-the two apart.
+A late advance judged independent of the branch still skips the
+re-run, so the attestation now says so: `Verified <sha>` names the
+commit step 1 last ran on, the marker the final head, and a line
+between them names the unchecked merge and why it was judged
+independent - anything trusting the attestation can tell the two
+apart.
 
 Co-authored-by: Claude <noreply@anthropic.com>
 ```
