@@ -36,7 +36,7 @@ from lib.pricing import (
     summarise_transcript,
 )
 from lib.estimate import latest
-from lib.ledger import copies, union
+from lib.ledger import copies, union_rows
 from lib.rows import (
     ROOT,
     SessionCost,
@@ -62,7 +62,7 @@ def previous(session_id: str) -> Optional[SessionCost]:
             rows.append(parse_session_cost(text, where))
         except (ShapeError, json.JSONDecodeError) as error:
             print(f"session-cost: {error}; rewriting the row without that copy", file=sys.stderr)
-    kept = union(rows, lambda row: row)
+    kept = union_rows(rows)
     return kept[0] if kept else None
 
 

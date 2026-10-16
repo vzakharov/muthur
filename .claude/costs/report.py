@@ -37,7 +37,7 @@ from lib.github import REPO, Client, GitHubError, remote_ledger
 from lib.hours import HoursTable
 from lib.period import FORMATS, KINDS, Period, PeriodError, month_of, period
 from lib.pricing import parse_prices
-from lib.ledger import BRANCH, REMOTE_REF, LedgerError, fetch, rows_at, union
+from lib.ledger import BRANCH, REMOTE_REF, LedgerError, fetch, rows_at, union_rows
 from lib.rows import SESSIONS, SessionCost, read_row, reshape
 from lib.shape import to_json
 from lib.totals import (
@@ -230,7 +230,7 @@ def this_repo(span: Optional[Period], as_json: bool, rates: Rates) -> int:
     months = sorted(p for p in SESSIONS.iterdir() if p.is_dir()) if SESSIONS.is_dir() else []
     shown = [m for m in months if span is None or m.name in span.months()]
     tree = [row for shown_month in shown for row in rows_in(shown_month)]
-    rows = [row for row in union([*ledger_rows(span), *tree], lambda row: row) if span is None or span.holds(row)]
+    rows = [row for row in union_rows([*ledger_rows(span), *tree]) if span is None or span.holds(row)]
     if not rows:
         print(f"costs: no rows under {SESSIONS} or on {BRANCH}{'' if span is None else f' for {span.label}'}")
         return 0

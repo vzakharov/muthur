@@ -20,7 +20,7 @@ from pathlib import Path
 from typing import List, Optional, Tuple
 
 from lib.estimate import latest, parse_rates
-from lib.ledger import BRANCH, REMOTE_REF, LedgerError, fetch, latest_row, rows_at, union
+from lib.ledger import BRANCH, REMOTE_REF, LedgerError, fetch, latest_row, rows_at, union_rows
 from lib.rows import ROOT, SESSIONS, SessionCost, parse_session_cost, read_pending_estimate
 from lib.shape import ShapeError
 
@@ -86,9 +86,8 @@ def main() -> int:
     running = os.environ.get("CLAUDE_CODE_SESSION_ID")
     base = merge_base()
     try:
-        carried = union(
-            [*(branch_rows(base[1]) if base is not None else []), *ledger_rows(git("branch", "--show-current").strip())],
-            lambda row: row,
+        carried = union_rows(
+            [*(branch_rows(base[1]) if base is not None else []), *ledger_rows(git("branch", "--show-current").strip())]
         )
         missing = {row.session_id: row.opening_prompt for row in carried if row.estimate is None}
         missing.pop(running, None)
