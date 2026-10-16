@@ -1,19 +1,19 @@
 {
   "total": {
-    "inputTokens": 56,
+    "inputTokens": 70,
     "cacheWrite5mTokens": 90501,
-    "cacheWrite1hTokens": 79041,
-    "cacheReadTokens": 2639698,
-    "outputTokens": 7925,
-    "thinkingTokens": 1884,
-    "responses": 28,
-    "costUsd": 1.7714966000000003
+    "cacheWrite1hTokens": 89620,
+    "cacheReadTokens": 3569005,
+    "outputTokens": 11215,
+    "thinkingTokens": 2512,
+    "responses": 35,
+    "costUsd": 2.1078460000000003
   },
   "estimate": {
-    "at": "2026-10-16T10:26:47.613Z",
+    "at": "2026-10-16T10:33:08.418Z",
     "parts": [
       {
-        "hours": 0.5,
+        "hours": 0.4,
         "grade": "senior",
         "role": "prompter",
         "comment": "the rule is one paragraph, but wording it so successor agents keep the title byte-for-byte, and handle the first relay and an untitled session, takes judgement about how agents misread loose phrasing"
@@ -31,18 +31,18 @@
   "url": "https://claude.ai/code/session_01DCeYbH5nm58p65bFvwNbV8",
   "operator": "vzakharov",
   "firstResponseAt": "2026-10-16T10:25:56.091Z",
-  "lastResponseAt": "2026-10-16T10:28:45.429Z",
+  "lastResponseAt": "2026-10-16T10:33:41.582Z",
   "pricesAsOf": "2026-10-06",
   "claudeCodeTotalUsd": null,
   "ownTurns": {
-    "inputTokens": 42,
+    "inputTokens": 56,
     "cacheWrite5mTokens": 0,
-    "cacheWrite1hTokens": 79041,
-    "cacheReadTokens": 2171704,
-    "outputTokens": 7840,
-    "thinkingTokens": 1884,
-    "responses": 21,
-    "costUsd": 1.2236368000000004
+    "cacheWrite1hTokens": 89620,
+    "cacheReadTokens": 3101011,
+    "outputTokens": 11130,
+    "thinkingTokens": 2512,
+    "responses": 28,
+    "costUsd": 1.5599862000000007
   },
   "subagents": {
     "inputTokens": 14,
@@ -56,14 +56,14 @@
   },
   "byRate": {
     "claude-opus-5-5/standard": {
-      "inputTokens": 56,
+      "inputTokens": 70,
       "cacheWrite5mTokens": 90501,
-      "cacheWrite1hTokens": 79041,
-      "cacheReadTokens": 2639698,
-      "outputTokens": 7925,
-      "thinkingTokens": 1884,
-      "responses": 28,
-      "costUsd": 1.7714966000000003
+      "cacheWrite1hTokens": 89620,
+      "cacheReadTokens": 3569005,
+      "outputTokens": 11215,
+      "thinkingTokens": 2512,
+      "responses": 35,
+      "costUsd": 2.1078460000000003
     }
   },
   "warnings": [
