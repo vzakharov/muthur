@@ -35,11 +35,12 @@ would carry anyway: a `polish:` subject would put the edit below the next run's
 floor (`passes.md` § "The floor"), unreviewed. The rest go to the operator with
 `/dry`'s calls.
 
-**An operator's answer that keeps a span is written into the history**, since
-the next run reads the diff afresh and would make the same cut: the commit
-carrying it — an empty one where the answer changes nothing — ends with the
-trailer `Operator-keep: <path> § <where> — <what stays> (<their words>)`.
-`passes.md` § "What the operator kept" is the reading side.
+**Undoing a run's edit is itself a `polish:` commit** — `polish: restore <what>`
+— when the operator wants something the passes changed put back. What it
+restores is text that run already read, so the commit becoming the next run's
+floor is what keeps the cut from being made again. It goes straight on top of
+the run: anything committed in between would sink below the floor with it,
+unreviewed.
 
 ## Where it runs
 
