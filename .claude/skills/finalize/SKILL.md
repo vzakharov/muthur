@@ -96,14 +96,12 @@ Steps (stop on first unresolved failure):
 1. **Vet**: `./scripts/vet.sh`. Fix and rerun until green.
 
    **This step is the branch's whole local verification** — the vet run plus any
-   check a project keeps out of `./scripts/vet.sh` for being too slow, such as a
-   production build over a clean checkout of the committed head (CLAUDE.md §
-   "Vetting" sends it here) — and step 7 vouches only for a head it ran on. A
-   merge that brings base commits in makes a head nobody has built, however
-   green both sides were alone, so **after any such merge this step runs again,
-   all of it, on the merged head** before the run goes on. `/sync-branch`'s own
-   vet run counts as the re-run's `./scripts/vet.sh`. `no vet` skips the re-run
-   as it skips this step.
+   check too slow for it that CLAUDE.md § "Vetting" sends here — and step 7
+   vouches only for a head it ran on. A merge that brings base commits in makes
+   a head nobody has built, however green both sides were alone, so **after any
+   such merge this step runs again, all of it, on the merged head** before the
+   run goes on. `/sync-branch`'s own vet run counts as the re-run's
+   `./scripts/vet.sh`. `no vet` skips the re-run as it skips this step.
 
 2. **Merge the base branch**: load `@.claude/skills/sync-branch/SKILL.md` and
    follow it, passing `no vet` in `no vet` mode. It owns the merge — the
