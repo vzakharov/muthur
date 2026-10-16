@@ -12,12 +12,11 @@ opened the PR, names the branch and PR on the lock as trailers in a
 commit on top of the claim, under a lease, keeping the claim's date as
 the lock's age. Re-running replaces them.
 
-The nudge is silent on the lock's own branch, and elsewhere while its
-PR is open and active, however long review takes. It reports a lock as
-stuck only when its PR closed unmerged, sat idle over a week, or none
-was attached a day after the claim, describing the holder by PR first
-and the claim's session link second. A takeover still starts a fresh
-lock, and only on the operator's say-so.
+The nudge is silent on the lock's own branch, which is the sync itself.
+Anywhere else a lock over a day old is reported as before, now with its
+PR's state, last activity and URL beside the claim's session link,
+since an open PR can be forgotten as surely as a session. A takeover
+still starts a fresh lock, and only on the operator's say-so.
 
 Co-authored-by: Claude <noreply@anthropic.com>
 ```
