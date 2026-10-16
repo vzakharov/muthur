@@ -330,8 +330,8 @@ whatever the `/task` outcome runs, `/go` ending in both.
 
 **Once `/pr` has opened the PR, run `scripts/muthur-sync.sh attach`**, and again
 if the branch is renamed after. It names this branch and its PR on the lock, so
-the nudge judges the sync by its PR, however long review takes, instead of
-reading the lock as stuck a day after the claim.
+the nudge stays silent on this branch, and elsewhere names the PR beside the
+claim's session when the lock outlives a day.
 
 If this repo adopted the sync path without the PR loop, land the sync however it
 normally lands changes — the triage table still belongs wherever that record
@@ -354,10 +354,11 @@ body's opening sentence and nothing more.
 A `SessionStart` hook runs `scripts/muthur-sync.sh nudge`. When the source has
 moved past the trunk's watermark and nobody holds the lock, it prints the commit
 titles, the changed files marked `here` or `not here`, the `adopted` keys, and
-the rules for making the offer. A held lock that looks stuck — its PR closed
-unmerged or idle over a week, or no PR attached a day after the claim — is
-printed instead, for the operator to decide on; only their say-so makes
-`claim --takeover` right.
+the rules for making the offer. A lock held over a day is printed instead, with
+its PR's state and the claim's session — an open PR can be forgotten as surely
+as a session — for the operator to decide on; only their say-so makes
+`claim --takeover` right. On the branch the lock names, which is the sync
+itself, it prints nothing.
 
 **The nudge is an offer, not a sync.** Nothing is cloned, read or claimed before
 the operator says yes, so an offer nobody answers holds nothing. The price is

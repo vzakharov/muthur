@@ -19,9 +19,9 @@
 # The claim often comes from a session that only made the offer, so its
 # `Session:` link need not lead to the work. `attach` names the work instead: a
 # commit on top of the claim adding `Branch:` and `PR:` trailers, its author date
-# kept at the claim's so the lock's age stays the claim's. A lock with a PR is
-# judged by the PR — open and active is alive however long review takes — and
-# one without by its age.
+# kept at the claim's so the lock's age stays the claim's. `nudge` is silent on
+# the branch a lock names; anywhere else it reports a lock over a day old with
+# its PR's state beside the session, since an open PR can be forgotten too.
 #
 # `nudge` never fails the session: every failure is one line of context and exit
 # 0, for `prompt-issue-export.sh`'s reason — a session must not fail to start
@@ -39,7 +39,6 @@ MODE="${1:-}"
 WATERMARK=".claude/skills/update-muthur/watermark.json"
 NUDGE_CLONE="tmp/muthur-source"
 STALE_AFTER=$((24 * 3600))
-IDLE_AFTER=$((7 * 24 * 3600))
 NUDGE_CAP=40
 
 die() {
@@ -198,29 +197,18 @@ pr_status() {
     '[.state, ($now - (.updatedAt | fromdateiso8601)), .url] | @tsv' <<<"$json"
 }
 
-# Why a held lock looks stuck, or nothing when it does not. Prints the reason on
-# its first line and, for a lock with a PR, what `describe_lock` says of the PR
-# on its second.
-stuck_reason() {
-  local held="$1" repo="$2" pr status state idle url
-  pr="$(trailer "$held" PR)"
-  if [ -z "$pr" ]; then
-    [ "$(lock_age "$held")" -ge "$STALE_AFTER" ] || return 0
-    echo "it was claimed over a day ago, and no PR has been attached to it"
-    return 0
-  fi
-  status="$(pr_status "$pr" "$repo")" || die "could not read the state of PR #$pr with \`gh pr view\`."
+# What `describe_lock` says of a PR now: its state, last activity and URL.
+pr_detail() {
+  local status state idle url
+  status="$(pr_status "$1" "$2")" || die "could not read the state of PR #$1 with \`gh pr view\`."
   IFS=$'\t' read -r state idle url <<<"$status"
   case "$state" in
-  OPEN)
-    [ "$idle" -ge "$IDLE_AFTER" ] || return 0
-    echo "its PR has seen no activity in over a week"
-    ;;
-  CLOSED) echo "its PR was closed without merging" ;;
-  MERGED) echo "its PR merged without moving the trunk's watermark" ;;
-  *) die "PR #$pr reports a state this script does not know, $state." ;;
+  OPEN) state="open" ;;
+  CLOSED) state="closed without merging" ;;
+  MERGED) state="merged, yet the trunk's watermark has not moved" ;;
+  *) die "PR #$1 reports a state this script does not know, $state." ;;
   esac
-  echo "$(lowercase "$state"), last activity $(ago "$idle"), $url"
+  echo "$state, last activity $(ago "$idle"), $url"
 }
 
 # The session-URL mapping — `cse_<id>` in the environment, `session_<id>` in the
@@ -293,20 +281,21 @@ nudge() {
   if [ -n "$held" ]; then
     fetch_lock "$held"
     # Silent on the branch the lock names: that branch is the sync itself.
-    local branch stuck
+    local branch pr detail=""
     branch="$(trailer "$held" Branch)"
     [ -z "$branch" ] || [ "$branch" != "$(git symbolic-ref --quiet --short HEAD || true)" ] || exit 0
-    stuck="$(stuck_reason "$held" "$repo")"
-    [ -n "$stuck" ] || exit 0
+    [ "$(lock_age "$held")" -ge "$STALE_AFTER" ] || exit 0
+    pr="$(trailer "$held" PR)"
+    [ -z "$pr" ] || detail="$(pr_detail "$pr" "$repo")"
     echo "muthur-sync: $SOURCE_REPO, the source this repo syncs its agent infrastructure"
-    echo "from, has moved past the last sync (${LAST_SHA:0:12}), and the sync claimed from"
-    echo "there looks stuck: $(head -n 1 <<<"$stuck")."
-    describe_lock "$held" "$(sed -n 2p <<<"$stuck")"
+    echo "from, has moved past the last sync (${LAST_SHA:0:12}), and a sync from there was"
+    echo "claimed over a day ago without landing:"
+    describe_lock "$held" "$detail"
     cat <<'EOF'
 
-Tell the operator once, at a natural moment, naming the PR — or, with none
-attached, the session link: it may be a sync of their own that stalled, or
-someone else's to ask about. Only if they say it is dead,
+Tell the operator once, at a natural moment, with the PR and the session link:
+either may be a sync of their own that stalled or was forgotten, or someone
+else's to ask about. Only if they say it is dead,
 `scripts/muthur-sync.sh claim --takeover` and then `/update-muthur claimed` take
 it over — nothing takes it over on a timeout. Investigate nothing before they
 answer.

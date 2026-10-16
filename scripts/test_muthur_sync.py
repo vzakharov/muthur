@@ -267,7 +267,7 @@ class LockTest(MuthurSyncTestCase):
         result = self.claim(work, CLAUDE_CODE_REMOTE_SESSION_ID="cse_x", **days_ago(2))
         self.assertEqual(result.returncode, 0, result.stderr)
         out = self.nudge(work)
-        self.assertIn("claimed over a day ago, and no PR has been attached", out)
+        self.assertIn("claimed over a day ago without landing", out)
         self.assertIn("PR: none attached", out)
         self.assertIn("Claimed-By: @alice, 2d ago", out)
         self.assertIn("Session: https://claude.ai/code/session_x", out)
@@ -358,23 +358,23 @@ class AttachTest(MuthurSyncTestCase):
         work = self.attached(days=30)
         self.assertEqual(self.nudge(work, FAKE_GH_PR=pr_json("CLOSED")), "")
 
-    def test_an_open_pr_awaiting_review_is_alive(self) -> None:
-        work = self.attached()
-        self.assertEqual(self.nudge_elsewhere(work, FAKE_GH_PR=pr_json(idle=3 * DAY)), "")
+    def test_fresh_elsewhere_is_silent(self) -> None:
+        work = self.attached(days=0)
+        self.assertEqual(self.nudge_elsewhere(work), "")
 
-    def test_an_idle_pr_is_reported(self) -> None:
-        work = self.attached(days=10)
-        out = self.nudge_elsewhere(work, FAKE_GH_PR=pr_json(idle=8 * DAY))
-        self.assertIn("looks stuck: its PR has seen no activity in over a week.", out)
-        self.assertIn(f"PR: #12 — open, last activity 8d ago, {PR_URL}", out)
+    def test_an_open_pr_is_reported_with_the_session(self) -> None:
+        work = self.attached()
+        out = self.nudge_elsewhere(work, FAKE_GH_PR=pr_json(idle=3 * DAY))
+        self.assertIn("claimed over a day ago without landing", out)
+        self.assertIn(f"PR: #12 — open, last activity 3d ago, {PR_URL}", out)
         self.assertIn("Branch: sync", out)
+        self.assertIn("Session: local", out)
         self.assertIn("claim --takeover", out)
 
     def test_a_closed_pr_is_reported(self) -> None:
         work = self.attached()
         out = self.nudge_elsewhere(work, FAKE_GH_PR=pr_json("CLOSED", idle=DAY))
-        self.assertIn("looks stuck: its PR was closed without merging.", out)
-        self.assertIn("PR: #12 — closed, last activity 24h ago", out)
+        self.assertIn("PR: #12 — closed without merging, last activity 24h ago", out)
 
     def test_claim_refusal_names_the_pr(self) -> None:
         work = self.attached()
