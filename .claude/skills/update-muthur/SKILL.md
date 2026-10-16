@@ -173,9 +173,9 @@ would either re-port work already here or skip work that isn't.
 
 Then claim the lock with `scripts/muthur-sync.sh claim`, so no parallel session
 runs a second sync of the same range — unless invoked with `claimed`. A claim
-that exits 3 names who holds the lock — stop and report that, with their session
-link, rather than syncing alongside them. `scripts/muthur-sync.sh`'s header is
-the lock's reference.
+that exits 3 names who holds the lock — stop and report that, with their PR or,
+with none attached, their session link, rather than syncing alongside them.
+`scripts/muthur-sync.sh`'s header is the lock's reference.
 
 ### Step 2 — Clone the source
 
@@ -328,6 +328,13 @@ body, since the watermark advances past them and nothing else records why. The
 tail — `@.claude/skills/polish/SKILL.md` and `@.claude/skills/pr/SKILL.md` — is
 whatever the `/task` outcome runs, `/go` ending in both.
 
+**Once `/pr` has opened the PR, `scripts/muthur-sync.sh attach`**, the sync's
+last act. It names this branch and its PR on the lock, which is how the nudge
+tells the sync apart from a stuck claim: silent on this branch, and elsewhere
+silent while the PR is open and active, however long its review takes. An
+unattached lock reads as stuck after a day. Re-run it if the branch is renamed
+after.
+
 If this repo adopted the sync path without the PR loop, land the sync however it
 normally lands changes — the triage table still belongs wherever that record
 goes.
@@ -349,9 +356,10 @@ body's opening sentence and nothing more.
 A `SessionStart` hook runs `scripts/muthur-sync.sh nudge`. When the source has
 moved past the trunk's watermark and nobody holds a fresh lock, it prints the
 commit titles, the changed files marked `here` or `not here`, the `adopted`
-keys, and the rules for making the offer. A lock over a day old is printed
-instead, with its holder and session link, for the operator to decide on; only
-their say-so makes `claim --takeover` right.
+keys, and the rules for making the offer. A held lock that looks stuck is
+printed instead, for the operator to decide on — its PR closed unmerged, or idle
+over a week, or no PR attached a day after the claim — with the PR first and the
+claim's session link after it; only their say-so makes `claim --takeover` right.
 
 **The nudge is an offer, not a sync.** Nothing is cloned, read or claimed before
 the operator says yes, so an offer nobody answers holds nothing. The price is
