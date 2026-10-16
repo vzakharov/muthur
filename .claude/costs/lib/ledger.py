@@ -118,6 +118,10 @@ def union(items: Iterable[T], row_of: Callable[[T], SessionCost]) -> List[T]:
     return [item for item, _ in kept.values()]
 
 
+def union_rows(rows: Iterable[SessionCost]) -> List[SessionCost]:
+    return union(rows, lambda row: row)
+
+
 def path_of(session_id: str) -> Optional[str]:
     """Where the local copy of the ledger files the session's row, if it has
     one."""
@@ -138,7 +142,7 @@ def copies(session_id: str) -> List[Tuple[str, str]]:
 
 def latest_row(session_id: str) -> Optional[SessionCost]:
     """The later of the session's copies, by `recency`."""
-    rows = union((parse_session_cost(text, where) for where, text in copies(session_id)), lambda row: row)
+    rows = union_rows(parse_session_cost(text, where) for where, text in copies(session_id))
     return rows[0] if rows else None
 
 
