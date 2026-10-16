@@ -40,7 +40,8 @@ which the script itself cannot see:
 agree:**
 
 1. `scripts/vet.sh` runs the project's real checks; its header carries per-stack
-   examples and the parallel form.
+   examples and the parallel form. A check too slow for it goes in `/finalize`'s
+   step 1 instead, per CLAUDE.md § "Vetting".
 2. `.claude/hooks/install-deps.sh` installs the dependencies, so a resumed
    remote session tracks the current lockfile.
 3. **The environment setup script** installs and pins the toolchain for remote

@@ -53,11 +53,11 @@ everything below depends on it: check whether any workflow runs on a PR in this
 repo (`.github/workflows/` triggers, or `gh pr checks` on an existing PR).
 
 - **If nothing runs on a PR**, _you_ are the entire gate — nothing downstream
-  will report on this branch before someone merges it. Step 1's
-  `./scripts/vet.sh` is the only thing that runs the project's checks before the
-  merge, which is why vetting is not optional on this path even though ordinary
-  development skips it. An empty Checks tab after step 4 is then the expected
-  end state; do **not** push an empty commit to "relaunch CI".
+  will report on this branch before someone merges it. Step 1 is the only thing
+  that runs the project's checks before the merge, which is why vetting is not
+  optional on this path even though ordinary development skips it. An empty
+  Checks tab after step 4 is then the expected end state; do **not** push an
+  empty commit to "relaunch CI".
 - **If a workflow does run on PRs**, the vet run still happens here — it's
   faster and it catches things before a reviewer sees red — but step 4 also
   means watching that run to green (`@.claude/skills/watch-ci/SKILL.md`), and
@@ -95,14 +95,15 @@ Steps (stop on first unresolved failure):
 
 1. **Vet**: `./scripts/vet.sh`. Fix and rerun until green.
 
-   **This step is the branch's whole local verification** — the vet run plus
-   anything a project adds here, such as a release gate over a clean checkout —
-   and step 7 vouches only for a head it ran on. A merge that brings base
-   commits in makes a head nobody has built, however green both sides were
-   alone, so **after any such merge this step runs again, all of it, on the
-   merged head** before the run goes on. `/sync-branch`'s own vet run counts as
-   the re-run's `./scripts/vet.sh`. `no vet` skips the re-run as it skips this
-   step.
+   **This step is the branch's whole local verification** — the vet run plus any
+   check a project keeps out of `./scripts/vet.sh` for being too slow, such as a
+   production build over a clean checkout of the committed head (CLAUDE.md §
+   "Vetting" sends it here) — and step 7 vouches only for a head it ran on. A
+   merge that brings base commits in makes a head nobody has built, however
+   green both sides were alone, so **after any such merge this step runs again,
+   all of it, on the merged head** before the run goes on. `/sync-branch`'s own
+   vet run counts as the re-run's `./scripts/vet.sh`. `no vet` skips the re-run
+   as it skips this step.
 
 2. **Merge the base branch**: load `@.claude/skills/sync-branch/SKILL.md` and
    follow it, passing `no vet` in `no vet` mode. It owns the merge — the
