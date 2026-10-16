@@ -1,0 +1,90 @@
+{
+  "total": {
+    "inputTokens": 56,
+    "cacheWrite5mTokens": 90501,
+    "cacheWrite1hTokens": 79041,
+    "cacheReadTokens": 2639698,
+    "outputTokens": 7925,
+    "thinkingTokens": 1884,
+    "responses": 28,
+    "costUsd": 1.7714966000000003
+  },
+  "estimate": {
+    "at": "2026-10-16T10:26:47.613Z",
+    "parts": [
+      {
+        "hours": 0.5,
+        "grade": "senior",
+        "role": "prompter",
+        "comment": "the rule is one paragraph, but wording it so successor agents keep the title byte-for-byte, and handle the first relay and an untitled session, takes judgement about how agents misread loose phrasing"
+      }
+    ],
+    "comment": null
+  },
+  "sessionId": "c0cc7d40-39f5-5ef1-995b-6715db9fe489",
+  "branch": "claude/relay-keep-session-title-b6rbbu",
+  "cwd": "/home/user/muthur",
+  "openingPrompt": "сессии же видят своё имя? давай при relay требовать чтобы они сохраняли его, меняя только `(N)` перед ней, а то они называют кто во что горазд, в результате пон…",
+  "prs": [
+    209
+  ],
+  "url": "https://claude.ai/code/session_01DCeYbH5nm58p65bFvwNbV8",
+  "operator": "vzakharov",
+  "firstResponseAt": "2026-10-16T10:25:56.091Z",
+  "lastResponseAt": "2026-10-16T10:28:45.429Z",
+  "pricesAsOf": "2026-10-06",
+  "claudeCodeTotalUsd": null,
+  "ownTurns": {
+    "inputTokens": 42,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 79041,
+    "cacheReadTokens": 2171704,
+    "outputTokens": 7840,
+    "thinkingTokens": 1884,
+    "responses": 21,
+    "costUsd": 1.2236368000000004
+  },
+  "subagents": {
+    "inputTokens": 14,
+    "cacheWrite5mTokens": 90501,
+    "cacheWrite1hTokens": 0,
+    "cacheReadTokens": 467994,
+    "outputTokens": 85,
+    "thinkingTokens": 0,
+    "responses": 7,
+    "costUsd": 0.5478598
+  },
+  "byRate": {
+    "claude-opus-5-5/standard": {
+      "inputTokens": 56,
+      "cacheWrite5mTokens": 90501,
+      "cacheWrite1hTokens": 79041,
+      "cacheReadTokens": 2639698,
+      "outputTokens": 7925,
+      "thinkingTokens": 1884,
+      "responses": 28,
+      "costUsd": 1.7714966000000003
+    }
+  },
+  "warnings": [
+    "7 responses were written with the usage their stream started with — no `stop_reason`, as a subagent's transcript writes each one — and no event to correct it, so their output tokens are a floor"
+  ],
+  "orientation": {
+    "endedBy": "Edit",
+    "endedOn": ".claude/skills/relay/SKILL.md",
+    "endedAt": "2026-10-16T10:26:37.512Z",
+    "contextTokens": 102066,
+    "spend": {
+      "inputTokens": 12,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 51215,
+      "cacheReadTokens": 507608,
+      "outputTokens": 1926,
+      "thinkingTokens": 782,
+      "responses": 6,
+      "costUsd": 0.5498096000000001
+    }
+  },
+  "compactions": [],
+  "telemetry": null
+}
