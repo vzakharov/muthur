@@ -30,12 +30,10 @@ warning about, the command worth documenting.
 
 **On a branch, this file — and anything else that loads on every turn — is
 edited only through a staged copy**, because an edit in place invalidates the
-prompt cache of every session on the branch: `scripts/staged.sh stage <path>`
-and commit, edit the copy it makes, and `/finalize` swaps it in. **An operator's
-ask to swap it in now** — "swap it in", "unstage", in any words or language —
-runs `scripts/staged.sh swap` on the spot and commits, trading the cache for a
-branch that runs on the new text. `@.claude/rules/staging.md` defines the set
-and the rest of the convention.
+prompt cache of every session on the branch; `/finalize` swaps it in. **An
+operator's ask to swap it in now** — "swap it in", "unstage", in any words or
+language — runs `scripts/staged.sh swap` on the spot and commits.
+`@.claude/rules/staging.md` defines the set and the mechanics.
 
 ## Repository layout
 
@@ -79,18 +77,14 @@ there. What `vet.sh` must exit, and why, is `.claude/rules/stack.md`.
   scope. A permanent exemption states the invariant that makes it correct; a
   temporary one names the issue tracking its removal.
 - **Linters are signals, not puzzles to game.** Do not contort the architecture
-  solely to silence a rule when a clearer approach exists. Rules exist to keep
-  the codebase consistent and safe — work _with_ them, not around them in a
-  hacky way.
+  solely to silence a rule when a clearer approach exists — work _with_ the
+  rules, not around them.
 - **When analysis keeps failing to explain a real bug, widen the frame — don't
-  just deepen it.** Re-reading the same code more closely won't surface a cause
-  that lives in a part of the system you implicitly scoped out at the start.
-  Stop and take in the bigger picture: explicitly name what you've been assuming
-  is irrelevant or already-correct — adjacent layers, surrounding systems, the
-  stretches of the request/data path you never opened — and question those
-  boundaries. The blind spot is usually something you excluded from the problem,
-  not something you misread inside it; "this code can't be wrong" is the cue to
-  look at everything around it.
+  just deepen it.** The cause usually lives in a part of the system you scoped
+  out at the start, not in code you misread. Name what you've been assuming is
+  irrelevant or already correct — adjacent layers, surrounding systems, the
+  stretches of the request/data path you never opened — and question it; "this
+  code can't be wrong" is the cue to look at everything around it.
 - **Comments describe the code's lasting contract, not the change that produced
   it.** Don't leave transient/situational notes that narrate an edit ("now also
   sets X", "migrated from Y", "this used to…") — they read as noise once the
@@ -101,13 +95,11 @@ there. What `vet.sh` must exit, and why, is `.claude/rules/stack.md`.
   Scratch files, spikes, exploratory output, extracted frames, probe results —
   all go under `tmp/` (already gitignored). Don't add per-artifact lines to
   `.gitignore`.
-- **Plans must include a `## DRY notes` section.** When writing an
-  implementation plan, always include one that states, for any code the plan
-  adds or moves: what is genuinely shared vs. duplicated, which existing
-  helper/type/module is reused, and — when you decide _not_ to extract a shared
-  abstraction — why forcing one would be net-negative. This makes the
-  reuse-vs-duplication call explicit and reviewable before implementation,
-  rather than discovered in review.
+- **Plans must include a `## DRY notes` section**, stating for any code the plan
+  adds or moves what is genuinely shared vs. duplicated, which existing
+  helper/type/module is reused, and, where it declines to extract an
+  abstraction, why one would be net-negative — so the reuse call is reviewed
+  before implementation, not discovered in review.
 - **Ignore IDE diagnostics until the vet run.** Do not react to or try to fix
   type errors, lint warnings, or other diagnostics that appear in IDE context
   during implementation. IDE servers can lag behind file changes and produce
@@ -134,11 +126,10 @@ there. What `vet.sh` must exit, and why, is `.claude/rules/stack.md`.
   (Zod, Pydantic, etc.) instead of asserting/casting. A cast hides shape
   mismatches at runtime; a parse surfaces them immediately. Don't re-parse data
   that's already type-safe inside the program.
-- **Keep production files under ~450 lines.** Rule of thumb, not a hard cap.
-  Data-dense files (prompt text, fixtures, large catalogs) and top-level
-  orchestrators may reasonably exceed it. When a logic-heavy file climbs well
-  past ~450 lines, look for natural seams (focused helpers, sub-components)
-  rather than letting it grow indefinitely.
+- **Keep production files under ~450 lines** — a rule of thumb, which data-dense
+  files (prompt text, fixtures, large catalogs) and top-level orchestrators may
+  exceed. A logic-heavy file well past it gets split at its natural seams
+  (focused helpers, sub-components).
 - **Read and change files with the `Read`/`Edit`/`Write` tools, in every
   permission mode** — the web UI renders an `Edit` as a diff the operator can
   skim, and a heredoc or `sed -i` as shell whose effect they have to
@@ -395,14 +386,10 @@ current tree would ask: the polar bear. Cut it; `/tend-prose negation` is the
 pass that finds them, and "polar bear here" on a PR comment asks for it by name.
 
 **Retiring a doc leaves a tombstone**, so every surviving citation still
-resolves: a file recording the last commit that contained it, the
-`git show <sha>:<path>` recipe to read it, and where any still-live content
-went. One tombstone per retirement, with a row per file: `retired.md` at the
-root of a retired directory, `<name>.retired.md` beside a retired file's
-siblings — so every tombstone matches `*retired.md`.
-
-**Plans are the exception, being transient**: keep them current as the work
-deviates, with checklist items in forward-looking voice.
+resolves: one per retirement, a row per file giving the last commit that held
+it, the `git show <sha>:<path>` recipe, and where any still-live content went —
+`retired.md` at a retired directory's root, `<name>.retired.md` beside a retired
+file's siblings, so every tombstone matches `*retired.md`.
 
 ## Language
 
@@ -429,30 +416,20 @@ down, not a blank left open.
 
 ## Explaining things to people
 
-How to write for a person is long enough to have its own file, so it is imported
-from `.claude/voice/` rather than stated here — in force from every session's
-first reply. `operators/` beside it holds one file per person, saying how that
-person in particular wants to be talked to.
-
-`/plainly` is the on-demand procedure: bare, it re-explains an answer that did
-not land; with a question, it answers plainly from the start. Invoking it is
-optional — the rule itself governs every reply regardless.
+How to write for a person is imported from `.claude/voice/`, in force from every
+session's first reply; `operators/` beside it holds one file per person on how
+they want to be talked to. `/plainly` is the on-demand procedure, and the rule
+governs every reply whether or not it is invoked.
 
 @.claude/voice/voice.md
 
 ## Working with skills
 
 Skills live under `.claude/skills/` and run as `/<name>`. The main loop, in the
-order work passes through it:
-
-- **`/task`** — makes the plan-or-not call, and runs what it picked.
-- **`/plan`** — writes the plan to `docs/plans/`, publishes it as a draft PR,
-  and hands over a `/go <branch>` command.
-- **`/go`** — the go-ahead: does the work, runs the quality passes, fills in the
-  PR.
-- **`/finalize`** — land prep: vet, merge the base, sweep working artifacts,
-  flip to ready, attest; on `and merge`, merges when the run left nothing to
-  decide.
+order work passes through it: `/task` (the plan-or-not call) → `/plan` (the plan
+on a draft PR, handing over `/go <branch>`) → `/go` (the work, the quality
+passes, the PR) → `/finalize` (land prep; on `and merge`, merges when the run
+left nothing to decide).
 
 **A stub is not a skill you can follow.** A skill whose description says STUB
 carries the shape of a job and no procedure; invoked before it is hydrated, say
