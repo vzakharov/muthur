@@ -1,26 +1,31 @@
 Proposed squash body:
 
 ```
-/finalize runs its checks at step 1 and merges the base at step 2, so
-a merge that brought base commits in left a tree step 1 never checked.
-/sync-branch runs ./scripts/vet.sh on that tree itself, but a project
-that adds checks of its own to step 1 - a release build from a clean
-checkout, say - never had those run on it, and step 7 attested it
-anyway: two branches, each green alone, could land as a red trunk.
+vet.sh is the fast check, so a project whose full check is slow - a
+production build over a clean checkout of the committed head - keeps
+it out of vet.sh, and nothing said where it goes. An adopter that lost
+CI on PRs put it in /finalize step 1 beside vet.sh, where step 2's base
+merge left it unrun: /sync-branch re-runs vet.sh alone, yet step 7
+attested the merged head, so two branches each green alone could land
+as a red trunk.
 
-Now any merge that brings base commits in re-runs every step-1 check
-on the merged tree, vet.sh excepted, since /sync-branch has just run
-it there. The base-advanced deliberation's interacting path re-runs
-them the same way, and the and-merge gate reads that re-run. Merging
-before step 1 was not enough on its own, since a late base advance at
-step 6 merges after the checks regardless.
+CLAUDE.md's Vetting section now names /finalize step 1 as the home of a
+check too slow for vet.sh that no CI runs on every PR. Step 1 is the
+branch's whole local verification, and any merge that brings base
+commits in re-runs all of it on the merged head - vet.sh excepted,
+since /sync-branch has just run it there. The base-advanced interacting
+path re-runs it the same way, and the and-merge gate reads that re-run.
 
-A late advance judged independent of the branch still skips the
-re-run, so the attestation now says so: `Verified <sha>` names the
-commit step 1 last ran on, the marker the final head, and a line
-between them names the unchecked merge and why it was judged
-independent - anything trusting the attestation can tell the two
-apart.
+A late base advance judged independent still skips the re-run, so the
+attestation's `Verified <sha>` names the commit step 1 last ran on,
+the marker the final head, and a line between them names the unchecked
+merge and why it was judged independent.
+
+Adopters: a check too slow for vet.sh that runs anywhere but /finalize
+step 1 - a CI job that no longer runs on PRs, a manual habit, another
+skill - moves into step 1; one already there is covered by the port.
+This stays in your tree and needs no sign-off unless it drops a CI job:
+https://github.com/vzakharov/muthur/blob/main/CLAUDE.md#vetting
 
 Co-authored-by: Claude <noreply@anthropic.com>
 ```
