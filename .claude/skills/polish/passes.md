@@ -36,6 +36,19 @@ could not establish — each of those as a question, not an edit. Intent the pla
 the diff and the code leave unrecoverable is intent a reviewer will not recover
 either, which is a finding in itself.
 
+## What the operator kept
+
+A commit on the branch whose message carries an `Operator-keep:` trailer records
+a call the operator made about a span — most often putting back what an earlier
+run cut. Read them before either pass:
+
+```bash
+git log origin/<base>..HEAD --format='%(trailers:key=Operator-keep,valueonly)'
+```
+
+Neither pass edits a span a trailer names. A finding against one goes in the
+report as a question that quotes the trailer, never as an edit.
+
 ## Scope: the branch, not the session
 
 Both passes carry their own scope ladders and both bottom out at unpushed work

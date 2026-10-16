@@ -35,6 +35,12 @@ would carry anyway: a `polish:` subject would put the edit below the next run's
 floor (`passes.md` § "The floor"), unreviewed. The rest go to the operator with
 `/dry`'s calls.
 
+**An operator's answer that keeps a span is written into the history**, since
+the next run reads the diff afresh and would make the same cut: the commit
+carrying it ends with a trailer, an empty commit where the answer changes
+nothing, as `Operator-keep: <path> § <where> — <what stays> (<their words>)`.
+`passes.md` § "What the operator kept" is the reading side.
+
 ## Where it runs
 
 - **`@.claude/skills/go/SKILL.md` Step 3** — after implementing, before the PR.
