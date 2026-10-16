@@ -19,9 +19,9 @@ entry is `opt-in: ask`.
   and price table, the lines sit where a relay starts saving over the next 100k
   tokens of work and where it saves 20% of it, capped at 300k and 400k, and the
   notice gives the dollars; without them, or under
-  `MUTHUR_CONTEXT_BUDGET_LINES=fixed`, they are 300k and 400k. **The cost, which
-  is why it is asked:** a `PostToolUse` hook on every tool call, and a session
-  that can end its own turn with the work paused, or hand itself to a new one.
+  `MUTHUR_CONTEXT_BUDGET_LINES=fixed`, they are those caps. **The cost, which is
+  why it is asked:** a `PostToolUse` hook on every tool call, and a session that
+  can end its own turn with the work paused, or hand itself to a new one.
   Arrives with one `.claude/settings.json` entry to merge and a `scripts/vet.sh`
   loop running its tests; a no deletes the directory and both.
   - **Requires:** `bash`, `jq`; `gh` to read an operator's manual-relay setting;

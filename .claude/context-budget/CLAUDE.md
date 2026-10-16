@@ -38,8 +38,8 @@ where it stands, a last step aside. What the agent does on each notice is
     recomputed per 10k of growth, since a Python start-up per tool call is what
     this bash hook avoids.
   - **Without the ledger's lib, on an unpriced model, or under
-    `MUTHUR_CONTEXT_BUDGET_LINES=fixed`**, the lines are 300k and 400k and the
-    hook runs no Python.
+    `MUTHUR_CONTEXT_BUDGET_LINES=fixed`**, the lines are those caps and the hook
+    runs no Python.
 - **The main chain only.** A tool call carrying `agent_id` is a subagent's and
   is skipped, as are `isSidechain` records and the `<synthetic>` placeholder
   Claude Code writes for a turn no model served — whose zeroed usage would read

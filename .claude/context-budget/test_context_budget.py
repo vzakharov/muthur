@@ -394,18 +394,18 @@ class ThePricedLines(BudgetTestCase):
         self.reach(WARN + 1)
         notice = self.session.notice(fixed)
         assert notice is not None
-        self.assertIn("300k warning line", notice)
+        self.assertIn(f"{WARN // 1_000}k warning line", notice)
         self.assertNotIn("Relaying now costs", notice)
         self.assertFalse((self.session.root / "tmp" / "context-budget" / "sess.line").exists())
 
     def test_the_fixed_lines_cap_the_priced_ones(self) -> None:
-        # A single response gives no growth to measure and prices a line past 300k.
+        # A single response gives no growth to measure and prices a line past its cap.
         self.session.transcript.write_text("")
         self.session.append(priced("open", 43_000, 0), priced("r1", WARN + 1, 1))
         # A relay saving 90% is priced past the pause cap, so the warning stands.
         notice = self.session.notice({"MUTHUR_CONTEXT_BUDGET_PAUSE_SAVING": "90"})
         assert notice is not None
-        self.assertIn("300k warning line — its fixed cap", notice)
+        self.assertIn(f"{WARN // 1_000}k warning line — its fixed cap", notice)
         self.assertIn("rather than for cost", notice)
 
     def test_a_hand_set_line_says_so(self) -> None:
