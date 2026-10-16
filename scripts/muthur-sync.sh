@@ -4,6 +4,7 @@
 #
 #   muthur-sync.sh nudge               what the SessionStart hook prints
 #   muthur-sync.sh claim [--takeover]  take the lock for the next sync
+#   muthur-sync.sh attach              name this branch's PR as the lock's sync
 #   muthur-sync.sh clone <dir>         the source, blobless, at its current HEAD
 #
 # The watermark is always read **off the trunk**, not the working tree: the lock
@@ -14,6 +15,13 @@
 # holding one commit whose message names the holder. The key is the trunk's
 # watermark, so a landed sync moves every session on to a fresh name and the old
 # lock stays behind, deleted by nobody, as the record of who synced what, when.
+#
+# The claim often comes from a session that only made the offer, so its
+# `Session:` link need not lead to the work. `attach` names the work instead: a
+# commit on top of the claim adding `Branch:` and `PR:` trailers, its author date
+# kept at the claim's so the lock's age stays the claim's. `nudge` is silent on
+# the branch a lock names; anywhere else it reports a lock over a day old with
+# its PR's state beside the session, since an open PR can be forgotten too.
 #
 # `nudge` never fails the session: every failure is one line of context and exit
 # 0, for `prompt-issue-export.sh`'s reason — a session must not fail to start
@@ -144,15 +152,63 @@ fetch_lock() {
     die "could not fetch $LOCK from origin."
 }
 
-lock_age() { echo $(($(date +%s) - $(git log -1 --format=%ct "$1"))); }
+lock_age() { echo $(($(date +%s) - $(git log -1 --format=%at "$1"))); }
+
+ago() {
+  if [ "$1" -lt $((48 * 3600)) ]; then
+    echo "$(($1 / 3600))h ago"
+  else
+    echo "$(($1 / 86400))d ago"
+  fi
+}
 
 trailer() { git log -1 --format="%(trailers:key=$2,valueonly)" "$1"; }
 
+# The second argument, when given, is what `gh` says of the PR now.
 describe_lock() {
+  local pr
   fetch_lock "$1"
-  echo "  Claimed-By: $(trailer "$1" Claimed-By)"
-  echo "  Session: $(trailer "$1" Session)"
-  echo "  Claimed: $(($(lock_age "$1") / 3600))h ago, as $LOCK on origin"
+  pr="$(trailer "$1" PR)"
+  if [ -n "$pr" ]; then
+    echo "  PR: #$pr${2:+ — $2}"
+    echo "  Branch: $(trailer "$1" Branch)"
+  else
+    echo "  PR: none attached"
+  fi
+  echo "  Claimed-By: $(trailer "$1" Claimed-By), $(ago "$(lock_age "$1")"), as $LOCK on origin"
+  echo "  Session: $(trailer "$1" Session) (the claim's; the sync may run in a session it started)"
+}
+
+# Resolved in a subshell because it exits on failure rather than returning.
+origin_repo() {
+  (
+    # shellcheck source=lib/gh-repo.sh
+    . scripts/lib/gh-repo.sh
+    gh_resolve_repo >/dev/null 2>&1
+    echo "$NWO"
+  )
+}
+
+# A PR as `<STATE>\t<seconds since its last activity>\t<url>`.
+pr_status() {
+  local json
+  json="$(gh pr view "$1" -R "$2" --json state,updatedAt,url 2>/dev/null)" || return 1
+  jq -r --argjson now "$(date +%s)" \
+    '[.state, ($now - (.updatedAt | fromdateiso8601)), .url] | @tsv' <<<"$json"
+}
+
+# What `describe_lock` says of a PR now: its state, last activity and URL.
+pr_detail() {
+  local status state idle url
+  status="$(pr_status "$1" "$2")" || die "could not read the state of PR #$1 with \`gh pr view\`."
+  IFS=$'\t' read -r state idle url <<<"$status"
+  case "$state" in
+  OPEN) state="open" ;;
+  CLOSED) state="closed without merging" ;;
+  MERGED) state="merged, yet the trunk's watermark has not moved" ;;
+  *) die "PR #$1 reports a state this script does not know, $state." ;;
+  esac
+  echo "$state, last activity $(ago "$idle"), $url"
 }
 
 # The session-URL mapping — `cse_<id>` in the environment, `session_<id>` in the
@@ -211,16 +267,10 @@ nudge() {
   need jq
   load_watermark || exit 0
 
-  # Resolved in a subshell because it exits on failure rather than returning.
-  local origin_repo
-  origin_repo="$(
-    # shellcheck source=lib/gh-repo.sh
-    . scripts/lib/gh-repo.sh
-    gh_resolve_repo >/dev/null 2>&1
-    echo "$NWO"
-  )" || die "could not resolve this repo's owner/name."
+  local repo
+  repo="$(origin_repo)" || die "could not resolve this repo's owner/name."
   # The template itself: nothing above it to sync from.
-  [ "$(lowercase "$origin_repo")" != "$(lowercase "$SOURCE_REPO")" ] || exit 0
+  [ "$(lowercase "$repo")" != "$(lowercase "$SOURCE_REPO")" ] || exit 0
 
   local tip
   tip="$(source_head)"
@@ -230,18 +280,25 @@ nudge() {
   held="$(lock_sha)"
   if [ -n "$held" ]; then
     fetch_lock "$held"
+    # Silent on the branch the lock names: that branch is the sync itself.
+    local branch pr detail=""
+    branch="$(trailer "$held" Branch)"
+    [ -z "$branch" ] || [ "$branch" != "$(git symbolic-ref --quiet --short HEAD || true)" ] || exit 0
     [ "$(lock_age "$held")" -ge "$STALE_AFTER" ] || exit 0
+    pr="$(trailer "$held" PR)"
+    [ -z "$pr" ] || detail="$(pr_detail "$pr" "$repo")"
     echo "muthur-sync: $SOURCE_REPO, the source this repo syncs its agent infrastructure"
     echo "from, has moved past the last sync (${LAST_SHA:0:12}), and a sync from there was"
     echo "claimed over a day ago without landing:"
-    describe_lock "$held"
+    describe_lock "$held" "$detail"
     cat <<'EOF'
 
-Tell the operator once, at a natural moment, with the session link: it may be a
-stuck session of their own, or someone else's to ask about. Only if they say it
-is dead, `scripts/muthur-sync.sh claim --takeover` and then `/update-muthur
-claimed` take it over — nothing takes it over on a timeout. Investigate nothing
-before they answer.
+Tell the operator once, at a natural moment, with the PR and the session link:
+either may be a sync of their own that stalled or was forgotten, or someone
+else's to ask about. Only if they say it is dead,
+`scripts/muthur-sync.sh claim --takeover` and then `/update-muthur claimed` take
+it over — nothing takes it over on a timeout. Investigate nothing before they
+answer.
 EOF
     exit 0
   fi
@@ -322,6 +379,36 @@ EOF
   echo "muthur-sync: claimed the sync from ${LAST_SHA:0:12} as $LOCK."
 }
 
+# Re-running replaces the trailers rather than stacking them, so a renamed branch
+# or a reopened PR is re-attached the same way.
+attach() {
+  [ -z "${1:-}" ] || die "usage: muthur-sync.sh attach"
+  need jq
+  need gh
+  load_watermark || die "the trunk has no hydrated $WATERMARK to attach a sync to."
+
+  local held branch repo pr date commit
+  held="$(lock_sha)"
+  [ -n "$held" ] || die "nobody holds $LOCK: claim the sync before attaching its PR."
+  branch="$(git symbolic-ref --quiet --short HEAD)" || die "HEAD is detached: attach runs on the sync's branch."
+  repo="$(origin_repo)" || die "could not resolve this repo's owner/name."
+  pr="$(gh pr view "$branch" -R "$repo" --json number 2>/dev/null | jq -r '.number // empty')" && [ -n "$pr" ] ||
+    die "$branch has no PR on $repo: run attach once \`/pr\` has opened it."
+  fetch_lock "$held"
+  date="$(git log -1 --format=%ad --date=raw "$held")"
+  commit="$(git log -1 --format=%B "$held" |
+    git interpret-trailers --if-exists replace --trailer "Branch: $branch" --trailer "PR: $pr" |
+    GIT_AUTHOR_DATE="$date" git commit-tree "$held^{tree}" -p "$held" -F -)" ||
+    die "could not build the attach commit on $LOCK."
+
+  # The lease is the lock as read: a takeover in between fails the push rather
+  # than being overwritten.
+  git push --quiet origin "$commit:refs/heads/$LOCK" \
+    "--force-with-lease=refs/heads/$LOCK:$held" 2>/dev/null ||
+    die "could not update $LOCK on origin — it moved since it was read, or the push was refused."
+  echo "muthur-sync: attached PR #$pr ($branch) to the sync from ${LAST_SHA:0:12}."
+}
+
 clone() {
   [ -n "${1:-}" ] || die "usage: muthur-sync.sh clone <dir>"
   need jq
@@ -354,6 +441,7 @@ run_nudge() {
 case "$MODE" in
 nudge) run_nudge ;;
 claim) claim "${@:2}" ;;
+attach) attach "${@:2}" ;;
 clone) clone "${@:2}" ;;
-*) die "usage: muthur-sync.sh nudge | claim [--takeover] | clone <dir>" ;;
+*) die "usage: muthur-sync.sh nudge | claim [--takeover] | attach | clone <dir>" ;;
 esac

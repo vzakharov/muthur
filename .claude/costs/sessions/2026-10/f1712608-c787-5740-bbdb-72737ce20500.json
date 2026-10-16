@@ -1,0 +1,96 @@
+{
+  "total": {
+    "inputTokens": 118,
+    "cacheWrite5mTokens": 117595,
+    "cacheWrite1hTokens": 169670,
+    "cacheReadTokens": 8951147,
+    "outputTokens": 42011,
+    "thinkingTokens": 12483,
+    "responses": 59,
+    "costUsd": 4.5762564
+  },
+  "estimate": {
+    "at": "2026-10-16T09:52:22.710Z",
+    "parts": [
+      {
+        "hours": 3.0,
+        "grade": "senior",
+        "role": "developer",
+        "comment": "lock protocol over git refs plus gh state, with concurrency and failure paths that must not break session start"
+      },
+      {
+        "hours": 1.0,
+        "grade": "middle",
+        "role": "prompter",
+        "comment": "the skill text has to tell a sync session when to attach without drifting from the script"
+      }
+    ],
+    "comment": null
+  },
+  "sessionId": "f1712608-c787-5740-bbdb-72737ce20500",
+  "branch": "muthur-sync-lock-names-its-pr",
+  "cwd": "/home/user/muthur",
+  "openingPrompt": "/task Make `scripts/muthur-sync.sh nudge` understand a held sync lock in terms of the branch/PR doing the sync, not only the session that claimed it. What happe…",
+  "prs": [
+    208
+  ],
+  "url": "https://claude.ai/code/session_018PKX9MsoCNHu6mJqNvr1AP",
+  "operator": "vzakharov",
+  "firstResponseAt": "2026-10-16T09:47:06.040Z",
+  "lastResponseAt": "2026-10-16T11:45:14.472Z",
+  "pricesAsOf": "2026-10-06",
+  "claudeCodeTotalUsd": 3.5421105999999996,
+  "ownTurns": {
+    "inputTokens": 98,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 169670,
+    "cacheReadTokens": 8102054,
+    "outputTokens": 41845,
+    "thinkingTokens": 12483,
+    "responses": 49,
+    "costUsd": 3.8150627999999998
+  },
+  "subagents": {
+    "inputTokens": 20,
+    "cacheWrite5mTokens": 117595,
+    "cacheWrite1hTokens": 0,
+    "cacheReadTokens": 849093,
+    "outputTokens": 166,
+    "thinkingTokens": 0,
+    "responses": 10,
+    "costUsd": 0.7611936000000001
+  },
+  "byRate": {
+    "claude-opus-5-5/standard": {
+      "inputTokens": 118,
+      "cacheWrite5mTokens": 117595,
+      "cacheWrite1hTokens": 169670,
+      "cacheReadTokens": 8951147,
+      "outputTokens": 42011,
+      "thinkingTokens": 12483,
+      "responses": 59,
+      "costUsd": 4.5762564
+    }
+  },
+  "warnings": [
+    "10 responses were written with the usage their stream started with — no `stop_reason`, as a subagent's transcript writes each one — and no event to correct it, so their output tokens are a floor"
+  ],
+  "orientation": {
+    "endedBy": "Edit",
+    "endedOn": "scripts/muthur-sync.sh",
+    "endedAt": "2026-10-16T09:48:31.157Z",
+    "contextTokens": 134438,
+    "spend": {
+      "inputTokens": 14,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 77237,
+      "cacheReadTokens": 692304,
+      "outputTokens": 7394,
+      "thinkingTokens": 6164,
+      "responses": 7,
+      "costUsd": 0.9042927999999999
+    }
+  },
+  "compactions": [],
+  "telemetry": null
+}
