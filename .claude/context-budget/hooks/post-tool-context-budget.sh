@@ -53,8 +53,6 @@ state_file="$state_dir/$session"
 # a hand-set line stays fixed. Cached as `<warn> <pause> <reading>`.
 hooks="$(dirname "${BASH_SOURCE[0]}")"
 priced=
-# Why each line sits where it does, for the notice: the agent relays it, and a
-# cap read as a price tells the operator to relay when carrying on is cheaper.
 cap='its fixed cap, there for context quality and the hard window rather than for cost'
 warn_why="$cap" pause_why="$cap"
 [ -z "${MUTHUR_CONTEXT_BUDGET_WARN:-}" ] || warn_why='set by MUTHUR_CONTEXT_BUDGET_WARN'
