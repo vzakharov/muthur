@@ -18,6 +18,10 @@ PR's state, last activity and URL beside the claim's session link,
 since an open PR can be forgotten as surely as a session. A takeover
 still starts a fresh lock, and only on the operator's say-so.
 
+CLAUDE.md drops its ban on Bash's run_in_background: the stalls it
+guarded against no longer happen, so the keepalive watcher is no longer
+an exception to it and the catalog stops asking adopters to edit it.
+
 Co-authored-by: Claude <noreply@anthropic.com>
 ```
 
