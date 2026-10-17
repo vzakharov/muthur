@@ -126,6 +126,17 @@ Two lanes, and which runs is read off the branch:
   read here:** load `@.claude/skills/handle/large-review.md` before opening a
   single post.
 
+  **A heading carrying `· N unsubmitted review` is a stop, before either lane
+  runs.** The operator started a review and never clicked "Submit review", so
+  its comments sit in GitHub's pending state, outside both tests and outside the
+  export. Neither lane can work them and Step 4 must not read their absence as
+  nothing to do: relay the notice under the heading — how many comments and
+  where — ask the operator to submit, and end the turn; their next `/handle`
+  re-exports it as an ordinary review. GitHub serves a pending review to its
+  author alone, so this fires only where the session's token is the operator's
+  own; under the agent's own token a pending review is invisible, and a `none`
+  there says nothing about one.
+
   **Whose post the tail is comes off the export's label, not the login** —
   shared identity puts both under the same `@login`. Every rendered author reads
   `@login (agent)` or `@login (human)`: a tail labelled `(agent)` is your own
@@ -191,9 +202,10 @@ Load and follow `@.claude/skills/finalize/SKILL.md` with no target token — the
 branch is already attached — and, where the invocation carried `and merge`,
 without that flag, per § "Argument shape". It runs only after a lane actually
 did something, since land-prepping a branch you just declined to touch is
-exactly the unasked-for finalize the flag exists to prevent. Two turns cancel
-it: a Step-4 stop, and a plan-review turn, which ends with the plan still
-awaiting a go-ahead and nothing implemented to land.
+exactly the unasked-for finalize the flag exists to prevent. Three turns cancel
+it: a Step-4 stop, Step 2's stop on an unsubmitted review, and a plan-review
+turn, which ends with the plan still awaiting a go-ahead and nothing implemented
+to land.
 
 The flag is opt-in because `/finalize` is the one lane whose consequences an
 unaware operator wouldn't want: it ends with the PR reading as merge-ready to

@@ -67,6 +67,7 @@ def section(
     previous=None,
     rest=SMALL,
     warn_line=200_000,
+    pending_comments=None,
 ) -> str:
     return awaiting_section(
         list(comments),
@@ -77,6 +78,7 @@ def section(
         previous=previous,
         rest=rest,
         warn_line=warn_line,
+        pending_comments=pending_comments or {},
     )
 
 
@@ -213,6 +215,53 @@ class Novelty(unittest.TestCase):
 
     def test_the_rule_names_the_export_it_read(self) -> None:
         self.assertIn("the export committed at abc1234", section(previous=seen()))
+
+
+def pending(rid: int, body: str = "") -> dict:
+    """As GitHub serves a pending review to its author: no submission stamp."""
+    return {"id": rid, "user": ME, "state": "PENDING", "submitted_at": None, "body": body}
+
+
+class Unsubmitted(unittest.TestCase):
+    def test_a_pending_review_keeps_the_verdict_off_none(self) -> None:
+        out = section(
+            reviews=[pending(9)],
+            pending_comments={9: [thread_post(1, "rename", "2026-10-06T09:00:00Z", review_id=9)]},
+        )
+        self.assertIn("## Awaiting an answer: none · 1 unsubmitted review\n", out)
+        self.assertIn("Unsubmitted review by @vzakharov: 1 inline comment on `docs/x.md`:3.", out)
+        self.assertIn("Submit review", out)
+
+    def test_it_sits_beside_the_count_not_in_it(self) -> None:
+        out = section(
+            comments=[comment(1, "rename Y", "2026-10-06T10:05:00Z")],
+            reviews=[pending(9), pending(10, "overall")],
+        )
+        self.assertIn("## Awaiting an answer: 1 · 2 unsubmitted reviews\n", out)
+        self.assertIn("0 inline comments plus a review body.", out)
+
+    def test_a_pending_body_is_not_a_submitted_one(self) -> None:
+        # Unsubmitted, it has nothing to answer; with an unseen key it would
+        # otherwise pass the novelty test.
+        out = section(reviews=[pending(9, "overall")], previous=seen())
+        self.assertNotIn("**R01**", out)
+
+    def test_many_locations_are_counted_past_the_first_few(self) -> None:
+        posts = [
+            {**thread_post(i, "x", "2026-10-06T09:00:00Z", review_id=9), "path": f"f{i}.py"}
+            for i in range(1, 9)
+        ]
+        out = section(reviews=[pending(9)], pending_comments={9: posts})
+        self.assertIn("8 inline comments on `f1.py`:3", out)
+        self.assertIn("`f5.py`:3 and 3 more.", out)
+
+    def test_the_notice_rides_inside_what_the_hook_lifts(self) -> None:
+        lines = section(reviews=[pending(9)]).splitlines()
+        lifted = lines[: lines.index("---")]
+        self.assertTrue(any("Unsubmitted review" in line for line in lifted))
+
+    def test_no_pending_review_leaves_the_heading_bare(self) -> None:
+        self.assertIn("## Awaiting an answer: none\n", section())
 
 
 def waiting_comments(count: int) -> list[dict]:
