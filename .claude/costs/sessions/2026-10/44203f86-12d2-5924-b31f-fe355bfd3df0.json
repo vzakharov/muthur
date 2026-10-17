@@ -1,0 +1,96 @@
+{
+  "total": {
+    "inputTokens": 84,
+    "cacheWrite5mTokens": 101410,
+    "cacheWrite1hTokens": 116257,
+    "cacheReadTokens": 5033284,
+    "outputTokens": 19821,
+    "thinkingTokens": 4107,
+    "responses": 42,
+    "costUsd": 2.840518799999999
+  },
+  "estimate": {
+    "at": "2026-10-17T08:23:14.528Z",
+    "parts": [
+      {
+        "hours": 3.0,
+        "grade": "middle",
+        "role": "developer",
+        "comment": "an export predicate and its tests against GitHub's pending-review API shape, routine for someone who knows the module"
+      },
+      {
+        "hours": 1.0,
+        "grade": "senior",
+        "role": "prompter",
+        "comment": "the skill texts must route a new stop through handle and finalize without contradicting existing lanes"
+      }
+    ],
+    "comment": null
+  },
+  "sessionId": "44203f86-12d2-5924-b31f-fe355bfd3df0",
+  "branch": "fix/handle-pending-review",
+  "cwd": "/home/user/muthur",
+  "openingPrompt": "/task Make `/handle` notice a review the operator started but never submitted. What happened (in the downstream repo vzakharov/vovazakharov.com, PR #158): the o…",
+  "prs": [
+    211
+  ],
+  "url": "https://claude.ai/code/session_01HEiYtVbj6ktgibK1mJT9N2",
+  "operator": "vzakharov",
+  "firstResponseAt": "2026-10-17T08:19:24.702Z",
+  "lastResponseAt": "2026-10-17T08:27:01.389Z",
+  "pricesAsOf": "2026-10-06",
+  "claudeCodeTotalUsd": null,
+  "ownTurns": {
+    "inputTokens": 64,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 116257,
+    "cacheReadTokens": 4245667,
+    "outputTokens": 19657,
+    "thinkingTokens": 4107,
+    "responses": 32,
+    "costUsd": 2.172585399999999
+  },
+  "subagents": {
+    "inputTokens": 20,
+    "cacheWrite5mTokens": 101410,
+    "cacheWrite1hTokens": 0,
+    "cacheReadTokens": 787617,
+    "outputTokens": 164,
+    "thinkingTokens": 0,
+    "responses": 10,
+    "costUsd": 0.6679334
+  },
+  "byRate": {
+    "claude-opus-5-5/standard": {
+      "inputTokens": 84,
+      "cacheWrite5mTokens": 101410,
+      "cacheWrite1hTokens": 116257,
+      "cacheReadTokens": 5033284,
+      "outputTokens": 19821,
+      "thinkingTokens": 4107,
+      "responses": 42,
+      "costUsd": 2.840518799999999
+    }
+  },
+  "warnings": [
+    "10 responses were written with the usage their stream started with — no `stop_reason`, as a subagent's transcript writes each one — and no event to correct it, so their output tokens are a floor"
+  ],
+  "orientation": {
+    "endedBy": "Edit",
+    "endedOn": "scripts/gh_export/reviews.py",
+    "endedAt": "2026-10-17T08:20:29.160Z",
+    "contextTokens": 127967,
+    "spend": {
+      "inputTokens": 16,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 79274,
+      "cacheReadTokens": 811791,
+      "outputTokens": 4663,
+      "thinkingTokens": 2984,
+      "responses": 8,
+      "costUsd": 0.8898742
+    }
+  },
+  "compactions": [],
+  "telemetry": null
+}
