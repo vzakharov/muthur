@@ -23,11 +23,10 @@ A review too large for one context to read through opens the verdict on a
 warning, the verdict being what `/handle`'s hook hands the agent before it
 reads a line.
 
-A review the operator started and never submitted is neither test's: its posts
-are not public, so nothing is owed on them yet, and they cannot be answered
-until they are. It rides in the heading beside the count instead, so a verdict
-reading `none` always means there is nothing left for anyone — the reading
-`/handle` and `/finalize` both act on.
+A review the operator started and never submitted is neither test's: nothing in
+it can be answered until it is submitted. It rides in the heading beside the
+count instead, so a bare `none` always means nothing is left for anyone — the
+reading `/handle` and `/finalize` both act on.
 """
 
 from __future__ import annotations

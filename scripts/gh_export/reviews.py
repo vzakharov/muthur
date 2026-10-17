@@ -200,9 +200,7 @@ def exported_threads(
 
 
 def bodied_reviews(reviews: list[dict[str, Any]]) -> list[dict[str, Any]]:
-    """The submitted reviews that render a body, in `R01`… order. A pending
-    review is nobody's to answer until its author submits it, so it is
-    `pending_reviews`' alone."""
+    """The submitted reviews that render a body, in `R01`… order."""
     return [
         r
         for r in reviews
@@ -211,9 +209,8 @@ def bodied_reviews(reviews: list[dict[str, Any]]) -> list[dict[str, Any]]:
 
 
 def pending_reviews(reviews: list[dict[str, Any]]) -> list[dict[str, Any]]:
-    """Reviews started and never submitted. GitHub serves one to its author
-    alone, so these are the token holder's own — the operator's, under shared
-    identity — and a token that is not theirs never sees one."""
+    """GitHub serves a pending review to its author alone, so these are the
+    token holder's own, and any other token sees none."""
     return [r for r in reviews if _is_pending(r)]
 
 
