@@ -18,7 +18,9 @@ Conversation comments and review threads are always indexed — one row each,
 carrying who posted last, when, and the thread's resolved state — so a consumer
 reads the index and follows a link to the body rather than the whole document.
 A PR export opens, right under its header, on `## Awaiting an answer`: `/handle`
-Step 2's tail and novelty tests already run, so the work is the first thing read.
+Step 2's tail and novelty tests already run, so the work is the first thing read
+— a review the token's owner started and never submitted included, readable to
+that token alone.
 The novelty test reads the export the branch last committed, so run it from the
 repository root. A review too large to read in one context opens that section on
 a warning, measured against the context budget's warning line
@@ -64,7 +66,7 @@ from gh_export.awaiting import ExportSize, awaiting_section
 from gh_export.index import indexed_section
 from gh_export.markdown import comments_parts, header_section
 from gh_export.previous import previous_export
-from gh_export.reviews import review_parts
+from gh_export.reviews import pending_reviews, review_parts
 from gh_export.timeline import timeline_section
 from lib.github import (
     AllRoutesFailed,
@@ -94,6 +96,7 @@ def main() -> None:
     reviews: list[dict[str, Any]] = []
     review_comments: list[dict[str, Any]] = []
     resolved_by_comment_id: dict[int, bool] = {}
+    pending_comments: dict[Any, list[dict[str, Any]]] = {}
     try:
         # The issues endpoint serves PRs too, and is the only one carrying the
         # conversation comments and timeline.
@@ -107,6 +110,11 @@ def main() -> None:
             pr = api_get(pr_base, token)
             reviews = api_paginated(f"{pr_base}/reviews", token)
             review_comments = api_paginated(f"{pr_base}/comments", token)
+            # The PR's comment listing carries submitted reviews' comments only.
+            pending_comments = {
+                r["id"]: api_paginated(f"{pr_base}/reviews/{r['id']}/comments", token)
+                for r in pending_reviews(reviews)
+            }
             resolved_by_comment_id = fetch_thread_resolution(repo, number, token)
     except AllRoutesFailed as exc:
         die(
@@ -187,6 +195,7 @@ def main() -> None:
                 previous,
                 ExportSize.of("\n".join(parts)),
                 context_warn_line(),
+                pending_comments,
             ),
         )
 

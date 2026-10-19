@@ -77,12 +77,12 @@ like any other change you authored.
   base makes everything verified stale and its deliberation is a judgment; a
   merged or closed PR leaves nothing to merge.
 - **Anywhere** — the two-shot rule engaged; the PR carries feedback nobody
-  answered — a fresh `python3 scripts/export-github-item.py <n>` whose
-  `## Awaiting an answer` count is not `none` (`rm -rf` the `docs/pr/<n>/` it
-  writes, the sweep having run), that heading being
-  `@.claude/skills/handle/SKILL.md` Step 2's tail test already run, and what
-  keeps a merge from burying an open thread; or you reached a point where you
-  would otherwise have asked the operator something.
+  answered — a fresh `python3 scripts/export-github-item.py <n>` whose heading
+  reads anything but `## Awaiting an answer: none`, an unsubmitted review beside
+  the count included (`rm -rf` the `docs/pr/<n>/` it writes, the sweep having
+  run), that heading being `@.claude/skills/handle/SKILL.md` Step 2's tail test
+  already run, and what keeps a merge from burying an open thread; or you
+  reached a point where you would otherwise have asked the operator something.
 - **Under `no vet`** — the mode is the operator's call and does not stand the
   merge down, but its stated precondition is yours to check: if any check in the
   vet run would have had something to say about this diff, the mode was

@@ -143,7 +143,7 @@ def render_thread(
     root = chain[0]
     start_line, line, side = selection_of(root)
     label = resolution_label(chain, resolved_by_comment_id)
-    chunks = [anchor_tag(anchor), "", f"### {_location(root)} — {label}", ""]
+    chunks = [anchor_tag(anchor), "", f"### {location(root)} — {label}", ""]
     hunk = trim_hunk(root.get("diff_hunk") or "", start_line, line, side)
     if hunk:
         chunks.extend(["```diff", hunk, "```", ""])
@@ -173,7 +173,7 @@ def thread_summary(
     tail = chain[-1]
     by_agent, body = split_agent_footer(tail.get("body") or "")
     return (
-        f"- **{thread_id}** {_location(chain[0])}"
+        f"- **{thread_id}** {location(chain[0])}"
         f" — {resolution_label(chain, resolved_by_comment_id)}"
         f" — last: {attribution(tail.get('user'), by_agent)}"
         f" {tail.get('created_at', '')} — {preview(body)}"
@@ -200,8 +200,22 @@ def exported_threads(
 
 
 def bodied_reviews(reviews: list[dict[str, Any]]) -> list[dict[str, Any]]:
-    """The reviews that render a body, in `R01`… order."""
-    return [r for r in reviews if (r.get("body") or "").strip()]
+    """The submitted reviews that render a body, in `R01`… order."""
+    return [
+        r
+        for r in reviews
+        if (r.get("body") or "").strip() and not _is_pending(r)
+    ]
+
+
+def pending_reviews(reviews: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """GitHub serves a pending review to its author alone, so these are the
+    token holder's own, and any other token sees none."""
+    return [r for r in reviews if _is_pending(r)]
+
+
+def _is_pending(review: dict[str, Any]) -> bool:
+    return (review.get("state") or "").upper() == "PENDING"
 
 
 def review_parts(
@@ -272,7 +286,7 @@ def review_parts(
     return "\n".join(chunks), items
 
 
-def _location(root: dict[str, Any]) -> str:
+def location(root: dict[str, Any]) -> str:
     """`` `path`:line ``, or bare `` `path` `` for a file-level comment, which
     has a path and no line at all."""
     _, line, _ = selection_of(root)

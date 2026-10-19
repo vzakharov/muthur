@@ -22,6 +22,11 @@ that second clause is the whole test.
 A review too large for one context to read through opens the verdict on a
 warning, the verdict being what `/handle`'s hook hands the agent before it
 reads a line.
+
+A review the operator started and never submitted is neither test's: nothing in
+it can be answered until it is submitted. It rides in the heading beside the
+count instead, so a bare `none` always means nothing is left for anyone — the
+reading `/handle` and `/finalize` both act on.
 """
 
 from __future__ import annotations
@@ -29,18 +34,23 @@ from __future__ import annotations
 import re
 from typing import Any, NamedTuple
 
-from gh_export.authorship import attribution, split_agent_footer
+from gh_export.authorship import attribution, login_of, split_agent_footer
 from gh_export.markdown import comment_summary
 from gh_export.previous import PreviousExport
 from gh_export.reviews import (
     bodied_reviews,
     exported_threads,
+    location,
+    pending_reviews,
     posted_at,
     resolution_label,
     thread_summary,
 )
 
 HEADING = "## Awaiting an answer"
+
+# Past this many, a pending review's locations are counted rather than listed.
+PENDING_LOCATIONS_SHOWN = 5
 
 # The fragments of the GitHub URLs an export renders beside each conversation
 # comment and review body — their identities.
@@ -70,12 +80,14 @@ def awaiting_section(
     previous: PreviousExport | None,
     rest: ExportSize,
     warn_line: int,
+    pending_comments: dict[Any, list[dict[str, Any]]],
 ) -> str:
     """The section, its heading carrying the count so a zero reads as a verdict
     rather than an absence. Every row links to the body it names.
 
     `rest` measures the export outside this section; `warn_line` is the context
-    budget's, in tokens."""
+    budget's, in tokens. `pending_comments` holds each pending review's inline
+    comments by review id, which the PR's comment listing leaves out."""
     seen = set(_POST_ID.findall(previous.text)) if previous else None
     last_agent_post = _last_agent_post(comments, reviews, review_comments)
 
@@ -117,12 +129,39 @@ def awaiting_section(
         f"has followed ({against}). "
         "Resolved threads never count; an `(agent)` tail is a reply already given._"
     )
+    pending = pending_reviews(reviews)
+    unsubmitted = (
+        f" · {len(pending)} unsubmitted review{'' if len(pending) == 1 else 's'}"
+        if pending
+        else ""
+    )
     listing = [*rows, ""] if rows else []
-    heading = [f"{HEADING}: {len(rows) or 'none'}", ""]
+    heading = [f"{HEADING}: {len(rows) or 'none'}{unsubmitted}", ""]
     body = [rule, "", *listing, "---", ""]
-    own = ExportSize.of("\n".join([*heading, *body]))
+    notices = [_pending_notice(r, pending_comments.get(r.get("id"), [])) for r in pending]
+    own = ExportSize.of("\n".join([*heading, *notices, *body]))
     size = ExportSize(rest.lines + own.lines, rest.chars + own.chars)
-    return "\n".join([*heading, *_large_review_warning(len(rows), size, warn_line), *body])
+    return "\n".join(
+        [*heading, *notices, *_large_review_warning(len(rows), size, warn_line), *body]
+    )
+
+
+def _pending_notice(review: dict[str, Any], comments: list[dict[str, Any]]) -> str:
+    """One paragraph, blank line included, and never a `---` line, for the
+    reason `_large_review_warning` gives."""
+    where = list(dict.fromkeys(location(c) for c in comments))
+    shown = ", ".join(where[:PENDING_LOCATIONS_SHOWN])
+    more = len(where) - PENDING_LOCATIONS_SHOWN
+    places = f" on {shown}" + (f" and {more} more" if more > 0 else "") if where else ""
+    count = f"{len(comments)} inline comment{'' if len(comments) == 1 else 's'}"
+    body = " plus a review body" if (review.get("body") or "").strip() else ""
+    who = login_of(review.get("user"))
+    return (
+        f"> **Unsubmitted review by @{who}: {count}{places}{body}.** GitHub "
+        "shows a pending review to its author alone, so nothing in it is "
+        "counted or exported here. Ask the operator to click “Submit review”, "
+        "and stop until they have.\n"
+    )
 
 
 def _large_review_warning(awaiting: int, size: ExportSize, warn_line: int) -> list[str]:
