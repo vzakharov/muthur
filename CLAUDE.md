@@ -385,11 +385,12 @@ a catalogue") reads as a constraint but answers a question no reader of the
 current tree would ask: the polar bear. Cut it; `/tend-prose negation` is the
 pass that finds them, and "polar bear here" on a PR comment asks for it by name.
 
-**Retiring a doc leaves a tombstone**, so every surviving citation still
-resolves: one per retirement, a row per file giving the last commit that held
-it, the `git show <sha>:<path>` recipe, and where any still-live content went —
-`retired.md` at a retired directory's root, `<name>.retired.md` beside a retired
-file's siblings, so every tombstone matches `*retired.md`.
+**Retiring a doc that the tree still cites leaves a tombstone**, so the citation
+still resolves; the file's own history needs none, since `git log -- <path>`
+finds it. One per retirement, a row per cited file giving the last commit that
+held it, the `git show <sha>:<path>` recipe, and where any still-live content
+went — `retired.md` at a retired directory's root, `<name>.retired.md` beside a
+retired file's siblings, so every tombstone matches `*retired.md`.
 
 ## Language
 
