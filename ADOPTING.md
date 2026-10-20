@@ -47,8 +47,8 @@ through a skill rather than by reading on — see that section below.
 **macOS and Linux, WSL included.** Most hooks and scripts are bash, and the
 Python ones are launched by their shebang, so native Windows runs almost none of
 them: adopting there means rewriting most of the shell layer. If your operator
-is on Windows, tell them before copying anything. A port, or a cheaper way
-around it, is welcome as
+is on Windows, tell them before copying anything. If you port it, or find a
+cheaper way around it, we'd be grateful for the know-how in
 [an issue](https://github.com/vzakharov/muthur/issues/new).
 
 ## Adopt into an existing repo
