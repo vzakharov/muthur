@@ -42,6 +42,15 @@ Both converge on the [shared tail](#shared-tail-both-modes), which is where the
 four steps they have in common are written once. The fork route reaches it
 through a skill rather than by reading on — see that section below.
 
+## Platforms
+
+**macOS and Linux, WSL included.** Most hooks and scripts are bash, and the
+Python ones are launched by their shebang, so native Windows runs almost none of
+them: adopting there means rewriting most of the shell layer. If your operator
+is on Windows, tell them before copying anything. If you do port it, or find a
+cheaper way, we'd be grateful for the know-how in
+[an issue](https://github.com/vzakharov/muthur/issues/new).
+
 ## Adopt into an existing repo
 
 ### Step 1 — Clone this repo somewhere temporary
