@@ -91,9 +91,8 @@ def lock(path: Path) -> Optional[IO[str]]:
 
 
 def running(state: State) -> bool:
-    # The probe takes the lock for an instant, so a watcher starting in that
-    # instant would exit at once. None does: the hook runs before the turn
-    # that starts one.
+    # A watcher starting while the probe holds the lock would exit at once;
+    # none can, since the hook runs before the turn that starts one.
     probe = lock(state.lock)
     if probe is None:
         return True
