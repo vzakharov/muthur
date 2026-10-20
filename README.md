@@ -71,8 +71,8 @@ already recorded rather than re-litigated.
 Two routes. Both are documented in **[`ADOPTING.md`](ADOPTING.md)**, which owns
 the procedure end to end.
 
-It runs on macOS and Linux, WSL included. Native Windows needs most of the shell
-layer rewritten — see [`ADOPTING.md`](ADOPTING.md#platforms).
+The infrastructure runs on macOS and Linux, WSL included. Native Windows needs
+most of the shell layer rewritten — see [`ADOPTING.md`](ADOPTING.md#platforms).
 
 ### Create a new project from this template
 
