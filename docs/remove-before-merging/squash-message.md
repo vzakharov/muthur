@@ -1,7 +1,6 @@
 Proposed squash body:
 
 ```
-<<<<<<< HEAD
 The keepalive hook told a live watcher by reading its stored pid's
 /proc/<pid>/cmdline. macOS has no /proc, so there the hook never saw a
 watcher and asked for a new one on every turn; the keepalive test
@@ -12,21 +11,14 @@ tmp/keepalive/<session>.lock while it runs, and the hook probes that
 lock without blocking. The kernel drops the lock with its holder, so a
 pid reused after a container restart no longer matters, and one stdlib
 path serves Linux and macOS. The state file loses its pid field, and a
-second watcher for the same session exits at once instead of running
-beside the first.
-=======
-Nothing said which platforms the agent infrastructure runs on. Most
-hooks and scripts are bash and the Python ones run by their shebang,
-so native Windows runs almost none of them, and an adopter there found
-out only after copying.
+second watcher for the same session exits at once.
 
+Native Windows has no fcntl, and most hooks are bash besides, so
 ADOPTING.md now opens the adoption steps with a Platforms section:
 macOS and Linux (WSL included), native Windows needs most of the shell
 layer rewritten, the adopting agent warns a Windows operator before
 copying, and know-how from a port is invited as an issue. README.md
-points there, since the template-fork route never reads ADOPTING.md
-that far.
->>>>>>> origin/platform-note
+points there, since the template-fork route never reads that far.
 
 Co-authored-by: Claude <noreply@anthropic.com>
 ```
