@@ -1,7 +1,7 @@
 Proposed squash title/body:
 
 ```
-feat: #185 let an adopter add fixed-grade estimate roles (pr #186)
+feat: [attn adopters] #185 repo estimate roles, kept on cost-ledger (pr #186)
 ```
 
 ```
@@ -9,19 +9,27 @@ An adopter whose sessions do work no shared estimate role captures
 could only add a role by editing rates.json, which collides with every
 sync of it.
 
-.claude/costs/rates.repo.json now holds a repository's own roles, each
-a multiplier, one grade and a line of the work booked under it. The
-role is fixed-grade: estimates must book it at that grade, so its hours
-land in the existing column of the hours table and nothing gains an
-ungraded path. The file only adds: a role rates.json already rates, or
-any key but roles, raises rather than re-rating history or being
-ignored, and the vet run reads the table so a broken file fails there.
+A repository now keeps roles of its own in .claude/costs/rates.repo.json
+on the cost-ledger branch, beside the rows they rate: each a multiplier,
+one grade and a line of the work booked under it. `estimate.py role set`
+and `role drop` write it there directly, the way the Stop hook writes a
+row, so a role is on the ledger before any row can book it, from any
+branch, merged or not. A retune re-rates every row under the role alike,
+and `role drop` refuses while a row books a role nothing else rates.
+Every reader, report.py across repositories included, rates rows by
+the table from the same ledger.
 
-The estimate notice gives each added role a sentence of its own, naming
-its grade, its work and the exact --part, and the restated notice says
-a part misbooked under a shared role moves onto it, since a role merely
-listed among the others lost its work to them. report.py --all-my-repos
-reads each repository's rates.repo.json and rates its rows by it.
+The role is fixed-grade, so its hours land in an existing column of the
+hours table. The table only adds: `role set` refuses a role rates.json
+rates. Where rates.json later takes one up, that repository's rows keep
+its own rate and every reader warns. The estimate notice names each
+added role, its grade, its work and the exact --part.
+
+Adopters: a repository that took this branch early carries a tree
+.claude/costs/rates.repo.json, which the vet run now fails on. Run
+`python3 .claude/costs/ledger.py backfill` to carry it onto
+cost-ledger, then `git rm` it. This pushes to cost-ledger, so it waits
+on the operator's yes.
 
 Closes #185
 
