@@ -26,8 +26,9 @@ session — so the entry is `opt-in: ask`.
   the repo's `cost-ledger` — four `.claude/settings.json` hook entries to merge,
   and a `scripts/vet.sh` loop running its tests and `check_estimates.py`, which
   fails a branch carrying a session with no estimate. Estimate roles of the
-  adopter's own go in a `rates.repo.json` this repo never ships, so a sync of
-  the shared `rates.json` leaves them alone.
+  adopter's own go in a `rates.repo.json` on its `cost-ledger`, written by
+  `estimate.py role set`, so a sync of the shared `rates.json` leaves them
+  alone; an adopter carrying one in its tree moves it with `ledger.py backfill`.
   - **Requires:** `bash`, `jq`, `git`, `python3` ≥3.9; `gh` for
     `report.py --all-my-repos` and `--repo` alone
   - **Pulls in:** `.claude/hooks/lib.sh` (G4)
