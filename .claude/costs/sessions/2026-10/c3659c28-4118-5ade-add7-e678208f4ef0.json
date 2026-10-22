@@ -1,0 +1,86 @@
+{
+  "total": {
+    "inputTokens": 16,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 50005,
+    "cacheReadTokens": 762985,
+    "outputTokens": 3024,
+    "thinkingTokens": 798,
+    "responses": 8,
+    "costUsd": 0.6131810000000001
+  },
+  "estimate": {
+    "at": "2026-10-22T10:57:52.538Z",
+    "parts": [
+      {
+        "hours": 0.25,
+        "grade": "middle",
+        "role": "developer",
+        "comment": "re-landing an already-vetted branch after a review read is a routine run of the finalize procedure"
+      }
+    ],
+    "comment": null
+  },
+  "sessionId": "c3659c28-4118-5ade-add7-e678208f4ef0",
+  "branch": "claude/relay-verbatim-last-reply-qbibw9",
+  "cwd": "/home/user/muthur",
+  "openingPrompt": "/relay take claude/relay-verbatim-last-reply-qbibw9 — отчитаться, правильно ли саммари передал разговор и последний ответ, и после общего решения с оператором —…",
+  "prs": [],
+  "url": "https://claude.ai/code/session_017CC1xpB7e2oLwVbbnoHcRX",
+  "operator": "vzakharov",
+  "firstResponseAt": "2026-10-22T10:57:29.324Z",
+  "lastResponseAt": "2026-10-22T10:58:07.625Z",
+  "pricesAsOf": "2026-10-06",
+  "claudeCodeTotalUsd": null,
+  "ownTurns": {
+    "inputTokens": 16,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 50005,
+    "cacheReadTokens": 762985,
+    "outputTokens": 3024,
+    "thinkingTokens": 798,
+    "responses": 8,
+    "costUsd": 0.6131810000000001
+  },
+  "subagents": {
+    "inputTokens": 0,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 0,
+    "cacheReadTokens": 0,
+    "outputTokens": 0,
+    "thinkingTokens": 0,
+    "responses": 0,
+    "costUsd": 0.0
+  },
+  "byRate": {
+    "claude-opus-5-5/standard": {
+      "inputTokens": 16,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 50005,
+      "cacheReadTokens": 762985,
+      "outputTokens": 3024,
+      "thinkingTokens": 798,
+      "responses": 8,
+      "costUsd": 0.6131810000000001
+    }
+  },
+  "warnings": [],
+  "orientation": {
+    "endedBy": "end_turn",
+    "endedOn": null,
+    "endedAt": "2026-10-22T10:58:07.625Z",
+    "contextTokens": 108862,
+    "spend": {
+      "inputTokens": 14,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 48645,
+      "cacheReadTokens": 655485,
+      "outputTokens": 2871,
+      "thinkingTokens": 735,
+      "responses": 7,
+      "costUsd": 0.577733
+    }
+  },
+  "compactions": [],
+  "telemetry": null
+}
