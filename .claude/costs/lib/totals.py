@@ -15,7 +15,7 @@ from datetime import date
 from statistics import mean, median
 from typing import Callable, Dict, Iterable, List, Mapping, Optional, Sequence, Tuple
 
-from lib.estimate import Rates, checked, senior_hours
+from lib.estimate_model import Rates, checked, senior_hours
 from lib.hours import HoursTable, hours_of
 from lib.orientation import Phase
 from lib.period import Period, iso_week

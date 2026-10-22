@@ -18,7 +18,7 @@ from dataclasses import replace
 from pathlib import Path
 from typing import Optional
 
-from lib.estimate import Part
+from lib.estimate_model import Part
 from lib.rows import json_text, row_text
 from test_estimate import ROW, estimate_of
 from test_stop_hook import Clone

@@ -8,9 +8,9 @@ being a bargain.
 ## Where rows live
 
 **`cost-ledger` is the source of truth**: an orphan branch on `origin` holding
-every row at its usual path, named once in `lib/ledger.py`. The default branch
-carries none. The `Stop` hook writes the row there every turn, on every branch
-and the trunk alike, so a session counts whether or not its work merges.
+every row at its usual path, named once in `lib/ledger_branch.py`. The default
+branch carries none. The `Stop` hook writes the row there every turn, on every
+branch and the trunk alike, so a session counts whether or not its work merges.
 
 **A branch also carries a display copy until it is finalized**, so its PR's diff
 shows what the work cost. Finalized means the PR's last
@@ -22,9 +22,9 @@ ledger and deletes them before the branch lands, and `/finalize revoke`
 withdraws the attestation.
 
 **Readers union the ledger with the default branch's tree**, one row per session
-id, the later by `lib/ledger.py`'s `recency` winning. The tree side is how a
-repository that has not migrated still counts, and how a copy that reached the
-trunk without `/finalize` is counted once.
+id, the later by `lib/ledger_branch.py`'s `recency` winning. The tree side is
+how a repository that has not migrated still counts, and how a copy that reached
+the trunk without `/finalize` is counted once.
 
 What each failure costs:
 

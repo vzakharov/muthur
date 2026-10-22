@@ -14,7 +14,7 @@ import os
 import subprocess
 from typing import Callable, Dict, Iterable, List, Mapping, Optional, Sequence, Tuple, TypeVar
 
-from lib.estimate import REPO_RATES, SHARED_RATES, Rates, parse_rates, with_added_roles
+from lib.estimate_model import REPO_RATES, SHARED_RATES, Rates, parse_rates, with_added_roles
 from lib.rows import ROOT, SESSIONS, SessionCost, parse_session_cost
 from lib.shape import ShapeError
 

@@ -30,7 +30,7 @@ from pathlib import Path
 
 from lib.finalized import finalized
 from lib.github import Client
-from lib.ledger import BRANCH, LedgerError, append_row, backfill, commit, every_ref, fetch, row_change
+from lib.ledger_branch import BRANCH, LedgerError, append_row, backfill, commit, every_ref, fetch, row_change
 
 TRUNKS = ("", "main", "master")
 

@@ -17,7 +17,7 @@ from datetime import date
 from pathlib import Path
 
 from lib.billed import Telemetry
-from lib.estimate import AddedRole, Estimate, Part, Rates
+from lib.estimate_model import AddedRole, Estimate, Part, Rates
 from lib.orientation import Compaction, Phase, Rereads
 from lib.period import month_of
 from lib.rows import ROOT, SessionCost, parse_session_cost, read_row, row_text

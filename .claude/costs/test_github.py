@@ -17,7 +17,7 @@ import unittest
 from typing import Any, Dict, List, Mapping, Optional
 
 from lib.github import Client, GitHubError, ServerError, discover, remote_ledger
-from lib.ledger import BRANCH
+from lib.ledger_branch import BRANCH
 from lib.rows import SessionCost, row_text
 from lib.shape import ShapeError
 from lib.tally import Tally
