@@ -1,13 +1,13 @@
 {
   "total": {
-    "inputTokens": 16,
-    "cacheWrite5mTokens": 0,
-    "cacheWrite1hTokens": 50005,
-    "cacheReadTokens": 762985,
-    "outputTokens": 3024,
-    "thinkingTokens": 798,
-    "responses": 8,
-    "costUsd": 0.6131810000000001
+    "inputTokens": 54,
+    "cacheWrite5mTokens": 104125,
+    "cacheWrite1hTokens": 72291,
+    "cacheReadTokens": 2606091,
+    "outputTokens": 7681,
+    "thinkingTokens": 1288,
+    "responses": 27,
+    "costUsd": 1.7740072
   },
   "estimate": {
     "at": "2026-10-22T10:57:52.538Z",
@@ -25,43 +25,45 @@
   "branch": "claude/relay-verbatim-last-reply-qbibw9",
   "cwd": "/home/user/muthur",
   "openingPrompt": "/relay take claude/relay-verbatim-last-reply-qbibw9 — отчитаться, правильно ли саммари передал разговор и последний ответ, и после общего решения с оператором —…",
-  "prs": [],
+  "prs": [
+    216
+  ],
   "url": "https://claude.ai/code/session_017CC1xpB7e2oLwVbbnoHcRX",
   "operator": "vzakharov",
   "firstResponseAt": "2026-10-22T10:57:29.324Z",
-  "lastResponseAt": "2026-10-22T10:58:07.625Z",
+  "lastResponseAt": "2026-10-22T11:00:09.181Z",
   "pricesAsOf": "2026-10-06",
   "claudeCodeTotalUsd": null,
   "ownTurns": {
-    "inputTokens": 16,
+    "inputTokens": 40,
     "cacheWrite5mTokens": 0,
-    "cacheWrite1hTokens": 50005,
-    "cacheReadTokens": 762985,
-    "outputTokens": 3024,
-    "thinkingTokens": 798,
-    "responses": 8,
-    "costUsd": 0.6131810000000001
+    "cacheWrite1hTokens": 72291,
+    "cacheReadTokens": 2222933,
+    "outputTokens": 6765,
+    "thinkingTokens": 1288,
+    "responses": 20,
+    "costUsd": 1.1583746000000004
   },
   "subagents": {
-    "inputTokens": 0,
-    "cacheWrite5mTokens": 0,
+    "inputTokens": 14,
+    "cacheWrite5mTokens": 104125,
     "cacheWrite1hTokens": 0,
-    "cacheReadTokens": 0,
-    "outputTokens": 0,
+    "cacheReadTokens": 383158,
+    "outputTokens": 916,
     "thinkingTokens": 0,
-    "responses": 0,
-    "costUsd": 0.0
+    "responses": 7,
+    "costUsd": 0.6156326000000001
   },
   "byRate": {
     "claude-opus-5-5/standard": {
-      "inputTokens": 16,
-      "cacheWrite5mTokens": 0,
-      "cacheWrite1hTokens": 50005,
-      "cacheReadTokens": 762985,
-      "outputTokens": 3024,
-      "thinkingTokens": 798,
-      "responses": 8,
-      "costUsd": 0.6131810000000001
+      "inputTokens": 54,
+      "cacheWrite5mTokens": 104125,
+      "cacheWrite1hTokens": 72291,
+      "cacheReadTokens": 2606091,
+      "outputTokens": 7681,
+      "thinkingTokens": 1288,
+      "responses": 27,
+      "costUsd": 1.7740072
     }
   },
   "warnings": [],
