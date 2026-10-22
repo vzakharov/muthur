@@ -1,8 +1,4 @@
-Proposed squash title/body:
-
-```
-feat: [attn adopters] #185 repo estimate roles, kept on cost-ledger (pr #186)
-```
+Proposed squash body:
 
 ```
 An adopter whose sessions do work no shared estimate role captures
