@@ -1,0 +1,88 @@
+{
+  "total": {
+    "inputTokens": 94,
+    "cacheWrite5mTokens": 96371,
+    "cacheWrite1hTokens": 94247,
+    "cacheReadTokens": 5292392,
+    "outputTokens": 14324,
+    "thinkingTokens": 3577,
+    "responses": 47,
+    "costUsd": 2.5811653999999997
+  },
+  "estimate": {
+    "at": "2026-10-22T12:24:03.054Z",
+    "parts": [
+      {
+        "hours": 1.0,
+        "grade": "middle",
+        "role": "developer",
+        "comment": "Landing an already-reviewed PR is routine release work: run the checks, sync the base, settle the squash text; no design calls"
+      }
+    ],
+    "comment": null
+  },
+  "sessionId": "ae799a87-9a67-5948-a0ef-62cd9c4b353f",
+  "branch": "claude/repo-estimate-roles-cwl9kz",
+  "cwd": "/home/user/muthur",
+  "openingPrompt": "/finalize & merge claude/repo-estimate-roles-cwl9kz",
+  "prs": [
+    186
+  ],
+  "url": "https://claude.ai/code/session_01SGntNf9E2zN1gfJgUBdb67",
+  "operator": "vzakharov",
+  "firstResponseAt": "2026-10-22T12:22:16.741Z",
+  "lastResponseAt": "2026-10-22T12:29:48.331Z",
+  "pricesAsOf": "2026-10-06",
+  "claudeCodeTotalUsd": null,
+  "ownTurns": {
+    "inputTokens": 76,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 94247,
+    "cacheReadTokens": 4618229,
+    "outputTokens": 10804,
+    "thinkingTokens": 2690,
+    "responses": 38,
+    "costUsd": 1.8940057999999997
+  },
+  "subagents": {
+    "inputTokens": 18,
+    "cacheWrite5mTokens": 96371,
+    "cacheWrite1hTokens": 0,
+    "cacheReadTokens": 674163,
+    "outputTokens": 3520,
+    "thinkingTokens": 887,
+    "responses": 9,
+    "costUsd": 0.6871596
+  },
+  "byRate": {
+    "claude-opus-5-5/standard": {
+      "inputTokens": 94,
+      "cacheWrite5mTokens": 96371,
+      "cacheWrite1hTokens": 94247,
+      "cacheReadTokens": 5292392,
+      "outputTokens": 14324,
+      "thinkingTokens": 3577,
+      "responses": 47,
+      "costUsd": 2.5811653999999997
+    }
+  },
+  "warnings": [],
+  "orientation": {
+    "endedBy": "end_turn",
+    "endedOn": null,
+    "endedAt": "2026-10-22T12:29:48.331Z",
+    "contextTokens": 142845,
+    "spend": {
+      "inputTokens": 92,
+      "cacheWrite5mTokens": 96371,
+      "cacheWrite1hTokens": 93902,
+      "cacheReadTokens": 5149894,
+      "outputTokens": 13171,
+      "thinkingTokens": 3524,
+      "responses": 46,
+      "costUsd": 2.5268377999999996
+    }
+  },
+  "compactions": [],
+  "telemetry": null
+}
