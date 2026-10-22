@@ -1,13 +1,13 @@
 {
   "total": {
-    "inputTokens": 104,
+    "inputTokens": 138,
     "cacheWrite5mTokens": 103141,
-    "cacheWrite1hTokens": 221188,
-    "cacheReadTokens": 5888544,
-    "outputTokens": 34365,
-    "thinkingTokens": 18194,
-    "responses": 52,
-    "costUsd": 5.09791345
+    "cacheWrite1hTokens": 777295,
+    "cacheReadTokens": 8252657,
+    "outputTokens": 42040,
+    "thinkingTokens": 21605,
+    "responses": 69,
+    "costUsd": 10.192932450000002
   },
   "estimate": {
     "at": "2026-10-22T08:00:36.658Z",
@@ -31,22 +31,24 @@
   "branch": "claude/relay-verbatim-last-reply-qbibw9",
   "cwd": "/home/user/muthur",
   "openingPrompt": "давай при relay последнее сообщение агента не пересказывать, а записывать буквально. можно даже (чтобы не тратить токены) просто пайпить в конец соответствующег…",
-  "prs": [],
+  "prs": [
+    216
+  ],
   "url": "https://claude.ai/code/session_01McjduCgdWDbxGWDKEXJKyE",
   "operator": "vzakharov",
   "firstResponseAt": "2026-10-22T07:59:10.269Z",
-  "lastResponseAt": "2026-10-22T08:07:02.149Z",
+  "lastResponseAt": "2026-10-22T08:12:06.205Z",
   "pricesAsOf": "2026-10-06",
   "claudeCodeTotalUsd": null,
   "ownTurns": {
-    "inputTokens": 78,
+    "inputTokens": 112,
     "cacheWrite5mTokens": 0,
-    "cacheWrite1hTokens": 221188,
-    "cacheReadTokens": 4909848,
-    "outputTokens": 24706,
-    "thinkingTokens": 12372,
-    "responses": 39,
-    "costUsd": 3.7223292000000003
+    "cacheWrite1hTokens": 777295,
+    "cacheReadTokens": 7273961,
+    "outputTokens": 32381,
+    "thinkingTokens": 15783,
+    "responses": 56,
+    "costUsd": 8.817348200000001
   },
   "subagents": {
     "inputTokens": 26,
@@ -60,24 +62,34 @@
   },
   "byRate": {
     "claude-opus-5-5/standard": {
-      "inputTokens": 66,
+      "inputTokens": 70,
       "cacheWrite5mTokens": 0,
-      "cacheWrite1hTokens": 112781,
-      "cacheReadTokens": 4095306,
-      "outputTokens": 21659,
-      "thinkingTokens": 11351,
-      "responses": 33,
-      "costUsd": 2.1547532000000005
+      "cacheWrite1hTokens": 333426,
+      "cacheReadTokens": 4213722,
+      "outputTokens": 22377,
+      "thinkingTokens": 12069,
+      "responses": 35,
+      "costUsd": 3.9579724000000005
     },
     "claude-opus-4-8/standard": {
-      "inputTokens": 38,
+      "inputTokens": 62,
       "cacheWrite5mTokens": 103141,
-      "cacheWrite1hTokens": 108407,
-      "cacheReadTokens": 1793238,
-      "outputTokens": 12706,
-      "thinkingTokens": 6843,
-      "responses": 19,
-      "costUsd": 2.9431602500000005
+      "cacheWrite1hTokens": 233842,
+      "cacheReadTokens": 3772556,
+      "outputTokens": 18353,
+      "thinkingTokens": 8372,
+      "responses": 31,
+      "costUsd": 5.32846425
+    },
+    "claude-sonnet-5-5/standard": {
+      "inputTokens": 6,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 210027,
+      "cacheReadTokens": 266379,
+      "outputTokens": 1310,
+      "thinkingTokens": 1164,
+      "responses": 3,
+      "costUsd": 0.9064958
     }
   },
   "warnings": [],
