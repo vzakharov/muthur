@@ -267,11 +267,11 @@ them. A revision replaces it, so its history is git's.
   its hours land in that grade's column of the report and no estimate, command
   or table has an ungraded path.
   - **The ledger is its only home**, because the rows are written there from
-    every branch: a table per branch left rows that only an unmerged branch
-    could rate. `estimate.py role set` and `role drop` write it through the same
-    append the `Stop` hook uses, so `git log cost-ledger` is its history;
-    `check_estimates.py` fails a tree copy, and `ledger.py backfill` carries one
-    over.
+    every branch: a table per branch would leave rows that only an unmerged
+    branch could rate. `estimate.py role set` and `role drop` write it through
+    the same append the `Stop` hook uses, so `git log cost-ledger` is its
+    history; `check_estimates.py` fails a tree copy, and `ledger.py backfill`
+    carries one over.
   - **It only adds.** `role set` refuses a role `rates.json` rates, and
     `role drop` refuses a role ledger rows book that the shared table does not
     rate, so every role a row names stays rateable.

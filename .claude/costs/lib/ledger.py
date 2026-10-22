@@ -21,8 +21,8 @@ from lib.shape import ShapeError
 BRANCH = "cost-ledger"
 REMOTE_REF = f"refs/remotes/origin/{BRANCH}"
 PREFIX = SESSIONS.relative_to(ROOT).as_posix()
-# The repository's own estimate roles, beside the rows they rate. The default
-# branch carries none: a copy per branch is what left rows no reader could rate.
+# The repository's own estimate roles, beside the rows they rate and nowhere
+# else: a copy per branch would leave rows only an unmerged branch could rate.
 RATES_PATH = (SESSIONS.parent / REPO_RATES).relative_to(ROOT).as_posix()
 RATES_ON_LEDGER = f"{BRANCH}:{RATES_PATH}"
 # Where `backfill` fetches every PR's head, apart from anything a person reads.
