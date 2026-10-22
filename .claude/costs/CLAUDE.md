@@ -257,23 +257,17 @@ them. A revision replaces it, so its history is git's.
 `hooks/estimate-notice.sh` is the agent-facing home of when and how to set one.
 
 - **The unit is a senior-hour**: an hour of a senior developer, the role and
-<<<<<<< HEAD
-  grade `rates.json` rates at 1. The table holds a multiplier per role and
-  per grade, a part being worth hours × both, and is applied when the report
-  reads a row, so retuning one re-rates the whole history alike and the trend
-  stays comparable with itself.
-- **A repository adds roles of its own in `rates.repo.json`**, beside
-  `rates.json`, so a sync of the shared table never collides with them. Each
-  is `{"multiplier", "grade", "work"}`, booked at that one grade, so its hours land in that grade's column of the
-  report and no estimate, command or table has an ungraded path. The file only
-  adds (`with_added_roles` in `lib/estimate.py` says why), so once the shared
-  table takes a role up, the repository's entry is what has to go.
-=======
   grade `rates.json` rates at 1. The table holds a multiplier per role and per
   grade, a part being worth hours × both, and is applied when the report reads a
   row, so retuning one re-rates the whole history alike and the trend stays
   comparable with itself.
->>>>>>> origin/main
+- **A repository adds roles of its own in `rates.repo.json`**, beside
+  `rates.json`, so a sync of the shared table never collides with them. Each is
+  `{"multiplier", "grade", "work"}`, booked at that one grade, so its hours land
+  in that grade's column of the report and no estimate, command or table has an
+  ungraded path. The file only adds (`with_added_roles` in `lib/estimate.py`
+  says why), so once the shared table takes a role up, the repository's entry is
+  what has to go.
 - **Of the row's copy and a running session's pending one, the later wins.**
   That is how a `--session` edit to a running session's row survives its next
   `Stop`, and how the session's own later `set` overrides that edit.
@@ -326,17 +320,6 @@ ledger row is reshaped in memory only, since writing it back would be a commit
 on another branch. So the reader keeps every shape the ledger still holds a row
 in.
 
-<<<<<<< HEAD
-**Across repositories, the rows are read off GitHub.** `--all-my-repos` reads the
-ledger on the default branch of every repository the `gh` user can reach, and
-`--repo` just the ones named, so nothing needs cloning. A repository counts by
-its ledger, not muthur's watermark: the ledger is opt-in, so a watermark alone
-has nothing to count. A row GitHub truncates stops the run, since a missing one
-understates every total it belongs to, and these rows are never written back:
-they are another branch's to change. Each row is rated by this checkout's
-`rates.json` plus the `rates.repo.json` on its own repository's default branch,
-since it may name a role only that repository rates.
-=======
 **Across repositories, the rows are read off GitHub.** `--all-my-repos` reads
 `cost-ledger` and the default branch's tree of every repository the `gh` user
 can reach, unioned per repository as above, and `--repo` just the ones named, so
@@ -345,8 +328,9 @@ alone and undercounts a migrated repository. A repository counts by its ledger,
 not muthur's watermark: the ledger is opt-in, so a watermark alone has nothing
 to count. A row GitHub truncates stops the run, since a missing one understates
 every total it belongs to, and these rows are never written back: they are
-another branch's to change.
->>>>>>> origin/main
+another branch's to change. Each row is rated by this checkout's `rates.json`
+plus the `rates.repo.json` on its own repository's default branch, since it may
+name a role only that repository rates.
 
 ## What the totals do not cover
 

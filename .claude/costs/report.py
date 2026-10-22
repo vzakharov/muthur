@@ -395,15 +395,11 @@ def main() -> int:
     except PeriodError as error:
         parser.error(str(error))
     if not (args.all_my_repos or args.repo):
-<<<<<<< HEAD
-        return this_repo(span, args.json, load_rates(COSTS))
-=======
         try:
-            return this_repo(span, args.json, rates)
+            return this_repo(span, args.json, load_rates(COSTS))
         except LedgerError as error:
             print(f"costs: {error}", file=sys.stderr)
             return 1
->>>>>>> origin/main
     try:
         return across_repos(
             None if args.all_my_repos else list(dict.fromkeys(args.repo)),

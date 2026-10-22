@@ -21,11 +21,8 @@ import time
 from dataclasses import dataclass, field
 from typing import Any, Callable, Collection, Dict, List, Mapping, Optional, Sequence, Tuple
 
-<<<<<<< HEAD
 from lib.estimate import REPO_RATES
-=======
 from lib.ledger import BRANCH, union
->>>>>>> origin/main
 from lib.rows import SessionCost, reshape
 from lib.shape import ShapeError, read_object, read_string, required
 
@@ -127,14 +124,6 @@ def repository(repo: str) -> str:
     return f"repository(owner: {literal(owner)}, name: {literal(name)})"
 
 
-<<<<<<< HEAD
-REPO_FIELDS = f"""
-  nameWithOwner
-  ledger: object(expression: {literal("HEAD:" + LEDGER)}) {{ ... on Tree {{ entries {{ name type }} }} }}
-  watermark: object(expression: {literal("HEAD:" + WATERMARK)}) {{ __typename }}
-  addedRoles: object(expression: {literal("HEAD:" + ADDED_ROLES)}) {{ ... on Blob {{ isTruncated isBinary text }} }}
-"""
-=======
 REPO_FIELDS = (
     "\n  nameWithOwner\n"
     + "".join(
@@ -142,8 +131,9 @@ REPO_FIELDS = (
         for alias, rev in SIDES.items()
     )
     + f"  watermark: object(expression: {literal('HEAD:' + WATERMARK)}) {{ __typename }}\n"
+    + f"  addedRoles: object(expression: {literal('HEAD:' + ADDED_ROLES)})"
+    " { ... on Blob { isTruncated isBinary text } }\n"
 )
->>>>>>> origin/main
 
 LISTING = f"""
 query($cursor: String) {{
@@ -163,18 +153,14 @@ query($cursor: String) {{
 @dataclass
 class Candidate:
     repo: str
-<<<<<<< HEAD
-    months: List[str]
-    # The text of its `rates.repo.json`, where it carries one.
-    added_roles: Optional[str] = None
-=======
     # The months each side that has a ledger holds, by the side's rev.
     sides: Dict[str, List[str]]
+    # The text of its `rates.repo.json`, where it carries one.
+    added_roles: Optional[str] = None
 
     @property
     def months(self) -> List[str]:
         return sorted({month for months in self.sides.values() for month in months})
->>>>>>> origin/main
 
 
 @dataclass
@@ -199,7 +185,6 @@ def _entries(tree: Any, where: str) -> Optional[List[Dict[str, Any]]]:
     return entries
 
 
-<<<<<<< HEAD
 def _blob_text(blob: Any, where: str) -> str:
     if not isinstance(blob, dict):
         raise ShapeError(f"{where}: not an object")
@@ -208,28 +193,12 @@ def _blob_text(blob: Any, where: str) -> str:
     return required(read_string, blob, "text", where)
 
 
-def _read_node(node: Any) -> Tuple[str, Optional[List[str]], bool, Optional[str]]:
+def _read_node(node: Any) -> Tuple[str, Dict[str, List[str]], bool, Optional[str]]:
     if not isinstance(node, dict):
         raise ShapeError("repository node: not an object")
     repo = required(read_string, node, "nameWithOwner", "repository node")
     added = node.get("addedRoles")
     added_roles = None if added is None else _blob_text(added, f"{repo}:{ADDED_ROLES}")
-    entries = _entries(node.get("ledger"), f"{repo} ledger")
-    months = (
-        None
-        if entries is None
-        else sorted(
-            entry["name"]
-            for entry in entries
-            if entry.get("type") == "tree" and MONTH.fullmatch(str(entry.get("name")))
-        )
-    )
-    return repo, months, node.get("watermark") is not None, added_roles
-=======
-def _read_node(node: Any) -> Tuple[str, Dict[str, List[str]], bool]:
-    if not isinstance(node, dict):
-        raise ShapeError("repository node: not an object")
-    repo = required(read_string, node, "nameWithOwner", "repository node")
     sides: Dict[str, List[str]] = {}
     for alias, rev in SIDES.items():
         entries = _entries(node.get(alias), f"{repo} {rev}")
@@ -239,8 +208,7 @@ def _read_node(node: Any) -> Tuple[str, Dict[str, List[str]], bool]:
                 for entry in entries
                 if entry.get("type") == "tree" and MONTH.fullmatch(str(entry.get("name")))
             )
-    return repo, sides, node.get("watermark") is not None
->>>>>>> origin/main
+    return repo, sides, node.get("watermark") is not None, added_roles
 
 
 def _nodes(client: Client, only: Optional[Sequence[str]]) -> List[Any]:
@@ -270,15 +238,9 @@ def discover(client: Client, only: Optional[Sequence[str]] = None) -> Discovery:
     ledgers: List[Candidate] = []
     without_ledger: List[str] = []
     nodes = _nodes(client, only)
-<<<<<<< HEAD
-    for repo, months, watermarked, added_roles in sorted(map(_read_node, nodes), key=lambda read: read[0]):
-        if months is not None:
-            ledgers.append(Candidate(repo, months, added_roles))
-=======
-    for repo, sides, watermarked in sorted(map(_read_node, nodes), key=lambda read: read[0]):
+    for repo, sides, watermarked, added_roles in sorted(map(_read_node, nodes), key=lambda read: read[0]):
         if sides:
-            ledgers.append(Candidate(repo, sides))
->>>>>>> origin/main
+            ledgers.append(Candidate(repo, sides, added_roles))
         elif only:
             raise GitHubError(f"{repo}: no {LEDGER} on its {BRANCH} branch or its default branch")
         elif watermarked:

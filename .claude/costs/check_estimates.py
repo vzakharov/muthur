@@ -19,14 +19,9 @@ import sys
 from pathlib import Path
 from typing import List, Optional, Tuple
 
-<<<<<<< HEAD
 from lib.estimate import latest, load_rates
-from lib.rows import ROOT, SESSIONS, SessionCost, parse_session_cost, read_pending_estimate, row_path
-=======
-from lib.estimate import latest, parse_rates
 from lib.ledger import BRANCH, REMOTE_REF, LedgerError, fetch, latest_row, rows_at, union
 from lib.rows import ROOT, SESSIONS, SessionCost, parse_session_cost, read_pending_estimate
->>>>>>> origin/main
 from lib.shape import ShapeError
 
 PROG = "check-estimates"
@@ -91,17 +86,13 @@ def main() -> int:
     running = os.environ.get("CLAUDE_CODE_SESSION_ID")
     base = merge_base()
     try:
-<<<<<<< HEAD
         # Read on every run, so a broken `rates.repo.json` fails the vet run
         # rather than the next estimate.
         rates = load_rates(COSTS)
-        carried = branch_rows(base[1]) if base is not None else []
-=======
         carried = union(
             [*(branch_rows(base[1]) if base is not None else []), *ledger_rows(git("branch", "--show-current").strip())],
             lambda row: row,
         )
->>>>>>> origin/main
         missing = {row.session_id: row.opening_prompt for row in carried if row.estimate is None}
         missing.pop(running, None)
         if running is not None and not running_is_estimated(running):

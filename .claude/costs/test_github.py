@@ -63,11 +63,8 @@ class FakeGitHub:
         page: int = 2,
         failures: int = 0,
         errors: Optional[List[Dict[str, Any]]] = None,
-<<<<<<< HEAD
-        added_roles: Optional[Mapping[str, Any]] = None,
-=======
         branches: Optional[Mapping[str, Months]] = None,
->>>>>>> origin/main
+        added_roles: Optional[Mapping[str, Any]] = None,
     ) -> None:
         self.ledgers = dict(sorted({**{repo: None for repo in branches or {}}, **ledgers}.items()))
         self.sides = {"HEAD": self.ledgers, f"refs/heads/{BRANCH}": dict(branches or {})}
@@ -93,19 +90,14 @@ class FakeGitHub:
             "addedRoles": None if repo not in self.added_roles else self.blob(self.added_roles[repo]),
         }
 
-<<<<<<< HEAD
     @staticmethod
     def blob(text: Any) -> Dict[str, Any]:
         if text is TRUNCATED:
             return {"isTruncated": True, "isBinary": False, "text": "{"}
         return {"isTruncated": False, "isBinary": False, "text": text}
 
-    def tree(self, repo: str, month: str) -> Dict[str, Any]:
-        files = (self.ledgers[repo] or {})[month]
-=======
     def tree(self, rev: str, repo: str, month: str) -> Dict[str, Any]:
         files = (self.sides[rev].get(repo) or {})[month]
->>>>>>> origin/main
         return {
             "object": {
                 "entries": [

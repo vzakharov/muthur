@@ -30,16 +30,10 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import List, Optional
 
-<<<<<<< HEAD
 from lib.estimate import Estimate, Part, Rates, checked, senior_hours, latest, load_rates
-from lib.rows import SESSIONS, read_pending_estimate, read_row, row_path, row_text, write_atomic, write_pending_estimate
-from lib.shape import ShapeError, to_json
-=======
-from lib.estimate import Estimate, Part, Rates, checked, senior_hours, latest, parse_rates
 from lib.ledger import BRANCH, LedgerError, append_row, fetch, latest_row, path_of
 from lib.rows import ROOT, SESSIONS, SessionCost, read_pending_estimate, row_path, row_text, write_atomic, write_pending_estimate
-from lib.shape import ShapeError
->>>>>>> origin/main
+from lib.shape import ShapeError, to_json
 
 COSTS = Path(__file__).resolve().parent
 
