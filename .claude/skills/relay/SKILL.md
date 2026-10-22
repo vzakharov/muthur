@@ -122,9 +122,8 @@ The sections, in this order:
    when nothing is pending. A draft plan's go-ahead given in this session is
    quoted here, since it is what the successor's `/go` records when it flips the
    plan.
-9. **Last agent turn** — the script's, never hand-written: every text block of
-   the turn, so the narration between its tool calls rides along before the
-   reply itself.
+9. **Last agent turn** — the script's, never hand-written, interim messages
+   included.
 
 ### Step 3 — Start the successor
 
