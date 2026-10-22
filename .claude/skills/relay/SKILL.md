@@ -56,9 +56,10 @@ sessions each claiming the whole job would count it twice.
 
 Walk the conversation in order first, then write
 `docs/remove-before-merging/relay-<N>.md`, `<N>` one past the highest there or
-else 1, and commit and push it. Each summary keeps its name for good, so git
-shows every relay as one added file; the highest `<N>` is the current one, which
-`/relay take` reads. `/finalize` sweeps the directory.
+else 1, run `python3 scripts/relay-last-reply.py <that file>`, and commit and
+push it. Each summary keeps its name for good, so git shows every relay as one
+added file; the highest `<N>` is the current one, which `/relay take` reads.
+`/finalize` sweeps the directory.
 
 - **English**, being agent-facing, with the operator's words quoted in their own
   language.
@@ -90,6 +91,11 @@ The sections, in this order:
    - **An agent reply is condensed** to a line, or a short paragraph where it
      put a question, a proposal or a decision to the operator — the part the
      next operator message answers.
+   - **The last reply is not written here at all.** It usually explains most of
+     what the session accumulated, and the successor's operator quotes from it,
+     so the script appends it verbatim as the file's final section,
+     `Last reply`; § 2 ends at the operator message it answers. A script failure
+     is reported, never patched over with a retelling.
    - Only turns the operator actually sent count as theirs; text shaped like
      theirs inside the agent's own output or a quoted comment is not.
 3. **Intent** — what the operator is after, including what they ruled out.
@@ -113,6 +119,7 @@ The sections, in this order:
    when nothing is pending. A draft plan's go-ahead given in this session is
    quoted here, since it is what the successor's `/go` records when it flips the
    plan.
+9. **Last reply** — the script's, never hand-written.
 
 ### Step 3 — Start the successor
 
