@@ -7,14 +7,27 @@ through `unittest discover`.
 
 from __future__ import annotations
 
+import importlib.util
 import json
 import subprocess
 import sys
 import tempfile
 import unittest
 from pathlib import Path
+from types import ModuleType
 
 SCRIPT = Path(__file__).resolve().parent / "relay-last-reply.py"
+KEEPALIVE = Path(__file__).resolve().parents[1] / ".claude" / "keepalive" / "hooks" / "keepalive.py"
+
+
+def load(name: str, path: Path) -> ModuleType:
+    spec = importlib.util.spec_from_file_location(name, path)
+    assert spec is not None and spec.loader is not None
+    module = importlib.util.module_from_spec(spec)
+    # A `@dataclass` looks its module up here while the module still executes.
+    sys.modules[name] = module
+    spec.loader.exec_module(module)
+    return module
 
 
 def prompt(turn: str, text: str = "a prompt") -> dict:
@@ -31,6 +44,20 @@ def tool_result(turn: str) -> dict:
         "type": "user",
         "promptId": turn,
         "message": {"role": "user", "content": [{"type": "tool_result", "content": "ok"}]},
+    }
+
+
+def wake(turn: str) -> dict:
+    """A keepalive wake: the watcher's completion notice, opening a turn."""
+    return {
+        "type": "user",
+        "promptId": turn,
+        "origin": {"kind": "task-notification"},
+        "message": {
+            "role": "user",
+            "content": '<task-notification><summary>Background command "Cache keepalive watcher"'
+            " completed (exit code 0)</summary></task-notification>",
+        },
     }
 
 
@@ -107,6 +134,38 @@ class LastReplyTest(unittest.TestCase):
             prompt("p2", "/relay"),
         )
         self.assertNotIn("subagent", out)
+
+    def test_passes_over_a_keepalive_wake_the_operator_answered_with_park(self) -> None:
+        out = self.appended(
+            prompt("p1"),
+            said(text("the reply")),
+            wake("p2"),
+            said(tool_use()),
+            tool_result("p2"),
+            said(text("🕯 cache extended 1/1 · say 'park' to record it and stop extending")),
+            prompt("p3", "park"),
+        )
+        self.assertIn("the reply", out)
+        self.assertNotIn("cache extended", out)
+
+    def test_a_wake_that_parks_on_its_own_is_the_running_turn(self) -> None:
+        out = self.appended(
+            prompt("p1"),
+            said(text("an older reply")),
+            prompt("p2"),
+            said(text("the reply")),
+            wake("p3"),
+            said(text("Parking."), tool_use()),
+        )
+        self.assertIn("the reply", out)
+        self.assertNotIn("older", out)
+
+    @unittest.skipUnless(KEEPALIVE.is_file(), "no cache keepalive in this tree")
+    def test_the_wake_mark_is_the_keepalives_own(self) -> None:
+        self.assertEqual(
+            load("relay_last_reply", SCRIPT).KEEPALIVE_MARK,
+            load("keepalive", KEEPALIVE).MARK,
+        )
 
     def test_fences_a_reply_holding_a_fence_with_a_longer_one(self) -> None:
         out = self.appended(

@@ -14,7 +14,9 @@ turn is every record sharing a user record's `promptId`, which a tool result
 carries as well as the prompt that opened the turn. All of a turn's text blocks
 are kept, in order, so a report written before a hook forced one more tool call
 survives that call. A turn holding no text — interrupted before it wrote any —
-is passed over for the one before it.
+is passed over for the one before it, and so is a cache keepalive wake
+(`.claude/keepalive/`): its one line is what the operator answers with "park",
+so it is the turn right before a parking relay, and it explains nothing.
 
 The transcript defaults to `~/.claude/projects/*/$CLAUDE_CODE_SESSION_ID.jsonl`,
 the session id being unique across project directories.
@@ -34,13 +36,16 @@ import os
 import re
 import sys
 from pathlib import Path
-from typing import Dict, List, NoReturn, Optional
+from typing import Dict, List, NoReturn, Optional, Tuple
 
 HEADING = "## Last reply"
 LEAD = (
     "The agent's final reply before the relay, verbatim, appended by\n"
     "`scripts/relay-last-reply.py`."
 )
+# `MARK` in `.claude/keepalive/hooks/keepalive.py`, which opens the watcher's
+# task description and so every wake's prompt; the tests hold the two equal.
+KEEPALIVE_MARK = "Cache keepalive"
 
 
 def _die(message: str) -> NoReturn:
@@ -58,9 +63,22 @@ def find_transcript() -> Path:
     return found[0]
 
 
-def turn_texts(transcript: Path) -> List[List[str]]:
-    """Each turn's text blocks, turns in the order they opened."""
-    turns: Dict[str, List[str]] = {}
+def prompt_text(content: object) -> str:
+    if isinstance(content, str):
+        return content
+    if isinstance(content, list):
+        return "\n".join(
+            block["text"]
+            for block in content
+            if isinstance(block, dict) and isinstance(block.get("text"), str)
+        )
+    return ""
+
+
+def turn_texts(transcript: Path) -> List[Tuple[bool, List[str]]]:
+    """Each turn's text blocks, turns in the order they opened, each with
+    whether a keepalive wake opened it."""
+    turns: Dict[str, Tuple[bool, List[str]]] = {}
     current: Optional[str] = None
     with transcript.open(encoding="utf-8", errors="replace") as fh:
         for line in fh:
@@ -76,12 +94,14 @@ def turn_texts(transcript: Path) -> List[List[str]]:
                 prompt = record.get("promptId")
                 if isinstance(prompt, str) and prompt:
                     current = prompt
-                    turns.setdefault(prompt, [])
+                    if prompt not in turns:
+                        opener = prompt_text((record.get("message") or {}).get("content"))
+                        turns[prompt] = (KEEPALIVE_MARK in opener, [])
             elif record.get("type") == "assistant" and current is not None:
                 content = (record.get("message") or {}).get("content")
                 if not isinstance(content, list):
                     continue
-                turns[current].extend(
+                turns[current][1].extend(
                     block["text"].strip()
                     for block in content
                     if isinstance(block, dict)
@@ -93,9 +113,11 @@ def turn_texts(transcript: Path) -> List[List[str]]:
 
 
 def last_reply(transcript: Path) -> Optional[str]:
-    """The text of the latest turn before the running one that wrote any."""
-    for texts in reversed(turn_texts(transcript)[:-1]):
-        if texts:
+    """The text of the latest turn before the running one that wrote any and
+    is no keepalive wake. The running turn is cut first: a wake runs the
+    relay that parks the session on its own."""
+    for wake, texts in reversed(turn_texts(transcript)[:-1]):
+        if texts and not wake:
             return "\n\n".join(texts)
     return None
 
