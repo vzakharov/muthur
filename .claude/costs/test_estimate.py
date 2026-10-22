@@ -378,7 +378,7 @@ class TheCommand(unittest.TestCase):
         self.assertFalse(self.pending().exists())
 
     def test_rates_prints_the_table_estimates_are_checked_against(self) -> None:
-        done = estimate("rates", session=self.running)
+        done = self.estimate("rates")
         self.assertEqual(done.returncode, 0, done.stderr)
         self.assertEqual(json.loads(done.stdout), to_json(load_rates(COSTS)))
 
