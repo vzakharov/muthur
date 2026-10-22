@@ -33,7 +33,7 @@ from lib.estimate import (
     split_comment,
     with_added_roles,
 )
-from lib.ledger import BRANCH
+from lib.ledger import BRANCH, RATES_ON_LEDGER, RATES_PATH
 from lib.rows import ROOT, SessionCost, parse_session_cost, read_row, row_text
 from lib.shape import ShapeError, to_json
 from lib.tally import Tally
@@ -124,6 +124,10 @@ def adding(**roles: object) -> str:
 
 
 ARTIST = {"multiplier": 0.9, "grade": "senior", "work": "a persona's reflections on songs"}
+
+
+def ledger_table(clone: Clone) -> object:
+    return json.loads(clone.git("show", f"origin/{RATES_ON_LEDGER}"))
 
 
 class RolesARepositoryAdds(unittest.TestCase):
@@ -414,17 +418,14 @@ class TheCommand(unittest.TestCase):
         shared = parse_rates((COSTS / "rates.json").read_text(encoding="utf-8"))
         self.assertEqual(json.loads(done.stdout), {**to_json(shared), "notes": []})
 
-    def ledger_table(self) -> object:
-        return json.loads(self.clone.git("show", f"origin/{BRANCH}:.claude/costs/rates.repo.json"))["roles"]
-
     def test_role_set_pushes_the_role_to_the_ledger_where_an_estimate_can_book_it(self) -> None:
         done = self.estimate("role", "set", "artist", "0.9", "senior", ARTIST["work"])
         self.assertEqual(done.returncode, 0, done.stderr)
-        self.assertEqual(self.ledger_table(), {"artist": ARTIST})
+        self.assertEqual(ledger_table(self.clone), {"roles": {"artist": ARTIST}})
         self.assertEqual(
             self.clone.git("log", "-1", "--format=%s", f"origin/{BRANCH}"), "chore: estimate role artist ×0.9 at senior"
         )
-        self.assertFalse((self.clone.root / ".claude" / "costs" / "rates.repo.json").exists())
+        self.assertFalse((self.clone.root / RATES_PATH).exists())
         booked = self.estimate("set", "--part", "2", "senior", "artist", "why")
         self.assertEqual(booked.returncode, 0, booked.stderr)
 
@@ -444,7 +445,7 @@ class TheCommand(unittest.TestCase):
         self.estimate("role", "set", "artist", "0.9", "senior", ARTIST["work"])
         done = self.estimate("role", "drop", "artist")
         self.assertEqual(done.returncode, 0, done.stderr)
-        self.assertNotIn(".claude/costs/rates.repo.json", self.clone.ledger_files())
+        self.assertNotIn(RATES_PATH, self.clone.ledger_files())
 
     def test_role_drop_is_refused_while_a_ledger_row_books_the_role(self) -> None:
         self.estimate("role", "set", "artist", "0.9", "senior", ARTIST["work"])
@@ -456,7 +457,7 @@ class TheCommand(unittest.TestCase):
         done = self.estimate("role", "drop", "artist")
         self.assertEqual(done.returncode, 1)
         self.assertIn(f"`artist` is booked by 1 ledger row(s), {self.finished} first", done.stderr)
-        self.assertEqual(self.ledger_table(), {"artist": ARTIST})
+        self.assertEqual(ledger_table(self.clone), {"roles": {"artist": ARTIST}})
 
     def test_a_session_with_no_row_is_refused_rather_than_guessed_at(self) -> None:
         done = self.estimate("show", "--session", "no-such-session")
@@ -472,7 +473,7 @@ class BackfillCarriesATreeTable(unittest.TestCase):
         self.base = Path(tempfile.mkdtemp())
         self.addCleanup(shutil.rmtree, self.base)
         self.clone = Clone(self.base)
-        self.tree = self.clone.root / ".claude" / "costs" / "rates.repo.json"
+        self.tree = self.clone.root / RATES_PATH
 
     def run_costs(self, script: str, *args: str) -> subprocess.CompletedProcess[str]:
         return subprocess.run(
@@ -482,15 +483,12 @@ class BackfillCarriesATreeTable(unittest.TestCase):
             text=True,
         )
 
-    def ledger_table(self) -> str:
-        return self.clone.git("show", f"origin/{BRANCH}:.claude/costs/rates.repo.json")
-
     def test_carries_the_tree_s_table_where_the_ledger_has_none_and_nothing_once_they_agree(self) -> None:
         self.tree.write_text(adding(artist=ARTIST), encoding="utf-8")
         done = self.run_costs("ledger.py", "backfill", "HEAD")
         self.assertEqual(done.returncode, 0, done.stderr)
         self.assertIn("carried in", done.stdout)
-        self.assertEqual(json.loads(self.ledger_table()), {"roles": {"artist": ARTIST}})
+        self.assertEqual(ledger_table(self.clone), {"roles": {"artist": ARTIST}})
         again = self.run_costs("ledger.py", "backfill", "HEAD")
         self.assertIn("nothing to carry", again.stdout)
 
@@ -500,7 +498,7 @@ class BackfillCarriesATreeTable(unittest.TestCase):
         done = self.run_costs("ledger.py", "backfill", "HEAD")
         self.assertEqual(done.returncode, 1)
         self.assertIn("they differ on `artist`", done.stderr)
-        self.assertEqual(json.loads(self.ledger_table()), {"roles": {"artist": ARTIST}})
+        self.assertEqual(ledger_table(self.clone), {"roles": {"artist": ARTIST}})
 
 
 if __name__ == "__main__":

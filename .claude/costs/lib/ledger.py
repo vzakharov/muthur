@@ -24,6 +24,7 @@ PREFIX = SESSIONS.relative_to(ROOT).as_posix()
 # The repository's own estimate roles, beside the rows they rate. The default
 # branch carries none: a copy per branch is what left rows no reader could rate.
 RATES_PATH = (SESSIONS.parent / REPO_RATES).relative_to(ROOT).as_posix()
+RATES_ON_LEDGER = f"{BRANCH}:{RATES_PATH}"
 # Where `backfill` fetches every PR's head, apart from anything a person reads.
 PR_REFS = "refs/costs-pr"
 TRIES = 3
@@ -79,7 +80,7 @@ def ledger_rates(rev: Optional[str]) -> Rates:
     adds; the shared table alone where `rev` or its table is missing."""
     shared = shared_rates()
     text = rates_text(rev)
-    return shared if text is None else with_added_roles(shared, text, f"{BRANCH}:{RATES_PATH}")
+    return shared if text is None else with_added_roles(shared, text, RATES_ON_LEDGER)
 
 
 def fetch() -> Optional[str]:

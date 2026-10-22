@@ -36,6 +36,7 @@ from typing import Any, Dict, List, Mapping, Optional, Tuple
 from lib.estimate import Estimate, Part, Rates, checked, senior_hours, latest, role_change, shadow_notes
 from lib.ledger import (
     BRANCH,
+    RATES_ON_LEDGER,
     RATES_PATH,
     REMOTE_REF,
     LedgerError,
@@ -95,15 +96,14 @@ def change_role(name: str, entry: Optional[Mapping[str, Any]]) -> Optional[str]:
     is refused while a ledger row books the role and the shared table does not
     rate it, so every role a row names stays rateable."""
     shared = shared_rates()
-    where = f"{BRANCH}:{RATES_PATH}"
 
     def plan(tip: Optional[str]) -> Tuple[Dict[str, Optional[str]], str]:
         before = rates_text(tip)
         if entry is None and name not in shared.roles:
             booked = booking(tip, name)
             if booked:
-                raise ShapeError(f"{where}: `{name}` is booked by {len(booked)} ledger row(s), {booked[0]} first")
-        text, message = role_change(shared, before, name, entry, where)
+                raise ShapeError(f"{RATES_ON_LEDGER}: `{name}` is booked by {len(booked)} ledger row(s), {booked[0]} first")
+        text, message = role_change(shared, before, name, entry, RATES_ON_LEDGER)
         return ({} if text == before else {RATES_PATH: text}), message
 
     return append(plan)
