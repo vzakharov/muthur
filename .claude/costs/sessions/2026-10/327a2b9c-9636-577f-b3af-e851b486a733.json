@@ -1,16 +1,16 @@
 {
   "total": {
-    "inputTokens": 48,
+    "inputTokens": 64,
     "cacheWrite5mTokens": 0,
-    "cacheWrite1hTokens": 126833,
-    "cacheReadTokens": 3242177,
-    "outputTokens": 21450,
-    "thinkingTokens": 8173,
-    "responses": 24,
-    "costUsd": 2.0922914000000006
+    "cacheWrite1hTokens": 138824,
+    "cacheReadTokens": 4719222,
+    "outputTokens": 30292,
+    "thinkingTokens": 10086,
+    "responses": 32,
+    "costUsd": 2.6605324
   },
   "estimate": {
-    "at": "2026-10-21T15:36:32.106Z",
+    "at": "2026-10-22T07:54:47.910Z",
     "parts": [
       {
         "hours": 3.0,
@@ -21,34 +21,35 @@
       {
         "hours": 1.0,
         "grade": "middle",
-        "role": "copywriter",
-        "comment": "the plan and migration note are adopter-facing prose, routine once the design is settled"
+        "role": "prompter",
+        "comment": "the plan and migration note are read and acted on by adopters' agents, so the prose is instructions; routine once the design is settled"
       }
     ],
     "comment": null
   },
   "sessionId": "327a2b9c-9636-577f-b3af-e851b486a733",
-  "branch": "claude/ledger-estimate-roles",
+  "branch": "claude/repo-estimate-roles-cwl9kz",
   "cwd": "/home/user/muthur",
   "openingPrompt": "/task Make a repository's custom estimate roles (today `.claude/costs/rates.repo.json`, read from the default branch) live on the `cost-ledger` branch alongside…",
   "prs": [
+    186,
     215
   ],
   "url": "https://claude.ai/code/session_01YUmGQf8qqGP2LWreB1SpBi",
   "operator": "vzakharov",
   "firstResponseAt": "2026-10-21T15:34:37.655Z",
-  "lastResponseAt": "2026-10-21T16:17:25.064Z",
+  "lastResponseAt": "2026-10-21T16:20:39.539Z",
   "pricesAsOf": "2026-10-06",
   "claudeCodeTotalUsd": 2.0756652000000004,
   "ownTurns": {
-    "inputTokens": 48,
+    "inputTokens": 64,
     "cacheWrite5mTokens": 0,
-    "cacheWrite1hTokens": 126833,
-    "cacheReadTokens": 3242177,
-    "outputTokens": 21450,
-    "thinkingTokens": 8173,
-    "responses": 24,
-    "costUsd": 2.0922914000000006
+    "cacheWrite1hTokens": 138824,
+    "cacheReadTokens": 4719222,
+    "outputTokens": 30292,
+    "thinkingTokens": 10086,
+    "responses": 32,
+    "costUsd": 2.6605324
   },
   "subagents": {
     "inputTokens": 0,
@@ -62,14 +63,14 @@
   },
   "byRate": {
     "claude-opus-5-5/standard": {
-      "inputTokens": 48,
+      "inputTokens": 64,
       "cacheWrite5mTokens": 0,
-      "cacheWrite1hTokens": 126833,
-      "cacheReadTokens": 3242177,
-      "outputTokens": 21450,
-      "thinkingTokens": 8173,
-      "responses": 24,
-      "costUsd": 2.0922914000000006
+      "cacheWrite1hTokens": 138824,
+      "cacheReadTokens": 4719222,
+      "outputTokens": 30292,
+      "thinkingTokens": 10086,
+      "responses": 32,
+      "costUsd": 2.6605324
     }
   },
   "warnings": [],
