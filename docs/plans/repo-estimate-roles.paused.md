@@ -191,3 +191,59 @@ has edited its own `rates.json`, so a cross-repo report run from any other
 checkout raises on a life row booked as `physician`, for the same reason this
 plan fixes. Once this lands, `physician` belongs in life's ledger table via
 `role set`, and that is life's change to make, not this one.
+
+## Progress
+
+Paused for the context budget; a relayed session continues.
+
+**Done:**
+
+- `main` merged in (merge 1d1316f, resolution e8c6b6d), plus 829f2ac fixing a
+  test the merge left calling a renamed runner. Vet was green after it.
+- The code side of § "Edits", in one commit after this record's base:
+  - `lib/estimate.py`: `with_added_roles` lists a shared-rated role in
+    `Rates.shadowed` instead of raising; `added_roles_of`, `_added_role`,
+    `checked_new_role` (the refusal `role set` keeps), `role_change` (the plan
+    body, `None` text where no role is left) and `shadow_notes` (the one warning
+    text). `load_rates` and `load_shared_rates` are gone.
+  - `lib/ledger.py`: `RATES_PATH`, `rates_text(rev)`, `shared_rates()`,
+    `ledger_rates(rev)`; `commit` removes a path mapped to `None`; `backfill`
+    carries a tree `rates.repo.json` where the ledger has none and raises naming
+    the differing roles where both exist and differ.
+  - `estimate.py`: `role set` / `role drop` (drop refused while a ledger row
+    books a role the shared table does not rate); `set` reads the local ledger
+    ref and fetches once on an unrated role; `rates` prints the table plus
+    `notes` (the shadow lines).
+  - `check_estimates.py`: fails on a tree `rates.repo.json` (naming `backfill`
+    then `git rm`), fetches once, reads the ledger table, prints shadow notes to
+    stderr without failing.
+  - `report.py`: this-repo reads rows and table at one fetched tip; both modes
+    print shadow notes to stderr. `lib/github.py` reads the `addedRoles` blob at
+    `refs/heads/cost-ledger:.claude/costs/rates.repo.json`.
+
+**Left:**
+
+- Tests — four files fail on the old API now:
+  - `test_estimate.py`: drop `load_rates` use (the tree-loading case becomes a
+    `ledger_rates` case over a `Clone`); the `copywriter` refusal case becomes
+    "shadowed, keeps its multiplier"; add `role_change` unit cases and
+    `TheCommand` cases for `role set` / `role drop` and the drop refusal; the
+    `rates` case compares against `ledger_rates` plus `notes`.
+  - `test_estimate_notice.py`: move onto a `Clone` (the table must sit on
+    `origin`'s `cost-ledger`, laid there with `estimate.py role set`); add the
+    fresh-container fetch and the shadowed sentence.
+  - `test_github.py`: the fake must answer the `addedRoles` alias from the
+    ledger side; the truncated-blob message now names `refs/heads/cost-ledger:`.
+  - `test_check_estimates.py`: see why it fails first (likely the fetch moving
+    into `main`); add a tree-file failure and a shadowed-role warning.
+  - `test_totals.py`: a shadowed role rated per repository.
+  - A `backfill` carry case (carried, agreed, differing).
+- `hooks/estimate-notice.sh`: run `ledger.py fetch` once where
+  `refs/remotes/origin/cost-ledger` is missing (a fetch failure is said in the
+  notice, not swallowed); after the added-role sentences, name
+  `estimate.py role set` as the way to add one; one sentence per `.notes` entry.
+- `.claude/costs/CLAUDE.md`: the added-roles bullet and § "The report"'s last
+  sentence say the table lives on `cost-ledger`, who writes it, and what a
+  collision does. `catalog/g7-cost-ledger.md`: the entry, re-pointed.
+- Then `/go` Step 3 (`/polish`) and Step 4 (`/pr` refresh); the PR body's banner
+  about the planned rework goes.
