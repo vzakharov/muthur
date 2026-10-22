@@ -1,8 +1,6 @@
 Proposed squash body:
 
 ```
-feat: relay appends the agent's last reply verbatim
-
 A relay condensed the agent's last reply to a line in the summary's
 conversation section, but that reply usually explains most of what the
 session accumulated, and the successor's operator reaches for it to
