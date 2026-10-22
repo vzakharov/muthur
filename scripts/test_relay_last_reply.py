@@ -160,6 +160,14 @@ class LastReplyTest(unittest.TestCase):
         self.assertIn("the reply", out)
         self.assertNotIn("older", out)
 
+    def test_keeps_a_reply_to_an_operator_who_named_the_keepalive(self) -> None:
+        out = self.appended(
+            prompt("p1", "why did the Cache keepalive watcher fire?"),
+            said(text("the reply")),
+            prompt("p2", "/relay"),
+        )
+        self.assertIn("the reply", out)
+
     @unittest.skipUnless(KEEPALIVE.is_file(), "no cache keepalive in this tree")
     def test_the_wake_mark_is_the_keepalives_own(self) -> None:
         self.assertEqual(

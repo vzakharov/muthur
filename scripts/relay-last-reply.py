@@ -96,7 +96,8 @@ def turn_texts(transcript: Path) -> List[Tuple[bool, List[str]]]:
                     current = prompt
                     if prompt not in turns:
                         opener = prompt_text((record.get("message") or {}).get("content"))
-                        turns[prompt] = (KEEPALIVE_MARK in opener, [])
+                        human = (record.get("origin") or {}).get("kind") == "human"
+                        turns[prompt] = (not human and KEEPALIVE_MARK in opener, [])
             elif record.get("type") == "assistant" and current is not None:
                 content = (record.get("message") or {}).get("content")
                 if not isinstance(content, list):
