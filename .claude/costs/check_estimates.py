@@ -3,7 +3,8 @@
 
 Those sessions are the rows under `sessions/` the branch adds against its merge
 base with the default branch, the rows it changes where the session went on
-responding, and the running session (`CLAUDE_CODE_SESSION_ID`), whose estimate
+responding, the `cost-ledger` rows filed under the branch's name, and the
+running session (`CLAUDE_CODE_SESSION_ID`), whose estimate
 counts from its pending file under `tmp/` by `estimate.py show`'s rule. A row
 the trunk already carries is left alone, since many predate estimates.
 
@@ -18,8 +19,14 @@ import sys
 from pathlib import Path
 from typing import List, Optional, Tuple
 
+<<<<<<< HEAD
 from lib.estimate import latest, load_rates
 from lib.rows import ROOT, SESSIONS, SessionCost, parse_session_cost, read_pending_estimate, row_path
+=======
+from lib.estimate import latest, parse_rates
+from lib.ledger import BRANCH, REMOTE_REF, LedgerError, fetch, latest_row, rows_at, union
+from lib.rows import ROOT, SESSIONS, SessionCost, parse_session_cost, read_pending_estimate
+>>>>>>> origin/main
 from lib.shape import ShapeError
 
 PROG = "check-estimates"
@@ -62,9 +69,16 @@ def branch_rows(base: str) -> List[SessionCost]:
     return rows
 
 
+def ledger_rows(branch: str) -> List[SessionCost]:
+    """A finalized branch's rows are on the ledger alone."""
+    if not branch or fetch() is None:
+        return []
+    rows = (parse_session_cost(text, f"{BRANCH}:{path}") for path, text in rows_at(REMOTE_REF))
+    return [row for row in rows if row.branch == branch]
+
+
 def running_is_estimated(session_id: str) -> bool:
-    path = row_path(session_id)
-    row = parse_session_cost(path.read_text(encoding="utf-8"), str(path)) if path is not None else None
+    row = latest_row(session_id)
     return latest(row.estimate if row is not None else None, read_pending_estimate(session_id)) is not None
 
 
@@ -77,15 +91,22 @@ def main() -> int:
     running = os.environ.get("CLAUDE_CODE_SESSION_ID")
     base = merge_base()
     try:
+<<<<<<< HEAD
         # Read on every run, so a broken `rates.repo.json` fails the vet run
         # rather than the next estimate.
         rates = load_rates(COSTS)
         carried = branch_rows(base[1]) if base is not None else []
+=======
+        carried = union(
+            [*(branch_rows(base[1]) if base is not None else []), *ledger_rows(git("branch", "--show-current").strip())],
+            lambda row: row,
+        )
+>>>>>>> origin/main
         missing = {row.session_id: row.opening_prompt for row in carried if row.estimate is None}
         missing.pop(running, None)
         if running is not None and not running_is_estimated(running):
             missing[running] = "this session"
-    except (ShapeError, ValueError) as error:
+    except (ShapeError, ValueError, LedgerError) as error:
         print(f"{PROG}: {error}", file=sys.stderr)
         return 1
 

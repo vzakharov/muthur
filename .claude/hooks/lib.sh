@@ -2,7 +2,7 @@
 # Sourced by the `UserPromptSubmit` hooks beside it and by
 # `permission-denied-phrase.sh`, by the three under `.claude/costs/hooks/` — the
 # `Stop` ones among these take everything here but `emit_context` — and by the
-# `PostToolUse` hook under
+# two `PostToolUse` hooks, `format-md.sh` beside it and the one under
 # `.claude/context-budget/hooks/`: the payload read, the context-injecting JSON
 # shape, and the guards each hook needs before it can do anything.
 #
@@ -10,7 +10,7 @@
 # so a tree holding a hook without this file skips that hook instead of failing
 # the turn — the same contract each hook keeps for its own failures. Which is
 # also why taking any one hook means taking this file:
-# `.claude/skills/update-muthur/catalog.md` has the row saying so.
+# `.claude/skills/update-muthur/catalog.md` has the entry saying so.
 #
 # `need_command` exits the *hook*, not just itself: a sourced function's `exit`
 # ends the script that sourced it, which is the intent — a hook with no `jq` has

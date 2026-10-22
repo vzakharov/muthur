@@ -8,11 +8,12 @@
 > write it describes is a public comment on muthur's own issue tracker, and it
 > happens only on your operator's explicit yes.
 
-muthur keeps a public thread where adopters say who they are and what they use it
-for: **[vzakharov/muthur#168](https://github.com/vzakharov/muthur/issues/168)**.
-You are here because an adoption — [`ADOPTING.md`](../../ADOPTING.md)'s shared
-tail, a template fork's `/detemplate` — or a sync commit marked `[attn adopters]`
-sent you to offer your operator a post there.
+muthur keeps a public thread where adopters say who they are and what they use
+it for:
+**[vzakharov/muthur#168](https://github.com/vzakharov/muthur/issues/168)**. You
+are here because an adoption — [`ADOPTING.md`](../../ADOPTING.md)'s shared tail,
+a template fork's `/detemplate` — or a sync commit marked `[attn adopters]` sent
+you to offer your operator a post there.
 
 ## Ask once, showing the exact text
 
@@ -39,8 +40,8 @@ gh api repos/<owner>/<repo> --jq .visibility
 
 - **Public** — the draft may name and link the repo.
 - **Private or internal** — name neither the repo nor the product unless the
-  operator says to. "Took it for a private project, hi" is a complete hello; what
-  else it says is theirs to add.
+  operator says to. "Took it for a private project, hi" is a complete hello;
+  what else it says is theirs to add.
 
 ## Post it
 

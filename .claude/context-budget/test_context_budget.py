@@ -17,8 +17,8 @@ import unittest
 from pathlib import Path
 
 HOOK = Path(__file__).resolve().parent / "hooks" / "post-tool-context-budget.sh"
-WARN = 200_000
-PAUSE = 300_000
+WARN = 300_000
+PAUSE = 400_000
 
 
 def assistant(context: int, *, sidechain: bool = False, model: str = "claude-x") -> dict:
@@ -89,8 +89,8 @@ class Session:
     def signed_in_as(self, login: str, kind: str = "User") -> None:
         self.identity = {"login": login, "type": kind}
 
-    def auto_relay(self, handle: str, setting: str) -> None:
-        path = self.root / ".claude" / "context-budget" / "auto-relay" / handle
+    def manual_relay(self, handle: str, setting: str) -> None:
+        path = self.root / ".claude" / "context-budget" / "manual-relay" / handle
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text(setting)
 
@@ -158,7 +158,7 @@ class WhenTheNoticesFire(BudgetTestCase):
         self.session.append(assistant(WARN + 5_000))
         notice = self.session.notice()
         assert notice is not None
-        self.assertIn("~205k", notice)
+        self.assertIn(f"~{(WARN + 5_000) // 1_000}k", notice)
         self.assertIn("warning line", notice)
         self.session.append(tool_result(), assistant(WARN + 9_000))
         self.assertIsNone(self.session.notice())
@@ -193,7 +193,7 @@ class WhenTheNoticesFire(BudgetTestCase):
     def test_the_thresholds_follow_their_env_overrides(self) -> None:
         self.session.append(assistant(60_000))
         notice = self.session.notice(
-            {"CONTEXT_BUDGET_WARN": "50000", "CONTEXT_BUDGET_PAUSE": "100000"}
+            {"MUTHUR_CONTEXT_BUDGET_WARN": "50000", "MUTHUR_CONTEXT_BUDGET_PAUSE": "100000"}
         )
         assert notice is not None
         self.assertIn("50k warning line", notice)
@@ -209,7 +209,7 @@ class WhenTheNoticesFire(BudgetTestCase):
     def test_the_room_follows_the_lines(self) -> None:
         self.session.append(assistant(60_000))
         notice = self.session.notice(
-            {"CONTEXT_BUDGET_WARN": "50000", "CONTEXT_BUDGET_PAUSE": "80000"}
+            {"MUTHUR_CONTEXT_BUDGET_WARN": "50000", "MUTHUR_CONTEXT_BUDGET_PAUSE": "80000"}
         )
         assert notice is not None
         self.assertIn("under ~30k more tokens", notice)
@@ -224,57 +224,113 @@ class WhenTheNoticesFire(BudgetTestCase):
         warning, _ = self.notices()
         self.assertIn("the open bite", warning)
 
-    def test_both_notices_offer_relay_as_the_way_on(self) -> None:
+    def test_both_notices_end_the_pause_in_a_relay(self) -> None:
         warning, pause = self.notices()
-        self.assertIn("offering `/relay`", warning)
-        self.assertIn("offering `/relay`", pause)
+        self.assertIn("run `/relay`", warning)
+        self.assertIn("run `/relay`", pause)
 
 
 class WhetherThePauseRelaysOnItsOwn(BudgetTestCase):
-    OPT_IN = "has not said whether to relay on their own"
+    AUTO = "without asking and with no argument, run `/relay`"
+    OFFER = "offering `/relay`"
+    ASK_FIRST = "if you'd rather I ask before relaying, say so"
 
-    def test_an_operator_never_asked_is_offered_it_with_the_relay(self) -> None:
-        self.session.signed_in_as("Someone")
-        warning, pause = self.notices()
-        self.assertIn(self.OPT_IN, warning)
-        self.assertIn("@someone", pause)
-        self.assertIn("offering `/relay`", pause)
+    def assert_relays(self, notice: str) -> None:
+        self.assertIn(self.AUTO, notice)
+        self.assertNotIn(self.OFFER, notice)
 
-    def test_on_makes_either_pause_relay_without_asking(self) -> None:
+    def assert_offers(self, notice: str) -> None:
+        self.assertIn(self.OFFER, notice)
+        self.assertNotIn(self.AUTO, notice)
+
+    def test_an_operator_with_no_setting_relays_without_asking(self) -> None:
         self.session.signed_in_as("Someone")
-        self.session.auto_relay("someone", "on\n")
         for notice in self.notices():
-            self.assertIn("without asking and with no argument, run `/relay`", notice)
-            self.assertIn("auto-relay/someone", notice)
-            self.assertNotIn("offering `/relay`", notice)
-            self.assertNotIn(self.OPT_IN, notice)
+            self.assert_relays(notice)
 
-    def test_off_keeps_the_offer_and_asks_nothing(self) -> None:
-        self.session.signed_in_as("someone")
-        self.session.auto_relay("someone", "off")
-        warning, pause = self.notices()
-        self.assertIn("offering `/relay`", pause)
-        self.assertNotIn(self.OPT_IN, warning)
-        self.assertNotIn(self.OPT_IN, pause)
+    def test_an_operator_with_no_answer_is_offered_the_switch(self) -> None:
+        self.session.signed_in_as("Someone")
+        for notice in self.notices():
+            self.assertIn(self.ASK_FIRST, notice)
+            self.assertIn("`.claude/context-budget/manual-relay/someone`", notice)
 
-    def test_a_setting_that_is_neither_reads_as_never_asked(self) -> None:
+    def test_an_operators_no_is_an_answer_and_ends_the_offer(self) -> None:
         self.session.signed_in_as("someone")
-        self.session.auto_relay("someone", "yes please")
+        self.session.manual_relay("someone", "false\n")
         _, pause = self.notices()
-        self.assertIn(self.OPT_IN, pause)
-        self.assertNotIn("with no argument, run", pause)
+        self.assert_relays(pause)
+        self.assertNotIn(self.ASK_FIRST, pause)
 
-    def test_a_bot_token_has_no_operator_to_ask(self) -> None:
+    def test_an_unreadable_answer_is_offered_again(self) -> None:
+        self.session.signed_in_as("someone")
+        self.session.manual_relay("someone", "maybe")
+        _, pause = self.notices()
+        self.assertIn(self.ASK_FIRST, pause)
+
+    def test_with_no_operator_there_is_nothing_to_offer(self) -> None:
+        _, pause = self.notices()
+        self.assertNotIn(self.ASK_FIRST, pause)
+
+    def test_an_operators_true_keeps_the_offer(self) -> None:
+        self.session.signed_in_as("Someone")
+        self.session.manual_relay("someone", "true\n")
+        for notice in self.notices():
+            self.assert_offers(notice)
+
+    def test_an_operators_yes_is_a_true(self) -> None:
+        self.session.signed_in_as("someone")
+        self.session.manual_relay("someone", "Yes")
+        _, pause = self.notices()
+        self.assert_offers(pause)
+
+    def test_an_operator_setting_that_is_not_a_yes_is_the_default(self) -> None:
+        self.session.signed_in_as("someone")
+        self.session.manual_relay("someone", "false")
+        _, pause = self.notices()
+        self.assert_relays(pause)
+
+    def test_another_operators_true_is_not_this_ones(self) -> None:
+        self.session.signed_in_as("someone")
+        self.session.manual_relay("someone-else", "true")
+        _, pause = self.notices()
+        self.assert_relays(pause)
+
+    def test_the_environments_true_keeps_the_offer_whatever_the_operator_says(self) -> None:
+        self.session.signed_in_as("someone")
+        self.session.manual_relay("someone", "false")
+        self.session.append(assistant(PAUSE + 1))
+        pause = self.session.notice({"MUTHUR_MANUAL_CONTEXT_BUDGET_RELAY": "true"})
+        assert pause is not None
+        self.assert_offers(pause)
+
+    def test_the_environments_false_leaves_the_operators_true(self) -> None:
+        self.session.signed_in_as("someone")
+        self.session.manual_relay("someone", "true")
+        self.session.append(assistant(PAUSE + 1))
+        pause = self.session.notice({"MUTHUR_MANUAL_CONTEXT_BUDGET_RELAY": "false"})
+        assert pause is not None
+        self.assert_offers(pause)
+
+    def test_an_unknown_environment_value_is_named_and_leaves_the_default(self) -> None:
+        self.session.append(assistant(PAUSE + 1))
+        result = self.session.tool_call({"MUTHUR_MANUAL_CONTEXT_BUDGET_RELAY": "ture"})
+        self.assertIn("MUTHUR_MANUAL_CONTEXT_BUDGET_RELAY", result.stderr)
+        self.assert_relays(json.loads(result.stdout)["hookSpecificOutput"]["additionalContext"])
+
+    def test_a_no_is_not_named(self) -> None:
+        self.session.append(assistant(PAUSE + 1))
+        result = self.session.tool_call({"MUTHUR_MANUAL_CONTEXT_BUDGET_RELAY": "off"})
+        self.assertNotIn("MUTHUR_MANUAL_CONTEXT_BUDGET_RELAY", result.stderr)
+
+    def test_a_bot_token_has_no_operator_setting_to_read(self) -> None:
         self.session.signed_in_as("claude[bot]", kind="Bot")
-        self.session.auto_relay("claude[bot]", "on")
+        self.session.manual_relay("claude[bot]", "true")
         _, pause = self.notices()
-        self.assertIn("offering `/relay`", pause)
-        self.assertNotIn(self.OPT_IN, pause)
+        self.assert_relays(pause)
 
-    def test_an_unanswering_gh_has_no_operator_to_ask(self) -> None:
+    def test_an_unanswering_gh_leaves_the_default(self) -> None:
         _, pause = self.notices()
-        self.assertIn("offering `/relay`", pause)
-        self.assertNotIn(self.OPT_IN, pause)
+        self.assert_relays(pause)
 
 
 class ThePricedLines(BudgetTestCase):
@@ -304,6 +360,7 @@ class ThePricedLines(BudgetTestCase):
         notice = self.session.notice()
         assert notice is not None
         self.assertLess(self.line(notice, "warning"), 150_000)
+        self.assertIn("where relaying starts to cost less than carrying on", notice)
         self.assertIn("Relaying now costs ~$", notice)
         self.assertIn("over the next 100k tokens of work", notice)
         self.assertIn("reorientation priced from this session's own orientation", notice)
@@ -313,47 +370,55 @@ class ThePricedLines(BudgetTestCase):
         notice = self.session.notice()
         assert notice is not None
         self.assertLess(self.line(notice, "pause"), 200_000)
+        self.assertIn("where relaying saves 20% of what carrying on costs", notice)
         self.assertIn("saves ~$", notice)
 
     def test_a_larger_pause_saving_moves_the_pause_out(self) -> None:
         self.reach(200_000)
-        notice = self.session.notice({"CONTEXT_BUDGET_PAUSE_SAVING": "40"})
+        notice = self.session.notice({"MUTHUR_CONTEXT_BUDGET_PAUSE_SAVING": "40"})
         assert notice is not None
         self.assertIn("warning line", notice)
 
     def test_a_line_set_by_hand_stays_fixed(self) -> None:
         self.reach(150_000)
-        self.assertIsNone(self.session.notice({"CONTEXT_BUDGET_WARN": "200000"}))
+        self.assertIsNone(self.session.notice({"MUTHUR_CONTEXT_BUDGET_WARN": "200000"}))
         self.reach(200_000)
-        notice = self.session.notice({"CONTEXT_BUDGET_PAUSE": "300000"})
+        notice = self.session.notice({"MUTHUR_CONTEXT_BUDGET_PAUSE": "300000"})
         assert notice is not None
         self.assertLess(self.line(notice, "warning"), 200_000)
 
     def test_fixed_lines_turn_the_pricing_off(self) -> None:
-        fixed = {"CONTEXT_BUDGET_LINES": "fixed"}
+        fixed = {"MUTHUR_CONTEXT_BUDGET_LINES": "fixed"}
         self.reach(190_000)
         self.assertIsNone(self.session.notice(fixed))
         self.reach(WARN + 1)
         notice = self.session.notice(fixed)
         assert notice is not None
-        self.assertIn("200k warning line", notice)
+        self.assertIn(f"{WARN // 1_000}k warning line", notice)
         self.assertNotIn("Relaying now costs", notice)
         self.assertFalse((self.session.root / "tmp" / "context-budget" / "sess.line").exists())
 
     def test_the_fixed_lines_cap_the_priced_ones(self) -> None:
-        # A single response gives no growth to measure and prices a line past 200k.
+        # A single response gives no growth to measure and prices a line past its cap.
         self.session.transcript.write_text("")
-        self.session.append(priced("open", 43_000, 0))
-        self.reach(WARN + 1)
-        notice = self.session.notice()
+        self.session.append(priced("open", 43_000, 0), priced("r1", WARN + 1, 1))
+        # A relay saving 90% is priced past the pause cap, so the warning stands.
+        notice = self.session.notice({"MUTHUR_CONTEXT_BUDGET_PAUSE_SAVING": "90"})
         assert notice is not None
-        self.assertIn("200k warning line", notice)
+        self.assertIn(f"{WARN // 1_000}k warning line — its fixed cap", notice)
+        self.assertIn("rather than for cost", notice)
+
+    def test_a_hand_set_line_says_so(self) -> None:
+        self.reach(150_000)
+        notice = self.session.notice({"MUTHUR_CONTEXT_BUDGET_WARN": "140000", "MUTHUR_CONTEXT_BUDGET_LINES": "fixed"})
+        assert notice is not None
+        self.assertIn("140k warning line — set by MUTHUR_CONTEXT_BUDGET_WARN", notice)
 
     def test_an_unknown_mode_is_refused(self) -> None:
         self.reach(WARN + 1)
-        result = self.session.tool_call({"CONTEXT_BUDGET_LINES": "maybe"})
+        result = self.session.tool_call({"MUTHUR_CONTEXT_BUDGET_LINES": "maybe"})
         self.assertEqual(result.stdout, "")
-        self.assertIn("CONTEXT_BUDGET_LINES", result.stderr)
+        self.assertIn("MUTHUR_CONTEXT_BUDGET_LINES", result.stderr)
 
 
 class WhichRecordsAreTheReading(BudgetTestCase):

@@ -14,13 +14,12 @@ you. An adopter taking a one-time snapshot deletes the skill instead.
 
 `/update-muthur` is a stub for want of a watermark, not a procedure, so
 hydrating it is `.claude/skills/update-muthur/watermark.json` — the file the
-skill's [own row](../../.claude/skills/update-muthur/catalog/g0-sync-path.md) tells
-you to rewrite. Write it for **your**
-repo, then clear both stub markers: delete the `⚠️ **STUB.**` banner and drop
-`STUB` from the frontmatter `description`. Half of either leaves the skill
-failing assertion 4.
+skill's [own entry](../../.claude/skills/update-muthur/catalog/g0-sync-path.md)
+tells you to rewrite. Write it for **your** repo, then clear both stub markers:
+delete the `⚠️ **STUB.**` banner and drop `STUB` from the frontmatter
+`description`. Half of either leaves the skill failing assertion 4.
 
-`repo` arrives correct — the shipped value names this repo, which *is* your
+`repo` arrives correct — the shipped value names this repo, which _is_ your
 source. What must not survive is the placeholder `lastSyncedSha`: the skill's
 Step 1 stops on it, so an unhydrated tree cannot sync against a foreign history.
 
@@ -35,29 +34,30 @@ Step 1 stops on it, so an unhydrated tree cannot sync against a foreign history.
 }
 ```
 
-- `repo` is where you took this from — this repo, for a first-generation adopter.
-- `lastSyncedSha` is the HEAD you cloned (`git -C <scratchpad>/muthur rev-parse HEAD`).
-  Recording it now is what makes the *next* sync a small diff instead of a
-  re-triage of everything.
-- `lineage` is where your repo *started*, and it is the field a hand-filled
-  watermark loses. It starts equal to `lastSyncedSha` and diverges permanently on
-  your first sync, which advances `lastSyncedSha` and leaves `lineage[0].atSha`
-  alone — so that first sync overwrites the only other trace of the birth point.
-  Write it now, in the same breath.
+- `repo` is where you took this from — this repo, for a first-generation
+  adopter.
+- `lastSyncedSha` is the HEAD you cloned
+  (`git -C <scratchpad>/muthur rev-parse HEAD`). Recording it now is what makes
+  the _next_ sync a small diff instead of a re-triage of everything.
+- `lineage` is where your repo _started_, and it is the field a hand-filled
+  watermark loses. It starts equal to `lastSyncedSha` and diverges permanently
+  on your first sync, which advances `lastSyncedSha` and leaves
+  `lineage[0].atSha` alone — so that first sync overwrites the only other trace
+  of the birth point. Write it now, in the same breath.
 - `adopted` lists what you actually took, at whatever granularity is true —
-  directories or files. The shipped array is a placeholder naming *this* repo's
+  directories or files. The shipped array is a placeholder naming _this_ repo's
   paths, and inheriting it is the one field whose failure is silent: a foreign
   set under-filters the candidate log, so `/update-muthur` offers you nothing
   and reports nothing wrong.
 - `declined` maps path → why-not: every decline recorded along the way. It is
   what keeps re-sync quiet.
 
-**A decline is not a verdict for all time**, which is why the map stores a reason
-rather than a bare list. Most declines are conditional — *no CI yet*, *work isn't
-tracked as issues yet*, *no deploy path yet* — and the condition can flip a month
-later. So **write the reason as the condition, in the present tense**, and a sync
-that sees the condition no longer holds re-offers the group instead of staying
-quiet forever:
+**A decline is not a verdict for all time**, which is why the map stores a
+reason rather than a bare list. Most declines are conditional — _no CI yet_,
+_work isn't tracked as issues yet_, _no deploy path yet_ — and the condition can
+flip a month later. So **write the reason as the condition, in the present
+tense**, and a sync that sees the condition no longer holds re-offers the group
+instead of staying quiet forever:
 
 ```json
 "declined": {
@@ -66,10 +66,11 @@ quiet forever:
 }
 ```
 
-A permanent refusal says so in the same field (`"never — we don't cut releases"`).
-One map with honest reasons beats a second `postponed` map: the useful distinction
-is not *which* dictionary a path sits in but *whether its stated reason still
-holds*, and that has to be re-read at sync time either way.
+A permanent refusal says so in the same field
+(`"never — we don't cut releases"`). One map with honest reasons beats a second
+`postponed` map: the useful distinction is not _which_ dictionary a path sits in
+but _whether its stated reason still holds_, and that has to be re-read at sync
+time either way.
 
 From here on, pulling later changes forward is just `/update-muthur`. Nothing
 further to install.

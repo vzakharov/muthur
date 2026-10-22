@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# One tick of the incremental CI watch loop. Sleeps INTERVAL seconds (minus
-# any time already elapsed since the previous tick), then snapshots the
+# One tick of the incremental CI watch loop. Sleeps MUTHUR_INTERVAL seconds
+# (minus any time already elapsed since the previous tick), then snapshots the
 # current run state from GitHub and prints any newly-failed jobs.
 #
 # Usage:
@@ -14,7 +14,7 @@
 #                                         # slate)
 #
 # Env:
-#   INTERVAL  poll interval in seconds (default 60)
+#   MUTHUR_INTERVAL  poll interval in seconds (default 60)
 #
 # Exit codes:
 #   0  - tick succeeded, run still in progress with no new failures this tick,
@@ -31,7 +31,7 @@
 
 set -euo pipefail
 
-INTERVAL="${INTERVAL:-60}"
+INTERVAL="${MUTHUR_INTERVAL:-60}"
 REPO_ROOT="$(git rev-parse --show-toplevel)"
 STATE_FILE="${REPO_ROOT}/.git/ci-watch-state.json"
 WT_PROG="ci-watch-tick"

@@ -17,6 +17,7 @@ import unittest
 from typing import Any, Dict, List, Mapping, Optional
 
 from lib.github import Client, GitHubError, ServerError, discover, remote_ledger
+from lib.ledger import BRANCH
 from lib.rows import SessionCost, row_text
 from lib.shape import ShapeError
 from lib.tally import Tally
@@ -26,7 +27,7 @@ TRUNCATED = object()
 Months = Dict[str, Dict[str, Any]]
 
 
-def row(session_id: str, branch: str = "a-branch") -> str:
+def row(session_id: str, branch: str = "a-branch", last: str = "2026-03-04T06:06:07.000Z") -> str:
     return row_text(
         SessionCost(
             session_id=session_id,
@@ -37,7 +38,7 @@ def row(session_id: str, branch: str = "a-branch") -> str:
             url=None,
             operator=None,
             first_response_at="2026-03-04T05:06:07.000Z",
-            last_response_at="2026-03-04T06:06:07.000Z",
+            last_response_at=last,
             prices_as_of="2026-01-01",
             claude_code_total_usd=None,
             total=Tally(responses=1, cost_usd=1),
@@ -50,9 +51,10 @@ def row(session_id: str, branch: str = "a-branch") -> str:
 
 
 class FakeGitHub:
-    """`ledgers` maps a repo to its months, each month's files to their text,
-    or to None for a repo with no ledger. The listing pages `page` repos at a
-    time; a 5xx is thrown on the first `failures` calls."""
+    """`ledgers` maps a repo to the months its default branch holds, each
+    month's files to their text, or to None for a repo with none there;
+    `branches` does the same for its `cost-ledger` branch. The listing pages
+    `page` repos at a time; a 5xx is thrown on the first `failures` calls."""
 
     def __init__(
         self,
@@ -61,9 +63,14 @@ class FakeGitHub:
         page: int = 2,
         failures: int = 0,
         errors: Optional[List[Dict[str, Any]]] = None,
+<<<<<<< HEAD
         added_roles: Optional[Mapping[str, Any]] = None,
+=======
+        branches: Optional[Mapping[str, Months]] = None,
+>>>>>>> origin/main
     ) -> None:
-        self.ledgers = dict(sorted(ledgers.items()))
+        self.ledgers = dict(sorted({**{repo: None for repo in branches or {}}, **ledgers}.items()))
+        self.sides = {"HEAD": self.ledgers, f"refs/heads/{BRANCH}": dict(branches or {})}
         self.watermarked = set(watermarked)
         # A repo to its `rates.repo.json` text, or TRUNCATED.
         self.added_roles = dict(added_roles or {})
@@ -73,16 +80,20 @@ class FakeGitHub:
         self.queries: List[str] = []
 
     def node(self, repo: str) -> Dict[str, Any]:
-        months = self.ledgers[repo]
+        def side(months: Optional[Months]) -> Optional[Dict[str, Any]]:
+            if months is None:
+                return None
+            return {"entries": [{"name": m, "type": "tree"} for m in months] + [{"name": ".gitkeep", "type": "blob"}]}
+
         return {
             "nameWithOwner": repo,
-            "ledger": None
-            if months is None
-            else {"entries": [{"name": m, "type": "tree"} for m in months] + [{"name": ".gitkeep", "type": "blob"}]},
+            "tree": side(self.ledgers[repo]),
+            "ledger": side(self.sides[f"refs/heads/{BRANCH}"].get(repo)),
             "watermark": {"__typename": "Blob"} if repo in self.watermarked else None,
             "addedRoles": None if repo not in self.added_roles else self.blob(self.added_roles[repo]),
         }
 
+<<<<<<< HEAD
     @staticmethod
     def blob(text: Any) -> Dict[str, Any]:
         if text is TRUNCATED:
@@ -91,6 +102,10 @@ class FakeGitHub:
 
     def tree(self, repo: str, month: str) -> Dict[str, Any]:
         files = (self.ledgers[repo] or {})[month]
+=======
+    def tree(self, rev: str, repo: str, month: str) -> Dict[str, Any]:
+        files = (self.sides[rev].get(repo) or {})[month]
+>>>>>>> origin/main
         return {
             "object": {
                 "entries": [
@@ -123,8 +138,8 @@ class FakeGitHub:
             }
         data: Dict[str, Any] = {}
         alias = r'(\w+): repository\(owner: "([^"]+)", name: "([^"]+)"\) \{ '
-        for found in re.finditer(alias + r'object\(expression: "HEAD:[^"]*/(\d{4}-\d{2})"\)', query):
-            data[found[1]] = self.tree(f"{found[2]}/{found[3]}", found[4])
+        for found in re.finditer(alias + r'object\(expression: "([^":]+):[^"]*/(\d{4}-\d{2})"\)', query):
+            data[found[1]] = self.tree(found[4], f"{found[2]}/{found[3]}", found[5])
         for found in re.finditer(alias + r"\s*nameWithOwner", query):
             data[found[1]] = self.node(f"{found[2]}/{found[3]}")
         return {"data": data}
@@ -249,6 +264,25 @@ class WhatIsRead(unittest.TestCase):
         github = FakeGitHub({"a/ledger": {"2026-03": {"s.json": row("s")}}, "b/ledger": {"2026-04": {}}})
         ledger = remote_ledger(Client(github, no_sleep), months={"2026-03"})
         self.assertEqual([repo.name for repo in ledger.repos], ["a/ledger"])
+
+
+class TheTwoSides(unittest.TestCase):
+    def test_a_repo_whose_rows_are_on_the_ledger_branch_alone_counts(self) -> None:
+        github = FakeGitHub({}, branches={"a/moved": {"2026-03": {"s.json": row("s")}}})
+        ledger = remote_ledger(Client(github, no_sleep))
+        self.assertEqual([r.session_id for r in ledger.rows], ["s"])
+        self.assertEqual(discover(Client(github, no_sleep), ["a/moved"]).ledgers[0].months, ["2026-03"])
+
+    def test_a_row_on_both_sides_is_one_session_and_the_later_copy_wins(self) -> None:
+        later = "2026-03-04T09:00:00.000Z"
+        github = FakeGitHub(
+            {"a/ledger": {"2026-03": {"s.json": row("s"), "t.json": row("t")}}},
+            branches={"a/ledger": {"2026-03": {"s.json": row("s", last=later)}}},
+        )
+        ledger = remote_ledger(Client(github, no_sleep))
+        self.assertEqual(sorted(r.session_id for r in ledger.rows), ["s", "t"])
+        self.assertEqual(next(r for r in ledger.rows if r.session_id == "s").last_response_at, later)
+        self.assertEqual(ledger.repos[0].warnings, [])
 
 
 if __name__ == "__main__":

@@ -3,7 +3,8 @@
 # `@.claude/skills/squash-message/SKILL.md` states as prose — size caps, and no
 # session link in the body — and fail when one breaks. The skill's Step 3 is an
 # agent reading their own output; this is the part of that target a machine can
-# settle.
+# settle. A proposal is the body alone, or a title block then the body; the PR
+# title outside a title block is beyond this script's reach.
 #
 # There is deliberately no env override: a hatch in the template teaches
 # reaching for it instead of tightening. An adopter needing more room edits this
@@ -51,7 +52,8 @@ usage() {
   cat >&2 <<EOF
 usage: scripts/check-squash-message.sh [<path-to-proposal>]
 
-  Measures the squash proposal's title and body against the size caps.
+  Measures the squash proposal's title block, if any, and body against the
+  size caps.
   With no argument, locates the proposal itself (worktree, tmp/, then git
   history) and passes quietly when there is none.
 EOF
@@ -168,6 +170,10 @@ resolve_source "${1:-}" || {
   exit 0
 }
 
+# The body is the last block, so the count has to be known before the read.
+fences=$(grep -c '^```' "$SRC_FILE" || true)
+total_blocks=$((fences / 2))
+
 blocks=0
 in_block=0
 title_lines=0
@@ -186,10 +192,8 @@ while IFS= read -r line || [ -n "$line" ]; do
     '```'*)
       if [ "$in_block" -eq 1 ]; then
         in_block=0
-        [ "$blocks" -lt 2 ] || break
       else
         blocks=$((blocks + 1))
-        [ "$blocks" -le 2 ] || break
         in_block=1
       fi
       continue
@@ -198,7 +202,7 @@ while IFS= read -r line || [ -n "$line" ]; do
 
   [ "$in_block" -eq 1 ] || continue
 
-  if [ "$blocks" -eq 1 ]; then
+  if [ "$total_blocks" -eq 2 ] && [ "$blocks" -eq 1 ]; then
     if is_blank "$line"; then
       continue
     fi
@@ -210,6 +214,7 @@ while IFS= read -r line || [ -n "$line" ]; do
     fi
     continue
   fi
+  [ "$blocks" -eq "$total_blocks" ] || continue
 
   # Trailing blank lines are not part of the body, so blanks are held back and
   # only counted once a further non-blank line proves they were interior.
@@ -247,16 +252,18 @@ fail() {
   failures="${failures}${NL}  $1"
 }
 
-if [ "$blocks" -lt 2 ]; then
-  fail "found $blocks fenced block(s); a proposal is two — the title, then the body"
+if [ "$blocks" -lt 1 ] || [ "$blocks" -gt 2 ] || [ $((fences % 2)) -ne 0 ]; then
+  fail "found $blocks fenced block(s); a proposal is the body, or a title block then the body"
 else
-  if [ "$title_lines" -eq 0 ]; then
-    fail "title block is empty"
-  elif [ "$title_lines" -gt 1 ]; then
-    fail "title is $title_lines lines; a squash title is one line, and a wrapped one pastes broken"
-  fi
-  if [ -n "$title_over" ]; then
-    fail "title over $TITLE_MAX_CHARS chars:$title_over"
+  if [ "$blocks" -eq 2 ]; then
+    if [ "$title_lines" -eq 0 ]; then
+      fail "title block is empty"
+    elif [ "$title_lines" -gt 1 ]; then
+      fail "title is $title_lines lines; a squash title is one line, and a wrapped one pastes broken"
+    fi
+    if [ -n "$title_over" ]; then
+      fail "title over $TITLE_MAX_CHARS chars:$title_over"
+    fi
   fi
   if [ "$body_lines" -eq 0 ]; then
     fail "body block is empty"
@@ -277,8 +284,9 @@ if [ -n "$failures" ]; then
   exit 1
 fi
 
-printf '%s: ok — %s (title %s/%s chars, body %s/%s lines, widest %s/%s)\n' \
-  "$PROG" "$SRC_DESC" \
-  "$title_widest" "$TITLE_MAX_CHARS" \
+title_report=""
+[ "$blocks" -ne 2 ] || title_report="title $title_widest/$TITLE_MAX_CHARS chars, "
+printf '%s: ok — %s (%sbody %s/%s lines, widest %s/%s)\n' \
+  "$PROG" "$SRC_DESC" "$title_report" \
   "$body_lines" "$BODY_MAX_LINES" \
   "$body_widest" "$BODY_MAX_WIDTH"

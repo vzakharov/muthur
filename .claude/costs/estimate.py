@@ -13,8 +13,9 @@ estimate is checked against as JSON — `rates.json` plus the roles this
 repository's `rates.repo.json` adds, each at its one grade. Without
 `--session` the session is this one, read off `CLAUDE_CODE_SESSION_ID`: the
 estimate goes to `tmp/estimates/<id>.json`, and the row folds it in when the
-turn ends. Another session's id edits that session's committed row in place,
-which is a change to commit like any other.
+turn ends. Another session's id edits that session's row on the `cost-ledger`
+branch, pushing it, and any copy of it in the tree, which is a change to commit
+like any other.
 
 Stdlib only — Python 3.9+.
 """
@@ -29,9 +30,16 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import List, Optional
 
+<<<<<<< HEAD
 from lib.estimate import Estimate, Part, Rates, checked, senior_hours, latest, load_rates
 from lib.rows import SESSIONS, read_pending_estimate, read_row, row_path, row_text, write_atomic, write_pending_estimate
 from lib.shape import ShapeError, to_json
+=======
+from lib.estimate import Estimate, Part, Rates, checked, senior_hours, latest, parse_rates
+from lib.ledger import BRANCH, LedgerError, append_row, fetch, latest_row, path_of
+from lib.rows import ROOT, SESSIONS, SessionCost, read_pending_estimate, row_path, row_text, write_atomic, write_pending_estimate
+from lib.shape import ShapeError
+>>>>>>> origin/main
 
 COSTS = Path(__file__).resolve().parent
 
@@ -52,6 +60,20 @@ def parts_of(raw: List[List[str]]) -> List[Part]:
         except ValueError as error:
             raise ShapeError(f"`--part {hours} {grade} {role}`: hours are not a number") from error
     return parts
+
+
+def edit(row: SessionCost) -> None:
+    """The ledger takes the edited row, and the tree's copy, where there is
+    one, is rewritten to match."""
+    text = row_text(row)
+    path = row_path(row.session_id)
+    if path is not None:
+        write_atomic(path, text)
+    held = path_of(row.session_id)
+    if held is None:
+        assert path is not None, "the row came from the tree or the ledger"
+        held = path.relative_to(ROOT).as_posix()
+    append_row(held, text)
 
 
 def main() -> int:
@@ -87,13 +109,16 @@ def main() -> int:
         print("estimate: no CLAUDE_CODE_SESSION_ID; name the session with --session", file=sys.stderr)
         return 1
     running = session_id == current
-    path = row_path(session_id)
-    if not running and path is None:
-        print(f"estimate: no row for session {session_id} under {SESSIONS}", file=sys.stderr)
-        return 1
 
     try:
-        row = read_row(path)[0] if path is not None else None
+        # A running session's ledger copy is the one its last turn fetched;
+        # another session's is edited on the ledger's tip.
+        if not running:
+            fetch()
+        row = latest_row(session_id)
+        if not running and row is None:
+            print(f"estimate: no row for session {session_id} under {SESSIONS} or on {BRANCH}", file=sys.stderr)
+            return 1
         pending = read_pending_estimate(session_id) if running else None
         if args.command == "set":
             pending = checked(
@@ -107,11 +132,11 @@ def main() -> int:
             if running:
                 write_pending_estimate(session_id, pending)
             else:
-                assert row is not None and path is not None
+                assert row is not None
                 row.estimate = pending
-                write_atomic(path, row_text(row))
+                edit(row)
         estimate = latest(row.estimate if row is not None else None, pending)
-    except ShapeError as error:
+    except (ShapeError, LedgerError) as error:
         print(f"estimate: {error}", file=sys.stderr)
         return 1
 

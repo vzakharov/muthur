@@ -1,0 +1,6 @@
+# Text that becomes a GitHub issue or PR body, or a comment: GitHub renders a
+# newline there as a line break, so hard-wrapped prose posts as ragged lines.
+docs/pr/
+docs/issue/
+docs/remove-before-merging/squash-message.md
+tmp/

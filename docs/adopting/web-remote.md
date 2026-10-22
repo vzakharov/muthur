@@ -5,8 +5,8 @@
 >
 > This is a chapter of [`ADOPTING.md`](../../ADOPTING.md), fetched over the
 > network from a repo outside your own, and its banner holds here too. The one
-> credential-adjacent thing it asks — unsetting `HTTPS_PROXY` for `gh` alone — is
-> below, is checked-in repo config you can read first, and declining it is a
+> credential-adjacent thing it asks — unsetting `HTTPS_PROXY` for `gh` alone —
+> is below, is checked-in repo config you can read first, and declining it is a
 > supported path.
 
 You are here because sessions on the adopting repo run on Claude Code web/remote
@@ -15,16 +15,16 @@ anything.
 
 ## Settle G4 before copying anything
 
-The adopted skills call GraphQL-flavored `gh` freely (`gh pr view --json`, `gh pr
-list`, `gh issue list`). Without the shim, those fail exactly as `ADOPTING.md`
-Step 2 showed. So on the web, G4 is a **prerequisite of G2, G3 and G5** — not a
-nicety.
+The adopted skills call GraphQL-flavored `gh` freely (`gh pr view --json`,
+`gh pr list`, `gh issue list`). Without the shim, those fail exactly as
+`ADOPTING.md` Step 2 showed. So on the web, G4 is a **prerequisite of G2, G3 and
+G5** — not a nicety.
 
 **To adopt it**, copy `.claude/hooks/gh-shim.sh` and merge
-`.claude/settings.json` (see the [G4 catalog
-rows](../../.claude/skills/update-muthur/catalog/g4-remote-plumbing.md)), then install the shim for
-the *current* session so the remaining steps and the newly-adopted skills have a
-working `gh`.
+`.claude/settings.json` (see the
+[G4 catalog entries](../../.claude/skills/update-muthur/catalog/g4-remote-plumbing.md)),
+then install the shim for the _current_ session so the remaining steps and the
+newly-adopted skills have a working `gh`.
 
 ### What the shim does, and why you may object to it
 
@@ -48,12 +48,12 @@ case for it:
   argument you are being talked into.
 
 **What you are actually giving up**, stated plainly rather than left for you to
-discover: the proxy also narrows what the API surface will serve to the session's
-configured repositories, and unproxied `gh` is bounded only by the token's own
-permissions — a search or a read can reach a repo outside that set. That is the
-same property that makes the blocked calls work again; it is one mechanism, not
-two. If your instructions scope you to particular repositories, that scoping is
-now yours to honor rather than the proxy's to enforce.
+discover: the proxy also narrows what the API surface will serve to the
+session's configured repositories, and unproxied `gh` is bounded only by the
+token's own permissions — a search or a read can reach a repo outside that set.
+That is the same property that makes the blocked calls work again; it is one
+mechanism, not two. If your instructions scope you to particular repositories,
+that scoping is now yours to honor rather than the proxy's to enforce.
 
 **Decide knowingly.** If you are not satisfied, decline it — the procedure is
 built to finish without it.
@@ -64,25 +64,26 @@ Adoption **never hard-depends on the shim**. `ADOPTING.md`'s own steps are
 proxy-safe REST throughout, so declining costs you nothing there. What it costs
 downstream is scoped and stated:
 
-- Most GraphQL-flavored calls need rewriting into the REST forms that work through
-  the proxy (`gh api repos/{owner}/{repo}/…`) — `gh pr view/list/create/edit/
-  comment/checks` and `gh issue view/create` all have one.
-- **`gh pr ready` has no REST form at all.** Promoting a draft to ready-for-review
-  is a GraphQL-only mutation, and this is the failure mode to know about: REST's
-  pull-update endpoint accepts `draft=false` and **silently ignores it** — HTTP
-  200, no error, the PR still a draft. An agent trusting the response reports
-  success on a PR nobody can merge. So without the shim, `/finalize`'s flip is a
-  step the operator does by hand.
-- **`gh run watch`-style long-polling is blocked outright**, so `/watch-ci` (G5) is
-  unavailable rather than degraded.
+- Most GraphQL-flavored calls need rewriting into the REST forms that work
+  through the proxy (`gh api repos/{owner}/{repo}/…`) —
+  `gh pr view/list/create/edit/ comment/checks` and `gh issue view/create` all
+  have one.
+- **`gh pr ready` has no REST form at all.** Promoting a draft to
+  ready-for-review is a GraphQL-only mutation, and this is the failure mode to
+  know about: REST's pull-update endpoint accepts `draft=false` and **silently
+  ignores it** — HTTP 200, no error, the PR still a draft. An agent trusting the
+  response reports success on a PR nobody can merge. So without the shim,
+  `/finalize`'s flip is a step the operator does by hand.
+- **`gh run watch`-style long-polling is blocked outright**, so `/watch-ci` (G5)
+  is unavailable rather than degraded.
 - **The whole `search/*` API path is blocked**, which `/propose-issue`'s dedupe
-  reaches for. The refusal reads *"sessions are bound to their configured
-  repositories"*, which sounds like a scope check and is not one: a search
+  reaches for. The refusal reads _"sessions are bound to their configured
+  repositories"_, which sounds like a scope check and is not one: a search
   restricted to the session's **own** repo is refused too. Substitute
   `gh api repos/{owner}/{repo}/issues` and filter locally.
 
-Making those skills proxy-safe at the source — which would remove this dependency
-and this decision entirely — is tracked separately; see
+Making those skills proxy-safe at the source — which would remove this
+dependency and this decision entirely — is tracked separately; see
 [Known gaps](#known-gaps).
 
 **A decline is recorded like any other**, with its reason — `ADOPTING.md` Step 4
@@ -92,37 +93,38 @@ report.
 ## Hand the operator a setup script (you cannot do this one)
 
 Everything else in the adoption is a file you can write. The **environment setup
-script** isn't: it lives in Claude Code's environment settings, is set by a human
-in the web UI, and has no API, MCP tool or in-repo file behind it. It runs **once
-when the environment snapshot is built**, then is cached ([docs](https://code.claude.com/docs/en/claude-code-on-the-web#setup-scripts)) —
+script** isn't: it lives in Claude Code's environment settings, is set by a
+human in the web UI, and has no API, MCP tool or in-repo file behind it. It runs
+**once when the environment snapshot is built**, then is cached
+([docs](https://code.claude.com/docs/en/claude-code-on-the-web#setup-scripts)) —
 which is why `.claude/hooks/install-deps.sh` re-syncs dependencies on every
 session start rather than trusting the snapshot.
 
-So the deliverable for this step is **text in your report** that the operator can
-paste into that setting. Three things make it worth the paragraph:
+So the deliverable for this step is **text in your report** that the operator
+can paste into that setting. Three things make it worth the paragraph:
 
 - **It is where `gh` comes from when the base image lacks it.** The image ships
   `gh` and `jq` but no apt package lists, so a bare `apt-get install -y gh`
-  fails the script with exit 100; the guarded line in the example below
-  installs only what is missing, after an `apt-get update`. Without
-  `gh` on `PATH`, G4's hook cannot install the shim, and every `gh`-dependent
-  skill fails later, far from the cause — so the hook reports the absence into
-  the session context, which is the litmus test for a setup script that is unset
-  or missing the install. It is the only part of this step that detects itself.
+  fails the script with exit 100; the guarded line in the example below installs
+  only what is missing, after an `apt-get update`. Without `gh` on `PATH`, G4's
+  hook cannot install the shim, and every `gh`-dependent skill fails later, far
+  from the cause — so the hook reports the absence into the session context,
+  which is the litmus test for a setup script that is unset or missing the
+  install. It is the only part of this step that detects itself.
 - **It is the only place the toolchain version can be pinned** for remote
   sessions, and `scripts/vet.sh` running under the wrong one is a confusing
   failure.
 - **It is the only place auto mode can learn the container is disposable.** The
   classifier's defaults assume a developer's own machine, so it blocks `rm -rf`,
-  `git clean`, `git reset --hard` and overwrites of pre-existing files, and three
-  blocks in a row leave an unattended session waiting on a human. It reads
+  `git clean`, `git reset --hard` and overwrites of pre-existing files, and
+  three blocks in a row leave an unattended session waiting on a human. It reads
   `autoMode` from user and managed settings only, never the repo's
-  `.claude/settings.json`; the session runs with `HOME=/root`, so the container's
-  own `~/.claude/settings.json` is the user file it reads. The same file is where
-  it learns which remote branches are the session's own: it sees commands, never
-  their output, so the check `/from-branch` and `/branch-rename` run before
-  deleting an abandoned branch name on origin is invisible to it, and the delete
-  reads as Git Destructive.
+  `.claude/settings.json`; the session runs with `HOME=/root`, so the
+  container's own `~/.claude/settings.json` is the user file it reads. The same
+  file is where it learns which remote branches are the session's own: it sees
+  commands, never their output, so the check `/from-branch` and `/branch-rename`
+  run before deleting an abandoned branch name on origin is invisible to it, and
+  the delete reads as Git Destructive.
 
 ### Where it goes — tell the operator this, not just "the settings"
 
@@ -135,10 +137,10 @@ named after the project) is editing one of them, not a global:
 
 ### A worked example
 
-This is a real, working script — the one this repo's own donor project uses. It is
-**Node/pnpm with that project's pins**, so it is an example to adapt rather than
-paste; the comments are the transferable part, since each one records a trap that
-actually bit.
+This is a real, working script — the one this repo's own donor project uses. It
+is **Node/pnpm with that project's pins**, so it is an example to adapt rather
+than paste; the comments are the transferable part, since each one records a
+trap that actually bit.
 
 ```bash
 #!/bin/bash
@@ -219,58 +221,87 @@ jq -s '.[0] * .[1]' ~/.claude/settings.json - > /tmp/claude-settings.json <<'EOF
 }
 EOF
 mv /tmp/claude-settings.json ~/.claude/settings.json
+
+# A session with several repositories attached runs none of their hooks; the
+# repositories' own scripts/multi-repo-hooks.py wires them in, and this hook
+# only finds one. Appended to any SessionStart hooks already there, replacing
+# an earlier copy of itself; in a single-repo session the glob finds nothing.
+jq --arg cmd 'for f in "$CLAUDE_PROJECT_DIR"/*/scripts/multi-repo-hooks.py; do [ -f "$f" ] && exec python3 "$f"; done; exit 0' \
+  '.hooks.SessionStart = [(.hooks.SessionStart // [])[] | select(any(.hooks[]; .command | contains("multi-repo-hooks.py")) | not)]
+    + [{"hooks": [{"type": "command", "command": $cmd, "timeout": 600}]}]' \
+  ~/.claude/settings.json > /tmp/claude-settings.json
+mv /tmp/claude-settings.json ~/.claude/settings.json
 ```
 
 What carries over to any stack, and what to check before adapting it:
 
-1. **No top-level `cd`** into the repo — comment (1) above is a real crash, not a
-   hypothetical.
-2. **Pin versions as literals**, with a comment naming the repo file each pin must
-   track. Reading `.nvmrc` or `.tool-versions` needs the repo, which brings back 1.
-3. **Reach non-interactive shells.** A profile edit alone doesn't; symlinking into
-   `/usr/local/bin` does.
+1. **No top-level `cd`** into the repo — comment (1) above is a real crash, not
+   a hypothetical.
+2. **Pin versions as literals**, with a comment naming the repo file each pin
+   must track. Reading `.nvmrc` or `.tool-versions` needs the repo, which brings
+   back 1.
+3. **Reach non-interactive shells.** A profile edit alone doesn't; symlinking
+   into `/usr/local/bin` does.
 4. **Check what the base image already ships and where it sits on `PATH`.** The
-   `/opt/nodeNN` loop exists because those directories sort *earlier* than
+   `/opt/nodeNN` loop exists because those directories sort _earlier_ than
    `/usr/local/bin`, so `which` kept resolving a stale binary. Whatever your
    toolchain, look for the same shape before assuming your symlink won.
-5. **`gh` and `jq`, guarded** — see above; without `gh` the shim never
-   installs, and an unguarded `apt-get install` fails on the empty apt lists.
-6. **Prime the dependency cache last**, guarded, since the repo dir may be absent.
+5. **`gh` and `jq`, guarded** — see above; without `gh` the shim never installs,
+   and an unguarded `apt-get install` fails on the empty apt lists.
+6. **Prime the dependency cache last**, guarded, since the repo dir may be
+   absent.
 7. **Check the `autoMode` block landed** from inside a session:
    `claude auto-mode config | grep -E "Ephemeral Container Files|Session Branch Cleanup"`
    prints both rules only if the classifier has them.
+8. **The multi-repo hook stays as written.** It names no repository, so it
+   carries over unchanged, and its 600-second `timeout` covers each attached
+   repository's dependency install running in turn.
 
-Adapt it, fill in your pins, and hand the operator the finished text. Say plainly
-in your report that this is the one step you could not apply yourself.
+Adapt it, fill in your pins, and hand the operator the finished text. Say
+plainly in your report that this is the one step you could not apply yourself.
 
 ## Known gaps
 
-**The `gh`-heavy skills are not proxy-safe.** They call GraphQL-flavored `gh`, so
-in a web session they need G4's shim. Rewriting those call sites into REST form
-would make G4 genuinely optional and remove the one step where you may
-reasonably refuse — but it touches roughly ten skills and changes behavior at the
-source as much as downstream, so it is judged on its own merits rather than as a
-rider on this entry point.
+**The `gh`-heavy skills are not proxy-safe.** They call GraphQL-flavored `gh`,
+so in a web session they need G4's shim. Rewriting those call sites into REST
+form would make G4 genuinely optional and remove the one step where you may
+reasonably refuse — but it touches roughly ten skills and changes behavior at
+the source as much as downstream, so it is judged on its own merits rather than
+as a rider on this entry point.
 
-Tracked at [#6](https://github.com/vzakharov/muthur/issues/6).
-That link points **out of your repo, into this one on purpose**: it is the one
-thread that will say whether the gap is still open. If it has closed by the time
-you read this, the shim is no longer load-bearing and the G4 decision above is
-moot — check it before you weigh the tradeoff, and don't copy the link into your
-own tree, where it would read as an issue of yours.
+Tracked at [#6](https://github.com/vzakharov/muthur/issues/6). That link points
+**out of your repo, into this one on purpose**: it is the one thread that will
+say whether the gap is still open. If it has closed by the time you read this,
+the shim is no longer load-bearing and the G4 decision above is moot — check it
+before you weigh the tradeoff, and don't copy the link into your own tree, where
+it would read as an issue of yours.
 
 **The shim leans on an egress path Anthropic does not document.** With
 `HTTPS_PROXY` stripped, `gh` still leaves through a transparent egress gateway
-(its TLS chain names `Egress Gateway SDS Issuing CA`), and that path applies none
-of the proxy's policy: through the proxy, a GitHub API path outside the session's
-configured repositories is refused ("sessions are bound to their configured
-repositories"), and around it the same call succeeds. `/override-gh`'s "try `gh`
-before calling it inaccessible" rests on that gap as much as the long-poll fix
-does. The base image ships its own `gh` set up for the proxy, so the proxied path
-is the supported one; if the gateway starts enforcing the same policy, every `gh`
-call through the shim fails at once, and the tell is the shim failing where the
-binary on its `exec` line, called directly with the proxy in place, succeeds.
+(its TLS chain names `Egress Gateway SDS Issuing CA`), and that path applies
+none of the proxy's policy: through the proxy, a GitHub API path outside the
+session's configured repositories is refused ("sessions are bound to their
+configured repositories"), and around it the same call succeeds.
+`/override-gh`'s "try `gh` before calling it inaccessible" rests on that gap as
+much as the long-poll fix does. The base image ships its own `gh` set up for the
+proxy, so the proxied path is the supported one; if the gateway starts enforcing
+the same policy, every `gh` call through the shim fails at once, and the tell is
+the shim failing where the binary on its `exec` line, called directly with the
+proxy in place, succeeds.
 
-Note what is *not* on this list: `gh pr ready` and the `search/*` block are not
+**A session with several repositories attached is held together from outside the
+platform.** Claude Code runs none of the repositories' hooks there, lists one
+copy of each same-named skill, and loads every repository's `CLAUDE.md` in full.
+The setup script's hook above, `scripts/multi-repo-hooks.py`,
+`scripts/find-repo.py` and `.claude/rules/multi-repo.md` cover the first two;
+the third, a full copy of the standing context per attached repository, nothing
+in a repository can remove — tracked upstream at
+[anthropics/claude-code#102311](https://github.com/anthropics/claude-code/issues/102311).
+Without the setup-script hook, the rule has the agent run the generator on its
+first turn — after the start event has passed, so it relays the `SessionStart`
+hooks' output itself. A `/relay` successor starts with the target repository
+alone.
+
+Note what is _not_ on this list: `gh pr ready` and the `search/*` block are not
 gaps in the infrastructure. Both work once the shim is in, so they are costs of
 declining G4 rather than defects — they are listed there, not here.

@@ -61,6 +61,17 @@ class HookCase(unittest.TestCase):
             env=self.env(None),
         )
 
+    def running_watcher(self) -> "subprocess.Popen[str]":
+        """A watcher a minute from its wake, past taking its lock — the state
+        file is written under it."""
+        self.knob(60)
+        watcher = self.start_watcher()
+        deadline = time.time() + 10
+        while not (self.state / "sess.json").exists():
+            self.assertLess(time.time(), deadline)
+            time.sleep(0.05)
+        return watcher
+
     def wake(self) -> None:
         """One watcher run to its exit, as the knob at 0 makes it."""
         self.knob(0)
@@ -104,13 +115,8 @@ class WhenAnOperatorPromptArrives(HookCase):
 
     def test_a_running_watcher_is_left_to_the_agent_to_stop(self) -> None:
         self.session(ago=1)
-        self.knob(60)
-        watcher = self.start_watcher()
+        watcher = self.running_watcher()
         try:
-            deadline = time.time() + 10
-            while not (self.state / "sess.json").exists() or not self.data().get("pid"):
-                self.assertLess(time.time(), deadline)
-                time.sleep(0.05)
             out, _ = self.prompt()
             self.assertIn("watcher is running", out)
             self.assertIn("TaskStop", out)
@@ -120,44 +126,69 @@ class WhenAnOperatorPromptArrives(HookCase):
             watcher.kill()
             watcher.communicate()
 
+    def test_a_killed_watcher_no_longer_counts(self) -> None:
+        self.session(ago=1)
+        watcher = self.running_watcher()
+        watcher.kill()
+        watcher.communicate()
+        out, _ = self.prompt()
+        self.assertIn("As this turn's last action, start the cache keepalive's watcher", out)
+
+    def test_a_second_watcher_leaves_the_first_one_running(self) -> None:
+        self.session(ago=1)
+        first = self.running_watcher()
+        try:
+            second = self.start_watcher()
+            second.communicate(timeout=10)
+            self.assertEqual(second.returncode, 0)
+            self.assertIsNone(first.poll())
+            self.assertIn("watcher is running", self.prompt()[0])
+        finally:
+            first.kill()
+            first.communicate()
+
     def test_it_starts_a_new_idle_spell(self) -> None:
         self.session(ago=1)
+        renewals = {"MUTHUR_CACHE_KEEPALIVE_RENEWALS": "5"}
         for _ in range(3):
             self.wake()
-            self.prompt(self.notice())
-        self.prompt()
+            self.prompt(self.notice(), renewals)
+        self.prompt(env=renewals)
         self.wake()
-        self.assertIn("wake 1 of 5", self.prompt(self.notice())[0])
+        self.assertIn("renewal 1 of 5", self.prompt(self.notice(), renewals)[0])
 
 
 class WhenTheWatcherWakesTheSession(HookCase):
-    def test_the_wake_asks_for_one_short_line_and_a_new_watcher(self) -> None:
+    def test_by_default_the_first_wake_parks_the_session(self) -> None:
         self.session(ago=1)
         self.wake()
-        self.assertEqual((self.data()["wakes"], self.data()["fired"], self.data()["pid"]), (1, True, None))
         out, _ = self.prompt(self.notice())
-        self.assertIn("wake 1 of 5", out)
+        self.assertIn("last wake (0 renewals spent)", out)
+        self.assertIn("Run `/relay park`", out)
+        self.assertIn("Do not start the watcher again", out)
+
+    def test_a_renewal_asks_for_one_line_with_the_way_out_and_a_new_watcher(self) -> None:
+        self.session(ago=1)
+        self.wake()
+        self.assertEqual((self.data()["wakes"], self.data()["fired"]), (1, True))
+        out, _ = self.prompt(self.notice(), {"MUTHUR_CACHE_KEEPALIVE_RENEWALS": "5"})
+        self.assertIn("renewal 1 of 5", out)
         self.assertIn("one line and nothing else", out)
         self.assertIn("plain words, no command names", out)
         self.assertIn("a word to park the session", out)
         self.assertIn("a word to just stop", out)
         self.assertIn("start the cache keepalive's watcher", out)
 
-    def test_the_fifth_wake_parks_the_session_and_starts_nothing(self) -> None:
+    def test_the_wake_after_the_last_renewal_parks_the_session(self) -> None:
         self.session(ago=1)
-        for wake in range(1, 5):
+        renewals = {"MUTHUR_CACHE_KEEPALIVE_RENEWALS": "2"}
+        for renewal in range(1, 3):
             self.wake()
-            self.assertIn(f"wake {wake} of 5", self.prompt(self.notice())[0])
+            self.assertIn(f"renewal {renewal} of 2", self.prompt(self.notice(), renewals)[0])
         self.wake()
-        out, _ = self.prompt(self.notice())
-        self.assertIn("last wake (5 of 5)", out)
-        self.assertIn("Run `/relay park`", out)
+        out, _ = self.prompt(self.notice(), renewals)
+        self.assertIn("last wake (2 renewals spent)", out)
         self.assertIn("Do not start the watcher again", out)
-
-    def test_the_wake_count_is_configurable(self) -> None:
-        self.session(ago=1)
-        self.wake()
-        self.assertIn("last wake (1 of 1)", self.prompt(self.notice(), {"CACHE_KEEPALIVE_WAKES": "1"})[0])
 
 
 class TheDeadline(HookCase):
@@ -177,12 +208,13 @@ class TheDeadline(HookCase):
 
 class TheSwitches(HookCase):
     def test_the_off_switch_says_nothing(self) -> None:
-        self.assertEqual(self.prompt(env={"CACHE_KEEPALIVE": "off"}), ("", ""))
+        self.assertEqual(self.prompt(env={"MUTHUR_CACHE_KEEPALIVE": "off"}), ("", ""))
 
     def test_a_malformed_setting_says_why(self) -> None:
-        out, err = self.prompt(env={"CACHE_KEEPALIVE_LEAD": "five"})
-        self.assertEqual(out, "")
-        self.assertIn("CACHE_KEEPALIVE_LEAD", err)
+        for raw in ("five", "-1"):
+            out, err = self.prompt(env={"MUTHUR_CACHE_KEEPALIVE_RENEWALS": raw})
+            self.assertEqual(out, "")
+            self.assertIn("MUTHUR_CACHE_KEEPALIVE_RENEWALS", err)
 
 
 if __name__ == "__main__":

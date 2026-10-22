@@ -22,37 +22,38 @@ model.
 - **The way on it prices is a fresh session, not `/relay`.** A relay's summary
   turn is a request at the whole context, so on a cold cache it pays the same
   re-cache carrying on does; the two cancel, and what is left is the context
-  budget's question, which that hook asks once the session goes on. Only a
-  fresh session skips the re-cache, so the guard prices it — the reorientation
-  up front, the smaller context on every request after — and offers it only for
+  budget's question, which that hook asks once the session goes on. Only a fresh
+  session skips the re-cache, so the guard prices it — the reorientation up
+  front, the smaller context on every request after — and offers it only for
   work that is already all on the branch, a call the operator makes. The hook
-  cannot see a decision made in chat after the last step that wrote one down —
-  a plan, a PR body, a commit — so the offer names that condition too.
+  cannot see a decision made in chat after the last step that wrote one down — a
+  plan, a PR body, a commit — so the offer names that condition too.
   `.claude/context-budget/CLAUDE.md` carries where a reorientation's price comes
   from; for a fresh successor the sources are the fresh sessions', not the
   relayed ones'.
-- **Once per cold spell.** A block writes the last response's id and the
-  stopped prompt to `tmp/cold-cache/<session_id>.blocked`, and a prompt against
-  the same id passes. A bare `!` then stands for the stopped prompt: a hook
-  cannot rewrite the prompt it is given, so it passes `!` with context telling
-  the model to act on the stored one verbatim. A new response and a new gap
-  re-arm it.
+- **Once per cold spell.** A block writes the last response's id and the stopped
+  prompt to `tmp/cold-cache/<session_id>.blocked`, and a prompt against the same
+  id passes. A bare `!` then stands for the stopped prompt: a hook cannot
+  rewrite the prompt it is given, so it passes `!` with context telling the
+  model to act on the stored one verbatim. A new response and a new gap re-arm
+  it.
 - **Images ride along by path.** The event carries the prompt's text and never
   its attachments, but Claude Code has saved each one in the `images/` beside
   `scratchpad_dir` before the hook runs, blocked prompt or not. A block copies
   those newer than the last response to `tmp/cold-cache/<session_id>.images/`,
-  since a restart can reuse a number, and `!`'s context names the copies for
-  the model to `Read`.
+  since a restart can reuse a number, and `!`'s context names the copies for the
+  model to `Read`.
 - **What always passes:** `/compact`, `/clear` and its aliases, `/relay`, and
   every built-in command that makes no model request — `PASSES`, taken from
   code.claude.com/docs/en/commands. Skills and the built-ins that prompt the
   model (`/go`, `/btw`, `/init`, `/plan`) are prompts like any other. Also
-  passing: a session whose re-cache costs under `COLD_CACHE_MIN_USD` (default
-  `0.30`), where the stop costs more attention than it saves; and one whose
-  fresh session beats carrying on by less than `COLD_CACHE_MARGIN` (default
-  `0.10`) both on its up-front cost against the re-cache and on the context it
-  carries after, where the stop has no real choice to offer. An unpriced model
-  is still stopped, with the times and token counts and no dollars.
+  passing: a session whose re-cache costs under `MUTHUR_COLD_CACHE_MIN_USD`
+  (default `0.30`), where the stop costs more attention than it saves; and one
+  whose fresh session beats carrying on by less than `MUTHUR_COLD_CACHE_MARGIN`
+  (default `0.10`) both on its up-front cost against the re-cache and on the
+  context it carries after, where the stop has no real choice to offer. An
+  unpriced model is still stopped, with the times and token counts and no
+  dollars.
 
-`COLD_CACHE_GUARD=off` in `.claude/settings.local.json`'s `env` disables both
-halves.
+`MUTHUR_COLD_CACHE_GUARD=off` in `.claude/settings.local.json`'s `env` disables
+both halves.

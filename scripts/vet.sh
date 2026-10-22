@@ -24,6 +24,13 @@
 #     dangling reference fails silently: the agent follows the surviving prose
 #     past the step they could not load. Dropping this line puts the check back
 #     on the agent's memory, which is where it was when it went unrun.
+#   check-markdown-tables.sh — fails on a Markdown table outside a code
+#     fence. Keyed on `.claude/rules/markdown.md`, the convention it holds,
+#     which is an opt-in: a repo that keeps its tables deletes the rule and
+#     the line goes quiet.
+#   check-markdown-wrap.sh — fails on tracked Markdown prettier would rewrap.
+#     Keyed on `.prettierrc.json`, so a repo that wraps with its own tooling
+#     deletes the prettier files and the line goes quiet.
 #   check-squash-message.sh — holds the squash proposal to the rules
 #     `/squash-message` states, passing quietly when a branch has no proposal.
 #     Dropping it leaves nothing catching a proposal edited by hand or outgrown
@@ -54,6 +61,8 @@
 set -euo pipefail
 
 "$(dirname "$0")/check-skill-catalog.sh"
+[ ! -f "$(dirname "$0")/../.claude/rules/markdown.md" ] || "$(dirname "$0")/check-markdown-tables.sh"
+[ ! -f "$(dirname "$0")/../.prettierrc.json" ] || "$(dirname "$0")/check-markdown-wrap.sh"
 "$(dirname "$0")/check-squash-message.sh"
 "$(dirname "$0")/staged.sh" check
 "$(dirname "$0")/check-claude-md-size.sh"

@@ -9,10 +9,10 @@ what happens to one is spread across `/task`, `/plan`, `/go` and
 cases rather than unconditionally: whether the argument carries an issue number.
 
 **With a `#<N>` in the argument:** load and follow
-`@.claude/skills/plan/SKILL.md`, passing the argument through unchanged —
-prose, number and all. Then say in one line that `/task` and `/go` take that
-same argument: `/task` hands the plan-or-not call back to the agent, and `/go`
-skips it.
+`@.claude/skills/plan/SKILL.md`, passing the argument through unchanged — prose,
+number and all. Then say in one line that `/task` and `/go` take that same
+argument: `/task` hands the plan-or-not call back to the agent, and `/go` skips
+it.
 
 `/plan` is the default of the three because it is what `/issue … #<N>` invoked
 before the split, so it is what an operator typing the old name is expecting to
@@ -28,4 +28,4 @@ beyond the fork, and `/handle`'s Do-NOT names acting on a one-line summary of a
 skill as the failure mode.
 
 Adopting repos: the source's `.claude/skills/update-muthur/catalog.md` states
-when this row is worth taking.
+when this entry is worth taking.

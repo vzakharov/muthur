@@ -7,10 +7,10 @@
 #      surviving prose and skips the step they could not load. Skill pointers are
 #      the bulk of them; CLAUDE.md's imports fail the same way, which is why the
 #      scope is the directory.
-#   2. Every `.claude/skills/*/` directory has exactly one row in
+#   2. Every `.claude/skills/*/` directory has exactly one entry in
 #      `.claude/skills/update-muthur/catalog.md` or its parts under `catalog/`.
-#   3. Every path named in a catalog row's first column exists; a row naming a
-#      glob names a set rather than a path, and is skipped.
+#   3. Every path a catalog entry opens with exists; an entry naming a glob
+#      names a set rather than a path, and is skipped.
 #   4. A skill's two stub markers agree, and no unhydrated stub is present
 #      downstream.
 #   5. Every `.md` beside a `SKILL.md` is reachable — something other than the
@@ -36,7 +36,7 @@ set -uo pipefail
 cd "$(dirname "$0")/.." || exit 1
 
 CATALOG=".claude/skills/update-muthur/catalog.md"
-# The index and its parts: rows live in `catalog/*.md`, the index keeps the prose.
+# The index and its parts: entries live in `catalog/*.md`, the index keeps the prose.
 CATALOG_FILES=("$CATALOG" ".claude/skills/update-muthur/catalog"/*.md)
 failures=0
 
@@ -90,32 +90,31 @@ done < <(
 if [ ! -f "$CATALOG" ]; then
   echo "2-3. Skipped — no $CATALOG (expected downstream)"
 else
-  # A catalog row is a table line whose first cell is a single backticked
+  # A catalog entry is a top-level list item opening with a single backticked
   # token: `/skill-name` for a skill, a repo-relative path for anything else.
-  mapfile -t row_items < <(
-    grep -hE '^\|' "${CATALOG_FILES[@]}" |
-      sed -E 's/^\| *`([^`]+)` *\|.*/\1/;t;d' |
+  mapfile -t entry_items < <(
+    sed -nE 's/^- `([^`]+)`.*/\1/p' "${CATALOG_FILES[@]}" |
       sort
   )
 
-  echo "2. Every skill directory has exactly one catalog row"
+  echo "2. Every skill directory has exactly one catalog entry"
   for dir in .claude/skills/*/; do
     name=$(basename "$dir")
     count=0
-    for item in "${row_items[@]}"; do
+    for item in "${entry_items[@]}"; do
       [ "$item" = "/$name" ] && count=$((count + 1))
     done
     case $count in
       1) ;;
-      0) fail "/$name has no row in $CATALOG" ;;
-      *) fail "/$name has $count rows in $CATALOG — groups must partition the inventory" ;;
+      0) fail "/$name has no entry in $CATALOG" ;;
+      *) fail "/$name has $count entries in $CATALOG — groups must partition the inventory" ;;
     esac
   done
 
-  echo "3. Every path in a catalog row exists"
-  for item in "${row_items[@]}"; do
+  echo "3. Every path in a catalog entry exists"
+  for item in "${entry_items[@]}"; do
     case "$item" in
-      # A glob row (`scripts/test_*.py`) names a set, not a path, so there is
+      # A glob entry (`scripts/test_*.py`) names a set, not a path, so there is
       # nothing single to stat.
       *\**) continue ;;
       /*) path=".claude/skills/${item#/}" ;;  # `/skill-name`
@@ -189,10 +188,10 @@ fi
 # pointer are separate edits, so assertion 1 catches losing the page and this one
 # catches losing the pointer.
 #
-# The catalog and its parts do not count as a reference. A row names a page in
-# its skill's entry — "Carries `carving.md`" — and that is an inventory entry,
-# not a load path, so a page the catalog is alone in naming is still one no
-# session can reach.
+# The catalog and its parts do not count as a reference. An entry names a page
+# its skill carries — "Carries `carving.md`" — and that is inventory, not a
+# load path, so a page the catalog is alone in naming is still one no session
+# can reach.
 
 echo "5. Every colocated skill page is referenced"
 
@@ -263,8 +262,11 @@ while IFS= read -r hit; do
     fail "$src cites $target § \"$heading\" — no such heading"
   fi
 done < <(
-  grep -oHE '([A-Za-z0-9_.-]+/)*CLAUDE\.md\\?`? § \\?"[^"\\]+' "${sources[@]}" 2>/dev/null |
-    sort -u
+  # Wrapped Markdown can break a citation across lines, so each file is matched
+  # whole and every line break inside a match, with the next line's indent or
+  # blockquote marker, folds back to one space.
+  grep -ozHE '([A-Za-z0-9_.-]+/)*CLAUDE\.md\\?`?[[:space:]>]+§[[:space:]>]+\\?"[^"\\]+' "${sources[@]}" 2>/dev/null |
+    sed -zE 's/\n[[:space:]]*(>[[:space:]]*)*/ /g' | tr '\0' '\n' | sort -u
 )
 
 while IFS= read -r hit; do

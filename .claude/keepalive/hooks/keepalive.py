@@ -14,13 +14,14 @@ Stdlib only — Python 3.9+.
 
 from __future__ import annotations
 
+import fcntl
 import json
 import os
 import sys
 import time
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Dict, Optional
+from typing import IO, Any, Dict, Optional
 
 # The ledger's lib is reached by path, as its own scripts reach it.
 ROOT = Path(__file__).resolve().parents[3]
@@ -28,7 +29,7 @@ sys.path.insert(0, str(ROOT / ".claude" / "costs"))
 
 from lib.restart import TTL_1H, epoch, read_history
 
-DEFAULT_WAKES = 5
+DEFAULT_RENEWALS = 0
 DEFAULT_LEAD = 300
 POLL = 30
 # The Bash tool's cap on a background command, in seconds. The watcher exits
@@ -46,7 +47,8 @@ HOOK = Path(__file__).resolve()
 @dataclass(frozen=True)
 class State:
     """`tmp/keepalive/` under the project: the wakes spent this idle spell,
-    the running watcher's pid, and whether it exited as a wake."""
+    whether the last watcher exited as a wake, and the lock a live watcher
+    holds."""
 
     dir: Path
     session: str
@@ -54,6 +56,10 @@ class State:
     @property
     def file(self) -> Path:
         return self.dir / f"{self.session}.json"
+
+    @property
+    def lock(self) -> Path:
+        return self.dir / f"{self.session}.lock"
 
     @property
     def period_knob(self) -> Path:
@@ -70,14 +76,28 @@ class State:
         self.file.write_text(json.dumps(data))
 
 
-def running(pid: Any) -> bool:
-    """A live watcher of this hook — a pid alone may have been reused since a
-    container restart."""
+def lock(path: Path) -> Optional[IO[str]]:
+    """The exclusive lock on `path`, held while the returned file stays open,
+    or None while another process holds it. The kernel drops a lock with its
+    holder however that process dies, a container restart included."""
+    path.parent.mkdir(parents=True, exist_ok=True)
+    held = path.open("a")
     try:
-        cmdline = Path(f"/proc/{int(pid)}/cmdline").read_bytes()
-    except (OSError, TypeError, ValueError):
-        return False
-    return str(HOOK).encode() in cmdline and b"watch" in cmdline
+        fcntl.flock(held, fcntl.LOCK_EX | fcntl.LOCK_NB)
+    except BlockingIOError:
+        held.close()
+        return None
+    return held
+
+
+def running(state: State) -> bool:
+    # A watcher starting while the probe holds the lock would exit at once;
+    # none can, since the hook runs before the turn that starts one.
+    probe = lock(state.lock)
+    if probe is None:
+        return True
+    probe.close()
+    return False
 
 
 # --- The watcher --------------------------------------------------------------
@@ -96,8 +116,16 @@ def deadline(transcript: Path, lead: int) -> Optional[float]:
 
 
 def watch(state: State, transcript: Path, lead: int) -> int:
+    held = lock(state.lock)
+    if held is None:  # the session's watcher is already running
+        return 0
+    with held:
+        return watch_locked(state, transcript, lead)
+
+
+def watch_locked(state: State, transcript: Path, lead: int) -> int:
     start = time.time()
-    state.write({**state.read(), "pid": os.getpid(), "fired": False})
+    state.write({**state.read(), "fired": False})
     try:
         period: Optional[float] = float(state.period_knob.read_text())
     except (OSError, ValueError):
@@ -115,10 +143,9 @@ def watch(state: State, transcript: Path, lead: int) -> int:
         # pay the re-cache it exists to avoid: wait for the next response.
         if due is not None and due <= now < due + lead:
             data = state.read()
-            state.write({**data, "wakes": int(data.get("wakes", 0)) + 1, "pid": None, "fired": True})
+            state.write({**data, "wakes": int(data.get("wakes", 0)) + 1, "fired": True})
             return 0
         time.sleep(POLL if due is None or due <= now else max(1.0, min(POLL, due - now)))
-    state.write({**state.read(), "pid": None})
     return 0
 
 
@@ -148,8 +175,8 @@ PARK = (
 )
 
 
-def context(data: Dict[str, Any], wakes: int, session: str, transcript: str) -> Optional[str]:
-    if running(data.get("pid")):
+def context(data: Dict[str, Any], alive: bool, renewals: int, session: str, transcript: str) -> Optional[str]:
+    if alive:
         return (
             f"A {MARK.lower()} watcher is running. {PARK} If {STOP}, or if, as this turn ends, {SUFFICIENT},"
             " stop it with TaskStop (its id is in the Bash result that started it)."
@@ -160,29 +187,29 @@ def context(data: Dict[str, Any], wakes: int, session: str, transcript: str) -> 
             f"As this turn's last action, {start_line(session, transcript)}"
             f" Skip it when {STOP}, or when, at that point, {SUFFICIENT}."
         )
-    if spent >= wakes:
+    if spent > renewals:
         return (
-            f"{MARK}, last wake ({spent} of {wakes}): the session has idled for hours. Run"
-            " `/relay park` per `.claude/skills/relay/SKILL.md`: commit the summary,"
-            " start no session, and end the reply with the `/relay take <branch>` line."
-            " Do not start the watcher again."
+            f"{MARK}, last wake ({renewals} renewals spent): the prompt cache is about to expire"
+            " on an idle session, so park it. Run `/relay park` per `.claude/skills/relay/SKILL.md`:"
+            " commit the summary, start no session, and end the reply with the `/relay take <branch>`"
+            " line. Do not start the watcher again."
         )
     return (
-        f"{MARK}, wake {spent} of {wakes}: this turn exists only to keep the prompt cache warm, so "
+        f"{MARK}, renewal {spent} of {renewals}: this turn exists only to keep the prompt cache warm, so "
         + start_line(session, transcript)
         + " Then reply in the conversation's language with one line and nothing else: the cache"
-        " extended, which wake of how many, and the two answers in plain words, no command names —"
+        " extended, which renewal of how many, and the two answers in plain words, no command names —"
         " a word to park the session (record it and stop extending) and a word to just stop"
-        f" (e.g. «🕯 кеш продлён {spent}/{wakes} · скажи «запаркуй», чтобы зафиксировать и не"
-        " продлевать, или «стоп», чтобы просто остановить»)."
+        f' (e.g. "🕯 cache extended {spent}/{renewals} · say \'park\' to record it and stop'
+        " extending, or 'stop' to just stop\")."
     )
 
 
-def on_prompt(state: State, prompt: str, wakes: int, session: str, transcript: str) -> Optional[str]:
+def on_prompt(state: State, prompt: str, renewals: int, session: str, transcript: str) -> Optional[str]:
     data = state.read()
     if MARK not in prompt:
         data["wakes"] = 0
-    out = context(data, wakes, session, transcript)
+    out = context(data, running(state), renewals, session, transcript)
     data["fired"] = False
     state.write(data)
     return out
@@ -193,10 +220,13 @@ def setting(name: str, default: int) -> Optional[int]:
     if raw is None:
         return default
     try:
-        return int(raw)
+        value = int(raw)
     except ValueError:
+        value = -1
+    if value < 0:
         print(f"keepalive: {name} must be a whole number; nothing armed.", file=sys.stderr)
         return None
+    return value
 
 
 def safe(session: str) -> bool:
@@ -204,11 +234,11 @@ def safe(session: str) -> bool:
 
 
 def main() -> int:
-    if os.environ.get("CACHE_KEEPALIVE") == "off":
+    if os.environ.get("MUTHUR_CACHE_KEEPALIVE") == "off":
         return 0
-    wakes = setting("CACHE_KEEPALIVE_WAKES", DEFAULT_WAKES)
-    lead = setting("CACHE_KEEPALIVE_LEAD", DEFAULT_LEAD)
-    if wakes is None or lead is None:
+    renewals = setting("MUTHUR_CACHE_KEEPALIVE_RENEWALS", DEFAULT_RENEWALS)
+    lead = setting("MUTHUR_CACHE_KEEPALIVE_LEAD", DEFAULT_LEAD)
+    if renewals is None or lead is None:
         return 0
     home = Path(os.environ.get("CLAUDE_PROJECT_DIR") or ROOT) / "tmp" / "keepalive"
     if sys.argv[1:2] == ["watch"] and len(sys.argv) == 4:
@@ -221,7 +251,7 @@ def main() -> int:
     if event.get("hook_event_name") != "UserPromptSubmit" or not safe(session):
         return 0
     state = State(home, session)
-    out = on_prompt(state, event.get("prompt") or "", wakes, session, event.get("transcript_path") or "")
+    out = on_prompt(state, event.get("prompt") or "", renewals, session, event.get("transcript_path") or "")
     if out is not None:
         print(json.dumps({"hookSpecificOutput": {"hookEventName": "UserPromptSubmit", "additionalContext": out}}))
     return 0

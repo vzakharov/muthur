@@ -174,7 +174,7 @@ class WhenAPromptIsStopped(HookCase):
         self.fresh_sessions(20_000, 0.05)
         self.append(opening(), latest(context=45_000))
         self.assertIsNone(self.prompt())
-        self.assertIsNotNone(self.prompt(env={"COLD_CACHE_MIN_USD": "0.01"}))
+        self.assertIsNotNone(self.prompt(env={"MUTHUR_COLD_CACHE_MIN_USD": "0.01"}))
 
     def test_a_fresh_session_that_cannot_come_out_ahead_passes(self) -> None:
         self.fresh_sessions(132_000, 1.19)
@@ -186,7 +186,7 @@ class WhenAPromptIsStopped(HookCase):
         self.fresh_sessions(90_000, 0.40)
         self.append(opening(), latest(context=94_000))
         self.assertIsNone(self.prompt())
-        self.assertIsNotNone(self.prompt(env={"COLD_CACHE_MARGIN": "0"}))
+        self.assertIsNotNone(self.prompt(env={"MUTHUR_COLD_CACHE_MARGIN": "0"}))
 
     def test_a_fresh_session_that_carries_less_is_still_offered(self) -> None:
         self.fresh_sessions(60_000, 1.19)
@@ -211,7 +211,7 @@ class WhenAPromptIsStopped(HookCase):
 
     def test_off_disables_both_halves(self) -> None:
         self.append(opening(), latest())
-        off = {"COLD_CACHE_GUARD": "off"}
+        off = {"MUTHUR_COLD_CACHE_GUARD": "off"}
         self.run_hook("SessionStart", off, source="resume", prompt_cache_likely_expired=True)
         self.assertFalse((self.root / "tmp" / "cold-cache" / "sess.json").exists())
         self.assertIsNone(self.prompt(env=off))

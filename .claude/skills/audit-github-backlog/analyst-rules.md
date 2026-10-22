@@ -12,27 +12,31 @@ only judgeable once you know that.
 
 ## Where the material is
 
-The threads are already dumped, so **read files — do not hammer the GitHub API.**
-Hundreds of items × N agents of `gh api` calls is slow, rate-limited, and blocks
-the whole run.
+The threads are already dumped, so **read files — do not hammer the GitHub
+API.** Hundreds of items × N agents of `gh api` calls is slow, rate-limited, and
+blocks the whole run.
 
-- `tmp/audit/issues/<n>.md` — full thread per open issue: body, labels, dates, all comments
+- `tmp/audit/issues/<n>.md` — full thread per open issue: body, labels, dates,
+  all comments
 - `tmp/audit/prs/<n>.md` — the same per open PR, plus its base and head refs
-- `tmp/audit/rot.md`, `rot.json` — per-PR rot: behind/ahead, files, overlap, gone, merge verdict
+- `tmp/audit/rot.md`, `rot.json` — per-PR rot: behind/ahead, files, overlap,
+  gone, merge verdict
 - `tmp/audit/pr-history.json` — every PR ever, with `base.ref`
 
-Read the repo itself with Read/Grep/Glob, and use `git` freely (`log`, `grep`, `-S`).
+Read the repo itself with Read/Grep/Glob, and use `git` freely (`log`, `grep`,
+`-S`).
 
 ## Verdicts — exactly one per item
 
-| Verdict             | Meaning                                                               |
-| ------------------- | --------------------------------------------------------------------- |
-| `CLOSE_DONE`        | The work described is done. Cite what did it.                         |
-| `CLOSE_NOT_PLANNED` | Obsolete or abandoned — real once, but nobody will do it now.          |
-| `CLOSE_DUPLICATE`   | Another issue covers it. **Name it as `#<n>` in your reason.**         |
-| `REFILE`            | The framing no longer fits the code: it needs rewriting, not keeping.  |
-| `KEEP`              | Still reads true against today's code.                                |
-| `UNSURE`            | Needs a human. Say precisely what you could not establish.            |
+- `CLOSE_DONE` — the work described is done. Cite what did it.
+- `CLOSE_NOT_PLANNED` — obsolete or abandoned — real once, but nobody will do it
+  now.
+- `CLOSE_DUPLICATE` — another issue covers it. **Name it as `#<n>` in your
+  reason.**
+- `REFILE` — the framing no longer fits the code: it needs rewriting, not
+  keeping.
+- `KEEP` — still reads true against today's code.
+- `UNSURE` — needs a human. Say precisely what you could not establish.
 
 Write the verdict **exactly** as spelled above. The three closing verdicts are
 separate because GitHub's close reason is: they become `completed`,
@@ -46,8 +50,8 @@ Two rules, not preferences:
 1. **Age is never a reason to close.** An old issue that still reads true is
    `KEEP`. Some issues get _worse_ while sitting — if a duplicate count or a
    scope has grown since it was filed, say so.
-2. **`REFILE` is a framing mismatch, not a wish.** "Still a good idea, nobody did
-   it" is `KEEP`. `REFILE` is for an item whose named paths, symbols, or
+2. **`REFILE` is a framing mismatch, not a wish.** "Still a good idea, nobody
+   did it" is `KEEP`. `REFILE` is for an item whose named paths, symbols, or
    architecture are gone.
 
 ## Priority — on every item that survives
@@ -56,16 +60,21 @@ A verdict says whether an item is still true; a priority says when it should be
 worked. Without one the sweep hands back a backlog of the same size in the same
 undifferentiated order, so **every `KEEP` and every `REFILE` carries a tier** —
 for a `REFILE` it is the tier the replacement issue should be filed at. The
-closing verdicts and `UNSURE` carry none: `—` in the column, since a schedule for
-work nobody will do is noise, and an `UNSURE` cannot be scheduled before a human
-resolves it.
+closing verdicts and `UNSURE` carry none: `—` in the column, since a schedule
+for work nobody will do is noise, and an `UNSURE` cannot be scheduled before a
+human resolves it.
 
-| Tier | Meaning                                                                                                                                                                               |
-| ---- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `P0` | Harm is happening now and will not stop on its own — users hitting a broken path in production, data being corrupted or lost, a security or billing hole, a deploy lane that is down. |
-| `P1` | A real defect or a cost the team pays repeatedly, but the app works: a bug with a workaround, a recurring incident source, debt actively slowing changes in code touched weekly.      |
-| `P2` | A genuine improvement with a bounded payoff and no clock on it — consistency, coverage, cleanup in code nobody is currently fighting. Worth doing when someone is already there.      |
-| `P3` | Worth keeping on the record, but nobody would schedule it deliberately. Would not be missed if it sat another year.                                                                   |
+- `P0` — harm is happening now and will not stop on its own — users hitting a
+  broken path in production, data being corrupted or lost, a security or billing
+  hole, a deploy lane that is down.
+- `P1` — a real defect or a cost the team pays repeatedly, but the app works: a
+  bug with a workaround, a recurring incident source, debt actively slowing
+  changes in code touched weekly.
+- `P2` — a genuine improvement with a bounded payoff and no clock on it —
+  consistency, coverage, cleanup in code nobody is currently fighting. Worth
+  doing when someone is already there.
+- `P3` — worth keeping on the record, but nobody would schedule it deliberately.
+  Would not be missed if it sat another year.
 
 Five rules, and the first is the one that goes wrong:
 
@@ -82,9 +91,9 @@ Five rules, and the first is the one that goes wrong:
    spread. If your items genuinely do cluster — single-occurrence auto-filed
    error reports are mostly `P3`, for instance — say so in your report, so the
    flat distribution reads as a finding rather than as sloppiness.
-5. **Sanity-check your own ladder before you write the summary.** Read your tiers
-   back as one ordered list and ask whether you would really pick every `P1`
-   ahead of every `P2`. Move whatever fails that.
+5. **Sanity-check your own ladder before you write the summary.** Read your
+   tiers back as one ordered list and ask whether you would really pick every
+   `P1` ahead of every `P2`. Move whatever fails that.
 
 ## Evidence standard — a verdict without evidence is discarded
 
@@ -126,10 +135,11 @@ that is what your verdict is for.
 Write to the report path your prompt gave you. Two parts, in this order:
 
 1. One `###` section per item: `### #<n> — <title>`, then your verdict, its
-   priority if it survives, the evidence you established (with paths/lines/SHAs),
-   and anything the coordinator needs to know.
+   priority if it survives, the evidence you established (with
+   paths/lines/SHAs), and anything the coordinator needs to know.
 
-2. A **final `## Summary` table**, the last thing in the file, in exactly this shape:
+2. A **final `## Summary` table**, the last thing in the file, in exactly this
+   shape:
 
 ```
 ## Summary
@@ -152,5 +162,5 @@ heading, the **last** one is taken as your settled position.
 
 If following these rules turns up something they get wrong — a trap they do not
 warn about, a step that misfires on this repo — say so at the end of your
-report. The coordinator collects those for the operator; see `SKILL.md` §
-"This is a living document".
+report. The coordinator collects those for the operator; see `SKILL.md` § "This
+is a living document".

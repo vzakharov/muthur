@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
-"""Total the rows under `sessions/` — what the work in this repository would
-have cost at Claude API rates.
+"""Total the rows on the `cost-ledger` branch and under `sessions/` — what the
+work in this repository would have cost at Claude API rates.
 
 Usage:
   python3 .claude/costs/report.py [--all-my-repos | --repo OWNER/NAME ...]
@@ -11,14 +11,14 @@ the hours by role and grade cover the current month.
 
 The totals are never written: they are derived from the rows, so the report is
 run when a number is wanted rather than kept on disk going stale. A row in a
-retired shape is rewritten in the current one, and the report says which.
-`--json` prints the whole breakdown for whoever wants to keep one anyway. Rows
-reach the trunk by merge, so a month read there is a month of *merged* work:
-`CLAUDE.md` beside this file carries what that leaves out.
+retired shape under `sessions/` is rewritten in the current one, and the report
+says which. `--json` prints the whole breakdown for whoever wants to keep one
+anyway. `CLAUDE.md` beside this file carries what the totals leave out.
 
-`--all-my-repos` reads every repository the `gh` user can see whose default
-branch carries a ledger, and `--repo` (repeatable) just the ones named, off
-GitHub rather than this checkout, adding a table by repository.
+`--all-my-repos` reads every repository the `gh` user can see that carries a
+ledger, on its `cost-ledger` branch or its default branch, and `--repo`
+(repeatable) just the ones named, off GitHub rather than this checkout, adding a
+table by repository.
 
 Stdlib only — Python 3.9+.
 """
@@ -37,7 +37,8 @@ from lib.github import ADDED_ROLES, REPO, Client, GitHubError, remote_ledger
 from lib.hours import HoursTable
 from lib.period import FORMATS, KINDS, Period, PeriodError, month_of, period
 from lib.pricing import parse_prices
-from lib.rows import SESSIONS, SessionCost, read_row
+from lib.ledger import BRANCH, REMOTE_REF, LedgerError, fetch, rows_at, union
+from lib.rows import SESSIONS, SessionCost, read_row, reshape
 from lib.shape import to_json
 from lib.totals import (
     Bucket,
@@ -211,17 +212,27 @@ def today() -> date:
     return datetime.now(timezone.utc).date()
 
 
+def ledger_rows(span: Optional[Period]) -> List[SessionCost]:
+    """The ledger's rows, read off its fetched tip and reshaped in memory only:
+    rewriting one would be a commit on another branch."""
+    if fetch() is None:
+        return []
+    return [
+        reshape(text, f"{BRANCH}:{path}")[0]
+        for path, text in rows_at(REMOTE_REF)
+        if span is None or path.split("/")[-2] in span.months()
+    ]
+
+
 def this_repo(span: Optional[Period], as_json: bool, rates: Rates) -> int:
+    """The ledger's rows and the tree's, one per session: the tree's side is a
+    branch's display copies, or rows a repository still keeps in its tree."""
     months = sorted(p for p in SESSIONS.iterdir() if p.is_dir()) if SESSIONS.is_dir() else []
     shown = [m for m in months if span is None or m.name in span.months()]
-    rows = [
-        row
-        for shown_month in shown
-        for row in rows_in(shown_month)
-        if span is None or span.holds(row)
-    ]
+    tree = [row for shown_month in shown for row in rows_in(shown_month)]
+    rows = [row for row in union([*ledger_rows(span), *tree], lambda row: row) if span is None or span.holds(row)]
     if not rows:
-        print(f"costs: no rows under {SESSIONS}{'' if span is None else f' for {span.label}'}")
+        print(f"costs: no rows under {SESSIONS} or on {BRANCH}{'' if span is None else f' for {span.label}'}")
         return 0
 
     totals = totals_of(rows, rates, hours_period=span or month_of(today()))
@@ -384,7 +395,15 @@ def main() -> int:
     except PeriodError as error:
         parser.error(str(error))
     if not (args.all_my_repos or args.repo):
+<<<<<<< HEAD
         return this_repo(span, args.json, load_rates(COSTS))
+=======
+        try:
+            return this_repo(span, args.json, rates)
+        except LedgerError as error:
+            print(f"costs: {error}", file=sys.stderr)
+            return 1
+>>>>>>> origin/main
     try:
         return across_repos(
             None if args.all_my_repos else list(dict.fromkeys(args.repo)),
