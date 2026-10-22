@@ -3,11 +3,11 @@
 ## The failure
 
 `report.py --all-my-repos` stops on one row of vzakharov/vovazakharov.com's
-ledger that books a part as `artist`. That role was rated by a
-`rates.repo.json` on a feature branch, and the report reads that file off the
-**default** branch only. The Stop hook writes a row to `cost-ledger` from any
-branch on every turn, so a row reaches the ledger that no reader can rate. One
-such row is enough to stop the cross-repo report.
+ledger that books a part as `artist`. That role was rated by a `rates.repo.json`
+on a feature branch, and the report reads that file off the **default** branch
+only. The Stop hook writes a row to `cost-ledger` from any branch on every turn,
+so a row reaches the ledger that no reader can rate. One such row is enough to
+stop the cross-repo report.
 
 The cause is where the table lives, not the reader. The rows have one home that
 every branch writes to. The table that rates them has a home per branch, and
@@ -57,9 +57,9 @@ Consequences:
   shared table. No branch copy exists to drift, so nothing reaches the ledger
   late.
 - **`role drop` refuses while a ledger row books the role and the shared table
-  does not rate it.** That keeps "every role a ledger row names is rateable" true
-  by construction. A role the shared table has since taken up can be dropped,
-  because the rows stay rateable.
+  does not rate it.** That keeps "every role a ledger row names is rateable"
+  true by construction. A role the shared table has since taken up can be
+  dropped, because the rows stay rateable.
 - **`estimate.py set` checks against the ledger's table.** It reads the local
   copy of the ledger (`refs/remotes/origin/cost-ledger`). Only on a role that
   copy does not rate does it fetch and check again, so the common path makes no
@@ -76,15 +76,15 @@ ledger's `rates.repo.json` at a given revision, through `with_added_roles`.
 - **`hooks/estimate-notice.sh`** reads `estimate.py rates`. A fresh container
   has no local ledger ref until its first Stop, so where the ref is missing the
   hook runs `ledger.py fetch` once. Otherwise the session's first notice would
-  leave out the repository's roles. On every later prompt it reads the local
-  ref with no network call.
+  leave out the repository's roles. On every later prompt it reads the local ref
+  with no network call.
 - **`report.py`, this repository**, already reads the ledger at the fetched tip
   on `main`. It reads the table at that same tip, so rows and rates come from
   one commit.
 - **`report.py --all-my-repos` / `--repo`** read the file as an aliased
-  `refs/heads/cost-ledger:.claude/costs/rates.repo.json` blob on the ledger
-  side of the GraphQL discovery, instead of `HEAD:`. The `rates_of` mapping
-  that already runs through `totals_of` stays as it is.
+  `refs/heads/cost-ledger:.claude/costs/rates.repo.json` blob on the ledger side
+  of the GraphQL discovery, instead of `HEAD:`. The `rates_of` mapping that
+  already runs through `totals_of` stays as it is.
 
 ### Adding only, and a collision
 
@@ -96,12 +96,12 @@ Moving the file creates one new case: the **shared table later takes up a role a
 ledger adds**, because an `/update-muthur` port brings in a `rates.json` that
 rates `artist`. The role then has two multipliers.
 
-**That repository's rows keep its own entry, and every reader warns.** The
-rows were booked against the ledger's multiplier, so switching them to the
-shared one would re-rate their history. Every other repository's rows take the
-shared entry, as they would anyway. `with_added_roles` therefore stops raising
-on such a role. It returns the role in a `shadowed` list, and the table keeps
-the ledger's multiplier for that repository.
+**That repository's rows keep its own entry, and every reader warns.** The rows
+were booked against the ledger's multiplier, so switching them to the shared one
+would re-rate their history. Every other repository's rows take the shared
+entry, as they would anyway. `with_added_roles` therefore stops raising on such
+a role. It returns the role in a `shadowed` list, and the table keeps the
+ledger's multiplier for that repository.
 
 Each reader names the collision with the repository, the role and both
 multipliers, and points at `estimate.py role drop <name>` for adopting the
@@ -111,8 +111,8 @@ shared rate:
 - `check_estimates.py`, on stderr, without failing the vet run;
 - the estimate notice, in a sentence.
 
-The report's figures stay whole either way. Each row is rated by a defined
-rule, and the warning is there so the person reading knows two rates exist.
+The report's figures stay whole either way. Each row is rated by a defined rule,
+and the warning is there so the person reading knows two rates exist.
 
 ### Migration
 
@@ -121,11 +121,11 @@ rule, and the warning is there so the person reading knows two rates exist.
   ledger has none. Where both exist and differ, it stops and names the
   difference rather than picking one.
 - **`check_estimates.py` fails while the tree carries a `rates.repo.json`.** The
-  message names `ledger.py backfill` and then `git rm` of the file. Without this,
-  a stale tree copy reads as the live table to anyone who opens it.
+  message names `ledger.py backfill` and then `git rm` of the file. Without
+  this, a stale tree copy reads as the live table to anyone who opens it.
 - vzakharov/life (`tutor`) and vzakharov/vovazakharov.com (`artist`, still only
-  on a branch) each migrate in one step: run `backfill`, or `role set` for a role
-  only a branch holds.
+  on a branch) each migrate in one step: run `backfill`, or `role set` for a
+  role only a branch holds.
 - The squash body carries `[attn adopters]` for whoever took this PR's branch
   early: one paragraph naming the two commands.
 
@@ -147,10 +147,11 @@ Against this PR's current state, after the `main` merge:
 - `.claude/costs/hooks/estimate-notice.sh`: fetch when the ref is missing. The
   added-role sentence names `role set` as the way to add one, and the notice
   adds a sentence for a shadowed role.
-- `.claude/costs/CLAUDE.md`: this PR's § "Human-hour estimates" bullet and
-  § "The report" sentence get rewritten to say the table lives on
-  `cost-ledger`, who writes it, and what a collision does.
-- `.claude/skills/update-muthur/catalog/g7-cost-ledger.md`: the entry, re-pointed.
+- `.claude/costs/CLAUDE.md`: this PR's § "Human-hour estimates" bullet and §
+  "The report" sentence get rewritten to say the table lives on `cost-ledger`,
+  who writes it, and what a collision does.
+- `.claude/skills/update-muthur/catalog/g7-cost-ledger.md`: the entry,
+  re-pointed.
 - Tests:
   - `test_estimate.py`: the ledger-backed table, and the `role set` / `drop`
     refusals.
