@@ -1,0 +1,94 @@
+{
+  "total": {
+    "inputTokens": 136,
+    "cacheWrite5mTokens": 165891,
+    "cacheWrite1hTokens": 155057,
+    "cacheReadTokens": 10146660,
+    "outputTokens": 34693,
+    "thinkingTokens": 8677,
+    "responses": 68,
+    "costUsd": 4.793647
+  },
+  "estimate": {
+    "at": "2026-10-22T06:24:14.304Z",
+    "parts": [
+      {
+        "hours": 3.5,
+        "grade": "senior",
+        "role": "developer",
+        "comment": "Tests over bare-origin clones plus the notice hook's fetch and shadow sentence: git-ledger semantics and failure surfacing need a senior who has shipped concurrent-write code"
+      },
+      {
+        "hours": 1.5,
+        "grade": "senior",
+        "role": "editor",
+        "comment": "The cost-ledger docs and catalog entry must restate the table's new home and collision rule exactly, without leaving the old default-branch story behind"
+      }
+    ],
+    "comment": null
+  },
+  "sessionId": "ebb729ce-5c75-50e2-b842-e58a3d7c17f0",
+  "branch": "claude/repo-estimate-roles-cwl9kz",
+  "cwd": "/home/user/muthur",
+  "openingPrompt": "/relay take claude/repo-estimate-roles-cwl9kz — продолжить приостановленный план: тесты, хук оценки, документация, затем polish и обновление PR",
+  "prs": [
+    186
+  ],
+  "url": "https://claude.ai/code/session_01CL74mAK6rHiTBNBBCoocfQ",
+  "operator": "vzakharov",
+  "firstResponseAt": "2026-10-22T06:23:56.029Z",
+  "lastResponseAt": "2026-10-22T06:31:38.875Z",
+  "pricesAsOf": "2026-10-06",
+  "claudeCodeTotalUsd": null,
+  "ownTurns": {
+    "inputTokens": 90,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 155057,
+    "cacheReadTokens": 7256125,
+    "outputTokens": 24523,
+    "thinkingTokens": 4091,
+    "responses": 45,
+    "costUsd": 3.1825009999999994
+  },
+  "subagents": {
+    "inputTokens": 46,
+    "cacheWrite5mTokens": 165891,
+    "cacheWrite1hTokens": 0,
+    "cacheReadTokens": 2890535,
+    "outputTokens": 10170,
+    "thinkingTokens": 4586,
+    "responses": 23,
+    "costUsd": 1.611146
+  },
+  "byRate": {
+    "claude-opus-5-5/standard": {
+      "inputTokens": 136,
+      "cacheWrite5mTokens": 165891,
+      "cacheWrite1hTokens": 155057,
+      "cacheReadTokens": 10146660,
+      "outputTokens": 34693,
+      "thinkingTokens": 8677,
+      "responses": 68,
+      "costUsd": 4.793647
+    }
+  },
+  "warnings": [],
+  "orientation": {
+    "endedBy": "Edit",
+    "endedOn": ".claude/costs/hooks/estimate-notice.sh",
+    "endedAt": "2026-10-22T06:24:55.958Z",
+    "contextTokens": 161632,
+    "spend": {
+      "inputTokens": 28,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 111364,
+      "cacheReadTokens": 1588012,
+      "outputTokens": 3575,
+      "thinkingTokens": 847,
+      "responses": 14,
+      "costUsd": 1.2801263999999999
+    }
+  },
+  "compactions": [],
+  "telemetry": null
+}
