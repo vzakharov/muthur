@@ -25,10 +25,11 @@ from lib.estimate import (
     Rates,
     checked,
     latest,
-    load_rates,
     parse_estimate,
     parse_rates,
+    role_change,
     senior_hours,
+    shadow_notes,
     split_comment,
     with_added_roles,
 )
@@ -139,9 +140,13 @@ class RolesARepositoryAdds(unittest.TestCase):
         with self.assertRaisesRegex(ShapeError, "part 1: role `artist` is booked at `senior` only"):
             checked(estimate_of("t", Part(2, "junior", "artist")), rates, "e")
 
-    def test_never_re_rate_a_role_the_shared_table_rates(self) -> None:
-        with self.assertRaisesRegex(ShapeError, "`copywriter`: rates.json rates this role already"):
-            with_added_roles(RATES, adding(copywriter=ARTIST))
+    def test_keep_their_multiplier_once_the_shared_table_takes_them_up_and_say_so(self) -> None:
+        rates = with_added_roles(RATES, adding(copywriter=ARTIST))
+        self.assertEqual((rates.roles["copywriter"], rates.shadowed), (0.9, {"copywriter": 0.5}))
+        (note,) = shadow_notes(rates, "a/repo")
+        self.assertIn("a/repo: `copywriter` is rated ×0.9 by its own table and ×0.5 by rates.json", note)
+        self.assertIn("`estimate.py role drop copywriter`", note)
+        self.assertEqual(shadow_notes(with_added_roles(RATES, adding(artist=ARTIST)), "a/repo"), [])
 
     def test_refuse_a_grade_the_shared_table_lacks_and_anything_but_roles(self) -> None:
         for text, message in (
@@ -156,13 +161,6 @@ class RolesARepositoryAdds(unittest.TestCase):
             with self.subTest(message), self.assertRaisesRegex(ShapeError, message):
                 with_added_roles(RATES, text)
 
-    def test_are_read_beside_the_shared_table_where_the_repository_carries_them(self) -> None:
-        with tempfile.TemporaryDirectory() as costs:
-            Path(costs, "rates.json").write_text(json.dumps({"roles": RATES.roles, "grades": RATES.grades}))
-            self.assertEqual(load_rates(Path(costs)), RATES)
-            Path(costs, "rates.repo.json").write_text(adding(artist=ARTIST))
-            self.assertEqual(load_rates(Path(costs)).roles["artist"], 0.9)
-
     def test_rate_a_row_by_its_own_repository_s_table(self) -> None:
         artist = replace(ROW, session_id="art", estimate=estimate_of("a", Part(1, "senior", "artist")))
         rates = with_added_roles(RATES, adding(artist=ARTIST))
@@ -170,6 +168,39 @@ class RolesARepositoryAdds(unittest.TestCase):
         self.assertEqual(summary.overall.senior_hours, round(0.9 + 2 * 0.5, 2))
         with self.assertRaisesRegex(ShapeError, "role `artist`"):
             effort_of([artist], RATES)
+
+    def test_rate_a_shadowed_role_by_its_own_table_in_its_repository_and_the_shared_one_elsewhere(self) -> None:
+        shared = replace(RATES, roles={**RATES.roles, "artist": 1.2})
+        own = replace(ROW, session_id="own", estimate=estimate_of("a", Part(1, "senior", "artist")))
+        other = replace(ROW, session_id="other", estimate=estimate_of("a", Part(1, "senior", "artist")))
+        summary = effort_of([own, other], shared, {"own": with_added_roles(shared, adding(artist=ARTIST))})
+        self.assertEqual(summary.overall.senior_hours, round(0.9 + 1.2, 2))
+
+
+class ChangingARepositorysTable(unittest.TestCase):
+    def test_a_role_set_onto_no_table_starts_one_and_names_the_change(self) -> None:
+        text, message = role_change(RATES, None, "artist", ARTIST, "t")
+        assert text is not None
+        self.assertEqual(json.loads(text), {"roles": {"artist": ARTIST}})
+        self.assertEqual(message, "chore: estimate role artist ×0.9 at senior")
+
+    def test_a_role_set_again_is_re_rated_and_the_others_kept(self) -> None:
+        before = adding(artist=ARTIST, tutor={**ARTIST, "work": "lessons"})
+        text, _ = role_change(RATES, before, "artist", {**ARTIST, "multiplier": 1.2}, "t")
+        assert text is not None
+        self.assertEqual(json.loads(text)["roles"], {"artist": {**ARTIST, "multiplier": 1.2}, "tutor": {**ARTIST, "work": "lessons"}})
+
+    def test_dropping_the_last_role_leaves_no_table(self) -> None:
+        self.assertEqual(role_change(RATES, adding(artist=ARTIST), "artist", None, "t"), (None, "chore: drop estimate role artist"))
+
+    def test_refuses_a_shared_role_a_bad_entry_and_a_drop_of_nothing(self) -> None:
+        for name, entry, message in (
+            ("copywriter", ARTIST, "rates.json rates this role already"),
+            ("artist", {**ARTIST, "grade": "wizard"}, "grade `wizard`"),
+            ("tutor", None, "no role `tutor` to drop"),
+        ):
+            with self.subTest(message), self.assertRaisesRegex(ShapeError, message):
+                role_change(RATES, adding(artist=ARTIST), name, entry, "t")
 
 
 class WhichCopyWins(unittest.TestCase):
@@ -380,12 +411,96 @@ class TheCommand(unittest.TestCase):
     def test_rates_prints_the_table_estimates_are_checked_against(self) -> None:
         done = self.estimate("rates")
         self.assertEqual(done.returncode, 0, done.stderr)
-        self.assertEqual(json.loads(done.stdout), to_json(load_rates(COSTS)))
+        shared = parse_rates((COSTS / "rates.json").read_text(encoding="utf-8"))
+        self.assertEqual(json.loads(done.stdout), {**to_json(shared), "notes": []})
+
+    def ledger_table(self) -> object:
+        return json.loads(self.clone.git("show", f"origin/{BRANCH}:.claude/costs/rates.repo.json"))["roles"]
+
+    def test_role_set_pushes_the_role_to_the_ledger_where_an_estimate_can_book_it(self) -> None:
+        done = self.estimate("role", "set", "artist", "0.9", "senior", ARTIST["work"])
+        self.assertEqual(done.returncode, 0, done.stderr)
+        self.assertEqual(self.ledger_table(), {"artist": ARTIST})
+        self.assertEqual(
+            self.clone.git("log", "-1", "--format=%s", f"origin/{BRANCH}"), "chore: estimate role artist ×0.9 at senior"
+        )
+        self.assertFalse((self.clone.root / ".claude" / "costs" / "rates.repo.json").exists())
+        booked = self.estimate("set", "--part", "2", "senior", "artist", "why")
+        self.assertEqual(booked.returncode, 0, booked.stderr)
+
+    def test_a_role_another_clone_added_is_fetched_for_before_an_estimate_is_refused(self) -> None:
+        self.estimate("role", "set", "artist", "0.9", "senior", ARTIST["work"])
+        self.clone.git("update-ref", "-d", f"refs/remotes/origin/{BRANCH}")
+        done = self.estimate("set", "--part", "2", "senior", "artist", "why")
+        self.assertEqual(done.returncode, 0, done.stderr)
+
+    def test_role_set_refuses_a_role_the_shared_table_rates(self) -> None:
+        done = self.estimate("role", "set", "copywriter", "0.9", "senior", "w")
+        self.assertEqual(done.returncode, 1)
+        self.assertIn("rates.json rates this role already", done.stderr)
+        self.assertEqual(self.clone.origin_git("branch", "--list", BRANCH), "")
+
+    def test_role_drop_removes_the_table_with_its_last_role(self) -> None:
+        self.estimate("role", "set", "artist", "0.9", "senior", ARTIST["work"])
+        done = self.estimate("role", "drop", "artist")
+        self.assertEqual(done.returncode, 0, done.stderr)
+        self.assertNotIn(".claude/costs/rates.repo.json", self.clone.ledger_files())
+
+    def test_role_drop_is_refused_while_a_ledger_row_books_the_role(self) -> None:
+        self.estimate("role", "set", "artist", "0.9", "senior", ARTIST["work"])
+        staged = self.base / "row.json"
+        booked = replace(ROW, session_id=self.finished, estimate=estimate_of("a", Part(1, "senior", "artist")))
+        staged.write_text(row_text(booked), encoding="utf-8")
+        ledger = [sys.executable, str(self.clone.root / ".claude" / "costs" / "ledger.py")]
+        subprocess.run([*ledger, "append-row", self.path, str(staged)], env=self.clone.env(), check=True)
+        done = self.estimate("role", "drop", "artist")
+        self.assertEqual(done.returncode, 1)
+        self.assertIn(f"`artist` is booked by 1 ledger row(s), {self.finished} first", done.stderr)
+        self.assertEqual(self.ledger_table(), {"artist": ARTIST})
 
     def test_a_session_with_no_row_is_refused_rather_than_guessed_at(self) -> None:
         done = self.estimate("show", "--session", "no-such-session")
         self.assertEqual(done.returncode, 1)
         self.assertIn("no row", done.stderr)
+
+
+class BackfillCarriesATreeTable(unittest.TestCase):
+    """`ledger.py backfill` moving a repository's tree `rates.repo.json` onto the
+    ledger, over a clone with a bare `origin`."""
+
+    def setUp(self) -> None:
+        self.base = Path(tempfile.mkdtemp())
+        self.addCleanup(shutil.rmtree, self.base)
+        self.clone = Clone(self.base)
+        self.tree = self.clone.root / ".claude" / "costs" / "rates.repo.json"
+
+    def run_costs(self, script: str, *args: str) -> subprocess.CompletedProcess[str]:
+        return subprocess.run(
+            [sys.executable, str(self.clone.root / ".claude" / "costs" / script), *args],
+            env=self.clone.env(),
+            capture_output=True,
+            text=True,
+        )
+
+    def ledger_table(self) -> str:
+        return self.clone.git("show", f"origin/{BRANCH}:.claude/costs/rates.repo.json")
+
+    def test_carries_the_tree_s_table_where_the_ledger_has_none_and_nothing_once_they_agree(self) -> None:
+        self.tree.write_text(adding(artist=ARTIST), encoding="utf-8")
+        done = self.run_costs("ledger.py", "backfill", "HEAD")
+        self.assertEqual(done.returncode, 0, done.stderr)
+        self.assertIn("carried in", done.stdout)
+        self.assertEqual(json.loads(self.ledger_table()), {"roles": {"artist": ARTIST}})
+        again = self.run_costs("ledger.py", "backfill", "HEAD")
+        self.assertIn("nothing to carry", again.stdout)
+
+    def test_stops_naming_the_roles_where_the_tree_and_the_ledger_differ(self) -> None:
+        self.run_costs("estimate.py", "role", "set", "artist", "0.9", "senior", ARTIST["work"])
+        self.tree.write_text(adding(artist={**ARTIST, "multiplier": 1.2}), encoding="utf-8")
+        done = self.run_costs("ledger.py", "backfill", "HEAD")
+        self.assertEqual(done.returncode, 1)
+        self.assertIn("they differ on `artist`", done.stderr)
+        self.assertEqual(json.loads(self.ledger_table()), {"roles": {"artist": ARTIST}})
 
 
 if __name__ == "__main__":

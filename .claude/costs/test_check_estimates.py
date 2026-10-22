@@ -10,6 +10,7 @@ tests' fixtures.
 
 from __future__ import annotations
 
+import json
 import subprocess
 import tempfile
 import unittest
@@ -17,6 +18,7 @@ from dataclasses import replace
 from pathlib import Path
 from typing import Optional
 
+from lib.estimate import Part
 from lib.rows import json_text, row_text
 from test_estimate import ROW, estimate_of
 from test_stop_hook import Clone
@@ -52,6 +54,14 @@ class TheGate(unittest.TestCase):
             env["CLAUDE_CODE_SESSION_ID"] = running
         return subprocess.run(
             ["python3", str(self.clone.root / CHECK)], capture_output=True, text=True, env=env
+        )
+
+    def run_costs(self, script: str, *args: str) -> None:
+        subprocess.run(
+            ["python3", str(self.clone.root / ".claude" / "costs" / script), *args],
+            env=self.clone.env(),
+            capture_output=True,
+            check=True,
         )
 
     def test_passes_a_branch_with_no_sessions(self) -> None:
@@ -100,6 +110,30 @@ class TheGate(unittest.TestCase):
         done = self.check(running="live")
         self.assertEqual(done.returncode, 0, done.stderr)
         self.assertIn("ok — 1 session(s)", done.stdout)
+
+    def test_fails_a_tree_copy_of_the_table_naming_the_way_onto_the_ledger(self) -> None:
+        (self.clone.root / ".claude" / "costs" / "rates.repo.json").write_text('{"roles": {}}', encoding="utf-8")
+        done = self.check()
+        self.assertEqual(done.returncode, 1)
+        self.assertIn("rates.repo.json is in the tree", done.stderr)
+        self.assertIn("ledger.py backfill`, then `git rm .claude/costs/rates.repo.json`", done.stderr)
+
+    def test_warns_of_a_role_both_tables_rate_without_failing(self) -> None:
+        self.run_costs("estimate.py", "role", "set", "artist", "0.9", "senior", "songs")
+        shared_path = self.clone.root / ".claude" / "costs" / "rates.json"
+        shared = json.loads(shared_path.read_text(encoding="utf-8"))
+        shared["roles"]["artist"] = 1.2
+        shared_path.write_text(json.dumps(shared), encoding="utf-8")
+        done = self.check()
+        self.assertEqual(done.returncode, 0, done.stderr)
+        self.assertIn("this repository: `artist` is rated ×0.9 by its own table and ×1.2 by rates.json", done.stderr)
+
+    def test_reads_the_table_off_the_ledger_tip_another_clone_pushed(self) -> None:
+        self.run_costs("estimate.py", "role", "set", "artist", "0.9", "senior", "songs")
+        self.clone.git("update-ref", "-d", "refs/remotes/origin/cost-ledger")
+        self.commit_row("added", estimate=estimate_of("a", Part(1, "senior", "artist")))
+        done = self.check()
+        self.assertEqual(done.returncode, 0, done.stderr)
 
     def test_with_no_base_checks_the_running_session_alone_and_says_so(self) -> None:
         self.commit_row("added")

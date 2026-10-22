@@ -17,6 +17,14 @@ session_id="$(field session_id)"
 [ -n "$root" ] && [ -n "$session_id" ] && [ -f "$root/.claude/costs/rates.json" ] || exit 0
 
 script=".claude/costs/estimate.py"
+# The repository's own roles are on `cost-ledger`, and a fresh container has no
+# local copy of it until its first `Stop`; without one the notice would leave
+# them out, so a failed fetch is said too.
+unfetched=""
+if ! git -C "$root" rev-parse -q --verify refs/remotes/origin/cost-ledger >/dev/null; then
+  error="$(python3 "$root/.claude/costs/ledger.py" fetch 2>&1)" ||
+    unfetched=" The \`cost-ledger\` branch could not be fetched, so any role this repository adds of its own is missing from the list: $error"
+fi
 # A table that does not parse — a broken `rates.repo.json`, most likely — would
 # refuse every estimate, so it is said rather than skipped.
 if ! rates="$(python3 "$root/$script" rates 2>&1)"; then
@@ -31,11 +39,13 @@ usage="python3 $script set --part <hours> <grade> <role> \"<why, at most 280 cha
 # A repository's own role gets a sentence of its own, naming the work booked
 # under it: listed among the shared roles alone, its work goes to the nearest.
 added="$(jq -r '.added | to_entries | map(" This repository adds a role of its own: `\(.key)`, always `\(.value.grade)` — \(.value.work). Book that work under it, `--part <hours> \(.value.grade) \(.key)`, even where a shared role seems to fit.") | join("")' <<<"$rates")"
+adding=" Work no listed role fits is a role this repository adds, with \`python3 $script role set <name> <multiplier> <grade> \"<the work booked under it>\"\`, which pushes it to \`cost-ledger\`."
+shadowed="$(jq -r '.notes | map(" Two rates for one role: \(.).") | join("")' <<<"$rates")"
 
 # One line per paragraph: the agent reads it unwrapped, and a hard break inside
 # the command would split it.
 if [ "$current" = "no estimate yet" ]; then
-  notice="This session has no human-hour estimate yet. Once the size of the work is known, set one — the vet run at \`/finalize\` fails a branch carrying a session without one: \`$usage\` — one part per role and grade the task would take in a team, each the hours that person would spend on it (roles: $roles; grades: $grades).$added A session that only answers a question gets one too. It sizes the task, never the session's own pace: revise it when the task grows or shrinks — scope added, a difficulty no estimator would have foreseen, a relay handing the rest on — and never because the work went slowly. Each part's reason is the case for the team: why that role at that grade for those hours — e.g. \`--part 2 middle developer \"the code is a routine component slot\" --part 1 senior copywriter \"the prose needs judgement of voice\"\` — never a summary of the work, which the row and the commits already carry. A revision replaces the whole estimate, and git keeps the old one, so its reasons justify the parts as they stand, never how the figure moved."
+  notice="This session has no human-hour estimate yet. Once the size of the work is known, set one — the vet run at \`/finalize\` fails a branch carrying a session without one: \`$usage\` — one part per role and grade the task would take in a team, each the hours that person would spend on it (roles: $roles; grades: $grades).$added$adding A session that only answers a question gets one too. It sizes the task, never the session's own pace: revise it when the task grows or shrinks — scope added, a difficulty no estimator would have foreseen, a relay handing the rest on — and never because the work went slowly. Each part's reason is the case for the team: why that role at that grade for those hours — e.g. \`--part 2 middle developer \"the code is a routine component slot\" --part 1 senior copywriter \"the prose needs judgement of voice\"\` — never a summary of the work, which the row and the commits already carry. A revision replaces the whole estimate, and git keeps the old one, so its reasons justify the parts as they stand, never how the figure moved."
 else
   # Correcting a part booked under the wrong role is not a change of size, so
   # it is named apart from the rule that revisions follow the task.
@@ -43,4 +53,4 @@ else
   notice="This session's human-hour estimate: $current. If this prompt changes the size of the task — never the pace of the work — revise it with \`$usage\`, each part's reason justifying its role, grade and hours as they now stand — never a summary of the work, nor how the figure moved.$added"
 fi
 
-emit_context "$notice"
+emit_context "$notice$shadowed$unfetched"

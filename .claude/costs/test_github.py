@@ -123,7 +123,7 @@ class FakeGitHub:
                     "viewer": {
                         "repositories": {
                             "pageInfo": {"hasNextPage": more, "endCursor": str(start + self.page) if more else None},
-                            "nodes": [self.node(repo) for repo in repos],
+                            "nodes": [self.node_answer(query, self.node(repo)) for repo in repos],
                         }
                     }
                 }
@@ -133,8 +133,14 @@ class FakeGitHub:
         for found in re.finditer(alias + r'object\(expression: "([^":]+):[^"]*/(\d{4}-\d{2})"\)', query):
             data[found[1]] = self.tree(found[4], f"{found[2]}/{found[3]}", found[5])
         for found in re.finditer(alias + r"\s*nameWithOwner", query):
-            data[found[1]] = self.node(f"{found[2]}/{found[3]}")
+            data[found[1]] = self.node_answer(query, self.node(f"{found[2]}/{found[3]}"))
         return {"data": data}
+
+    def node_answer(self, query: str, node: Dict[str, Any]) -> Dict[str, Any]:
+        """A repository's table is on the ledger, so a query reading it anywhere
+        else finds nothing."""
+        ledger_side = f'addedRoles: object(expression: "refs/heads/{BRANCH}:.claude/costs/rates.repo.json")' in query
+        return node if ledger_side else {**node, "addedRoles": None}
 
 
 def no_sleep(_: float) -> None:
@@ -193,7 +199,9 @@ class FailuresAreLoud(unittest.TestCase):
 
     def test_a_truncated_rates_repo_json_raises(self) -> None:
         github = FakeGitHub({"a/ledger": {"2026-03": {}}}, added_roles={"a/ledger": TRUNCATED})
-        with self.assertRaisesRegex(ShapeError, "a/ledger:.claude/costs/rates.repo.json: GitHub did not return"):
+        with self.assertRaisesRegex(
+            ShapeError, f"a/ledger:refs/heads/{BRANCH}:.claude/costs/rates.repo.json: GitHub did not return"
+        ):
             discover(Client(github, no_sleep))
 
 
