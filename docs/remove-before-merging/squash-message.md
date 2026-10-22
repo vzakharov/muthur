@@ -1,8 +1,4 @@
-Proposed squash title/body:
-
-```
-feat: add /merge, routing by whether the branch is finalized (#217)
-```
+Proposed squash body:
 
 ```
 An operator's ask to merge had one route, /finalize and merge, defined
