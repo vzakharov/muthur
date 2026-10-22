@@ -91,7 +91,7 @@ def booking(tip: Optional[str], role: str) -> List[str]:
     return [row.session_id for row in rows if row.estimate and any(p.role == role for p in row.estimate.parts)]
 
 
-def change_role(name: str, entry: Optional[Mapping[str, Any]]) -> Optional[str]:
+def push_role(name: str, entry: Optional[Mapping[str, Any]]) -> Optional[str]:
     """`role set` where `entry` is given, `role drop` where it is None. A drop
     is refused while a ledger row books the role and the shared table does not
     rate it, so every role a row names stays rateable."""
@@ -139,7 +139,7 @@ def main() -> int:
             entry = None
             if args.action == "set":
                 entry = {"multiplier": args.multiplier, "grade": args.grade, "work": args.work}
-            built = change_role(args.name, entry)
+            built = push_role(args.name, entry)
             print(f"estimate: {BRANCH} {'already holds that' if built is None else f'updated in {built[:7]}'}")
             return 0
         # The local copy of the ledger, so a prompt's notice makes no network
