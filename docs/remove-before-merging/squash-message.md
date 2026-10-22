@@ -14,9 +14,11 @@ last turn before the running /relay one to the summary verbatim, as a
 final "Last reply" section in a code fence, so the text is carried
 rather than retyped. A turn is the records sharing a user record's
 promptId, and all of its text blocks are kept, so a report survives a
-hook-forced trailing tool call; a turn that wrote no text is passed
-over, and the script fails loudly and writes nothing when it finds no
-earlier reply.
+hook-forced trailing tool call. A turn that wrote no text is passed
+over, and so is a cache keepalive wake the operator did not open, whose
+one line is what they answer with "park" right before a parking relay.
+The script fails loudly and writes nothing when it finds no earlier
+reply.
 
 /relay's Step 2 runs the script after writing the summary, its section 2
 now ends at the operator message the reply answers, and section 9 is
