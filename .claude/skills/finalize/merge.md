@@ -20,8 +20,7 @@ merge back rather than passing it on. Any future caller answers the same
 question: was the flag written after the operator could have looked?
 
 **An operator's ask to merge goes to `@.claude/skills/merge/SKILL.md`**, which
-reads it, tells a finalized branch from one that is not, and reaches this flag
-for the latter.
+reaches this flag on a branch not yet finalized.
 
 ## Step 8 — the gate
 

@@ -37,16 +37,15 @@ Load `@.claude/skills/check-merge/SKILL.md` and run it **once**. Its hand-back
 on an advanced base is taken here rather than by its standalone deliberation.
 
 - **`contained`** → walk `@.claude/skills/finalize/merge.md` § "Step 8 — the
-  gate" over this run. The run is `/finalize`'s step 6 — the check — plus the
-  squash reconcile that is step 5's criterion, so those entries and "Anywhere"
-  can fire, and the others describe steps that never ran. **The attestation
-  itself is part of the gate here**, because the land-prep run's own steps are
-  what would have stood it down: a line short of green — the vet run, CI, a
-  bucket left undispatched for any reason but the diff not reaching it — or a
-  two-shot stop it records, stands this run down. A `Verified` SHA trailing the
-  marker does not: that judgment is written in the attestation being merged on.
-  Pass → `@.claude/skills/finalize/merge.md` § "Merging", whose step 7 is
-  already up. Fail → its § "Standing down".
+  gate" over this run. Only its step 5 (the squash reconcile), step 6 (the
+  check) and "Anywhere" entries can fire; the rest describe steps this run never
+  ran. **The attestation itself is part of the gate here**, because the
+  land-prep run's own steps are what would have stood it down: a line short of
+  green — the vet run, CI, a bucket left undispatched for any reason but the
+  diff not reaching it — or a two-shot stop it records, stands this run down. A
+  `Verified` SHA trailing the marker does not: that judgment is written in the
+  attestation being merged on. Pass → `@.claude/skills/finalize/merge.md` §
+  "Merging", whose step 7 is already up. Fail → its § "Standing down".
 - **`advanced`** → load `@.claude/skills/sync-branch/SKILL.md` and follow it,
   then let `/check-merge` Step 3 reconcile the squash record on the merged head.
   Stand down per `@.claude/skills/finalize/merge.md` § "Standing down", naming
