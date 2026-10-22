@@ -219,9 +219,8 @@ Steps (stop on first unresolved failure):
    operator, or by step 8 itself.
 
 7. **Attest** — the last act, and the only durable record that this branch was
-   verified beyond whatever CI reports. Load `@.claude/skills/finalize/attest.md`
-   and follow it: it owns the comment's templates, how to find it on a re-run,
-   and the rules that make it worth trusting.
+   verified beyond whatever CI reports. Load
+   `@.claude/skills/finalize/attest.md` and follow it.
 
 8. **Merge — under `and merge` only, and only if the run was uneventful.**
    Without the flag, stop at step 7 and report. With it, walk the gate in
