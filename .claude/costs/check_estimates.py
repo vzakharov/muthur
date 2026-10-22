@@ -16,16 +16,14 @@ from __future__ import annotations
 import os
 import subprocess
 import sys
-from pathlib import Path
 from typing import List, Optional, Tuple
 
-from lib.estimate import latest, load_rates
-from lib.ledger import BRANCH, REMOTE_REF, LedgerError, fetch, latest_row, rows_at, union
+from lib.estimate import latest, shadow_notes
+from lib.ledger import BRANCH, RATES_PATH, REMOTE_REF, LedgerError, fetch, latest_row, ledger_rates, rows_at, union
 from lib.rows import ROOT, SESSIONS, SessionCost, parse_session_cost, read_pending_estimate
 from lib.shape import ShapeError
 
 PROG = "check-estimates"
-COSTS = Path(__file__).resolve().parent
 DEFAULT_BRANCHES = ("refs/remotes/origin/HEAD", "refs/remotes/origin/main", "refs/remotes/origin/master")
 
 
@@ -66,7 +64,7 @@ def branch_rows(base: str) -> List[SessionCost]:
 
 def ledger_rows(branch: str) -> List[SessionCost]:
     """A finalized branch's rows are on the ledger alone."""
-    if not branch or fetch() is None:
+    if not branch:
         return []
     rows = (parse_session_cost(text, f"{BRANCH}:{path}") for path, text in rows_at(REMOTE_REF))
     return [row for row in rows if row.branch == branch]
@@ -85,10 +83,20 @@ def fix_for(session_id: str, running: Optional[str]) -> str:
 def main() -> int:
     running = os.environ.get("CLAUDE_CODE_SESSION_ID")
     base = merge_base()
+    if (ROOT / RATES_PATH).is_file():
+        print(
+            f"{PROG}: {RATES_PATH} is in the tree, where nothing reads it; the table lives on {BRANCH}."
+            f" Carry it there with `python3 .claude/costs/ledger.py backfill`, then `git rm {RATES_PATH}`.",
+            file=sys.stderr,
+        )
+        return 1
     try:
-        # Read on every run, so a broken `rates.repo.json` fails the vet run
-        # rather than the next estimate.
-        rates = load_rates(COSTS)
+        # Fetched and read on every run, so a broken or stale table shows here
+        # rather than at the next estimate.
+        fetch()
+        rates = ledger_rates(REMOTE_REF)
+        for note in shadow_notes(rates, "this repository"):
+            print(f"{PROG}: {note}", file=sys.stderr)
         carried = union(
             [*(branch_rows(base[1]) if base is not None else []), *ledger_rows(git("branch", "--show-current").strip())],
             lambda row: row,

@@ -9,8 +9,7 @@ from __future__ import annotations
 import json
 import re
 from dataclasses import dataclass, field, replace
-from pathlib import Path
-from typing import Any, Dict, List, Mapping, Optional
+from typing import Any, Dict, List, Mapping, Optional, Tuple
 
 from lib.shape import ShapeError, is_number, read_number, read_object, read_string, required
 
@@ -64,6 +63,9 @@ class Rates:
     grades: Dict[str, float]
     # The roles `rates.repo.json` adds, each in `roles` too at its multiplier.
     added: Dict[str, AddedRole] = field(default_factory=dict)
+    # An added role the shared table has since taken up, to the shared
+    # multiplier; `roles` keeps the repository's.
+    shadowed: Dict[str, float] = field(default_factory=dict)
 
 
 def _is_multiplier(value: Any) -> bool:
@@ -97,12 +99,25 @@ def parse_rates(text: str, where: str = SHARED_RATES) -> Rates:
     )
 
 
-def with_added_roles(shared: Rates, text: str, where: str = REPO_RATES) -> Rates:
-    """The shared table plus the roles a repository's own file adds. The file
-    only adds: a role the shared table already rates raises rather than being
-    re-rated, which would re-rate every row booked under it, and a key it does
-    not know raises rather than being ignored, since a `grades` there would
-    otherwise read as a grade added."""
+def _added_role(entry: Any, shared: Rates, at: str) -> Tuple[float, AddedRole]:
+    if not isinstance(entry, dict) or sorted(entry) != sorted(ADDED_ROLE_KEYS):
+        raise ShapeError(f"{at}: not an object of exactly {', '.join(ADDED_ROLE_KEYS)}")
+    multiplier = entry["multiplier"]
+    if not _is_multiplier(multiplier):
+        raise ShapeError(f"{at}: `multiplier` is not positive")
+    grade = required(read_string, entry, "grade", at)
+    if grade not in shared.grades:
+        raise ShapeError(f"{at}: grade `{grade}` is not one of {', '.join(shared.grades)} ({SHARED_RATES})")
+    work = required(read_string, entry, "work", at).strip()
+    if not 0 < len(work) <= COMMENT_LIMIT:
+        raise ShapeError(f"{at}: `work` is {len(work)} characters, not 1–{COMMENT_LIMIT}")
+    return multiplier, AddedRole(grade=grade, work=work)
+
+
+def added_roles_of(text: str, where: str) -> Dict[str, Any]:
+    """The `roles` object of a repository's table. A key it does not know raises
+    rather than being ignored, since a `grades` there would otherwise read as a
+    grade added."""
     table = _json_object(text, where)
     unknown = sorted(set(table) - {"roles"})
     if unknown:
@@ -110,38 +125,64 @@ def with_added_roles(shared: Rates, text: str, where: str = REPO_RATES) -> Rates
     roles = read_object(table, "roles", where)
     if not roles:
         raise ShapeError(f"{where} roles: not a non-empty object")
+    return roles
+
+
+def with_added_roles(shared: Rates, text: str, where: str = REPO_RATES) -> Rates:
+    """The shared table plus the roles a repository's own table adds. A role
+    the shared table has since taken up keeps the repository's multiplier and is
+    listed in `shadowed`: its rows were booked against that multiplier, so
+    switching them to the shared one would re-rate their history."""
     multipliers = dict(shared.roles)
     added: Dict[str, AddedRole] = {}
-    for name, entry in roles.items():
-        at = f"{where} roles `{name}`"
+    shadowed: Dict[str, float] = {}
+    for name, entry in added_roles_of(text, where).items():
+        multipliers[name], added[name] = _added_role(entry, shared, f"{where} roles `{name}`")
         if name in shared.roles:
-            raise ShapeError(f"{at}: {SHARED_RATES} rates this role already; drop it from {where}")
-        if not isinstance(entry, dict) or sorted(entry) != sorted(ADDED_ROLE_KEYS):
-            raise ShapeError(f"{at}: not an object of exactly {', '.join(ADDED_ROLE_KEYS)}")
-        multiplier = entry["multiplier"]
-        if not _is_multiplier(multiplier):
-            raise ShapeError(f"{at}: `multiplier` is not positive")
-        grade = required(read_string, entry, "grade", at)
-        if grade not in shared.grades:
-            raise ShapeError(f"{at}: grade `{grade}` is not one of {', '.join(shared.grades)} ({SHARED_RATES})")
-        work = required(read_string, entry, "work", at).strip()
-        if not 0 < len(work) <= COMMENT_LIMIT:
-            raise ShapeError(f"{at}: `work` is {len(work)} characters, not 1–{COMMENT_LIMIT}")
-        multipliers[name] = multiplier
-        added[name] = AddedRole(grade=grade, work=work)
-    return Rates(roles=multipliers, grades=shared.grades, added=added)
+            shadowed[name] = shared.roles[name]
+    return Rates(roles=multipliers, grades=shared.grades, added=added, shadowed=shadowed)
 
 
-def load_shared_rates(costs: Path) -> Rates:
-    return parse_rates((costs / SHARED_RATES).read_text(encoding="utf-8"))
+def checked_new_role(shared: Rates, name: str, entry: Mapping[str, Any], where: str) -> None:
+    """A role a repository may add: never one the shared table rates, since
+    re-rating it there would re-rate every row booked under it."""
+    at = f"{where} roles `{name}`"
+    if name in shared.roles:
+        raise ShapeError(f"{at}: {SHARED_RATES} rates this role already")
+    _added_role(dict(entry), shared, at)
 
 
-def load_rates(costs: Path) -> Rates:
-    """This repository's table: the shared one, plus its own roles where it
-    carries a `rates.repo.json`."""
-    shared = load_shared_rates(costs)
-    repo = costs / REPO_RATES
-    return with_added_roles(shared, repo.read_text(encoding="utf-8")) if repo.is_file() else shared
+def role_change(
+    shared: Rates, before: Optional[str], name: str, entry: Optional[Mapping[str, Any]], where: str
+) -> Tuple[Optional[str], str]:
+    """The table `before` becomes with `name` set to `entry`, or dropped where
+    `entry` is None — None where no role is left — and the commit's message,
+    which is how the ledger's log reads as the table's history."""
+    roles = dict(added_roles_of(before, where)) if before is not None else {}
+    if entry is None:
+        if name not in roles:
+            raise ShapeError(f"{where}: no role `{name}` to drop")
+        del roles[name]
+        message = f"chore: drop estimate role {name}"
+    else:
+        checked_new_role(shared, name, entry, where)
+        roles[name] = dict(entry)
+        message = f"chore: estimate role {name} ×{entry['multiplier']:g} at {entry['grade']}"
+    if not roles:
+        return None, message
+    text = json.dumps({"roles": roles}, indent=2, ensure_ascii=False) + "\n"
+    with_added_roles(shared, text, where)
+    return text, message
+
+
+def shadow_notes(rates: Rates, repo: str) -> List[str]:
+    """One line per shadowed role, naming both multipliers and how to adopt the
+    shared one."""
+    return [
+        f"{repo}: `{role}` is rated ×{rates.roles[role]:g} by its own table and ×{shared:g} by {SHARED_RATES};"
+        f" its rows keep ×{rates.roles[role]:g} — `estimate.py role drop {role}` adopts the shared rate"
+        for role, shared in rates.shadowed.items()
+    ]
 
 
 def checked(estimate: Estimate, rates: Rates, where: str) -> Estimate:

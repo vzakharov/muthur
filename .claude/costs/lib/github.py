@@ -21,14 +21,14 @@ import time
 from dataclasses import dataclass, field
 from typing import Any, Callable, Collection, Dict, List, Mapping, Optional, Sequence, Tuple
 
-from lib.estimate import REPO_RATES
-from lib.ledger import BRANCH, union
+from lib.ledger import BRANCH, RATES_PATH, union
 from lib.rows import SessionCost, reshape
 from lib.shape import ShapeError, read_object, read_string, required
 
 LEDGER = ".claude/costs/sessions"
-# A row may name a role only its own repository rates, so the report reads it.
-ADDED_ROLES = f".claude/costs/{REPO_RATES}"
+# A row may name a role only its own repository rates, so the report reads that
+# repository's table, off the ledger beside the rows.
+ADDED_ROLES = f"refs/heads/{BRANCH}:{RATES_PATH}"
 WATERMARK = ".claude/skills/update-muthur/watermark.json"
 # A page of 100 answered HTTP 502 on a token reaching 357 repositories; 40 did not.
 PAGE = 40
@@ -131,7 +131,7 @@ REPO_FIELDS = (
         for alias, rev in SIDES.items()
     )
     + f"  watermark: object(expression: {literal('HEAD:' + WATERMARK)}) {{ __typename }}\n"
-    + f"  addedRoles: object(expression: {literal('HEAD:' + ADDED_ROLES)})"
+    + f"  addedRoles: object(expression: {literal(ADDED_ROLES)})"
     " { ... on Blob { isTruncated isBinary text } }\n"
 )
 
