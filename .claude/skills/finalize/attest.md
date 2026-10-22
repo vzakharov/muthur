@@ -4,13 +4,11 @@ Loaded by `@.claude/skills/finalize/SKILL.md` at step 7, and by
 `@.claude/skills/merge/SKILL.md` and `@.claude/skills/finalize/revoke.md`, which
 read the comment it posts. Step numbers below are `/finalize`'s.
 
-The attestation is the last act, and the only durable record that this branch
-was verified beyond whatever CI reports. Post it on the PR — or, on a re-run,
-edit it in place; it is sticky, keyed on the `<!-- finalize-attestation` marker,
-and the marker is how you find it (§ "Finding the comment"). The marker carries
-the head's full SHA, which the cost ledger's `Stop` hook parses
-(`.claude/costs/lib/finalized.py`) to stop writing display copies onto a
-finalized branch:
+Post the attestation on the PR — or, on a re-run, edit it in place; it is
+sticky, keyed on the `<!-- finalize-attestation` marker, and the marker is how
+you find it (§ "Finding the comment"). The marker carries the head's full SHA,
+which the cost ledger's `Stop` hook parses (`.claude/costs/lib/finalized.py`) to
+stop writing display copies onto a finalized branch:
 
 ```md
 <!-- finalize-attestation <full-head-sha> -->
