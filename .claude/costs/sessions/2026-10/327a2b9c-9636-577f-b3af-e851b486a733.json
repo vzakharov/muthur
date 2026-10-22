@@ -1,6 +1,16 @@
 {
+  "total": {
+    "inputTokens": 64,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 138824,
+    "cacheReadTokens": 4719222,
+    "outputTokens": 30292,
+    "thinkingTokens": 10086,
+    "responses": 32,
+    "costUsd": 2.6605324
+  },
   "estimate": {
-    "at": "2026-10-21T15:36:32.106Z",
+    "at": "2026-10-22T07:54:47.910Z",
     "parts": [
       {
         "hours": 3.0,
@@ -11,8 +21,8 @@
       {
         "hours": 1.0,
         "grade": "middle",
-        "role": "copywriter",
-        "comment": "the plan and migration note are adopter-facing prose, routine once the design is settled"
+        "role": "prompter",
+        "comment": "the plan and migration note are read and acted on by adopters' agents, so the prose is instructions; routine once the design is settled"
       }
     ],
     "comment": null
@@ -31,16 +41,6 @@
   "lastResponseAt": "2026-10-21T16:20:39.539Z",
   "pricesAsOf": "2026-10-06",
   "claudeCodeTotalUsd": 2.0756652000000004,
-  "total": {
-    "inputTokens": 64,
-    "cacheWrite5mTokens": 0,
-    "cacheWrite1hTokens": 138824,
-    "cacheReadTokens": 4719222,
-    "outputTokens": 30292,
-    "thinkingTokens": 10086,
-    "responses": 32,
-    "costUsd": 2.6605324
-  },
   "ownTurns": {
     "inputTokens": 64,
     "cacheWrite5mTokens": 0,
