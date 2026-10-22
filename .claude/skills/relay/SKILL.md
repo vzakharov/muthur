@@ -123,7 +123,7 @@ The sections, in this order:
    quoted here, since it is what the successor's `/go` records when it flips the
    plan.
 9. **Last agent turn** — the script's, never hand-written, interim messages
-   included.
+   included — chat text the operator already saw.
 
 ### Step 3 — Start the successor
 
