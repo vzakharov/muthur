@@ -13,18 +13,19 @@ in a stand-down rather than a merge.
   first, as `/finalize <target>` does. No target → the current branch.
 - **`no vet`** (optional): rides unchanged to whichever of `/finalize` and
   `/sync-branch` runs below.
-
-**An ask that also requests changes holds the merge.** It was written before the
-diff it would merge existed, so make the changes, run `/finalize` without the
-flag, and report that the merge was held and that `/merge` lands it once the
-operator has looked — `@.claude/skills/finalize/merge.md` § "The flag" says why.
+- **Changes asked alongside** — this skill is reached by an ask in words as
+  often as by the command, and "fix the typo and merge" asks for a diff too.
+  That holds the merge: the ask was written before the diff it would merge
+  existed, so make the changes, run `/finalize` without the flag, and report
+  that the merge was held and that `/merge` lands it once the operator has
+  looked — `@.claude/skills/finalize/merge.md` § "The flag" says why.
 
 ## Finalized?
 
-**Finalized means the PR is ready for review and its
-`<!-- finalize-attestation -->` comment names the current head**, give or take
-what `@.claude/skills/finalize/SKILL.md` step 7's last rule lets ride past it.
-Anything short of that is a diff no run has verified.
+**Finalized means the PR is ready for review and its attestation comment names
+the current head** — or a head past it only by `.claude/costs/sessions/`, which
+`@.claude/skills/finalize/attest.md` § "What makes it worth trusting" counts as
+the same head. Anything short of that is a diff no run has verified.
 
 ## Not finalized → land prep
 
