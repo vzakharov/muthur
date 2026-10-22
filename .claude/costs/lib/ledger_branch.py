@@ -14,12 +14,17 @@ import os
 import subprocess
 from typing import Callable, Dict, Iterable, List, Mapping, Optional, Sequence, Tuple, TypeVar
 
+from lib.estimate_model import REPO_RATES, SHARED_RATES, Rates, parse_rates, with_added_roles
 from lib.rows import ROOT, SESSIONS, SessionCost, parse_session_cost
 from lib.shape import ShapeError
 
 BRANCH = "cost-ledger"
 REMOTE_REF = f"refs/remotes/origin/{BRANCH}"
 PREFIX = SESSIONS.relative_to(ROOT).as_posix()
+# The repository's own estimate roles, beside the rows they rate and nowhere
+# else: a copy per branch would leave rows only an unmerged branch could rate.
+RATES_PATH = (SESSIONS.parent / REPO_RATES).relative_to(ROOT).as_posix()
+RATES_ON_LEDGER = f"{BRANCH}:{RATES_PATH}"
 # Where `backfill` fetches every PR's head, apart from anything a person reads.
 PR_REFS = "refs/costs-pr"
 TRIES = 3
@@ -60,6 +65,22 @@ def resolve(rev: str) -> Optional[str]:
 def text_at(rev: str, path: str) -> Optional[str]:
     done = run("cat-file", "blob", f"{rev}:{path}")
     return done.stdout.decode() if done.returncode == 0 else None
+
+
+def rates_text(rev: Optional[str]) -> Optional[str]:
+    return text_at(rev, RATES_PATH) if rev else None
+
+
+def shared_rates() -> Rates:
+    return parse_rates((SESSIONS.parent / SHARED_RATES).read_text(encoding="utf-8"))
+
+
+def ledger_rates(rev: Optional[str]) -> Rates:
+    """This checkout's `rates.json` plus the roles the ledger's table at `rev`
+    adds; the shared table alone where `rev` or its table is missing."""
+    shared = shared_rates()
+    text = rates_text(rev)
+    return shared if text is None else with_added_roles(shared, text, RATES_ON_LEDGER)
 
 
 def fetch() -> Optional[str]:
@@ -163,18 +184,21 @@ def row_subject(before: Optional[str], after: str) -> str:
     )
 
 
-def commit(parent: Optional[str], rows: Mapping[str, str], message: str) -> str:
-    """A commit of `rows`, path to text, on `parent` (an orphan root where
-    None), built in a throwaway index so whatever the agent has staged stays out
-    of it. `commit-tree` runs no commit hooks, which suits a file no formatter
-    should rewrite, and signs only when asked, so `-S` follows
-    `commit.gpgsign`."""
+def commit(parent: Optional[str], rows: Mapping[str, Optional[str]], message: str) -> str:
+    """A commit of `rows`, path to text or to None for a file it removes, on
+    `parent` (an orphan root where None), built in a throwaway index so whatever
+    the agent has staged stays out of it. `commit-tree` runs no commit hooks,
+    which suits a file no formatter should rewrite, and signs only when asked,
+    so `-S` follows `commit.gpgsign`."""
     index = ROOT / "tmp" / f"ledger-index.{os.getpid()}"
     index.parent.mkdir(parents=True, exist_ok=True)
     env = {"GIT_INDEX_FILE": str(index)}
     try:
         git("read-tree", *([parent] if parent else ["--empty"]), env=env)
         for path, text in rows.items():
+            if text is None:
+                git("update-index", "--force-remove", path, env=env)
+                continue
             blob = git("hash-object", "-w", "--stdin", "--path", path, input=text).strip()
             git("update-index", "--add", "--cacheinfo", f"100644,{blob},{path}", env=env)
         tree = git("write-tree", env=env).strip()
@@ -186,7 +210,7 @@ def commit(parent: Optional[str], rows: Mapping[str, str], message: str) -> str:
     ).strip()
 
 
-Plan = Callable[[Optional[str]], Tuple[Dict[str, str], str]]
+Plan = Callable[[Optional[str]], Tuple[Dict[str, Optional[str]], str]]
 
 
 def append(plan: Plan) -> Optional[str]:
@@ -208,7 +232,7 @@ def append(plan: Plan) -> Optional[str]:
     raise LedgerError(f"pushing to {BRANCH} failed {TRIES} times: {error}")
 
 
-def row_change(parent: Optional[str], path: str, text: str) -> Tuple[Dict[str, str], str]:
+def row_change(parent: Optional[str], path: str, text: str) -> Tuple[Dict[str, Optional[str]], str]:
     """What committing `text` at `path` onto `parent` changes — nothing where
     `parent` already holds it — and the commit's message."""
     before = text_at(parent, path) if parent else None
@@ -231,22 +255,59 @@ def _count(n: int) -> str:
     return f"{n} session row{'' if n == 1 else 's'}"
 
 
+def _roles(text: str) -> Optional[object]:
+    try:
+        return json.loads(text).get("roles")
+    except (ValueError, AttributeError):
+        return None
+
+
+def _rates_carry(tree: Optional[str], held: Optional[str]) -> Optional[str]:
+    """The tree's `rates.repo.json` where the ledger has none; nothing where the
+    two agree. Where they differ, neither is picked: which multiplier a role's
+    rows were booked against is the operator's to say."""
+    if tree is None:
+        return None
+    if held is None:
+        return tree
+    tree_roles, held_roles = _roles(tree), _roles(held)
+    if tree_roles is not None and tree_roles == held_roles:
+        return None
+    if isinstance(tree_roles, dict) and isinstance(held_roles, dict):
+        differ = sorted(n for n in {*tree_roles, *held_roles} if tree_roles.get(n) != held_roles.get(n))
+        what = f"they differ on {', '.join(f'`{n}`' for n in differ)}"
+    else:
+        what = "one of them does not parse"
+    raise LedgerError(
+        f"{RATES_PATH} is in the tree and on {BRANCH}, and {what}; settle {BRANCH}'s with"
+        " `estimate.py role set` / `role drop`, then `git rm` the tree's"
+    )
+
+
 def backfill(refs: Sequence[str]) -> Tuple[int, Optional[str]]:
     """Carry into the ledger every row `refs` hold that it lacks or holds
-    older: how many sessions the ledger holds after, and the commit, if one was
-    needed. A second run commits nothing."""
+    older, and the tree's `rates.repo.json` where the ledger has none: how many
+    sessions the ledger holds after, and the commit, if one was needed. A second
+    run commits nothing."""
     found = [(path, text) for ref in refs for path, text in rows_at(ref)]
+    tree_rates = ROOT / RATES_PATH
+    tree_text = tree_rates.read_text(encoding="utf-8") if tree_rates.is_file() else None
     held_ids: List[str] = []
 
     def parsed(item: Tuple[str, str]) -> SessionCost:
         return parse_session_cost(item[1], item[0])
 
-    def plan(tip: Optional[str]) -> Tuple[Dict[str, str], str]:
+    def plan(tip: Optional[str]) -> Tuple[Dict[str, Optional[str]], str]:
         held = dict(rows_at(tip)) if tip else {}
         winners = union([*held.items(), *found], parsed)
         held_ids[:] = [parsed(item).session_id for item in winners]
-        carried = {path: text for path, text in winners if held.get(path) != text}
-        return carried, f"chore: carry {_count(len(carried))} into the ledger"
+        carried: Dict[str, Optional[str]] = {path: text for path, text in winners if held.get(path) != text}
+        message = f"chore: carry {_count(len(carried))} into the ledger"
+        rates = _rates_carry(tree_text, rates_text(tip))
+        if rates is not None:
+            carried[RATES_PATH] = rates
+            message = f"chore: carry {_count(len(carried) - 1)} and the estimate roles into the ledger"
+        return carried, message
 
     try:
         built = append(plan)

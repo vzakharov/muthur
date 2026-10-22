@@ -16,16 +16,14 @@ from __future__ import annotations
 import os
 import subprocess
 import sys
-from pathlib import Path
 from typing import List, Optional, Tuple
 
-from lib.estimate import latest, parse_rates
-from lib.ledger import BRANCH, REMOTE_REF, LedgerError, fetch, latest_row, rows_at, union
+from lib.estimate_model import latest, shadow_notes
+from lib.ledger_branch import BRANCH, RATES_PATH, REMOTE_REF, LedgerError, fetch, latest_row, ledger_rates, rows_at, union
 from lib.rows import ROOT, SESSIONS, SessionCost, parse_session_cost, read_pending_estimate
 from lib.shape import ShapeError
 
 PROG = "check-estimates"
-COSTS = Path(__file__).resolve().parent
 DEFAULT_BRANCHES = ("refs/remotes/origin/HEAD", "refs/remotes/origin/main", "refs/remotes/origin/master")
 
 
@@ -66,7 +64,7 @@ def branch_rows(base: str) -> List[SessionCost]:
 
 def ledger_rows(branch: str) -> List[SessionCost]:
     """A finalized branch's rows are on the ledger alone."""
-    if not branch or fetch() is None:
+    if not branch:
         return []
     rows = (parse_session_cost(text, f"{BRANCH}:{path}") for path, text in rows_at(REMOTE_REF))
     return [row for row in rows if row.branch == branch]
@@ -85,7 +83,20 @@ def fix_for(session_id: str, running: Optional[str]) -> str:
 def main() -> int:
     running = os.environ.get("CLAUDE_CODE_SESSION_ID")
     base = merge_base()
+    if (ROOT / RATES_PATH).is_file():
+        print(
+            f"{PROG}: {RATES_PATH} is in the tree, where nothing reads it; the table lives on {BRANCH}."
+            f" Carry it there with `python3 .claude/costs/ledger.py backfill`, then `git rm {RATES_PATH}`.",
+            file=sys.stderr,
+        )
+        return 1
     try:
+        # Fetched and read on every run, so a broken or stale table shows here
+        # rather than at the next estimate.
+        fetch()
+        rates = ledger_rates(REMOTE_REF)
+        for note in shadow_notes(rates, "this repository"):
+            print(f"{PROG}: {note}", file=sys.stderr)
         carried = union(
             [*(branch_rows(base[1]) if base is not None else []), *ledger_rows(git("branch", "--show-current").strip())],
             lambda row: row,
@@ -99,14 +110,14 @@ def main() -> int:
         return 1
 
     if missing:
-        rates = parse_rates((COSTS / "rates.json").read_text(encoding="utf-8"))
         print(f"{PROG}: {len(missing)} session(s) on this branch have no human-hour estimate.", file=sys.stderr)
         for session_id, what in missing.items():
             print(f"{PROG}:   {session_id} ({(what or 'no opening prompt')[:80]!r}):", file=sys.stderr)
             print(f"{PROG}:     {fix_for(session_id, running)}", file=sys.stderr)
+        fixed = "".join(f"; {role} at {added.grade} only" for role, added in rates.added.items())
         print(
             f"{PROG}: Each part is the hours one role at one grade would spend on the task, and why"
-            f" (roles: {', '.join(rates.roles)}; grades: {', '.join(rates.grades)}).",
+            f" (roles: {', '.join(rates.roles)}; grades: {', '.join(rates.grades)}{fixed}).",
             file=sys.stderr,
         )
         if base is not None:

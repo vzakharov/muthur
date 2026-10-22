@@ -17,7 +17,7 @@ from datetime import date
 from pathlib import Path
 
 from lib.billed import Telemetry
-from lib.estimate import Estimate, Part, Rates
+from lib.estimate_model import AddedRole, Estimate, Part, Rates
 from lib.orientation import Compaction, Phase, Rereads
 from lib.period import month_of
 from lib.rows import ROOT, SessionCost, parse_session_cost, read_row, row_text
@@ -157,6 +157,18 @@ class HoursByRoleAndGrade(unittest.TestCase):
 
     def test_is_absent_unless_a_period_is_asked_for(self) -> None:
         self.assertIsNone(totals_of([ROW], self.RATES).hours)
+
+    def test_files_a_role_a_repository_adds_under_its_grade_after_the_shared_roles(self) -> None:
+        added = Rates(
+            roles={**self.RATES.roles, "artist": 0.9},
+            grades=self.RATES.grades,
+            added={"artist": AddedRole("senior", "reflections")},
+        )
+        rows = [estimated(Part(2, "senior", "artist"), Part(1, "junior", "developer"))]
+        table = totals_of(rows, self.RATES, {"sess": "o/art"}, MARCH, {"sess": added}).hours
+        assert table is not None
+        self.assertEqual(table.grades, ["junior", "senior"])
+        self.assertEqual(table.by_role, {"developer": {"junior": 1}, "artist": {"senior": 2}})
 
 
 class WhoseSessionItWas(unittest.TestCase):

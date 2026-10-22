@@ -8,9 +8,9 @@ being a bargain.
 ## Where rows live
 
 **`cost-ledger` is the source of truth**: an orphan branch on `origin` holding
-every row at its usual path, named once in `lib/ledger.py`. The default branch
-carries none. The `Stop` hook writes the row there every turn, on every branch
-and the trunk alike, so a session counts whether or not its work merges.
+every row at its usual path, named once in `lib/ledger_branch.py`. The default
+branch carries none. The `Stop` hook writes the row there every turn, on every
+branch and the trunk alike, so a session counts whether or not its work merges.
 
 **A branch also carries a display copy until it is finalized**, so its PR's diff
 shows what the work cost. Finalized means the PR's last
@@ -22,9 +22,9 @@ ledger and deletes them before the branch lands, and `/finalize revoke`
 withdraws the attestation.
 
 **Readers union the ledger with the default branch's tree**, one row per session
-id, the later by `lib/ledger.py`'s `recency` winning. The tree side is how a
-repository that has not migrated still counts, and how a copy that reached the
-trunk without `/finalize` is counted once.
+id, the later by `lib/ledger_branch.py`'s `recency` winning. The tree side is
+how a repository that has not migrated still counts, and how a copy that reached
+the trunk without `/finalize` is counted once.
 
 What each failure costs:
 
@@ -261,6 +261,24 @@ them. A revision replaces it, so its history is git's.
   grade, a part being worth hours × both, and is applied when the report reads a
   row, so retuning one re-rates the whole history alike and the trend stays
   comparable with itself.
+- **A repository adds roles of its own in `rates.repo.json` on `cost-ledger`**,
+  beside the rows they rate, so a sync of the shared table never collides with
+  them. Each is `{"multiplier", "grade", "work"}`, booked at that one grade, so
+  its hours land in that grade's column of the report and no estimate, command
+  or table has an ungraded path.
+  - **The ledger is its only home**, because the rows are written there from
+    every branch: a table per branch would leave rows that only an unmerged
+    branch could rate. `estimate.py role set` and `role drop` write it through
+    the same append the `Stop` hook uses, so `git log cost-ledger` is its
+    history; `check_estimates.py` fails a tree copy, and `ledger.py backfill`
+    carries one over.
+  - **It only adds.** `role set` refuses a role `rates.json` rates, and
+    `role drop` refuses a role ledger rows book that the shared table does not
+    rate, so every role a row names stays rateable.
+  - **A role the shared table takes up later keeps the repository's multiplier
+    for that repository's rows**, since they were booked against it, and the
+    report, `check_estimates.py` and the notice each name both rates;
+    `role drop` adopts the shared one.
 - **Of the row's copy and a running session's pending one, the later wins.**
   That is how a `--session` edit to a running session's row survives its next
   `Stop`, and how the session's own later `set` overrides that edit.
@@ -321,7 +339,9 @@ alone and undercounts a migrated repository. A repository counts by its ledger,
 not muthur's watermark: the ledger is opt-in, so a watermark alone has nothing
 to count. A row GitHub truncates stops the run, since a missing one understates
 every total it belongs to, and these rows are never written back: they are
-another branch's to change.
+another branch's to change. Each row is rated by this checkout's `rates.json`
+plus the `rates.repo.json` on its own repository's `cost-ledger`, since it may
+name a role only that repository rates.
 
 ## What the totals do not cover
 

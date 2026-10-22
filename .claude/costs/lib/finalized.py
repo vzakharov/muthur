@@ -14,7 +14,7 @@ from pathlib import Path
 from typing import Optional, Tuple
 
 from lib.github import Client, GitHubError
-from lib.ledger import PREFIX, resolve, run
+from lib.ledger_branch import PREFIX, resolve, run
 from lib.rows import ROOT
 from lib.shape import ShapeError, read_object, required
 

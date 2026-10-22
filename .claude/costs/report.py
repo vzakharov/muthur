@@ -32,14 +32,14 @@ from datetime import date, datetime, timezone
 from pathlib import Path
 from typing import Dict, List, Optional
 
-from lib.estimate import Rates, parse_rates
-from lib.github import REPO, Client, GitHubError, remote_ledger
+from lib.estimate_model import Rates, shadow_notes, with_added_roles
+from lib.github import ADDED_ROLES, REPO, Client, GitHubError, remote_ledger
 from lib.hours import HoursTable
 from lib.period import FORMATS, KINDS, Period, PeriodError, month_of, period
 from lib.pricing import parse_prices
-from lib.ledger import BRANCH, REMOTE_REF, LedgerError, fetch, rows_at, union
+from lib.ledger_branch import BRANCH, LedgerError, fetch, ledger_rates, rows_at, shared_rates, union
 from lib.rows import SESSIONS, SessionCost, read_row, reshape
-from lib.shape import to_json
+from lib.shape import ShapeError, to_json
 from lib.totals import (
     Bucket,
     EffortSummary,
@@ -212,25 +212,35 @@ def today() -> date:
     return datetime.now(timezone.utc).date()
 
 
-def ledger_rows(span: Optional[Period]) -> List[SessionCost]:
-    """The ledger's rows, read off its fetched tip and reshaped in memory only:
+def ledger_rows(tip: Optional[str], span: Optional[Period]) -> List[SessionCost]:
+    """The ledger's rows at its fetched `tip`, reshaped in memory only:
     rewriting one would be a commit on another branch."""
-    if fetch() is None:
+    if tip is None:
         return []
     return [
         reshape(text, f"{BRANCH}:{path}")[0]
-        for path, text in rows_at(REMOTE_REF)
+        for path, text in rows_at(tip)
         if span is None or path.split("/")[-2] in span.months()
     ]
 
 
-def this_repo(span: Optional[Period], as_json: bool, rates: Rates) -> int:
+def notes(lines: List[str]) -> None:
+    """Stderr, so `--json` stays parseable."""
+    for line in lines:
+        print(f"costs: {line}", file=sys.stderr)
+
+
+def this_repo(span: Optional[Period], as_json: bool) -> int:
     """The ledger's rows and the tree's, one per session: the tree's side is a
-    branch's display copies, or rows a repository still keeps in its tree."""
+    branch's display copies, or rows a repository still keeps in its tree. The
+    rows and the table rating them come from one ledger commit."""
+    tip = fetch()
+    rates = ledger_rates(tip)
+    notes(shadow_notes(rates, "this repository"))
     months = sorted(p for p in SESSIONS.iterdir() if p.is_dir()) if SESSIONS.is_dir() else []
     shown = [m for m in months if span is None or m.name in span.months()]
     tree = [row for shown_month in shown for row in rows_in(shown_month)]
-    rows = [row for row in union([*ledger_rows(span), *tree], lambda row: row) if span is None or span.holds(row)]
+    rows = [row for row in union([*ledger_rows(tip, span), *tree], lambda row: row) if span is None or span.holds(row)]
     if not rows:
         print(f"costs: no rows under {SESSIONS} or on {BRANCH}{'' if span is None else f' for {span.label}'}")
         return 0
@@ -263,14 +273,21 @@ class Status:
             sys.stderr.flush()
 
 
-def across_repos(only: Optional[List[str]], span: Optional[Period], as_json: bool, rates: Rates) -> int:
+def across_repos(only: Optional[List[str]], span: Optional[Period], as_json: bool, shared: Rates) -> int:
+    """Each row is rated by its own repository's table: `shared` — this
+    checkout's `rates.json` — plus whatever roles that repository adds."""
     status = Status()
     try:
         ledger = remote_ledger(Client(progress=status), only, None if span is None else span.months())
     finally:
         status.clear()
     rows = [row for row in ledger.rows if span is None or span.holds(row)]
-    totals = totals_of(rows, rates, ledger.repo_of, span or month_of(today()))
+    tables = {
+        repo: with_added_roles(shared, text, f"{repo}:{ADDED_ROLES}") for repo, text in ledger.added_roles.items()
+    }
+    notes([note for repo, table in tables.items() for note in shadow_notes(table, repo)])
+    rates_of = {session: tables[repo] for session, repo in ledger.repo_of.items() if repo in tables}
+    totals = totals_of(rows, shared, ledger.repo_of, span or month_of(today()), rates_of)
     repos = by_repo(rows, ledger.repo_of)
     if as_json:
         print(
@@ -388,16 +405,18 @@ def main() -> int:
         span = period(*named[0], today()) if named else None
     except PeriodError as error:
         parser.error(str(error))
-    rates = parse_rates((COSTS / "rates.json").read_text(encoding="utf-8"))
     if not (args.all_my_repos or args.repo):
         try:
-            return this_repo(span, args.json, rates)
-        except LedgerError as error:
+            return this_repo(span, args.json)
+        except (LedgerError, ShapeError) as error:
             print(f"costs: {error}", file=sys.stderr)
             return 1
     try:
         return across_repos(
-            None if args.all_my_repos else list(dict.fromkeys(args.repo)), span, args.json, rates
+            None if args.all_my_repos else list(dict.fromkeys(args.repo)),
+            span,
+            args.json,
+            shared_rates(),
         )
     except GitHubError as error:
         print(f"costs: {error}", file=sys.stderr)

@@ -10,7 +10,7 @@ from pathlib import Path
 from typing import Any, Dict, List, Mapping, Optional, Tuple
 
 from lib.billed import Telemetry, parse_telemetry
-from lib.estimate import Estimate, parse_estimate, split_comment
+from lib.estimate_model import Estimate, parse_estimate, split_comment
 from lib.orientation import Compaction, Phase, parse_compaction, parse_phase
 from lib.shape import ShapeError, read_number, read_object, read_string, required, to_json
 from lib.tally import Tally, parse_tally

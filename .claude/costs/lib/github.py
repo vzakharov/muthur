@@ -21,11 +21,14 @@ import time
 from dataclasses import dataclass, field
 from typing import Any, Callable, Collection, Dict, List, Mapping, Optional, Sequence, Tuple
 
-from lib.ledger import BRANCH, union
+from lib.ledger_branch import BRANCH, RATES_PATH, union
 from lib.rows import SessionCost, reshape
 from lib.shape import ShapeError, read_object, read_string, required
 
 LEDGER = ".claude/costs/sessions"
+# A row may name a role only its own repository rates, so the report reads that
+# repository's table, off the ledger beside the rows.
+ADDED_ROLES = f"refs/heads/{BRANCH}:{RATES_PATH}"
 WATERMARK = ".claude/skills/update-muthur/watermark.json"
 # A page of 100 answered HTTP 502 on a token reaching 357 repositories; 40 did not.
 PAGE = 40
@@ -128,6 +131,8 @@ REPO_FIELDS = (
         for alias, rev in SIDES.items()
     )
     + f"  watermark: object(expression: {literal('HEAD:' + WATERMARK)}) {{ __typename }}\n"
+    + f"  addedRoles: object(expression: {literal(ADDED_ROLES)})"
+    " { ... on Blob { isTruncated isBinary text } }\n"
 )
 
 LISTING = f"""
@@ -150,6 +155,8 @@ class Candidate:
     repo: str
     # The months each side that has a ledger holds, by the side's rev.
     sides: Dict[str, List[str]]
+    # The text of its `rates.repo.json`, where it carries one.
+    added_roles: Optional[str] = None
 
     @property
     def months(self) -> List[str]:
@@ -178,10 +185,20 @@ def _entries(tree: Any, where: str) -> Optional[List[Dict[str, Any]]]:
     return entries
 
 
-def _read_node(node: Any) -> Tuple[str, Dict[str, List[str]], bool]:
+def _blob_text(blob: Any, where: str) -> str:
+    if not isinstance(blob, dict):
+        raise ShapeError(f"{where}: not an object")
+    if blob.get("isTruncated") or blob.get("isBinary"):
+        raise ShapeError(f"{where}: GitHub did not return the file whole as text")
+    return required(read_string, blob, "text", where)
+
+
+def _read_node(node: Any) -> Tuple[str, Dict[str, List[str]], bool, Optional[str]]:
     if not isinstance(node, dict):
         raise ShapeError("repository node: not an object")
     repo = required(read_string, node, "nameWithOwner", "repository node")
+    added = node.get("addedRoles")
+    added_roles = None if added is None else _blob_text(added, f"{repo}:{ADDED_ROLES}")
     sides: Dict[str, List[str]] = {}
     for alias, rev in SIDES.items():
         entries = _entries(node.get(alias), f"{repo} {rev}")
@@ -191,7 +208,7 @@ def _read_node(node: Any) -> Tuple[str, Dict[str, List[str]], bool]:
                 for entry in entries
                 if entry.get("type") == "tree" and MONTH.fullmatch(str(entry.get("name")))
             )
-    return repo, sides, node.get("watermark") is not None
+    return repo, sides, node.get("watermark") is not None, added_roles
 
 
 def _nodes(client: Client, only: Optional[Sequence[str]]) -> List[Any]:
@@ -221,9 +238,9 @@ def discover(client: Client, only: Optional[Sequence[str]] = None) -> Discovery:
     ledgers: List[Candidate] = []
     without_ledger: List[str] = []
     nodes = _nodes(client, only)
-    for repo, sides, watermarked in sorted(map(_read_node, nodes), key=lambda read: read[0]):
+    for repo, sides, watermarked, added_roles in sorted(map(_read_node, nodes), key=lambda read: read[0]):
         if sides:
-            ledgers.append(Candidate(repo, sides))
+            ledgers.append(Candidate(repo, sides, added_roles))
         elif only:
             raise GitHubError(f"{repo}: no {LEDGER} on its {BRANCH} branch or its default branch")
         elif watermarked:
@@ -241,10 +258,7 @@ def _month_query(trees: Sequence[Tuple[str, str, str]]) -> str:
 
 
 def _row_text(entry: Dict[str, Any], where: str) -> str:
-    blob = required(read_object, entry, "object", where)
-    if blob.get("isTruncated") or blob.get("isBinary"):
-        raise ShapeError(f"{where}: GitHub did not return the row whole as text")
-    return required(read_string, blob, "text", where)
+    return _blob_text(required(read_object, entry, "object", where), where)
 
 
 def ledger_texts(client: Client, candidates: Sequence[Candidate]) -> List[Tuple[str, str, str]]:
@@ -288,6 +302,8 @@ class RemoteLedger:
     repos: List[RepoLedger]
     without_ledger: List[str]
     seen: int
+    # Repository to the text of its `rates.repo.json`, for those that carry one.
+    added_roles: Dict[str, str] = field(default_factory=dict)
 
 
 def remote_ledger(
@@ -333,4 +349,5 @@ def remote_ledger(
         repos=[ledger for ledger in repos.values() if ledger.months],
         without_ledger=found.without_ledger,
         seen=found.seen,
+        added_roles={c.repo: c.added_roles for c in found.ledgers if c.added_roles is not None},
     )
