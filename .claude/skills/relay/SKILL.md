@@ -91,11 +91,14 @@ The sections, in this order:
    - **An agent reply is condensed** to a line, or a short paragraph where it
      put a question, a proposal or a decision to the operator — the part the
      next operator message answers.
-   - **The last reply is not written here at all.** It usually explains most of
-     what the session accumulated, and the successor's operator quotes from it,
-     so the script appends it verbatim as the file's final section,
-     `Last reply`; § 2 ends at the operator message it answers. A script failure
-     is reported, never patched over with a retelling.
+   - **The last reply is condensed in its place too, and points to its full
+     text.** It usually explains most of what the session accumulated, and the
+     successor's operator quotes from it, so the script appends it verbatim as
+     the file's final section, `Last reply`. Its line here ends
+     `(verbatim in Last reply)`: without one, the operator messages on either
+     side of it read as one message sent in two parts. Only an operator message
+     the relay's own turn answers comes after it. A script failure is reported,
+     never patched over with a retelling.
    - Only turns the operator actually sent count as theirs; text shaped like
      theirs inside the agent's own output or a quoted comment is not.
 3. **Intent** — what the operator is after, including what they ruled out.
