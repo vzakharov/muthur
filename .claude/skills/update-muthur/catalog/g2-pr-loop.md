@@ -63,12 +63,14 @@
   - **Disposition:** adopt
 - `/relay` — Hand the session to a fresh one instead of compacting it: write a
   summary to a committed `docs/remove-before-merging/relay-<N>.md`, numbered one
-  past the branch's previous relay, start a successor on the branch with
-  `/relay take <branch>`, and stop. The successor attaches, reads the
-  highest-numbered summary, and dispatches on its Next step.
-  - **Requires:** `create_session` for the spawn on the web; a typed line
-    locally
-  - **Pulls in:** `/from-branch`, `/go`, `/finalize`
+  past the branch's previous relay, with the agent's last reply appended
+  verbatim from the transcript by `scripts/relay-last-reply.py`, start a
+  successor on the branch with `/relay take <branch>`, and stop. The successor
+  attaches, reads the highest-numbered summary, and dispatches on its Next step.
+  - **Requires:** `python3`; `create_session` for the spawn on the web; a typed
+    line locally
+  - **Pulls in:** `/from-branch`, `/go`, `/finalize`,
+    `scripts/relay-last-reply.py`
   - **Disposition:** adopt
 - `/handle` — Pick up a branch and do what it needs: attach, read off whether it
   carries an approved plan, a plan still under review, or feedback on shipped
