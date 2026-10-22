@@ -1,0 +1,86 @@
+{
+  "total": {
+    "inputTokens": 8,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 44629,
+    "cacheReadTokens": 315922,
+    "outputTokens": 962,
+    "thinkingTokens": 401,
+    "responses": 4,
+    "costUsd": 0.4394884
+  },
+  "estimate": {
+    "at": "2026-10-22T12:22:39.063Z",
+    "parts": [
+      {
+        "hours": 0.1,
+        "grade": "middle",
+        "role": "analyst",
+        "comment": "checking one API response for a field is a lookup, no judgement"
+      }
+    ],
+    "comment": null
+  },
+  "sessionId": "cb2cf64a-f15d-5b0a-9602-581a9730ad75",
+  "branch": "claude/relaxed-archimedes-0yylvt",
+  "cwd": "/home/user/muthur",
+  "openingPrompt": "а тебе видно отсюда какие сесии у меня запинены?",
+  "prs": [],
+  "url": "https://claude.ai/code/session_01PdwvQC9Z6kZiiirFqEfcf7",
+  "operator": "vzakharov",
+  "firstResponseAt": "2026-10-22T12:22:32.638Z",
+  "lastResponseAt": "2026-10-22T12:22:44.268Z",
+  "pricesAsOf": "2026-10-06",
+  "claudeCodeTotalUsd": null,
+  "ownTurns": {
+    "inputTokens": 8,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 44629,
+    "cacheReadTokens": 315922,
+    "outputTokens": 962,
+    "thinkingTokens": 401,
+    "responses": 4,
+    "costUsd": 0.4394884
+  },
+  "subagents": {
+    "inputTokens": 0,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 0,
+    "cacheReadTokens": 0,
+    "outputTokens": 0,
+    "thinkingTokens": 0,
+    "responses": 0,
+    "costUsd": 0.0
+  },
+  "byRate": {
+    "claude-opus-5-5/standard": {
+      "inputTokens": 8,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 44629,
+      "cacheReadTokens": 315922,
+      "outputTokens": 962,
+      "thinkingTokens": 401,
+      "responses": 4,
+      "costUsd": 0.4394884
+    }
+  },
+  "warnings": [],
+  "orientation": {
+    "endedBy": "end_turn",
+    "endedOn": null,
+    "endedAt": "2026-10-22T12:22:44.268Z",
+    "contextTokens": 93227,
+    "spend": {
+      "inputTokens": 6,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 44303,
+      "cacheReadTokens": 223023,
+      "outputTokens": 632,
+      "thinkingTokens": 335,
+      "responses": 3,
+      "costUsd": 0.4116926
+    }
+  },
+  "compactions": [],
+  "telemetry": null
+}
