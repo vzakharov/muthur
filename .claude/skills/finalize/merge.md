@@ -19,8 +19,10 @@ forward it, and `@.claude/skills/handle/SKILL.md` § "Argument shape" holds the
 merge back rather than passing it on. Any future caller answers the same
 question: was the flag written after the operator could have looked?
 
-**An operator's ask to merge goes to `@.claude/skills/merge/SKILL.md`**, which
-reaches this flag on a branch not yet finalized.
+**`@.claude/skills/merge/SKILL.md` is the caller that forwards it**, on a branch
+not yet finalized, and passes that test: an ask to merge names a diff that
+already exists. A run carrying the flag is past that routing and never goes back
+through `/merge`.
 
 ## Step 8 — the gate
 
