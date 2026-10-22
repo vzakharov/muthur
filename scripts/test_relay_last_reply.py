@@ -99,7 +99,7 @@ class LastReplyTest(unittest.TestCase):
     def appended(self, *records: object) -> str:
         result = self.run_script(*records)
         self.assertEqual(result.returncode, 0, result.stderr)
-        return self.summary.read_text().split("## Last reply\n", 1)[1]
+        return self.summary.read_text().split("## Last agent turn\n", 1)[1]
 
     def test_appends_the_previous_turns_text_and_not_the_running_ones(self) -> None:
         out = self.appended(
@@ -185,7 +185,7 @@ class LastReplyTest(unittest.TestCase):
 
     def test_keeps_the_summary_and_leaves_a_blank_line_before_the_section(self) -> None:
         self.appended(prompt("p1"), said(text("r")), prompt("p2"))
-        self.assertTrue(self.summary.read_text().startswith("# Relay\n\n## Next step\n\nWait.\n\n## Last reply\n"))
+        self.assertTrue(self.summary.read_text().startswith("# Relay\n\n## Next step\n\nWait.\n\n## Last agent turn\n"))
 
     def test_fails_and_writes_nothing_with_no_earlier_reply(self) -> None:
         result = self.run_script(prompt("p1", "/relay"), said(text("Writing.")))

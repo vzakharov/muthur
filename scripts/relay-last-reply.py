@@ -38,10 +38,13 @@ import sys
 from pathlib import Path
 from typing import Dict, List, NoReturn, Optional, Tuple
 
-HEADING = "## Last reply"
+HEADING = "## Last agent turn"
 LEAD = (
-    "The agent's final reply before the relay, verbatim, appended by\n"
-    "`scripts/relay-last-reply.py`."
+    "The agent's last turn before the relay, verbatim, appended by\n"
+    "`scripts/relay-last-reply.py`. The reply is usually its final paragraphs;\n"
+    "the lines before them are the turn's narration between tool calls, kept\n"
+    "because a hook can force a tool call after the reply. They are mostly\n"
+    "noise, and harmless."
 )
 # `MARK` in `.claude/keepalive/hooks/keepalive.py`, which opens the watcher's
 # task description and so every wake's prompt; the tests hold the two equal.
