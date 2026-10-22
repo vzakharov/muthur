@@ -194,7 +194,7 @@ plan fixes. Once this lands, `physician` belongs in life's ledger table via
 
 ## Progress
 
-Paused for the context budget; a relayed session continues.
+Implemented across two sessions, the second relayed from the first.
 
 **Done:**
 
@@ -221,29 +221,15 @@ Paused for the context budget; a relayed session continues.
     print shadow notes to stderr. `lib/github.py` reads the `addedRoles` blob at
     `refs/heads/cost-ledger:.claude/costs/rates.repo.json`.
 
-**Left:**
+- The rest, in the relayed session:
+  - c5359df: the notice hook fetches the ledger where the ref is missing (a
+    failed fetch said in the notice), names `role set`, and a sentence per
+    shadowed role; every test moved onto the ledger-backed table, plus
+    `role_change`, `role set` / `drop`, `backfill` carry (carried, agreed,
+    differing) and a fake GitHub that answers the roles blob only ledger-side.
+    The shadowed-role-per-repository case sits in `test_estimate.py` beside the
+    fixtures it uses, not in `test_totals.py`.
+  - fcb23a3: `.claude/costs/CLAUDE.md` and the G7 catalog entry.
+  - `/polish`: e442b62, aca6884.
 
-- Tests — four files fail on the old API now:
-  - `test_estimate.py`: drop `load_rates` use (the tree-loading case becomes a
-    `ledger_rates` case over a `Clone`); the `copywriter` refusal case becomes
-    "shadowed, keeps its multiplier"; add `role_change` unit cases and
-    `TheCommand` cases for `role set` / `role drop` and the drop refusal; the
-    `rates` case compares against `ledger_rates` plus `notes`.
-  - `test_estimate_notice.py`: move onto a `Clone` (the table must sit on
-    `origin`'s `cost-ledger`, laid there with `estimate.py role set`); add the
-    fresh-container fetch and the shadowed sentence.
-  - `test_github.py`: the fake must answer the `addedRoles` alias from the
-    ledger side; the truncated-blob message now names `refs/heads/cost-ledger:`.
-  - `test_check_estimates.py`: see why it fails first (likely the fetch moving
-    into `main`); add a tree-file failure and a shadowed-role warning.
-  - `test_totals.py`: a shadowed role rated per repository.
-  - A `backfill` carry case (carried, agreed, differing).
-- `hooks/estimate-notice.sh`: run `ledger.py fetch` once where
-  `refs/remotes/origin/cost-ledger` is missing (a fetch failure is said in the
-  notice, not swallowed); after the added-role sentences, name
-  `estimate.py role set` as the way to add one; one sentence per `.notes` entry.
-- `.claude/costs/CLAUDE.md`: the added-roles bullet and § "The report"'s last
-  sentence say the table lives on `cost-ledger`, who writes it, and what a
-  collision does. `catalog/g7-cost-ledger.md`: the entry, re-pointed.
-- Then `/go` Step 3 (`/polish`) and Step 4 (`/pr` refresh); the PR body's banner
-  about the planned rework goes.
+**Left:** nothing; `/finalize` is next.
