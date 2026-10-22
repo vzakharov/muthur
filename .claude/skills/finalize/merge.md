@@ -1,8 +1,8 @@
 # `and merge`
 
 Loaded by `@.claude/skills/finalize/SKILL.md` when the run carries `and merge`,
-typed or read from an operator's ask to merge. Step numbers below are that
-file's.
+and by `@.claude/skills/merge/SKILL.md` on a finalized branch, which walks the
+gate over its own shorter run. Step numbers below are `/finalize`'s.
 
 ## The flag
 
@@ -19,17 +19,9 @@ forward it, and `@.claude/skills/handle/SKILL.md` § "Argument shape" holds the
 merge back rather than passing it on. Any future caller answers the same
 question: was the flag written after the operator could have looked?
 
-**An operator's ask to merge a branch not yet finalized is
-`/finalize and merge`**, whatever words carry it — "merge", "мерджи", "land it".
-Finalized means the PR is ready for review and its
-`<!-- finalize-attestation -->` comment names the current head, give or take
-what step 7's last rule lets ride past it; anything short of that is a diff no
-run has verified, so merging it as asked would skip every gate this skill exists
-for. **Open the reply by saying you read the ask that way** — the operator asked
-for a click and is getting land prep, which can stand the merge down at step 8 —
-then run the skill with the flag. The paragraph above holds here too: an ask
-that also requests changes was written before the diff it would merge, so land
-prep runs and the merge is held.
+**An operator's ask to merge goes to `@.claude/skills/merge/SKILL.md`**, which
+reads it, tells a finalized branch from one that is not, and reaches this flag
+for the latter.
 
 ## Step 8 — the gate
 
