@@ -1,7 +1,3 @@
-> `tmp/`. On an explicit operator go-ahead, `git mv` it to `*.in-progress.md`
-> and delete this banner (quoting the go-ahead in the commit) _before_ touching
-> code.
-
 # A shared format-on-edit hook, driven by a per-repo list
 
 ## The task
@@ -42,9 +38,9 @@ both, and life's copy becomes one entry in a list.
   `<name> could not format <path>:` and its output; a malformed
   `.claude/format.json` exits 2 in the hook and 1 in the check. No config file
   is a quiet 0 in both.
-- **The check reads a staged always-loaded file through its copy**
-  (`scripts/staged.sh resolve`, when that script exists), as
-  `check-markdown-wrap.sh` did; for any other file the resolve is identity.
+- **The check reads a staged always-loaded file through its copy** (one
+  `scripts/staged.sh list`, when that script exists), as
+  `check-markdown-wrap.sh` did; any other file is checked as itself.
 
 ## Steps
 
@@ -78,8 +74,8 @@ What life adds after `/update-muthur`, replacing its two scripts:
 
 - **Shared:** the matcher and the config loader, one copy in `format.py` that
   both modes call — the point of putting the hook and the check in one file.
-  `scripts/prettier.sh` stays the only prettier invocation; `staged.sh resolve`
-  is reused rather than reimplemented.
+  `scripts/prettier.sh` stays the only prettier invocation; `staged.sh list` is
+  reused rather than reimplemented.
 - **Removed duplication:** `format-md.sh` and life's `format-code.sh` were the
   same hook with different `case` lines; both collapse into entries.
 - **Not reused:** `.claude/hooks/lib.sh` is bash; the Python hook needs only
