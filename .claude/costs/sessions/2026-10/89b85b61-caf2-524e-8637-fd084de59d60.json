@@ -1,0 +1,94 @@
+{
+  "total": {
+    "inputTokens": 98,
+    "cacheWrite5mTokens": 110314,
+    "cacheWrite1hTokens": 149673,
+    "cacheReadTokens": 7007516,
+    "outputTokens": 40061,
+    "thinkingTokens": 12732,
+    "responses": 49,
+    "costUsd": 3.952069199999999
+  },
+  "estimate": {
+    "at": "2026-10-23T09:58:03.341Z",
+    "parts": [
+      {
+        "hours": 4.0,
+        "grade": "senior",
+        "role": "developer",
+        "comment": "a hook-and-check pair generic over formatters, with config validation and tests, replacing a working Markdown path without regressing it"
+      },
+      {
+        "hours": 1.0,
+        "grade": "middle",
+        "role": "editor",
+        "comment": "the catalog, rule and vet notes that name the old scripts must be repointed consistently"
+      }
+    ],
+    "comment": null
+  },
+  "sessionId": "89b85b61-caf2-524e-8637-fd084de59d60",
+  "branch": "claude/shared-format-hook",
+  "cwd": "/home/user/muthur",
+  "openingPrompt": "/task",
+  "prs": [
+    218
+  ],
+  "url": "https://claude.ai/code/session_01ChoSAn2Lsusj6b7UkbcRNU",
+  "operator": "vzakharov",
+  "firstResponseAt": "2026-10-23T09:54:51.976Z",
+  "lastResponseAt": "2026-10-23T10:06:10.123Z",
+  "pricesAsOf": "2026-10-06",
+  "claudeCodeTotalUsd": null,
+  "ownTurns": {
+    "inputTokens": 74,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 149673,
+    "cacheReadTokens": 6008599,
+    "outputTokens": 34248,
+    "thinkingTokens": 9922,
+    "responses": 37,
+    "costUsd": 3.0843597999999997
+  },
+  "subagents": {
+    "inputTokens": 24,
+    "cacheWrite5mTokens": 110314,
+    "cacheWrite1hTokens": 0,
+    "cacheReadTokens": 998917,
+    "outputTokens": 5813,
+    "thinkingTokens": 2810,
+    "responses": 12,
+    "costUsd": 0.8677093999999999
+  },
+  "byRate": {
+    "claude-opus-5-5/standard": {
+      "inputTokens": 98,
+      "cacheWrite5mTokens": 110314,
+      "cacheWrite1hTokens": 149673,
+      "cacheReadTokens": 7007516,
+      "outputTokens": 40061,
+      "thinkingTokens": 12732,
+      "responses": 49,
+      "costUsd": 3.952069199999999
+    }
+  },
+  "warnings": [],
+  "orientation": {
+    "endedBy": "Write",
+    "endedOn": "docs/plans/shared-format-hook.draft.do-not-implement.md",
+    "endedAt": "2026-10-23T09:56:46.078Z",
+    "contextTokens": 145277,
+    "spend": {
+      "inputTokens": 14,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 91814,
+      "cacheReadTokens": 724961,
+      "outputTokens": 7890,
+      "thinkingTokens": 5640,
+      "responses": 7,
+      "costUsd": 1.0373602
+    }
+  },
+  "compactions": [],
+  "telemetry": null
+}
