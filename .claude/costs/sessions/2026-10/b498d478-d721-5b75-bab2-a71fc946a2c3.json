@@ -1,13 +1,13 @@
 {
   "total": {
-    "inputTokens": 106,
-    "cacheWrite5mTokens": 0,
-    "cacheWrite1hTokens": 119064,
-    "cacheReadTokens": 6811884,
-    "outputTokens": 38978,
-    "thinkingTokens": 18280,
-    "responses": 53,
-    "costUsd": 3.0948727999999996
+    "inputTokens": 152,
+    "cacheWrite5mTokens": 96003,
+    "cacheWrite1hTokens": 148191,
+    "cacheReadTokens": 9979285,
+    "outputTokens": 61101,
+    "thinkingTokens": 26932,
+    "responses": 76,
+    "costUsd": 4.884028000000001
   },
   "estimate": {
     "at": "2026-10-23T08:07:18.645Z",
@@ -29,45 +29,45 @@
   },
   "sessionId": "b498d478-d721-5b75-bab2-a71fc946a2c3",
   "branch": "claude/session-auto-naming-speed-3n5zn5",
-  "cwd": "/home/user/muthur",
+  "cwd": "/home/user/muthur/tmp/branch-names",
   "openingPrompt": "Каким образом так моментально (sub-second) создаются автоназвания для сессий тут? Они прогоняются ещё до того как я нажму энтер, что ли?",
   "prs": [],
   "url": "https://claude.ai/code/session_01TyepQdxXqFjQ8g9z2Nsyzx",
   "operator": "vzakharov",
   "firstResponseAt": "2026-10-23T07:59:39.013Z",
-  "lastResponseAt": "2026-10-23T08:11:35.628Z",
+  "lastResponseAt": "2026-10-23T08:48:06.381Z",
   "pricesAsOf": "2026-10-06",
   "claudeCodeTotalUsd": null,
   "ownTurns": {
-    "inputTokens": 106,
+    "inputTokens": 132,
     "cacheWrite5mTokens": 0,
-    "cacheWrite1hTokens": 119064,
-    "cacheReadTokens": 6811884,
-    "outputTokens": 38978,
-    "thinkingTokens": 18280,
-    "responses": 53,
-    "costUsd": 3.0948727999999996
+    "cacheWrite1hTokens": 148191,
+    "cacheReadTokens": 9248830,
+    "outputTokens": 51066,
+    "thinkingTokens": 24429,
+    "responses": 66,
+    "costUsd": 4.057142
   },
   "subagents": {
-    "inputTokens": 0,
-    "cacheWrite5mTokens": 0,
+    "inputTokens": 20,
+    "cacheWrite5mTokens": 96003,
     "cacheWrite1hTokens": 0,
-    "cacheReadTokens": 0,
-    "outputTokens": 0,
-    "thinkingTokens": 0,
-    "responses": 0,
-    "costUsd": 0.0
+    "cacheReadTokens": 730455,
+    "outputTokens": 10035,
+    "thinkingTokens": 2503,
+    "responses": 10,
+    "costUsd": 0.8268859999999999
   },
   "byRate": {
     "claude-opus-5-5/standard": {
-      "inputTokens": 106,
-      "cacheWrite5mTokens": 0,
-      "cacheWrite1hTokens": 119064,
-      "cacheReadTokens": 6811884,
-      "outputTokens": 38978,
-      "thinkingTokens": 18280,
-      "responses": 53,
-      "costUsd": 3.0948727999999996
+      "inputTokens": 152,
+      "cacheWrite5mTokens": 96003,
+      "cacheWrite1hTokens": 148191,
+      "cacheReadTokens": 9979285,
+      "outputTokens": 61101,
+      "thinkingTokens": 26932,
+      "responses": 76,
+      "costUsd": 4.884028000000001
     }
   },
   "warnings": [],
