@@ -1,22 +1,28 @@
 {
   "total": {
-    "inputTokens": 44,
+    "inputTokens": 106,
     "cacheWrite5mTokens": 0,
-    "cacheWrite1hTokens": 77013,
-    "cacheReadTokens": 2290213,
-    "outputTokens": 14708,
-    "thinkingTokens": 6421,
-    "responses": 22,
-    "costUsd": 1.3684826
+    "cacheWrite1hTokens": 119064,
+    "cacheReadTokens": 6811884,
+    "outputTokens": 38978,
+    "thinkingTokens": 18280,
+    "responses": 53,
+    "costUsd": 3.0948727999999996
   },
   "estimate": {
-    "at": "2026-10-23T08:00:19.412Z",
+    "at": "2026-10-23T08:07:18.645Z",
     "parts": [
       {
         "hours": 1.0,
         "grade": "senior",
         "role": "developer",
-        "comment": "Answering means reading minified Claude Code bytecode to find the title generator, its model and its triggers; a senior knows where to look in a bundled binary and how to read the result without overclaiming."
+        "comment": "Reading minified Claude Code bytecode and env-manager logs to place where the branch name is decided takes someone who knows bundled binaries and won't overclaim from them."
+      },
+      {
+        "hours": 3.0,
+        "grade": "middle",
+        "role": "analyst",
+        "comment": "Correlating branch-name style with session features over hundreds of sessions is routine data work: pull, tabulate, test a race hypothesis against confounders."
       }
     ],
     "comment": null
@@ -29,18 +35,18 @@
   "url": "https://claude.ai/code/session_01TyepQdxXqFjQ8g9z2Nsyzx",
   "operator": "vzakharov",
   "firstResponseAt": "2026-10-23T07:59:39.013Z",
-  "lastResponseAt": "2026-10-23T08:05:44.363Z",
+  "lastResponseAt": "2026-10-23T08:11:35.628Z",
   "pricesAsOf": "2026-10-06",
   "claudeCodeTotalUsd": null,
   "ownTurns": {
-    "inputTokens": 44,
+    "inputTokens": 106,
     "cacheWrite5mTokens": 0,
-    "cacheWrite1hTokens": 77013,
-    "cacheReadTokens": 2290213,
-    "outputTokens": 14708,
-    "thinkingTokens": 6421,
-    "responses": 22,
-    "costUsd": 1.3684826
+    "cacheWrite1hTokens": 119064,
+    "cacheReadTokens": 6811884,
+    "outputTokens": 38978,
+    "thinkingTokens": 18280,
+    "responses": 53,
+    "costUsd": 3.0948727999999996
   },
   "subagents": {
     "inputTokens": 0,
@@ -54,14 +60,14 @@
   },
   "byRate": {
     "claude-opus-5-5/standard": {
-      "inputTokens": 44,
+      "inputTokens": 106,
       "cacheWrite5mTokens": 0,
-      "cacheWrite1hTokens": 77013,
-      "cacheReadTokens": 2290213,
-      "outputTokens": 14708,
-      "thinkingTokens": 6421,
-      "responses": 22,
-      "costUsd": 1.3684826
+      "cacheWrite1hTokens": 119064,
+      "cacheReadTokens": 6811884,
+      "outputTokens": 38978,
+      "thinkingTokens": 18280,
+      "responses": 53,
+      "costUsd": 3.0948727999999996
     }
   },
   "warnings": [],
