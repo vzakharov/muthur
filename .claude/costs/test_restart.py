@@ -28,6 +28,7 @@ from lib.restart import (
     read_history,
     recache,
     reorientation_of,
+    fresh_saving_over,
     saving_over,
 )
 
@@ -37,6 +38,8 @@ OPUS = PRICES.rates[f"{MODEL}/standard"]
 HOUR = 3600
 # The context budget hook's `finish`, the slice a relay's saving is priced over.
 FINISH = 100_000
+# The worked session's requests per token of context growth.
+WORKED_RATE = 37 / 100_000
 
 
 def iso(at: float) -> str:
@@ -92,7 +95,7 @@ def prompt_record(text: str) -> Dict[str, Any]:
 def worked(context: int) -> Session:
     """A long session's figures: 37 requests per 100k of growth, a successor
     reoriented at 97k for $0.57."""
-    return Session(context, 41_000, 37 / 100_000, Reorientation(97_000, 0.57, "test"), OPUS, OPUS.cache_write_1h)
+    return Session(context, 41_000, WORKED_RATE, Reorientation(97_000, 0.57, "test"), OPUS, OPUS.cache_write_1h)
 
 
 class TheCostModel(unittest.TestCase):
@@ -110,8 +113,14 @@ class TheCostModel(unittest.TestCase):
 
     def test_a_relay_costs_the_summary_turn_and_the_reorientation(self) -> None:
         saving = saving_over(worked(126_000), FINISH)
-        self.assertEqual(f"{saving.relay:.2f}", "0.76")
+        self.assertEqual(f"{saving.up_front:.2f}", "0.76")
         self.assertLess(saving.usd, 0)
+
+    def test_a_fresh_session_weighs_its_reorientation_against_the_recache(self) -> None:
+        saving = fresh_saving_over(worked(174_000), FINISH)
+        self.assertEqual(f"{saving.up_front:.2f}", "0.57")
+        # $0.50 of re-cache saved up front, plus 77k less on each of 37 requests.
+        self.assertEqual(f"{saving.usd:.2f}", "1.07")
 
     def test_a_recache_reads_the_shared_prefix_and_writes_the_rest(self) -> None:
         self.assertEqual(f"{recache(worked(174_000)):.2f}", "1.07")

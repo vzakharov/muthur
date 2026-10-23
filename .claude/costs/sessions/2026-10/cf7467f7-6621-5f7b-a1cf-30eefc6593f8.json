@@ -1,0 +1,94 @@
+{
+  "total": {
+    "inputTokens": 136,
+    "cacheWrite5mTokens": 133213,
+    "cacheWrite1hTokens": 146986,
+    "cacheReadTokens": 9235197,
+    "outputTokens": 42690,
+    "thinkingTokens": 14510,
+    "responses": 68,
+    "costUsd": 4.5433364
+  },
+  "estimate": {
+    "at": "2026-10-23T12:21:53.963Z",
+    "parts": [
+      {
+        "hours": 2.0,
+        "grade": "senior",
+        "role": "developer",
+        "comment": "the change re-derives a cost comparison inside a shared pricing model, and the hook fixtures need rebuilding to price a realistic session"
+      },
+      {
+        "hours": 0.5,
+        "grade": "middle",
+        "role": "copywriter",
+        "comment": "the stop message has to make one figure carry an up-front cost and a per-request gain without asking the reader to add them"
+      }
+    ],
+    "comment": null
+  },
+  "sessionId": "cf7467f7-6621-5f7b-a1cf-30eefc6593f8",
+  "branch": "claude/cold-cache-fresh-session-saving-286i3o",
+  "cwd": "/home/user/muthur",
+  "openingPrompt": "не оч удачное сообщение, если честно. 1- если reorient дороже, то вообще зачем предлагать? 2- как может быть reorient дороже, но при этом each next costs less? …",
+  "prs": [
+    220
+  ],
+  "url": "https://claude.ai/code/session_01KPAD1wtwmQpeuHTJQZzihd",
+  "operator": "vzakharov",
+  "firstResponseAt": "2026-10-23T12:18:06.925Z",
+  "lastResponseAt": "2026-10-23T13:25:10.589Z",
+  "pricesAsOf": "2026-10-06",
+  "claudeCodeTotalUsd": null,
+  "ownTurns": {
+    "inputTokens": 102,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 146986,
+    "cacheReadTokens": 7464911,
+    "outputTokens": 32309,
+    "thinkingTokens": 9921,
+    "responses": 51,
+    "costUsd": 3.315458200000001
+  },
+  "subagents": {
+    "inputTokens": 34,
+    "cacheWrite5mTokens": 133213,
+    "cacheWrite1hTokens": 0,
+    "cacheReadTokens": 1770286,
+    "outputTokens": 10381,
+    "thinkingTokens": 4589,
+    "responses": 17,
+    "costUsd": 1.2278782
+  },
+  "byRate": {
+    "claude-opus-5-5/standard": {
+      "inputTokens": 136,
+      "cacheWrite5mTokens": 133213,
+      "cacheWrite1hTokens": 146986,
+      "cacheReadTokens": 9235197,
+      "outputTokens": 42690,
+      "thinkingTokens": 14510,
+      "responses": 68,
+      "costUsd": 4.5433364
+    }
+  },
+  "warnings": [],
+  "orientation": {
+    "endedBy": "Edit",
+    "endedOn": ".claude/costs/lib/restart.py",
+    "endedAt": "2026-10-23T12:19:13.903Z",
+    "contextTokens": 125809,
+    "spend": {
+      "inputTokens": 18,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 73776,
+      "cacheReadTokens": 846182,
+      "outputTokens": 5943,
+      "thinkingTokens": 3843,
+      "responses": 9,
+      "costUsd": 0.8783764000000001
+    }
+  },
+  "compactions": [],
+  "telemetry": null
+}
