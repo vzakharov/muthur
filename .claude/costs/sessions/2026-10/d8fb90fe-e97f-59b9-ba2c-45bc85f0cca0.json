@@ -1,13 +1,13 @@
 {
   "total": {
-    "inputTokens": 8,
+    "inputTokens": 30,
     "cacheWrite5mTokens": 0,
-    "cacheWrite1hTokens": 39519,
-    "cacheReadTokens": 311370,
-    "outputTokens": 1313,
-    "thinkingTokens": 444,
-    "responses": 4,
-    "costUsd": 0.404718
+    "cacheWrite1hTokens": 53951,
+    "cacheReadTokens": 1379011,
+    "outputTokens": 4705,
+    "thinkingTokens": 1127,
+    "responses": 15,
+    "costUsd": 0.8016302
   },
   "estimate": {
     "at": "2026-10-23T10:06:24.498Z",
@@ -22,25 +22,25 @@
     "comment": null
   },
   "sessionId": "d8fb90fe-e97f-59b9-ba2c-45bc85f0cca0",
-  "branch": "claude/compassionate-maxwell-423v3n",
+  "branch": "claude/branch-autoname-check-423v3n",
   "cwd": "/home/user/muthur",
   "openingPrompt": "делаю пробный запрос чтобы проверить создаются ли нормально автоназвания веток",
   "prs": [],
   "url": "https://claude.ai/code/session_012fL4hWmH2VdBF6sybY1ZRb",
   "operator": "vzakharov",
   "firstResponseAt": "2026-10-23T10:06:20.222Z",
-  "lastResponseAt": "2026-10-23T10:06:33.537Z",
+  "lastResponseAt": "2026-10-23T11:02:24.211Z",
   "pricesAsOf": "2026-10-06",
   "claudeCodeTotalUsd": null,
   "ownTurns": {
-    "inputTokens": 8,
+    "inputTokens": 30,
     "cacheWrite5mTokens": 0,
-    "cacheWrite1hTokens": 39519,
-    "cacheReadTokens": 311370,
-    "outputTokens": 1313,
-    "thinkingTokens": 444,
-    "responses": 4,
-    "costUsd": 0.404718
+    "cacheWrite1hTokens": 53951,
+    "cacheReadTokens": 1379011,
+    "outputTokens": 4705,
+    "thinkingTokens": 1127,
+    "responses": 15,
+    "costUsd": 0.8016302
   },
   "subagents": {
     "inputTokens": 0,
@@ -54,14 +54,14 @@
   },
   "byRate": {
     "claude-opus-5-5/standard": {
-      "inputTokens": 8,
+      "inputTokens": 30,
       "cacheWrite5mTokens": 0,
-      "cacheWrite1hTokens": 39519,
-      "cacheReadTokens": 311370,
-      "outputTokens": 1313,
-      "thinkingTokens": 444,
-      "responses": 4,
-      "costUsd": 0.404718
+      "cacheWrite1hTokens": 53951,
+      "cacheReadTokens": 1379011,
+      "outputTokens": 4705,
+      "thinkingTokens": 1127,
+      "responses": 15,
+      "costUsd": 0.8016302
     }
   },
   "warnings": [],
