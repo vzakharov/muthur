@@ -1,13 +1,13 @@
 {
   "total": {
-    "inputTokens": 310,
+    "inputTokens": 320,
     "cacheWrite5mTokens": 506456,
-    "cacheWrite1hTokens": 164376,
-    "cacheReadTokens": 38897833,
-    "outputTokens": 178645,
-    "thinkingTokens": 42746,
-    "responses": 155,
-    "costUsd": 15.200994599999998
+    "cacheWrite1hTokens": 173596,
+    "cacheReadTokens": 40041081,
+    "outputTokens": 183191,
+    "thinkingTokens": 44652,
+    "responses": 160,
+    "costUsd": 15.594364199999998
   },
   "estimate": {
     "at": "2026-10-23T08:07:18.645Z",
@@ -29,24 +29,24 @@
   },
   "sessionId": "b498d478-d721-5b75-bab2-a71fc946a2c3",
   "branch": "claude/session-auto-naming-speed-3n5zn5",
-  "cwd": "/home/user/muthur/tmp/branch-names",
+  "cwd": "/home/user/muthur",
   "openingPrompt": "Каким образом так моментально (sub-second) создаются автоназвания для сессий тут? Они прогоняются ещё до того как я нажму энтер, что ли?",
   "prs": [],
   "url": "https://claude.ai/code/session_01TyepQdxXqFjQ8g9z2Nsyzx",
   "operator": "vzakharov",
   "firstResponseAt": "2026-10-23T07:59:39.013Z",
-  "lastResponseAt": "2026-10-23T10:03:58.172Z",
+  "lastResponseAt": "2026-10-23T10:07:53.044Z",
   "pricesAsOf": "2026-10-06",
   "claudeCodeTotalUsd": null,
   "ownTurns": {
-    "inputTokens": 150,
+    "inputTokens": 160,
     "cacheWrite5mTokens": 0,
-    "cacheWrite1hTokens": 164376,
-    "cacheReadTokens": 11154981,
-    "outputTokens": 59262,
-    "thinkingTokens": 28708,
-    "responses": 75,
-    "costUsd": 4.7318442
+    "cacheWrite1hTokens": 173596,
+    "cacheReadTokens": 12298229,
+    "outputTokens": 63808,
+    "thinkingTokens": 30614,
+    "responses": 80,
+    "costUsd": 5.125213799999999
   },
   "subagents": {
     "inputTokens": 160,
@@ -60,14 +60,14 @@
   },
   "byRate": {
     "claude-opus-5-5/standard": {
-      "inputTokens": 310,
+      "inputTokens": 320,
       "cacheWrite5mTokens": 506456,
-      "cacheWrite1hTokens": 164376,
-      "cacheReadTokens": 38897833,
-      "outputTokens": 178645,
-      "thinkingTokens": 42746,
-      "responses": 155,
-      "costUsd": 15.200994599999998
+      "cacheWrite1hTokens": 173596,
+      "cacheReadTokens": 40041081,
+      "outputTokens": 183191,
+      "thinkingTokens": 44652,
+      "responses": 160,
+      "costUsd": 15.594364199999998
     }
   },
   "warnings": [],
