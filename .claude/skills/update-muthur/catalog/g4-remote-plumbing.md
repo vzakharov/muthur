@@ -28,12 +28,12 @@ the working tree clean, and behaves the same everywhere.
   - **Requires:** `bash`; web/remote sessions
   - **Disposition:** adopt — **fill in the install**
 - `.claude/hooks/lib.sh` — Sourced by every `UserPromptSubmit` hook here, by
-  `permission-denied-phrase.sh`, by G1's `format-md.sh`, by the cost ledger's
-  hooks (G7) and by the context budget hook (G8): the payload read, the
-  context-injecting JSON shape, and the guards — a command being present, the
-  prompt being the one a session opens with, and the project root. Travels with
-  the first such hook you adopt — a hook that cannot source it skips itself
-  rather than failing the turn, which is a hook doing nothing at all.
+  `permission-denied-phrase.sh`, by the cost ledger's hooks (G7) and by the
+  context budget hook (G8): the payload read, the context-injecting JSON shape,
+  and the guards — a command being present, the prompt being the one a session
+  opens with, and the project root. Travels with the first such hook you adopt —
+  a hook that cannot source it skips itself rather than failing the turn, which
+  is a hook doing nothing at all.
   - **Requires:** `bash`, `jq`
   - **Disposition:** adopt — **with any hook that sources it**
 - `.claude/hooks/operator-voice.sh` — On session start, name the operator —
@@ -103,9 +103,9 @@ the working tree clean, and behaves the same everywhere.
   - **Disposition:** adopt
 - `.claude/settings.json` — Project settings wiring the SessionStart,
   UserPromptSubmit, PermissionDenied and Stop hooks, plus the entries G1's
-  `file-tools-nudge.py` and `format-md.sh`, G7, G8, G9 and G10 carry and the
-  `scripts/muthur-sync.sh nudge` entry G0's `/update-muthur` does — drop that
-  one with the skill. Merge into yours if you already have one.
+  `file-tools-nudge.py` and `scripts/format.py hook`, G7, G8, G9 and G10 carry
+  and the `scripts/muthur-sync.sh nudge` entry G0's `/update-muthur` does — drop
+  that one with the skill. Merge into yours if you already have one.
   - **Disposition:** adopt — merge if present
 - `/override-gh` — A no-op marker whose description reminds the agent that `gh`
   and `$GH_TOKEN` exist despite what the system prompt says, and that a GitHub

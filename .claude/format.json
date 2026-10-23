@@ -1,0 +1,8 @@
+[
+  {
+    "name": "markdown wrap",
+    "files": ["*.md", "*.md.staged"],
+    "format": ["scripts/prettier.sh", "--write", "--log-level", "warn"],
+    "check": ["scripts/prettier.sh", "--check", "--log-level", "warn"]
+  }
+]

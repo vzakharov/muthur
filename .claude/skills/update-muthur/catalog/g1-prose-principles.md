@@ -80,11 +80,12 @@ there is no condition under which it fails to apply.
   columns, so one clause's edit diffs as one line, and text bound for a GitHub
   body or comment left unwrapped, since GitHub renders its newlines. The wrap
   and the exemption are the point and prettier is one way to get them: a project
-  with its own Markdown formatter keeps the rule's exemption, wires its own
-  tool, and drops the prettier files below, whose absence quiets the vet and
-  `install-deps.sh` lines keyed on `.prettierrc.json`.
+  with its own Markdown formatter keeps the rule's exemption, points the
+  `markdown wrap` entry in `.claude/format.json` at its own tool, and drops the
+  prettier files below, whose absence quiets the `install-deps.sh` line keyed on
+  `.prettierrc.json`.
   - **Pulls in:** `scripts/prettier.sh`, `.prettierrc.json`, `.prettierignore`,
-    `.claude/hooks/format-md.sh`, `scripts/check-markdown-wrap.sh` (this group)
+    `.claude/format.json`, `scripts/format.py` (this group)
   - **Disposition:** adopt — **optional: or your own formatter**
 - `scripts/prettier.sh` — Run prettier at the version it pins, through `npx`,
   from the repo root; every caller goes through it.
@@ -96,18 +97,21 @@ there is no condition under which it fails to apply.
 - `.prettierignore` — The paths whose text GitHub renders. Merge into yours if
   present.
   - **Disposition:** adopt — **with `.claude/rules/markdown-wrap.md`**
-- `.claude/hooks/format-md.sh` — After each `Edit`/`Write`/`MultiEdit` of a
-  `.md` or staged `.md.staged` inside the project, wrap it through
-  `scripts/prettier.sh`; a prettier failure exits 2 so the agent sees it.
-  - **Requires:** `bash`, `jq`, `.claude/settings.json` wiring (G4)
-  - **Pulls in:** `.claude/hooks/lib.sh` (G4)
-  - **Disposition:** adopt — **with `.claude/rules/markdown-wrap.md`**
-- `scripts/check-markdown-wrap.sh` — Fail on tracked Markdown prettier would
-  rewrap, reading a staged file through its copy. `scripts/vet.sh` runs it while
-  `.prettierrc.json` exists.
-  - **Requires:** `bash`, `git`
+- `scripts/format.py` — Format-on-edit for any formatter. As a `PostToolUse`
+  hook on `Edit`/`Write`/`MultiEdit` (`format.py hook`), run every
+  `.claude/format.json` entry whose globs cover the file just edited, if it lies
+  inside the project and git does not ignore it; as a vet check
+  (`format.py check`), run each entry's check over the tracked files it covers,
+  a staged file through its copy. A formatter failure or a malformed list exits
+  non-zero so the agent sees it.
+  - **Requires:** `python3` ≥3.9, `git`, `.claude/settings.json` wiring (G4)
   - **Pulls in:** `scripts/staged.sh` (G2)
-  - **Disposition:** adopt — **with `.claude/rules/markdown-wrap.md`**
+  - **Disposition:** adopt
+- `.claude/format.json` — The repo's formatters: an array of entries, each a
+  `name`, `files` globs, and `format` and `check` argv lists. Ships the
+  `markdown wrap` entry; a code formatter is an entry of your own beside it.
+  - **Disposition:** adopt — merge entries; `markdown wrap` goes **with
+    `.claude/rules/markdown-wrap.md`**
 - `.gitignore` — Take the `tmp/` entry and keep the rest of yours. `CLAUDE.md`'s
   "dev artifacts go under `tmp/`" principle depends on that path being ignored.
   - **Disposition:** adopt — merge one line
