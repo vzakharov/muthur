@@ -59,8 +59,16 @@ claude_environ() {
 # reach this port at all. Where that process is out of sight, only
 # `CLAUDE_CODE_ENABLE_TELEMETRY` survives into this one to be checked, and the
 # receiver starts on it alone: a listener nothing exports to costs nothing.
+#
+# A `claude` exec'd from a preloaded spare (`claude --preload`) is handed the
+# environment's variables after its exec, so its `/proc` environ lacks them
+# while what it spawns carries them: one naming no `CLAUDE_CODE_ENABLE_TELEMETRY`
+# where this process has it set is that stale copy, and as good as out of sight.
+stale() {
+  [ "${CLAUDE_CODE_ENABLE_TELEMETRY-}" = 1 ] && ! grep -q '^CLAUDE_CODE_ENABLE_TELEMETRY=' <<<"$exporter_env"
+}
 checked=("${expected[@]:0:4}")
-if exporter_env="$(claude_environ 2>/dev/null)"; then
+if exporter_env="$(claude_environ 2>/dev/null)" && ! stale; then
   value_of() { sed -n "s|^$1=||p" <<<"$exporter_env"; }
 else
   checked=("${expected[0]}")

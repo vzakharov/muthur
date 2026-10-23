@@ -206,7 +206,9 @@ class WhenTheHookStartsTheReceiver(unittest.TestCase):
             "OTEL_EXPORTER_OTLP_ENDPOINT": f"http://127.0.0.1:{self.port}",
         }
 
-    def run_hook(self, event: str = "SessionStart", **env: str) -> str:
+    def run_hook(self, event: str = "SessionStart", late: str = "", **env: str) -> str:
+        """`late` is assignments the hook gets and `claude`'s `/proc` environ
+        does not, as a `claude` exec'd from a preloaded spare hands them on."""
         inherited = {
             k: v
             for k, v in os.environ.items()
@@ -214,7 +216,7 @@ class WhenTheHookStartsTheReceiver(unittest.TestCase):
         }
         # The trailing `:` keeps `claude` from exec'ing into the hook, which
         # would leave it no such ancestor.
-        strip_otel = 'env $(env | sed -n "s/^\\(OTEL_[A-Z_]*\\)=.*/-u \\1/p") bash "$0"; :'
+        strip_otel = f'env $(env | sed -n "s/^\\(OTEL_[A-Z_]*\\)=.*/-u \\1/p") {late} bash "$0"; :'
         ran = subprocess.run(
             [str(self.claude), "-c", strip_otel, str(HOOK)],
             input=json.dumps({"hook_event_name": event}),
@@ -242,8 +244,8 @@ class WhenTheHookStartsTheReceiver(unittest.TestCase):
         time.sleep(0.2)
         self.assertFalse(self.started.exists())
 
-    def assert_started(self, event: str) -> None:
-        self.assertEqual(self.run_hook(event, **self.export), "")
+    def assert_started(self, event: str, late: str = "") -> None:
+        self.assertEqual(self.run_hook(event, late, **({} if late else self.export)), "")
         for _ in range(50):
             if self.started.exists():
                 break
@@ -255,6 +257,9 @@ class WhenTheHookStartsTheReceiver(unittest.TestCase):
 
     def test_starts_a_missing_receiver_after_a_tool_call_too(self) -> None:
         self.assert_started("PostToolUse")
+
+    def test_starts_on_its_own_telemetry_flag_when_claudes_environ_predates_it(self) -> None:
+        self.assert_started("SessionStart", late="CLAUDE_CODE_ENABLE_TELEMETRY=1")
 
     def test_says_nothing_after_a_tool_call_when_the_variables_are_unset(self) -> None:
         self.assertEqual(self.run_hook("PostToolUse"), "")
