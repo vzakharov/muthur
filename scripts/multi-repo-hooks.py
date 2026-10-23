@@ -49,7 +49,7 @@ PER_REPO = frozenset(
     {
         ".claude/hooks/install-deps.sh",
         "scripts/muthur-sync.sh",
-        ".claude/hooks/format-md.sh",
+        "scripts/format.py",
         ".claude/hooks/file-tools-nudge.py",
         ".claude/costs/hooks/stop-session-cost.sh",
         ".claude/costs/hooks/estimate-notice.sh",

@@ -138,7 +138,7 @@ class MultiRepoHooksTest(unittest.TestCase):
                 "UserPromptSubmit": [
                     {
                         "hooks": [
-                            command(".claude/hooks/format-md.sh"),
+                            command("scripts/format.py hook"),
                             command(".claude/hooks/operator-voice.sh"),
                             command(".claude/hooks/prompt-issue-export.sh"),
                         ]
@@ -151,9 +151,9 @@ class MultiRepoHooksTest(unittest.TestCase):
         self.assertEqual(
             commands,
             [
-                f"CLAUDE_PROJECT_DIR={alpha} {alpha}/.claude/hooks/format-md.sh",
+                f"CLAUDE_PROJECT_DIR={alpha} {alpha}/scripts/format.py hook",
                 f"CLAUDE_PROJECT_DIR={alpha} {alpha}/.claude/hooks/operator-voice.sh",
-                f"CLAUDE_PROJECT_DIR={beta} {beta}/.claude/hooks/format-md.sh",
+                f"CLAUDE_PROJECT_DIR={beta} {beta}/scripts/format.py hook",
             ],
         )
 

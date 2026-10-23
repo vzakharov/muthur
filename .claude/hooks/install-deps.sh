@@ -29,7 +29,7 @@ cd "${CLAUDE_PROJECT_DIR:-$(pwd)}"
 
 # Fetch the prettier `scripts/prettier.sh` pins, so the session's first Markdown
 # edit does not wait on the download. Not stack-specific, so it stays when the
-# install below is filled in. Keyed on `.prettierrc.json`, as in `vet.sh`.
+# install below is filled in. Keyed on `.prettierrc.json`.
 [ ! -f .prettierrc.json ] || scripts/prettier.sh --version >/dev/null
 
 # TODO: install dependencies for your stack
