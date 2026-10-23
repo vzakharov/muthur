@@ -50,7 +50,7 @@ def main() -> None:
         if s is not None:
             saving = saving_over(s, slice_tokens)
             print(
-                f"Relaying now costs ~${saving.relay:.2f} up front and {verdict(saving)} over the next"
+                f"Relaying now costs ~${saving.up_front:.2f} up front and {verdict(saving)} over the next"
                 f" {slice_tokens // 1000}k tokens of work, reorientation priced from"
                 f" {s.reorientation.source}."
             )

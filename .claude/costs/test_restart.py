@@ -28,6 +28,7 @@ from lib.restart import (
     read_history,
     recache,
     reorientation_of,
+    fresh_saving_over,
     saving_over,
 )
 
@@ -110,8 +111,14 @@ class TheCostModel(unittest.TestCase):
 
     def test_a_relay_costs_the_summary_turn_and_the_reorientation(self) -> None:
         saving = saving_over(worked(126_000), FINISH)
-        self.assertEqual(f"{saving.relay:.2f}", "0.76")
+        self.assertEqual(f"{saving.up_front:.2f}", "0.76")
         self.assertLess(saving.usd, 0)
+
+    def test_a_fresh_session_weighs_its_reorientation_against_the_recache(self) -> None:
+        saving = fresh_saving_over(worked(174_000), FINISH)
+        self.assertEqual(f"{saving.up_front:.2f}", "0.57")
+        # $0.50 of re-cache saved up front, plus 77k less on each of 37 requests.
+        self.assertEqual(f"{saving.usd:.2f}", "1.07")
 
     def test_a_recache_reads_the_shared_prefix_and_writes_the_rest(self) -> None:
         self.assertEqual(f"{recache(worked(174_000)):.2f}", "1.07")

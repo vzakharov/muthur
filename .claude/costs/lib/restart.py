@@ -67,9 +67,9 @@ class Session:
 
 @dataclass(frozen=True)
 class Saving:
-    usd: float  # what relaying saves over the slice, up-front costs included
+    usd: float  # what switching saves over the slice, up-front costs included
     share: float  # of what carrying on costs over it
-    relay: float  # USD a relay pays before its successor's first action
+    up_front: float  # USD the switch pays before its successor's first action
 
 
 def usd(tokens: float, rate: float) -> float:
@@ -87,17 +87,28 @@ def relay_once(s: Session) -> float:
     return usd(s.context, s.rates.cache_read) + usd(SUMMARY_OUT, s.rates.output) + s.reorientation.cost_usd
 
 
-def saving_over(s: Session, slice_tokens: int) -> Saving:
-    """Carrying on against relaying, over the requests `slice_tokens` of context
-    growth takes. New context is written at the same rate under both, so the
-    writes cancel out of the saving and stay in carrying on's total."""
+def _switch_over(s: Session, slice_tokens: int, carry_once: float, switch_once: float) -> Saving:
+    """Carrying on against a successor, over the requests `slice_tokens` of
+    context growth takes, each side paying its own up-front cost first. New
+    context is written at the same rate under both, so the writes cancel out of
+    the saving and stay in carrying on's total."""
     n = slice_tokens * s.requests_per_token
     r = s.rates.cache_read
     growth = usd(slice_tokens, s.write)
-    carry = usd(n * (s.context + slice_tokens / 2), r) + growth
-    once = relay_once(s)
-    relay = once + usd(n * (s.reorientation.context + slice_tokens / 2), r) + growth
-    return Saving(carry - relay, (carry - relay) / carry, once)
+    carry = carry_once + usd(n * (s.context + slice_tokens / 2), r) + growth
+    switch = switch_once + usd(n * (s.reorientation.context + slice_tokens / 2), r) + growth
+    return Saving(carry - switch, (carry - switch) / carry, switch_once)
+
+
+def saving_over(s: Session, slice_tokens: int) -> Saving:
+    """Relaying a warm session."""
+    return _switch_over(s, slice_tokens, 0.0, relay_once(s))
+
+
+def fresh_saving_over(s: Session, slice_tokens: int) -> Saving:
+    """Starting a fresh session instead of re-caching a cold one: carrying on
+    pays the re-cache, the fresh session its reorientation."""
+    return _switch_over(s, slice_tokens, recache(s), s.reorientation.cost_usd)
 
 
 def verdict(saving: Saving) -> str:

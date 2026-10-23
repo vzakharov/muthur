@@ -23,12 +23,25 @@ ROOT = Path(__file__).resolve().parents[3]
 sys.path.insert(0, str(ROOT / ".claude" / "costs"))
 
 from lib.pricing import parse_prices
-from lib.restart import History, Session, context_of, epoch, read_history, recache, session_of
+from lib.restart import (
+    History,
+    Session,
+    context_of,
+    epoch,
+    fresh_saving_over,
+    read_history,
+    recache,
+    session_of,
+    verdict,
+)
 
 PRICES = ROOT / ".claude" / "costs" / "prices.json"
 RESEND = "!"
 DEFAULT_MIN_USD = 0.30
 DEFAULT_MARGIN = 0.10
+# The slice of work a fresh session's saving is priced over, as the context
+# budget's notice prices a relay's.
+SLICE = 100_000
 
 # The commands a cold cache lets through: the ways on that shed context, and the
 # built-ins that make no model request over this session's context, aliases
@@ -136,13 +149,13 @@ def kilo(tokens: float) -> str:
 def reason(idle: float, context: int, priced: Optional[Session], claude_code_usd: Optional[float], images: int) -> str:
     lines = [f"Prompt cache expired: {span(idle)} since the last response, {kilo(context)} tokens to re-cache."]
     if priced is not None:
-        fresh = priced.reorientation
-        lines.append(f"Carry on: ~${recache(priced):.2f} to re-cache.")
+        saving = fresh_saving_over(priced, SLICE)
+        lines.append(f"Carrying on re-caches them for ~${recache(priced):.2f}.")
         lines.append(
-            "A new session, if everything the work needs is already on the branch and nothing decided"
-            f" since lives only in this conversation: ~${fresh.cost_usd:.2f}"
-            f" to reorient, priced from {fresh.source}, and each request after reads ~{kilo(fresh.context)}"
-            f" instead of ~{kilo(context)}."
+            f"A new session pays ~${saving.up_front:.2f} to reorient (priced from"
+            f" {priced.reorientation.source}) but carries less on every request after, so it"
+            f" {verdict(saving)} over the next {SLICE // 1000}k tokens of work — if everything the work"
+            " needs is already on the branch and nothing decided since lives only in this conversation."
         )
     elif claude_code_usd is not None:
         lines.append(f"Claude Code estimates re-caching at ${claude_code_usd:.2f}; this model has no row in the price table to price a new session.")
@@ -163,10 +176,10 @@ def price(transcript: Path, history: History, context: int, project: Path) -> Op
 
 
 def outclassed(s: Session, margin: float) -> bool:
-    """The fresh session beats carrying on by less than `margin` on both counts,
-    so the stop has no real choice to offer."""
-    keep = 1 - margin
-    return s.reorientation.cost_usd >= keep * recache(s) and s.reorientation.context >= keep * s.context
+    """The fresh session saves less than `margin` of the re-cache over the next
+    `SLICE`, nothing at all included, so the stop has no real choice to offer."""
+    saving = fresh_saving_over(s, SLICE)
+    return saving.usd <= 0 or saving.usd < margin * recache(s)
 
 
 @dataclass(frozen=True)

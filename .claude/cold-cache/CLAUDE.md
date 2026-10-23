@@ -23,8 +23,11 @@ model.
   turn is a request at the whole context, so on a cold cache it pays the same
   re-cache carrying on does; the two cancel, and what is left is the context
   budget's question, which that hook asks once the session goes on. Only a fresh
-  session skips the re-cache, so the guard prices it — the reorientation up
-  front, the smaller context on every request after — and offers it only for
+  session skips the re-cache, so the guard prices it as the context budget
+  prices a relay, by what it saves over the next 100k tokens of work: the
+  reorientation against the re-cache up front, the smaller context on every
+  request after. Two figures that point opposite ways — dearer up front, cheaper
+  per request — would leave the operator to do that sum. It is offered only for
   work that is already all on the branch, a call the operator makes. The hook
   cannot see a decision made in chat after the last step that wrote one down — a
   plan, a PR body, a commit — so the offer names that condition too.
@@ -49,11 +52,10 @@ model.
   model (`/go`, `/btw`, `/init`, `/plan`) are prompts like any other. Also
   passing: a session whose re-cache costs under `MUTHUR_COLD_CACHE_MIN_USD`
   (default `0.30`), where the stop costs more attention than it saves; and one
-  whose fresh session beats carrying on by less than `MUTHUR_COLD_CACHE_MARGIN`
-  (default `0.10`) both on its up-front cost against the re-cache and on the
-  context it carries after, where the stop has no real choice to offer. An
-  unpriced model is still stopped, with the times and token counts and no
-  dollars.
+  whose fresh session saves nothing over that slice, or less than
+  `MUTHUR_COLD_CACHE_MARGIN` (default `0.10`) of the re-cache, where the stop
+  has no real choice to offer. An unpriced model is still stopped, with the
+  times and token counts and no dollars.
 
 `MUTHUR_COLD_CACHE_GUARD=off` in `.claude/settings.local.json`'s `env` disables
 both halves.
