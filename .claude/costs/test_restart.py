@@ -38,6 +38,8 @@ OPUS = PRICES.rates[f"{MODEL}/standard"]
 HOUR = 3600
 # The context budget hook's `finish`, the slice a relay's saving is priced over.
 FINISH = 100_000
+# The worked session's requests per token of context growth.
+WORKED_RATE = 37 / 100_000
 
 
 def iso(at: float) -> str:
@@ -93,7 +95,7 @@ def prompt_record(text: str) -> Dict[str, Any]:
 def worked(context: int) -> Session:
     """A long session's figures: 37 requests per 100k of growth, a successor
     reoriented at 97k for $0.57."""
-    return Session(context, 41_000, 37 / 100_000, Reorientation(97_000, 0.57, "test"), OPUS, OPUS.cache_write_1h)
+    return Session(context, 41_000, WORKED_RATE, Reorientation(97_000, 0.57, "test"), OPUS, OPUS.cache_write_1h)
 
 
 class TheCostModel(unittest.TestCase):

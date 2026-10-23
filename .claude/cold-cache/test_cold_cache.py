@@ -25,7 +25,7 @@ HOOK = HERE / "hooks" / "cold_cache.py"
 # The ledger's directory, for its lib and its test's record builders.
 sys.path.insert(0, str(HERE.parent / "costs"))
 
-from test_restart import HOUR, opening, response, row
+from test_restart import HOUR, WORKED_RATE, opening, response, row
 
 
 def latest(message_id: str = "last", ago: float = 2 * HOUR, context: int = 174_000, **kw: Any) -> Dict[str, Any]:
@@ -74,12 +74,12 @@ class HookCase(unittest.TestCase):
         return decision["reason"]
 
     def session(self, context: int = 174_000, ago: float = 2 * HOUR, **kw: Any) -> None:
-        """`opening()` to `latest()` at 37 requests per 100k of growth, as
-        `test_restart`'s worked session, since a fresh session's saving is
-        earned per request."""
-        first = opening(**kw)
-        start, since = first["message"]["usage"]["cache_read_input_tokens"] * 2, 3 * HOUR
-        steps = max(1, round(37 * (context - start) / 100_000))
+        """`opening()` to `latest()` at `test_restart`'s worked rate, since a
+        fresh session's saving is earned per request."""
+        since = 3 * HOUR
+        first = opening(ago=since, **kw)
+        start = first["message"]["usage"]["cache_read_input_tokens"] * 2
+        steps = max(1, round(WORKED_RATE * (context - start)))
         between = [
             response(f"mid{i}", ago=since - (since - ago) * i / steps, read=start + (context - start) * i // steps, **kw)
             for i in range(1, steps)
