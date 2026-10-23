@@ -1,0 +1,86 @@
+{
+  "total": {
+    "inputTokens": 18,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 52828,
+    "cacheReadTokens": 800696,
+    "outputTokens": 4887,
+    "thinkingTokens": 1997,
+    "responses": 9,
+    "costUsd": 0.6805752
+  },
+  "estimate": {
+    "at": "2026-10-23T08:00:19.412Z",
+    "parts": [
+      {
+        "hours": 1.0,
+        "grade": "senior",
+        "role": "developer",
+        "comment": "Answering means reading minified Claude Code bytecode to find the title generator, its model and its triggers; a senior knows where to look in a bundled binary and how to read the result without overclaiming."
+      }
+    ],
+    "comment": null
+  },
+  "sessionId": "b498d478-d721-5b75-bab2-a71fc946a2c3",
+  "branch": "claude/session-auto-naming-speed-3n5zn5",
+  "cwd": "/home/user/muthur",
+  "openingPrompt": "Каким образом так моментально (sub-second) создаются автоназвания для сессий тут? Они прогоняются ещё до того как я нажму энтер, что ли?",
+  "prs": [],
+  "url": "https://claude.ai/code/session_01TyepQdxXqFjQ8g9z2Nsyzx",
+  "operator": "vzakharov",
+  "firstResponseAt": "2026-10-23T07:59:39.013Z",
+  "lastResponseAt": "2026-10-23T08:00:28.417Z",
+  "pricesAsOf": "2026-10-06",
+  "claudeCodeTotalUsd": null,
+  "ownTurns": {
+    "inputTokens": 18,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 52828,
+    "cacheReadTokens": 800696,
+    "outputTokens": 4887,
+    "thinkingTokens": 1997,
+    "responses": 9,
+    "costUsd": 0.6805752
+  },
+  "subagents": {
+    "inputTokens": 0,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 0,
+    "cacheReadTokens": 0,
+    "outputTokens": 0,
+    "thinkingTokens": 0,
+    "responses": 0,
+    "costUsd": 0.0
+  },
+  "byRate": {
+    "claude-opus-5-5/standard": {
+      "inputTokens": 18,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 52828,
+      "cacheReadTokens": 800696,
+      "outputTokens": 4887,
+      "thinkingTokens": 1997,
+      "responses": 9,
+      "costUsd": 0.6805752
+    }
+  },
+  "warnings": [],
+  "orientation": {
+    "endedBy": "end_turn",
+    "endedOn": null,
+    "endedAt": "2026-10-23T08:00:28.417Z",
+    "contextTokens": 101658,
+    "spend": {
+      "inputTokens": 16,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 52457,
+      "cacheReadTokens": 699411,
+      "outputTokens": 3909,
+      "thinkingTokens": 1960,
+      "responses": 8,
+      "costUsd": 0.6377822000000001
+    }
+  },
+  "compactions": [],
+  "telemetry": null
+}
