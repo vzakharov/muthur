@@ -1,13 +1,13 @@
 {
   "total": {
-    "inputTokens": 102,
+    "inputTokens": 122,
     "cacheWrite5mTokens": 133213,
-    "cacheWrite1hTokens": 110957,
-    "cacheReadTokens": 6188292,
-    "outputTokens": 33061,
-    "thinkingTokens": 13042,
-    "responses": 51,
-    "costUsd": 3.4530074000000006
+    "cacheWrite1hTokens": 133075,
+    "cacheReadTokens": 7921074,
+    "outputTokens": 37110,
+    "thinkingTokens": 13467,
+    "responses": 61,
+    "costUsd": 4.057567800000001
   },
   "estimate": {
     "at": "2026-10-23T12:21:53.963Z",
@@ -31,22 +31,24 @@
   "branch": "claude/cold-cache-fresh-session-saving-286i3o",
   "cwd": "/home/user/muthur",
   "openingPrompt": "не оч удачное сообщение, если честно. 1- если reorient дороже, то вообще зачем предлагать? 2- как может быть reorient дороже, но при этом each next costs less? …",
-  "prs": [],
+  "prs": [
+    220
+  ],
   "url": "https://claude.ai/code/session_01KPAD1wtwmQpeuHTJQZzihd",
   "operator": "vzakharov",
   "firstResponseAt": "2026-10-23T12:18:06.925Z",
-  "lastResponseAt": "2026-10-23T12:24:20.767Z",
+  "lastResponseAt": "2026-10-23T12:25:19.723Z",
   "pricesAsOf": "2026-10-06",
   "claudeCodeTotalUsd": null,
   "ownTurns": {
-    "inputTokens": 68,
+    "inputTokens": 88,
     "cacheWrite5mTokens": 0,
-    "cacheWrite1hTokens": 110957,
-    "cacheReadTokens": 4418006,
-    "outputTokens": 22680,
-    "thinkingTokens": 8453,
-    "responses": 34,
-    "costUsd": 2.2251292000000005
+    "cacheWrite1hTokens": 133075,
+    "cacheReadTokens": 6150788,
+    "outputTokens": 26729,
+    "thinkingTokens": 8878,
+    "responses": 44,
+    "costUsd": 2.829689600000001
   },
   "subagents": {
     "inputTokens": 34,
@@ -60,14 +62,14 @@
   },
   "byRate": {
     "claude-opus-5-5/standard": {
-      "inputTokens": 102,
+      "inputTokens": 122,
       "cacheWrite5mTokens": 133213,
-      "cacheWrite1hTokens": 110957,
-      "cacheReadTokens": 6188292,
-      "outputTokens": 33061,
-      "thinkingTokens": 13042,
-      "responses": 51,
-      "costUsd": 3.4530074000000006
+      "cacheWrite1hTokens": 133075,
+      "cacheReadTokens": 7921074,
+      "outputTokens": 37110,
+      "thinkingTokens": 13467,
+      "responses": 61,
+      "costUsd": 4.057567800000001
     }
   },
   "warnings": [],
