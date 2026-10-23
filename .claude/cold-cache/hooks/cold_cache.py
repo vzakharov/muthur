@@ -176,8 +176,8 @@ def price(transcript: Path, history: History, context: int, project: Path) -> Op
 
 
 def outclassed(s: Session, margin: float) -> bool:
-    """The fresh session saves less than `margin` of the re-cache over the next
-    `SLICE`, nothing at all included, so the stop has no real choice to offer."""
+    """The fresh session saves nothing, or under `margin` of the re-cache, over
+    the next `SLICE`, so the stop has no real choice to offer."""
     saving = fresh_saving_over(s, SLICE)
     return saving.usd <= 0 or saving.usd < margin * recache(s)
 

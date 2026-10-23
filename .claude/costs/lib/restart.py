@@ -112,7 +112,7 @@ def fresh_saving_over(s: Session, slice_tokens: int) -> Saving:
 
 
 def verdict(saving: Saving) -> str:
-    """What relaying does against carrying on, as both hooks' notices say it."""
+    """What the switch does against carrying on, as both hooks' notices say it."""
     if abs(saving.usd) < 0.01:
         return "about breaks even with carrying on"
     if saving.usd > 0:
