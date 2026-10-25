@@ -1,13 +1,13 @@
 {
   "total": {
-    "inputTokens": 150,
-    "cacheWrite5mTokens": 83055,
-    "cacheWrite1hTokens": 154199,
-    "cacheReadTokens": 10797454,
-    "outputTokens": 44350,
-    "thinkingTokens": 18171,
-    "responses": 75,
-    "costUsd": 4.695957799999999
+    "inputTokens": 228,
+    "cacheWrite5mTokens": 193651,
+    "cacheWrite1hTokens": 190313,
+    "cacheReadTokens": 17412703,
+    "outputTokens": 68417,
+    "thinkingTokens": 24684,
+    "responses": 114,
+    "costUsd": 7.3425515999999975
   },
   "estimate": {
     "at": "2026-10-25T11:15:59.652Z",
@@ -27,52 +27,6 @@
     ],
     "comment": null
   },
-  "sessionId": "51146bb6-ee7b-5a47-bf48-c9df6ebb9594",
-  "branch": "claude/orientation-mark-738nfp",
-  "cwd": "/home/user/muthur",
-  "openingPrompt": "давай сделаем так чтобы агенты сами \"говорили\" что orientation закончилась. Сейчас бывают ситуации (пример на скриншоте), когда именно \"ориентировка\" (понять о …",
-  "prs": [
-    222
-  ],
-  "url": "https://claude.ai/code/session_01XbFgG9uYDW5wcXMo6XaNXf",
-  "operator": "vzakharov",
-  "firstResponseAt": "2026-10-25T11:14:16.390Z",
-  "lastResponseAt": "2026-10-25T11:36:25.587Z",
-  "pricesAsOf": "2026-10-06",
-  "claudeCodeTotalUsd": null,
-  "ownTurns": {
-    "inputTokens": 118,
-    "cacheWrite5mTokens": 0,
-    "cacheWrite1hTokens": 154199,
-    "cacheReadTokens": 9206858,
-    "outputTokens": 33283,
-    "thinkingTokens": 12363,
-    "responses": 59,
-    "costUsd": 3.7410955999999995
-  },
-  "subagents": {
-    "inputTokens": 32,
-    "cacheWrite5mTokens": 83055,
-    "cacheWrite1hTokens": 0,
-    "cacheReadTokens": 1590596,
-    "outputTokens": 11067,
-    "thinkingTokens": 5808,
-    "responses": 16,
-    "costUsd": 0.9548622
-  },
-  "byRate": {
-    "claude-opus-5-5/standard": {
-      "inputTokens": 150,
-      "cacheWrite5mTokens": 83055,
-      "cacheWrite1hTokens": 154199,
-      "cacheReadTokens": 10797454,
-      "outputTokens": 44350,
-      "thinkingTokens": 18171,
-      "responses": 75,
-      "costUsd": 4.695957799999999
-    }
-  },
-  "warnings": [],
   "orientation": {
     "endedBy": "Edit",
     "endedOn": ".claude/costs/lib/orientation.py",
@@ -89,6 +43,52 @@
       "costUsd": 1.1210842
     }
   },
+  "sessionId": "51146bb6-ee7b-5a47-bf48-c9df6ebb9594",
+  "branch": "claude/orientation-mark-738nfp",
+  "cwd": "/home/user/muthur",
+  "openingPrompt": "давай сделаем так чтобы агенты сами \"говорили\" что orientation закончилась. Сейчас бывают ситуации (пример на скриншоте), когда именно \"ориентировка\" (понять о …",
+  "prs": [
+    222
+  ],
+  "url": "https://claude.ai/code/session_01XbFgG9uYDW5wcXMo6XaNXf",
+  "operator": "vzakharov",
+  "firstResponseAt": "2026-10-25T11:14:16.390Z",
+  "lastResponseAt": "2026-10-25T12:12:59.035Z",
+  "pricesAsOf": "2026-10-06",
+  "claudeCodeTotalUsd": 4.695957800000001,
+  "ownTurns": {
+    "inputTokens": 166,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 190313,
+    "cacheReadTokens": 14537724,
+    "outputTokens": 49870,
+    "thinkingTokens": 15657,
+    "responses": 83,
+    "costUsd": 5.428112799999998
+  },
+  "subagents": {
+    "inputTokens": 62,
+    "cacheWrite5mTokens": 193651,
+    "cacheWrite1hTokens": 0,
+    "cacheReadTokens": 2874979,
+    "outputTokens": 18547,
+    "thinkingTokens": 9027,
+    "responses": 31,
+    "costUsd": 1.9144388
+  },
+  "byRate": {
+    "claude-opus-5-5/standard": {
+      "inputTokens": 228,
+      "cacheWrite5mTokens": 193651,
+      "cacheWrite1hTokens": 190313,
+      "cacheReadTokens": 17412703,
+      "outputTokens": 68417,
+      "thinkingTokens": 24684,
+      "responses": 114,
+      "costUsd": 7.3425515999999975
+    }
+  },
+  "warnings": [],
   "compactions": [],
   "telemetry": null
 }
