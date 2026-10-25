@@ -1,13 +1,13 @@
 {
   "total": {
-    "inputTokens": 86,
-    "cacheWrite5mTokens": 0,
-    "cacheWrite1hTokens": 127149,
-    "cacheReadTokens": 6155394,
-    "outputTokens": 27657,
-    "thinkingTokens": 11862,
-    "responses": 43,
-    "costUsd": 2.8017548
+    "inputTokens": 150,
+    "cacheWrite5mTokens": 83055,
+    "cacheWrite1hTokens": 154199,
+    "cacheReadTokens": 10797454,
+    "outputTokens": 44350,
+    "thinkingTokens": 18171,
+    "responses": 75,
+    "costUsd": 4.695957799999999
   },
   "estimate": {
     "at": "2026-10-25T11:15:59.652Z",
@@ -31,43 +31,45 @@
   "branch": "claude/orientation-mark-738nfp",
   "cwd": "/home/user/muthur",
   "openingPrompt": "давай сделаем так чтобы агенты сами \"говорили\" что orientation закончилась. Сейчас бывают ситуации (пример на скриншоте), когда именно \"ориентировка\" (понять о …",
-  "prs": [],
+  "prs": [
+    222
+  ],
   "url": "https://claude.ai/code/session_01XbFgG9uYDW5wcXMo6XaNXf",
   "operator": "vzakharov",
   "firstResponseAt": "2026-10-25T11:14:16.390Z",
-  "lastResponseAt": "2026-10-25T11:22:14.849Z",
+  "lastResponseAt": "2026-10-25T11:36:25.587Z",
   "pricesAsOf": "2026-10-06",
   "claudeCodeTotalUsd": null,
   "ownTurns": {
-    "inputTokens": 86,
+    "inputTokens": 118,
     "cacheWrite5mTokens": 0,
-    "cacheWrite1hTokens": 127149,
-    "cacheReadTokens": 6155394,
-    "outputTokens": 27657,
-    "thinkingTokens": 11862,
-    "responses": 43,
-    "costUsd": 2.8017548
+    "cacheWrite1hTokens": 154199,
+    "cacheReadTokens": 9206858,
+    "outputTokens": 33283,
+    "thinkingTokens": 12363,
+    "responses": 59,
+    "costUsd": 3.7410955999999995
   },
   "subagents": {
-    "inputTokens": 0,
-    "cacheWrite5mTokens": 0,
+    "inputTokens": 32,
+    "cacheWrite5mTokens": 83055,
     "cacheWrite1hTokens": 0,
-    "cacheReadTokens": 0,
-    "outputTokens": 0,
-    "thinkingTokens": 0,
-    "responses": 0,
-    "costUsd": 0.0
+    "cacheReadTokens": 1590596,
+    "outputTokens": 11067,
+    "thinkingTokens": 5808,
+    "responses": 16,
+    "costUsd": 0.9548622
   },
   "byRate": {
     "claude-opus-5-5/standard": {
-      "inputTokens": 86,
-      "cacheWrite5mTokens": 0,
-      "cacheWrite1hTokens": 127149,
-      "cacheReadTokens": 6155394,
-      "outputTokens": 27657,
-      "thinkingTokens": 11862,
-      "responses": 43,
-      "costUsd": 2.8017548
+      "inputTokens": 150,
+      "cacheWrite5mTokens": 83055,
+      "cacheWrite1hTokens": 154199,
+      "cacheReadTokens": 10797454,
+      "outputTokens": 44350,
+      "thinkingTokens": 18171,
+      "responses": 75,
+      "costUsd": 4.695957799999999
     }
   },
   "warnings": [],
