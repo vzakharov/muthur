@@ -159,7 +159,7 @@ through a staged copy per `.claude/rules/staging.md`.
 
 ## Not in this PR
 
-- The Project board — the follow-up issue.
+- The Project board — vzakharov/muthur#225.
 - A team hub; cross-repo matters.
 
 ## DRY notes
