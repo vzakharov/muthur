@@ -120,8 +120,10 @@ reason that says `"never — …"` is the one that does not need re-reading.
 entry's note, a `declined` reason, and any free-text field a repo adds to the
 file, such as a `notes` map. An array reads as the paragraphs of one text, an
 element per paragraph or finished thought. **Write an array once the text runs
-past a sentence or two**: a JSON string is one physical line, so a long one
-cannot be read raw and diffs whole on a one-word edit. Whatever reads the
+past a sentence or two, or once a sentence carries two separate points**: a JSON
+string is one physical line, so a long one cannot be read raw and diffs whole on
+a one-word edit, and a sentence welding two points together cannot lose one when
+its condition stops holding without rewriting the other. Whatever reads the
 watermark accepts both shapes.
 
 A repo with two sources would make **`repo`** an array. Nothing here precludes

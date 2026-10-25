@@ -9,15 +9,21 @@ Every explanatory value in update-muthur's watermark.json -- an
 `adopted` entry's note, a `declined` reason, and any free-text field a
 repo adds, such as a `notes` map -- is now a string or an array of
 strings. An array reads as the paragraphs of one text, an element per
-paragraph or finished thought, and the skill's § "The watermark"
-advises one once the text runs past a sentence or two;
+paragraph or finished thought. The skill's § "The watermark" asks for
+one once the text runs past a sentence or two, or once a sentence
+carries two separate points, which then cannot be revised apart;
 docs/adopting/sync.md points there. scripts/muthur-sync.sh, the only
 code that parses the file, reads `adopted` keys alone and so already
 accepted both shapes; its test fixture now carries arrays to pin that.
 
-Adopters: nothing to do now. Existing string values stay valid;
-converting long ones to arrays is optional and can ride your next
-sync.
+Adopters: go through your watermark.json's explanatory values --
+`adopted` notes, `declined` reasons, and any free-text field you added
+-- and split each one that has outgrown that rule, by length or by
+welding separate points into one sentence, into an array with one
+thought per element. Rewrite the wording where a split leaves a
+fragment, but keep what it says. It is a sweep of your own file and
+needs no operator's yes; it rides the sync that brings this commit,
+alongside the rule in § "The watermark".
 
 Co-authored-by: Claude <noreply@anthropic.com>
 ```

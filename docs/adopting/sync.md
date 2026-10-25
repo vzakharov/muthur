@@ -73,8 +73,9 @@ but _whether its stated reason still holds_, and that has to be re-read at sync
 time either way.
 
 A reason — or any other explanatory value in the file — that outgrows a sentence
-or two goes in as an array of strings, one per paragraph or finished thought, so
-it stays readable and diffs line by line. The skill's
+or two, or joins separate points in one sentence, goes in as an array of
+strings, one per paragraph or finished thought, so it stays readable and diffs
+line by line. The skill's
 [§ "The watermark"](../../.claude/skills/update-muthur/SKILL.md#the-watermark)
 owns the rule.
 
