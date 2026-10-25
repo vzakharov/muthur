@@ -95,9 +95,9 @@ hook, tests. `settings.py` goes into `.claude/settings.json`
 - **Found by listing, not searching**: issues labelled `repo:<repo>`, the marker
   matched client-side. The search index lags, and a lag here is a duplicate.
 - **The body's managed block** — repository, branch, PR, and one line per
-  session (link, opening prompt, date) — is rewritten by the sync; anything
-  outside it is the operator's. **The title** is the opening prompt at creation
-  and never touched again, so the operator renames freely.
+  session (link, claude.ai account, opening prompt, date) — is rewritten by the
+  sync; anything outside it is the operator's. **The title** is the opening
+  prompt at creation and never touched again, so the operator renames freely.
 - **Labels**: `repo:<repo>` and one `status:*`, the only labels the sync writes;
   every other label is the operator's.
 - **Status, derived from the tree and the PR, never set by hand from the loop**:
@@ -109,6 +109,15 @@ hook, tests. `settings.py` goes into `.claude/settings.json`
 - **A closed matter stays closed.** The sync never reopens one — closing is the
   operator's "no longer live" — and says once, in the next turn's context, that
   this branch's matter is closed in the hub.
+- **One GitHub account, several claude.ai accounts, one hub.** The hub follows
+  the `gh` token, so an operator working one repository from a personal and a
+  corporate claude.ai account has one hub, and both accounts' sessions on a
+  branch share its matter. A session link opens only in the account that owns
+  it, so each session line names the account: its label from the `accounts`
+  setting (`{"<email>": "<label>"}`), else the email's domain. The email is the
+  `userEmail` of the transcript's `session_context` record, read beside
+  `.claude/costs/lib/identity.py`'s other readers. Several GitHub accounts are
+  out of scope.
 - **The default branch has no matter**: work there is nobody's matter.
 - **A branch rename moves the marker**: `/branch-rename` calls
   `hub.py rename <old> <new>`, since a turn may already have created the matter
@@ -139,7 +148,9 @@ the matter's update without anyone knowing, and the next turn retries.
   branch (which folds relay chains for free), dropping a branch whose PR merged
   or which no longer exists; plus any session the operator names or shows in a
   screenshot. The list goes to the operator in chat; only what they keep is
-  created.
+  created. `list_sessions` sees only its own claude.ai account, so the tour says
+  to run it once from each account the operator works in; a second run merges
+  into existing matters rather than duplicating them.
 
 The `SKILL.md` is new and its description is always loaded, so it is written
 through a staged copy per `.claude/rules/staging.md`.
@@ -155,12 +166,13 @@ through a staged copy per `.claude/rules/staging.md`.
 - **Tests** at the `gh` boundary — a stub `gh` on `PATH` answering canned JSON:
   settings precedence and the refusal path, the cache, status derivation for
   each plan state and PR state, the marker round trip, rename, the closed-matter
-  rule, the write-only-on-change cache.
+  rule, the write-only-on-change cache, two accounts' sessions in one matter
+  with their labels.
 
 ## Not in this PR
 
 - The Project board — vzakharov/muthur#225.
-- A team hub; cross-repo matters.
+- A team hub; cross-repo matters; one operator on several GitHub accounts.
 
 ## DRY notes
 
