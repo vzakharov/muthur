@@ -121,9 +121,8 @@ entry's note, a `declined` reason, and any free-text field a repo adds to the
 file, such as a `notes` map. An array reads as the paragraphs of one text, an
 element per paragraph or finished thought. **Write an array once the text runs
 past a sentence or two**: a JSON string is one physical line, so a long one
-cannot be read raw and diffs whole on a one-word edit. A string already written
-stays valid, and converting it is optional. Whatever reads the watermark accepts
-both shapes.
+cannot be read raw and diffs whole on a one-word edit. Whatever reads the
+watermark accepts both shapes.
 
 A repo with two sources would make **`repo`** an array. Nothing here precludes
 that and nothing here builds it — and it is a separate question from `lineage`,
