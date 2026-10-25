@@ -72,12 +72,10 @@ A permanent refusal says so in the same field
 but _whether its stated reason still holds_, and that has to be re-read at sync
 time either way.
 
-A reason — or any other explanatory value in the file — that outgrows a sentence
-or two, or joins separate points in one sentence, goes in as an array of
-strings, one per paragraph or finished thought, so it stays readable and diffs
-line by line. The skill's
+A reason — or any other explanatory value in the file — may be an array of
+strings instead, one per paragraph or finished thought; the skill's
 [§ "The watermark"](../../.claude/skills/update-muthur/SKILL.md#the-watermark)
-owns the rule.
+says when to write one.
 
 From here on, pulling later changes forward is just `/update-muthur`. Nothing
 further to install.
