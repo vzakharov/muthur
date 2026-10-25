@@ -1,0 +1,92 @@
+{
+  "total": {
+    "inputTokens": 86,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 127149,
+    "cacheReadTokens": 6155394,
+    "outputTokens": 27657,
+    "thinkingTokens": 11862,
+    "responses": 43,
+    "costUsd": 2.8017548
+  },
+  "estimate": {
+    "at": "2026-10-25T11:15:59.652Z",
+    "parts": [
+      {
+        "hours": 3.0,
+        "grade": "senior",
+        "role": "developer",
+        "comment": "the mark is read back out of transcripts the ledger already parses, so it has to fit the phase measure, the report and their tests without a second source of truth"
+      },
+      {
+        "hours": 1.0,
+        "grade": "senior",
+        "role": "prompter",
+        "comment": "the reminder decides when agents mark, so the wording has to separate knowing what is what from knowing the whole ask"
+      }
+    ],
+    "comment": null
+  },
+  "sessionId": "51146bb6-ee7b-5a47-bf48-c9df6ebb9594",
+  "branch": "claude/orientation-mark-738nfp",
+  "cwd": "/home/user/muthur",
+  "openingPrompt": "давай сделаем так чтобы агенты сами \"говорили\" что orientation закончилась. Сейчас бывают ситуации (пример на скриншоте), когда именно \"ориентировка\" (понять о …",
+  "prs": [],
+  "url": "https://claude.ai/code/session_01XbFgG9uYDW5wcXMo6XaNXf",
+  "operator": "vzakharov",
+  "firstResponseAt": "2026-10-25T11:14:16.390Z",
+  "lastResponseAt": "2026-10-25T11:22:14.849Z",
+  "pricesAsOf": "2026-10-06",
+  "claudeCodeTotalUsd": null,
+  "ownTurns": {
+    "inputTokens": 86,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 127149,
+    "cacheReadTokens": 6155394,
+    "outputTokens": 27657,
+    "thinkingTokens": 11862,
+    "responses": 43,
+    "costUsd": 2.8017548
+  },
+  "subagents": {
+    "inputTokens": 0,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 0,
+    "cacheReadTokens": 0,
+    "outputTokens": 0,
+    "thinkingTokens": 0,
+    "responses": 0,
+    "costUsd": 0.0
+  },
+  "byRate": {
+    "claude-opus-5-5/standard": {
+      "inputTokens": 86,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 127149,
+      "cacheReadTokens": 6155394,
+      "outputTokens": 27657,
+      "thinkingTokens": 11862,
+      "responses": 43,
+      "costUsd": 2.8017548
+    }
+  },
+  "warnings": [],
+  "orientation": {
+    "endedBy": "Edit",
+    "endedOn": ".claude/costs/lib/orientation.py",
+    "endedAt": "2026-10-25T11:16:01.802Z",
+    "contextTokens": 134355,
+    "spend": {
+      "inputTokens": 24,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 84931,
+      "cacheReadTokens": 1304101,
+      "outputTokens": 9036,
+      "thinkingTokens": 7059,
+      "responses": 12,
+      "costUsd": 1.1210842
+    }
+  },
+  "compactions": [],
+  "telemetry": null
+}
