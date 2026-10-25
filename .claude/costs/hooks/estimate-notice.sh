@@ -56,10 +56,10 @@ else
   notice="This session's human-hour estimate: $current. If this prompt changes the size of the task — never the pace of the work — revise it with \`$usage\`, each part's reason justifying its role, grade and hours as they now stand — never a summary of the work, nor how the figure moved.$added"
 fi
 
-# A compaction has just opened a fresh stretch, so there is nothing to check.
 oriented=".claude/costs/oriented.py"
 mark="Once you know what the repository is and what the request is about, mark the end of your orientation with \`python3 $oriented\`, bare — even with details of the ask still open, and before the next step that carries it out, even a read such as tracing callers. Skip it when that step is an edit to the repository or a reply to the operator: either ends orientation by itself."
 transcript="$(field transcript_path)"
+# A compaction has just opened a fresh stretch, so there is nothing to check.
 if [ "$(field source)" != "compact" ] && [ -f "$transcript" ]; then
   if state="$(python3 "$root/$oriented" check "$transcript" 2>&1)"; then
     [ "$state" = "marked" ] && mark=""
