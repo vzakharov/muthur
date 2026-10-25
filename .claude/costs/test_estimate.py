@@ -219,10 +219,10 @@ class RowsCarryTheirEstimate(unittest.TestCase):
         row = replace(ROW, estimate=estimate_of("a", Part(1, "junior", "developer"), Part(2, "senior", "copywriter")))
         self.assertEqual(parse_session_cost(json.dumps(to_json(row))), row)
 
-    def test_a_row_is_written_opening_on_its_total_then_its_estimate(self) -> None:
+    def test_a_row_is_written_opening_on_its_total_then_its_estimate_and_orientation(self) -> None:
         row = replace(ROW, estimate=estimate_of("a"))
         written = row_text(row)
-        self.assertEqual(list(json.loads(written))[:2], ["total", "estimate"])
+        self.assertEqual(list(json.loads(written))[:3], ["total", "estimate", "orientation"])
         self.assertEqual(parse_session_cost(written), row)
 
     def test_a_row_from_before_estimates_reads_as_having_none(self) -> None:

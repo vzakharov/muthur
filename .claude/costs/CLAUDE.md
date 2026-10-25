@@ -106,10 +106,10 @@ the summary forced. They feed the call on whether a fresh session or a compact
 is the cheaper way to shed context. `lib/orientation.py` holds the definitions.
 
 - **Marking is a Bash call running `python3 .claude/costs/oriented.py` bare**,
-  which `hooks/orientation-notice.sh` asks for until the stretch has one.
-  Knowing what is what comes before the first edit or answer — a session tracing
-  callers before it changes anything is already working — and only the agent can
-  tell when. A subagent's mark is its own bearings, not the session's.
+  which `hooks/estimate-notice.sh` asks for until the stretch has one. Knowing
+  what is what comes before the first edit or answer — a session tracing callers
+  before it changes anything is already working — and only the agent can tell
+  when. A subagent's mark is its own bearings, not the session's.
 - **Acting is a write into the repository or a handover to the operator**: an
   `Edit`, `Write` or `NotebookEdit` under the directory the session started in
   and outside its `tmp/`, an `AskUserQuestion` or `ExitPlanMode`, or the

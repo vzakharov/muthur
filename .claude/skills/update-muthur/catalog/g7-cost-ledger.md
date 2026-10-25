@@ -24,7 +24,7 @@ session — so the entry is `opt-in: ask`.
   variables go in the environment's settings by hand, since Claude Code ignores
   them in `.claude/settings.json` — `hooks/start-telemetry-receiver.sh` names
   them until they are set. Arrives with no rows — the first session's row roots
-  the repo's `cost-ledger` — six `.claude/settings.json` hook entries to merge,
+  the repo's `cost-ledger` — five `.claude/settings.json` hook entries to merge,
   and a `scripts/vet.sh` loop running its tests and `check_estimates.py`, which
   fails a branch carrying a session with no estimate. Estimate roles of the
   adopter's own go in a `rates.repo.json` on its `cost-ledger`, written by

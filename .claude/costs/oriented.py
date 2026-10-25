@@ -8,7 +8,7 @@ Usage:
 Run bare, it records nothing itself: the Bash call that ran it, in the
 transcript, is the mark, and the ledger reads it there. `check` prints `marked`
 or `unmarked` for the stretch since the transcript's latest compaction, which is
-how `hooks/orientation-notice.sh` knows to stay quiet. `.claude/costs/CLAUDE.md`
+how `hooks/estimate-notice.sh` knows to stop asking for one. `.claude/costs/CLAUDE.md`
 § "Orientation" carries what the mark ends.
 
 Stdlib only — Python 3.9+.

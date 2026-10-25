@@ -1,11 +1,14 @@
 #!/bin/bash
-# `UserPromptSubmit` hook: keep the session's human-hour estimate in front of the
-# agent. With none yet, say how to set one; with one, restate it, since a prompt
-# is where scope grows and nothing else would bring the figure back up then.
+# `UserPromptSubmit` and post-compaction `SessionStart` hook: keep the two
+# fields of the session's row the agent sets in front of it. The human-hour
+# estimate: with none yet, say how to set one; with one, restate it, since a
+# prompt is where scope grows and nothing else would bring the figure back up
+# then. The orientation mark: ask for it until the stretch since the session
+# started or last compacted has one.
 #
-# This text is the agent-facing home of when and how to estimate;
-# `.claude/costs/CLAUDE.md` § "Human-hour estimates" carries what the figure is
-# for and what it cannot tell apart.
+# This text is the agent-facing home of when and how to estimate and to mark;
+# `.claude/costs/CLAUDE.md` § "Human-hour estimates" and § "Orientation" carry
+# what each figure is for and what it cannot tell apart.
 
 . "$(dirname "${BASH_SOURCE[0]}")/../../hooks/lib.sh" || exit 0
 need_command jq "skipping the estimate notice."
@@ -53,4 +56,18 @@ else
   notice="This session's human-hour estimate: $current. If this prompt changes the size of the task — never the pace of the work — revise it with \`$usage\`, each part's reason justifying its role, grade and hours as they now stand — never a summary of the work, nor how the figure moved.$added"
 fi
 
-emit_context "$notice$shadowed$unfetched"
+# A compaction has just opened a fresh stretch, so there is nothing to check.
+oriented=".claude/costs/oriented.py"
+mark="Once you know what the repository is and what the request is about, mark the end of your orientation with \`python3 $oriented\`, bare — even with details of the ask still open, and before the next step that carries it out, even a read such as tracing callers. Skip it when that step is an edit to the repository or a reply to the operator: either ends orientation by itself."
+transcript="$(field transcript_path)"
+if [ "$(field source)" != "compact" ] && [ -f "$transcript" ]; then
+  if state="$(python3 "$root/$oriented" check "$transcript" 2>&1)"; then
+    [ "$state" = "marked" ] && mark=""
+  else
+    mark="$mark (The transcript could not be read to tell whether you already have: $state)"
+  fi
+fi
+
+emit_context "$notice$shadowed$unfetched${mark:+
+
+$mark}"
