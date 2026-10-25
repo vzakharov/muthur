@@ -100,8 +100,8 @@ class Fixture:
                 {
                     "repo": SOURCE_REPO,
                     "lastSyncedSha": last_synced,
-                    "adopted": [".claude/", {"scripts/": "ported"}],
-                    "declined": {},
+                    "adopted": [".claude/", {"scripts/": ["ported.", "Split in two."]}],
+                    "declined": {"docs/": ["not taken.", "Ours differ."]},
                 }
             )
         for path, text in files.items():
