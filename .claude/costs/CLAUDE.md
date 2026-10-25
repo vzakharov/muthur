@@ -135,14 +135,14 @@ is the cheaper way to shed context. `lib/orientation.py` holds the definitions.
 
 **What it misses.** The mark is the agent's word: one made early or late moves
 the phase with it, and a forgotten one leaves the phase to end at acting, later
-than it did. An edit made through `Bash` is not seen as acting, so an unmarked
-such session's orientation runs long. Re-reads are a floor: a hole read around —
-a `cat` after a `Read`, a narrower grep — or one that shows as a wrong turn goes
-uncounted, while a repeat that was simply due, a `git status` before each
-commit, counts; `byTool` is what lets `Bash` be read apart. The compaction call
-itself has no `usage` to price. A resume in a fresh container reloads the
-transcript with no boundary to restart at, so what it spends getting its
-bearings lands in the work.
+than it did. An edit made through `Bash` is not seen as acting, so such a
+session's orientation runs long unless it marks. Re-reads are a floor: a hole
+read around — a `cat` after a `Read`, a narrower grep — or one that shows as a
+wrong turn goes uncounted, while a repeat that was simply due, a `git status`
+before each commit, counts; `byTool` is what lets `Bash` be read apart. The
+compaction call itself has no `usage` to price. A resume in a fresh container
+reloads the transcript with no boundary to restart at, so what it spends getting
+its bearings lands in the work.
 
 ## Telemetry
 

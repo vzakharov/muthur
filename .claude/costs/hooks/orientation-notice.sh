@@ -1,7 +1,7 @@
 #!/bin/bash
 # `UserPromptSubmit` and post-compaction `SessionStart` hook: ask the agent to
 # mark the end of its orientation, until it has since the session started or
-# last compacted. A prompt that finds the mark already made adds nothing.
+# last compacted.
 #
 # This text is the agent-facing home of when to mark;
 # `.claude/costs/CLAUDE.md` § "Orientation" carries what the mark ends and what

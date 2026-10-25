@@ -1,11 +1,11 @@
-"""What a session spent finding its bearings before it acted — at its start, and
-again after each compaction — and what each compaction cost later in reads of
-things its summary left out.
+"""What a session spent finding its bearings before it marked them found or
+acted — at its start, and again after each compaction — and what each
+compaction cost later in reads of things its summary left out.
 
-It takes what `summarise_transcript` collects on its one pass over the
+The measure takes what `summarise_transcript` collects on its one pass over the
 transcript rather than walking the records itself, so the dedup rule for
 `message.id` has one home. `.claude/costs/CLAUDE.md` § "Orientation" carries
-what counts as acting, and what the measure misses.
+what ends a phase, and what the measure misses.
 """
 
 from __future__ import annotations
@@ -143,9 +143,9 @@ def summary_chars_of(record: Mapping[str, Any]) -> Optional[int]:
 
 @dataclass
 class Phase:
-    """From a starting point to the first response that acted, that response
-    left out. The four `ended*`/`context*` fields are null when the stretch ran
-    out before anything acted."""
+    """From a starting point to the first response that marked or acted, that
+    response left out. The four `ended*`/`context*` fields are null when the
+    stretch ran out before either."""
 
     ended_by: Optional[str]
     ended_on: Optional[str]
