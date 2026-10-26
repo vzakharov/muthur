@@ -204,12 +204,12 @@ turn's last commit:
   and is still live — its standing constraints, its open questions — carried
   into the matching sections, and the rest left to a pointer at it.
 
-A rewrite is a new file rather than an edit in place: a summary keeps its name
-for good, so the operator reads the change as one added file, the session
-title's number counts up with it, and a summary a session already took stays
-what it took. A turn that leaves the Next step true — a question asked and still
-open, a side remark answered — settles nothing; nor does the turn that wrote the
-summary, nor a predecessor after Step 3, whose branch is the successor's.
+A rewrite is a new file rather than an edit in place, for Step 2's reason, and
+so the session title's number counts up with it and a summary a session already
+took stays what it took. A turn that leaves the Next step true — a question
+asked and still open, a side remark answered — settles nothing; nor does the
+turn that wrote the summary, nor a predecessor after Step 3, whose branch is the
+successor's.
 
 ## The predecessor's transcript
 
