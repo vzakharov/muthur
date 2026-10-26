@@ -1,0 +1,86 @@
+{
+  "total": {
+    "inputTokens": 10,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 46103,
+    "cacheReadTokens": 415557,
+    "outputTokens": 3477,
+    "thinkingTokens": 1556,
+    "responses": 5,
+    "costUsd": 0.5215154
+  },
+  "estimate": {
+    "at": "2026-10-26T05:56:37.288Z",
+    "parts": [
+      {
+        "hours": 0.5,
+        "grade": "middle",
+        "role": "qa",
+        "comment": "dedupe against a large public tracker takes several keyword passes and reading candidates closely enough to tell a same-cause report from a look-alike"
+      }
+    ],
+    "comment": null
+  },
+  "sessionId": "074d5a56-96ee-54d8-832a-433f15fbbc33",
+  "branch": "claude/jolly-goodall-rgrfds",
+  "cwd": "/home/user/muthur",
+  "openingPrompt": "для запиненных сообщений (сверху) не отображается статус ветки (merged/mergeable/conflict) как для обычных (снизу), давай поищем зарепортили ли уже в claude cod…",
+  "prs": [],
+  "url": "https://claude.ai/code/session_014Ua3tVd4NySbS6LbVg9nx5",
+  "operator": "vzakharov",
+  "firstResponseAt": "2026-10-26T05:56:11.042Z",
+  "lastResponseAt": "2026-10-26T05:56:48.223Z",
+  "pricesAsOf": "2026-10-06",
+  "claudeCodeTotalUsd": null,
+  "ownTurns": {
+    "inputTokens": 10,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 46103,
+    "cacheReadTokens": 415557,
+    "outputTokens": 3477,
+    "thinkingTokens": 1556,
+    "responses": 5,
+    "costUsd": 0.5215154
+  },
+  "subagents": {
+    "inputTokens": 0,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 0,
+    "cacheReadTokens": 0,
+    "outputTokens": 0,
+    "thinkingTokens": 0,
+    "responses": 0,
+    "costUsd": 0.0
+  },
+  "byRate": {
+    "claude-opus-5-5/standard": {
+      "inputTokens": 10,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 46103,
+      "cacheReadTokens": 415557,
+      "outputTokens": 3477,
+      "thinkingTokens": 1556,
+      "responses": 5,
+      "costUsd": 0.5215154
+    }
+  },
+  "warnings": [],
+  "orientation": {
+    "endedBy": "end_turn",
+    "endedOn": null,
+    "endedAt": "2026-10-26T05:56:48.223Z",
+    "contextTokens": 94933,
+    "spend": {
+      "inputTokens": 8,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 45737,
+      "cacheReadTokens": 320992,
+      "outputTokens": 2458,
+      "thinkingTokens": 1511,
+      "responses": 4,
+      "costUsd": 0.47928639999999995
+    }
+  },
+  "compactions": [],
+  "telemetry": null
+}
