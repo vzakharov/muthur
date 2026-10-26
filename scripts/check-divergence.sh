@@ -2,18 +2,14 @@
 # Hold `/update-muthur`'s state to its shape: the watermark carries the sync's
 # position and nothing else, and the divergence record stays within a size every
 # sync can read whole. `.claude/skills/update-muthur/SKILL.md` § "The divergence
-# record" owns both; `vet.sh` runs this only while the watermark exists.
+# record" owns both.
 #
-# The record is measured in lines as wrapped at WIDTH columns, each physical
-# line counting ceil(characters / WIDTH): on a prettier-wrapped file that is its
-# line count, and on one wrapped differently or not at all it is the length the
-# same text would have wrapped. Characters, not bytes, by
-# `check-claude-md-size.sh`'s `count_chars` trick, so a non-Latin record is not
-# measured as two or three times its length.
-#
-# The cap is on the whole record because the whole record enters every sync's
-# context. An adopter with its own idea of the right size changes MAX_LINES in
-# its copy, in a commit that says why.
+# Each physical line of the record counts ceil(characters / WIDTH): a
+# prettier-wrapped file's line count, and the wrapped length of one that is not.
+# Characters, not bytes, by `check-claude-md-size.sh`'s `count_chars` trick, so
+# a non-Latin record is not measured as two or three times its length. An
+# adopter with its own idea of the right size changes MAX_LINES in its copy, in
+# a commit that says why.
 
 set -uo pipefail
 

@@ -15,10 +15,10 @@ you. An adopter taking a one-time snapshot deletes the skill instead.
 `/update-muthur` is a stub for want of a watermark, not a procedure, so
 hydrating it is `.claude/skills/update-muthur/watermark.json` — the file the
 skill's [own entry](../../.claude/skills/update-muthur/catalog/g0-sync-path.md)
-tells you to rewrite — and `divergence.md` beside it. Write both for **your**
-repo, then clear both stub markers: delete the `⚠️ **STUB.**` banner and drop
-`STUB` from the frontmatter `description`. Half of either leaves the skill
-failing assertion 4.
+tells you to rewrite — and `divergence.md` beside it wherever your repo differs.
+Write them for **your** repo, then clear both stub markers: delete the
+`⚠️ **STUB.**` banner and drop `STUB` from the frontmatter `description`. Half
+of either leaves the skill failing assertion 4.
 
 `repo` arrives correct — the shipped value names this repo, which _is_ your
 source. What must not survive is the placeholder `lastSyncedSha`: the skill's
@@ -42,12 +42,12 @@ Step 1 stops on it, so an unhydrated tree cannot sync against a foreign history.
   watermark loses. It starts equal to `lastSyncedSha` and diverges permanently
   on your first sync, which advances `lastSyncedSha` and leaves
   `lineage[0].atSha` alone — so that first sync overwrites the only other trace
-  of the birth point. Write it now, in the same breath. What you took verbatim
-  needs no writing down: the files being in your tree say so. **`divergence.md`
-  records the rest** — every path you took differently, and every decline along
-  the way (G4's, each `opt-in: ask` no, any group or skill you skipped), each
-  with its reason as a present-tense condition, so a later sync can re-offer
-  what it no longer covers:
+  of the birth point. Write it now, in the same breath.
+
+What you took verbatim needs no writing down: the files being in your tree say
+so. **`divergence.md` records the rest** — every path you took differently, and
+every decline along the way (G4's, each `opt-in: ask` no, any group or skill you
+skipped), each with its reason:
 
 ```markdown
 `.claude/skills/take-issue/` and the rest of G3 are declined: work is tracked in

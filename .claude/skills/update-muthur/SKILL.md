@@ -54,9 +54,8 @@ nothing else:
 }
 ```
 
-What this repo took and declined is not in it: § "The divergence record" below
-holds that, and `scripts/check-divergence.sh` fails a watermark that still
-carries an `adopted` or `declined` field.
+What this repo took differently or declined is § "The divergence record"'s,
+below.
 
 - **`lineage`** — optional provenance: the whole ancestry, **root first**, so
   the repo actually synced from leads and each later entry is one hop further
@@ -102,11 +101,11 @@ merged without its port silently skips commits forever.
 
 `.claude/skills/update-muthur/divergence.md` is this repo's account of how it
 differs from the source. **A source path that exists here and that the record
-never mentions was taken as is** — the tree says so, and no list repeats it.
-Everything else is the record's: paths re-expressed here (ported to another
-language, split across files, generalized past the source's interface), paths
-and ideas declined, and differences that cut across many paths — "this repo's
-`AGENTS.md` is upstream's `CLAUDE.md`" — stated once rather than per path.
+never mentions was taken as is** — the tree says so. Everything else is the
+record's: paths re-expressed here (ported to another language, split across
+files, generalized past the source's interface), paths and ideas declined, and
+differences that cut across many paths — "this repo's `AGENTS.md` is upstream's
+`CLAUDE.md`" — stated once rather than per path.
 
 **The form is free.** Order, headings and grouping are whatever reads best for
 this repo, which its own agent knows better than this file does. Three things
@@ -328,11 +327,11 @@ skill whose every prose site is correct.
 Set `lastSyncedSha` to the sync's **boundary** and `lastSyncedAt` to today, as
 the final commit of the sync, with the record's edits from Steps 4 and 4a in the
 same commit. **Each passage the sync touched is rewritten to the difference as
-it now stands** — rule 3 of § "The divergence record" — not appended to: a
-passage whose difference the port erased goes, and `scripts/check-divergence.sh`
-passes before the commit. The boundary is the HEAD recorded in Step 3 for a
-whole sync, and the last source commit a slice or bite triaged for a split one;
-candidates past it are the next one's.
+it now stands** (rule 3 of § "The divergence record"): a passage whose
+difference the port erased goes, and `scripts/check-divergence.sh` passes before
+the commit. The boundary is the HEAD recorded in Step 3 for a whole sync, and
+the last source commit a slice or bite triaged for a split one; candidates past
+it are the next one's.
 
 **Any commit on the source's first-parent line is a clean boundary.** One inside
 a merged side branch is not: its ancestry leaves out mainline commits the slice
