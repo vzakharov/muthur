@@ -219,12 +219,12 @@ them wrong is silent:
   The files are copied out of a tree synced to exactly that point, so that is
   the honest mark; the root's HEAD would claim the target already carries
   commits nobody ported.
-- **The target's `adopted` list derives from the caller's, restricted to the
-  paths that actually travelled — and the caller's list may spell paths that no
-  longer exist, so verify each against the caller's tree before writing it.** A
-  list still naming a since-renamed path silently drops every future commit
-  under the new one from its candidate sets, and copying the list forward
-  propagates that blind spot into a second repo.
+- **The target's divergence record derives from the caller's: its passages on
+  paths that travelled, plus a decline for every root path that did not, with
+  the criterion that kept it back.** A path the target lacks and its record
+  never mentions reads as undecided, so the target's first sync re-offers
+  everything this triage dropped. The caller's record may name paths that no
+  longer exist, so verify each against the caller's tree before carrying it.
 - **`lineage` is the caller's own array with the caller appended.** That is the
   whole operation, the array's shape and meaning living in the contract section
   above. A caller with no `lineage` yields a one-entry array naming the caller —
@@ -234,7 +234,7 @@ them wrong is silent:
 The target's sync skill is named after the **root**, which is what the caller's
 is named after too, so it travels as a copy rather than a rename. Clear both of
 its stub markers — the banner and the `STUB` in its frontmatter description. The
-watermark you just wrote _is_ the hydration, and
+watermark and record you just wrote _are_ the hydration, and
 `scripts/check-skill-catalog.sh` fails a half-cleared pair.
 
 ## Step 4 — Seed: `main`, then the branch
@@ -296,9 +296,9 @@ Three consequences, each stated by a check rather than by taste:
 - **A rewrite lands on `main` only where a check forces it there — and then it
   lands hydrated for the target, never stubbed.** `check-skill-catalog.sh` ties
   two knots of this kind. Assertion 4 requires a skill's stub markers to agree
-  with its hydration state, and the sync skill's hydration _is_ its watermark,
-  so that skill and its JSON land together or `main` fails its own gate.
-  Assertion 1 ties the same knot for any caller-hydrated stub that a
+  with its hydration state, and the sync skill's hydration _is_ its watermark
+  and record, so that skill and both files land together or `main` fails its own
+  gate. Assertion 1 ties the same knot for any caller-hydrated stub that a
   _travelling_ skill `@`-references: omitting it dangles the reference, so it is
   hydrated for the target on `main` — or both skills are dropped together, which
   is the other way to keep the closure whole.
