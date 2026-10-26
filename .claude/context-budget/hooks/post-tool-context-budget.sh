@@ -24,8 +24,6 @@ lines="${MUTHUR_CONTEXT_BUDGET_LINES:-priced}"
   say "MUTHUR_CONTEXT_BUDGET_LINES must be \`priced\` or \`fixed\`; no reading taken."
   exit 0
 }
-# The slice of work a relay's saving is priced over.
-finish=100000
 
 root="$(project_root)"
 transcript="$(field transcript_path)"
@@ -63,7 +61,7 @@ if [ "$lines" = priced ] && [ -z "${MUTHUR_CONTEXT_BUDGET_WARN:-}" -o -z "${MUTH
   priced_warn= priced_pause= at=
   [ ! -f "$line_file" ] || read -r priced_warn priced_pause at <"$line_file"
   if ! [[ "$at" =~ ^[0-9]+$ && "$reading" -ge "$at" && "$reading" -lt $((at + 10000)) ]]; then
-    read -r priced_warn priced_pause < <(python3 "$hooks/priced_line.py" lines "$transcript" "$finish" "$pause_saving")
+    read -r priced_warn priced_pause < <(python3 "$hooks/priced_line.py" lines "$transcript" "$pause_saving")
     mkdir -p "$state_dir" && printf '%s %s %s\n' "${priced_warn:--}" "${priced_pause:--}" "$reading" >"$line_file"
   fi
   if [ -z "${MUTHUR_CONTEXT_BUDGET_WARN:-}" ] && [[ "$priced_warn" =~ ^[0-9]+$ ]]; then
@@ -149,7 +147,7 @@ ends="then, without asking and with no argument, run ${relay}. Its report tells 
 paused="follow ${stopping}. Push, ${ends}; the new session resumes the paused plan."
 
 saving=
-[ -z "$priced" ] || saving="$(python3 "$hooks/priced_line.py" notice "$transcript" "$reading" "$finish")"
+[ -z "$priced" ] || saving="$(python3 "$hooks/priced_line.py" notice "$transcript" "$reading")"
 priced_past() { echo "$(past "$@")${saving:+ $saving Give the operator those figures, and why the line sits where it does, when you offer the choice.}"; }
 
 case "$level" in
