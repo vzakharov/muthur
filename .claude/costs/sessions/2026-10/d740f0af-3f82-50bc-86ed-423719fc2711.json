@@ -1,0 +1,88 @@
+{
+  "total": {
+    "inputTokens": 64,
+    "cacheWrite5mTokens": 84729,
+    "cacheWrite1hTokens": 90579,
+    "cacheReadTokens": 3447839,
+    "outputTokens": 10838,
+    "thinkingTokens": 2228,
+    "responses": 32,
+    "costUsd": 2.0548608
+  },
+  "estimate": {
+    "at": "2026-10-26T05:26:43.778Z",
+    "parts": [
+      {
+        "hours": 0.5,
+        "grade": "middle",
+        "role": "developer",
+        "comment": "land prep of a small, already-reviewed fix: a base merge with a conflict to resolve, a vet run and the squash record need care but no design"
+      }
+    ],
+    "comment": null
+  },
+  "sessionId": "d740f0af-3f82-50bc-86ed-423719fc2711",
+  "branch": "keepalive-pr-thread-boundary",
+  "cwd": "/home/user/muthur",
+  "openingPrompt": "/merge keepalive-pr-thread-boundary",
+  "prs": [
+    226
+  ],
+  "url": "https://claude.ai/code/session_018XyuBhf1qzXp9UxbEgXFL5",
+  "operator": "vzakharov",
+  "firstResponseAt": "2026-10-26T05:25:32.175Z",
+  "lastResponseAt": "2026-10-26T05:34:15.495Z",
+  "pricesAsOf": "2026-10-06",
+  "claudeCodeTotalUsd": null,
+  "ownTurns": {
+    "inputTokens": 54,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 90579,
+    "cacheReadTokens": 3145899,
+    "outputTokens": 9220,
+    "thinkingTokens": 1936,
+    "responses": 27,
+    "costUsd": 1.5384278000000002
+  },
+  "subagents": {
+    "inputTokens": 10,
+    "cacheWrite5mTokens": 84729,
+    "cacheWrite1hTokens": 0,
+    "cacheReadTokens": 301940,
+    "outputTokens": 1618,
+    "thinkingTokens": 292,
+    "responses": 5,
+    "costUsd": 0.5164330000000001
+  },
+  "byRate": {
+    "claude-opus-5-5/standard": {
+      "inputTokens": 64,
+      "cacheWrite5mTokens": 84729,
+      "cacheWrite1hTokens": 90579,
+      "cacheReadTokens": 3447839,
+      "outputTokens": 10838,
+      "thinkingTokens": 2228,
+      "responses": 32,
+      "costUsd": 2.0548608
+    }
+  },
+  "warnings": [],
+  "orientation": {
+    "endedBy": "Edit",
+    "endedOn": ".claude/keepalive/hooks/keepalive.py",
+    "endedAt": "2026-10-26T05:29:03.198Z",
+    "contextTokens": 125986,
+    "spend": {
+      "inputTokens": 42,
+      "cacheWrite5mTokens": 84729,
+      "cacheWrite1hTokens": 75144,
+      "cacheReadTokens": 1991251,
+      "outputTokens": 5705,
+      "thinkingTokens": 1361,
+      "responses": 21,
+      "costUsd": 1.5373151999999999
+    }
+  },
+  "compactions": [],
+  "telemetry": null
+}
