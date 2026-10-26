@@ -2,11 +2,8 @@
 
 ## Why
 
-Adopter watermarks grow without bound. metkain/metka's, at `76371ef`, is 48 KB:
-484 physical lines, 924 once its strings are wrapped at 80 columns, against the
-~450-line rule of thumb. `adopted` is 36 KB of it. 67 of its 80 entries carry
-notes, and 57 of their 162 paragraphs are sync history ("From `70cbc4b`
-(2026-10-15 sync) …", "gone again at …"), because nothing tells a sync to
+Adopter watermarks grow without bound: per-path notes gather sync history ("From
+`<sha>` (<date> sync) …", "gone again at …"), because nothing tells a sync to
 rewrite a note rather than append to it.
 
 The JSON shape makes it worse: a string is one physical line, so the prose
@@ -34,20 +31,15 @@ print its keys under the nudge, and nothing reads `declined` but the agent.
      permanent one says "never".
   3. It states the current difference, never the sync that produced it: a sync
      rewrites the passages it touches, and history lives in the sync PR.
-- **One file, read whole on every sync, capped at 450 lines** measured as Σ
-  ceil(width / 80) over its lines — equal to `wc -l` on a prettier-wrapped file,
-  and honest on an adopter that wraps differently or not at all. The cap is on
-  the whole record because the whole record enters every sync's context; the
-  pressure that keeps it under is rule 3, not splitting.
+- **Read whole on every sync, with no cap of its own**: `divergence.md` may
+  split into files under `divergence/` beside it, and the attn-adopters note
+  asks adopters to keep it to a size a sync can read, trimming or splitting. A
+  size limit, if any, belongs to a check over all Markdown, not to this file.
 
 ## Steps
 
-1. **`scripts/check-divergence.sh`** (new), wired into `scripts/vet.sh` keyed on
-   the watermark's presence, with a header paragraph beside the others: fails
-   when `watermark.json` carries `adopted` or `declined` (an unconverted
-   watermark), and when `divergence.md` is over the cap. bash + `awk`, no `jq`,
-   like `check-markdown-tables.sh`. Tests in `scripts/test_check_divergence.py`,
-   which `check-muthur.sh` already runs.
+1. **No check script.** Review dropped `scripts/check-divergence.sh`: an adopter
+   converting by hand sees the request, and the size is the adopter's to keep.
 2. **`scripts/muthur-sync.sh`**: drop `ADOPTED` and the "You adopted the
    following" block from the nudge; `mark_files` also skips the record
    (`divergence.md`), which is never synced, like the watermark. Update

@@ -152,8 +152,7 @@
   - **Disposition:** adopt
 - `scripts/lib/chars.sh` — Filter text to one byte per UTF-8 character, so the
   checks that cap text in terminal columns count characters whatever the locale.
-  Shared by the two size checks here and G0's `check-divergence.sh`, which is
-  why it sits here. POSIX `sh`.
+  Shared by the two size checks here. POSIX `sh`.
   - **Requires:** `sh`
   - **Disposition:** adopt
 - `scripts/pr-comment.sh` — Post or update the squash proposal or the finalize
@@ -181,7 +180,7 @@
   - **Pulls in:** `scripts/check-skill-catalog.sh` (G1),
     `scripts/check-markdown-wrap.sh` (G1), `scripts/check-squash-message.sh`,
     `scripts/staged.sh`, `scripts/check-claude-md-size.sh`,
-    `scripts/check-divergence.sh` (G0), `scripts/check-muthur.sh` (never)
+    `scripts/check-muthur.sh` (never)
   - **Disposition:** **rewrite**
 - `scripts/run-parallel.sh` — Optional helper for `scripts/vet.sh`: run the
   checks concurrently, print output only for the ones that failed, and name

@@ -22,13 +22,12 @@ every step of the skill is usable as written. The
   you sync from, the SHA you last synced to, and the ancestry that led here —
   shipped pointed at this repo with the rest as placeholders, this tree being
   the root; what you take differently or decline goes in a `divergence.md` you
-  write beside it. Carries `scripts/muthur-sync.sh` too, the `SessionStart`
-  entry that runs its nudge, and `scripts/check-divergence.sh`, which holds the
-  watermark and the record to their shape from `vet.sh`.
+  write beside it. Carries `scripts/muthur-sync.sh` too, and the `SessionStart`
+  entry that runs its nudge.
   - **Requires:** `gh`, `$GH_TOKEN`, `jq`, git transport to the source repo;
     hydration (the watermark, and the divergence record wherever you differ)
-  - **Pulls in:** `/polish` (G1); `/task`, `/pr`, `/squash-message`,
-    `scripts/lib/chars.sh` (G2); `/override-gh` (G4)
+  - **Pulls in:** `/polish` (G1); `/task`, `/pr`, `/squash-message` (G2);
+    `/override-gh` (G4)
   - **Disposition:** adopt — **rewrite the watermark**
 - `/spinoff` — Seed a new sibling repo out of the adopter you are standing in:
   triage what travels, write the target's watermark, seed its `main` and a

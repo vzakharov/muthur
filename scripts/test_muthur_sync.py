@@ -23,7 +23,7 @@ from pathlib import Path
 
 SCRIPTS = Path(__file__).resolve().parent
 WATERMARK = ".claude/skills/update-muthur/watermark.json"
-RECORD = ".claude/skills/update-muthur/divergence.md"
+RECORD = ".claude/skills/update-muthur/divergence"
 SOURCE_REPO = json.loads((SCRIPTS.parent / WATERMARK).read_text())["repo"]
 DAY = 24 * 3600
 
@@ -155,7 +155,12 @@ class MuthurSyncTestCase(unittest.TestCase):
         self.fx.source_commit("feat: add new.sh", {"scripts/new.sh": "new\n"})
         self.fx.source_commit(
             "chore: bookkeeping",
-            {WATERMARK: "{}", RECORD: "theirs\n", ".claude/costs/sessions/x.json": "{}"},
+            {
+                WATERMARK: "{}",
+                f"{RECORD}.md": "theirs\n",
+                f"{RECORD}/ci.md": "theirs\n",
+                ".claude/costs/sessions/x.json": "{}",
+            },
         )
         return work
 
@@ -191,7 +196,7 @@ class LagTest(MuthurSyncTestCase):
         self.assertIn("  here      .claude/skills/go/SKILL.md", out)
         self.assertIn("  not here  scripts/new.sh", out)
         self.assertNotIn("watermark.json", out)
-        self.assertNotIn("divergence.md", out)
+        self.assertNotIn("divergence", out)
         self.assertNotIn(".claude/costs/sessions/", out)
         self.assertIn("Investigate nothing before the operator says yes", out)
         self.assertIn(

@@ -126,10 +126,9 @@ are not free, because the procedure below depends on them:
    upstream commit prompted the change, and when, is the sync PR's to record.
    Appending a paragraph per sync is what grows the record without bound.
 
-**It is read whole on every sync, so it is capped whole**: 450 lines, counted at
-80 columns. `scripts/check-divergence.sh` is the measure. A record at the cap is
-rewritten under rule 3, not split: parts would spread what every sync reads
-without shortening it.
+**A record may split into files under `divergence/` beside it**; the record is
+then `divergence.md` and all of them, and every step below that reads or greps
+it covers both.
 
 A re-expressed path still surfaces every upstream commit that touches it, which
 is the point — upstream's later changes to the original are worth reading for
@@ -225,7 +224,8 @@ The log is unfiltered, so a source that puts agent infrastructure somewhere new
 — a `.github/` workflow, another top-level directory — surfaces like anything
 else. Sort each path it names, minus the ones § "Three invariants" excludes, by
 two questions — does it exist here, and does the record mention it
-(`grep -F '<path>' divergence.md`, the path and each directory above it):
+(`grep -rF '<path>' divergence.md divergence/`, the path and each directory
+above it):
 
 - **Here, unmentioned** — taken as is: a port candidate for Step 4.
 - **Mentioned** — what the record says decides: re-expressed here, or declined
@@ -328,10 +328,9 @@ Set `lastSyncedSha` to the sync's **boundary** and `lastSyncedAt` to today, as
 the final commit of the sync, with the record's edits from Steps 4 and 4a in the
 same commit. **Each passage the sync touched is rewritten to the difference as
 it now stands** (rule 3 of § "The divergence record"): a passage whose
-difference the port erased goes, and `scripts/check-divergence.sh` passes before
-the commit. The boundary is the HEAD recorded in Step 3 for a whole sync, and
-the last source commit a slice or bite triaged for a split one; candidates past
-it are the next one's.
+difference the port erased goes. The boundary is the HEAD recorded in Step 3 for
+a whole sync, and the last source commit a slice or bite triaged for a split
+one; candidates past it are the next one's.
 
 **Any commit on the source's first-parent line is a clean boundary.** One inside
 a merged side branch is not: its ancestry leaves out mainline commits the slice

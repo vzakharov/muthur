@@ -1,32 +1,31 @@
 Proposed squash body:
 
 ```
-Adopter watermarks grew without bound: metka's reached 48 KB, 924 lines
-once its JSON strings are wrapped at 80 columns. Per-path notes gathered
-a paragraph per sync, since nothing said to rewrite them, and JSON prose
+Adopter watermarks grew without bound. Per-path notes gathered a
+paragraph per sync, since nothing said to rewrite them, and JSON prose
 can be neither wrapped, measured by lines, nor diffed by clause.
 
 watermark.json now holds only the sync's position: repo, lastSyncedSha,
 lastSyncedAt, lineage. A path taken verbatim needs no record, its
 presence on disk saying so; everything else that differs from the
 source - re-expressions, declines, cross-cutting differences stated
-once - goes to a free-form update-muthur/divergence.md. Three rules
-bind it: every path named literally from the root, a decline reading
-as one, and current state rather than sync history. The sync reads it
-whole, sorts the unfiltered log against disk and record, and rewrites
-the passages it touches.
+once - goes to a free-form update-muthur/divergence.md, which may split
+into files under divergence/ beside it. Three rules bind it: every path
+named literally from the root, a decline reading as one, and current
+state rather than sync history. The sync reads it whole, sorts the
+unfiltered log against disk and record, and rewrites the passages it
+touches.
 
-scripts/check-divergence.sh, run by vet.sh, fails a watermark still
-carrying adopted/declined and a record past 450 lines counted at 80
-columns, which holds whatever formatter the adopter uses. The nudge no
-longer prints adopted; /detemplate and /spinoff write the record with a
-decline for everything they leave out, so a first sync re-offers none.
+The nudge no longer prints adopted; /detemplate and /spinoff write the
+record with a decline for everything they leave out, so a first sync
+re-offers none.
 
 Adopters: in the sync that ports this, convert by hand - drop entries
 taken verbatim, rewrite notes and reasons into divergence.md under the
-three rules (history out, cross-cutting differences once), move free
-fields such as notes to their homes, and get the check green before
-the bump. No operator yes is needed.
+three rules (history out, cross-cutting differences once), and move
+free fields such as notes to their homes. Keep the record to a size a
+sync can read whole: trim it, or split it into files under divergence/
+where it will not fit. No operator yes is needed.
 
 Co-authored-by: Claude <noreply@anthropic.com>
 ```

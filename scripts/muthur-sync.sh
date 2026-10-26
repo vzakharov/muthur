@@ -29,7 +29,7 @@ cd "$(dirname "$0")/.." || exit 1
 
 MODE="${1:-}"
 WATERMARK=".claude/skills/update-muthur/watermark.json"
-RECORD=".claude/skills/update-muthur/divergence.md"
+RECORD=".claude/skills/update-muthur/divergence"
 NUDGE_CLONE="tmp/muthur-source"
 STALE_AFTER=$((24 * 3600))
 NUDGE_CAP=40
@@ -173,7 +173,7 @@ mark_files() {
   local path mark
   while IFS= read -r path; do
     case "$path" in
-    "$WATERMARK" | "$RECORD" | .claude/costs/sessions/*) continue ;;
+    "$WATERMARK" | "$RECORD.md" | "$RECORD"/* | .claude/costs/sessions/*) continue ;;
     esac
     mark="not here"
     [ -e "$path" ] && mark="here"

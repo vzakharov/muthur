@@ -59,7 +59,8 @@ Linear, not GitHub issues.
 `scripts/run-parallel.sh`.
 ```
 
-Its form is yours; the three rules it has to keep, and its cap, are the skill's
+Its form is yours, and it may split into files under `divergence/` beside it;
+the three rules it has to keep are the skill's
 [§ "The divergence record"](../../.claude/skills/update-muthur/SKILL.md#the-divergence-record).
 An adoption that took everything verbatim writes no record.
 

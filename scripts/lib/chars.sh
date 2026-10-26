@@ -1,6 +1,5 @@
 # Character counting for the checks that measure text against a cap in terminal
-# columns (scripts/check-claude-md-size.sh, scripts/check-divergence.sh,
-# scripts/check-squash-message.sh).
+# columns (scripts/check-claude-md-size.sh, scripts/check-squash-message.sh).
 #
 # Meant to be SOURCED, not executed, and POSIX `sh`, since its callers hold to
 # the floor `check-squash-message.sh` states.
