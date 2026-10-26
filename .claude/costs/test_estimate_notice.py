@@ -17,12 +17,24 @@ import sys
 import tempfile
 import unittest
 from pathlib import Path
+from typing import Any, Dict, List, Optional
 
 from test_stop_hook import Clone
 
 SESSION = "sess"
 WORK = "creative writing in a persona's voice, such as its reflections on songs"
 LEDGER_REF = "refs/remotes/origin/cost-ledger"
+
+
+def bash(command: str) -> Dict[str, Any]:
+    content = [{"type": "tool_use", "id": "toolu_1", "name": "Bash", "input": {"command": command}}]
+    return {"type": "assistant", "message": {"role": "assistant", "content": content}}
+
+
+MARK = bash("python3 .claude/costs/oriented.py")
+BOUNDARY = {"type": "system", "subtype": "compact_boundary", "timestamp": "2026-03-04T05:00:00.000Z"}
+PROMPT = {"type": "user", "message": {"role": "user", "content": "do it"}}
+ASKS_FOR_THE_MARK = "mark the end of your orientation with `python3 .claude/costs/oriented.py`, bare"
 
 
 class EstimateNoticeTest(unittest.TestCase):
@@ -44,8 +56,22 @@ class EstimateNoticeTest(unittest.TestCase):
     def adds_artist(self) -> None:
         self.run_costs("estimate.py", "role", "set", "artist", "0.9", "senior", WORK)
 
-    def notice(self) -> str:
-        payload = {"session_id": SESSION, "cwd": str(self.clone.root), "hook_event_name": "UserPromptSubmit"}
+    def notice(self, records: Optional[List[Any]] = None, source: Optional[str] = None) -> str:
+        """The notice for a transcript of `records` — a string among them is a
+        line written as it stands — or for a session with no transcript yet;
+        `source` makes it the `SessionStart` that names it."""
+        payload: Dict[str, Any] = {
+            "session_id": SESSION,
+            "cwd": str(self.clone.root),
+            "hook_event_name": "SessionStart" if source else "UserPromptSubmit",
+        }
+        if source:
+            payload["source"] = source
+        if records is not None:
+            transcript = self.clone.root.parent / "notice-transcript.jsonl"
+            lines = (r if isinstance(r, str) else json.dumps(r) for r in records)
+            transcript.write_text("".join(line + "\n" for line in lines), encoding="utf-8")
+            payload["transcript_path"] = str(transcript)
         done = subprocess.run(
             [str(self.costs / "hooks" / "estimate-notice.sh")],
             input=json.dumps(payload),
@@ -108,6 +134,28 @@ class EstimateNoticeTest(unittest.TestCase):
         notice = self.notice()
         self.assertIn("rate table does not parse", notice)
         self.assertIn("roles: not a non-empty object", notice)
+
+    def test_asks_for_the_orientation_mark_until_the_stretch_has_one(self) -> None:
+        self.assertIn(ASKS_FOR_THE_MARK, self.notice([PROMPT, bash("cat .claude/costs/oriented.py")]))
+        quiet = self.notice([PROMPT, MARK, PROMPT])
+        self.assertNotIn(ASKS_FOR_THE_MARK, quiet)
+        self.assertIn("no human-hour estimate yet", quiet)
+
+    def test_asks_for_the_mark_again_after_a_compaction(self) -> None:
+        self.assertIn(ASKS_FOR_THE_MARK, self.notice([PROMPT, MARK, BOUNDARY, PROMPT]))
+        self.assertNotIn(ASKS_FOR_THE_MARK, self.notice([PROMPT, MARK, BOUNDARY, MARK]))
+
+    def test_asks_for_the_mark_on_the_compaction_itself_without_reading_the_transcript(self) -> None:
+        self.assertIn(ASKS_FOR_THE_MARK, self.notice([PROMPT, MARK], source="compact"))
+
+    def test_a_session_with_no_transcript_yet_is_asked_for_the_mark(self) -> None:
+        self.assertIn(ASKS_FOR_THE_MARK, self.notice())
+
+    def test_a_transcript_that_does_not_parse_is_said_rather_than_skipped(self) -> None:
+        notice = self.notice([PROMPT, "{not json"])
+        self.assertIn(ASKS_FOR_THE_MARK, notice)
+        self.assertIn("could not be read", notice)
+        self.assertIn("not JSON", notice)
 
 
 if __name__ == "__main__":

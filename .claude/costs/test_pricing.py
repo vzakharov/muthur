@@ -474,6 +474,7 @@ def summary(text: str) -> str:
 
 EDIT = call("Edit", file_path=f"{ROOT}/lib/a.py", old_string="x", new_string="y")
 READ = call("Read", id="toolu_read", file_path=f"{ROOT}/lib/b.py")
+MARK = call("Bash", command="python3 .claude/costs/oriented.py", description="Mark orientation done")
 
 
 class WhereOrientationEnds(unittest.TestCase):
@@ -527,6 +528,37 @@ class WhereOrientationEnds(unittest.TestCase):
         assert cost.orientation is not None
         self.assertEqual(cost.orientation.ended_by, "AskUserQuestion")
 
+    def test_is_ended_by_the_agent_s_mark_before_it_acts(self) -> None:
+        cost = summarise([step(1), step(2, MARK), step(3, READ), step(4, EDIT)])
+        assert cost.orientation is not None
+        self.assertEqual(cost.orientation.ended_by, "oriented")
+        self.assertEqual(cost.orientation.ended_at, t(2))
+        self.assertIsNone(cost.orientation.ended_on)
+        self.assertEqual(cost.orientation.spend.responses, 1)
+
+    def test_is_not_ended_by_a_command_that_only_names_the_script_or_a_subagent_s_mark(self) -> None:
+        mentions = [
+            call("Bash", command="grep -n python3 .claude/costs/oriented.py"),
+            call("Bash", command="cat /repo/.claude/costs/oriented.py"),
+            call("Bash", command="python3 .claude/costs/oriented.py check /x.jsonl"),
+            call("Bash", command='echo "python3 .claude/costs/oriented.py"'),
+        ]
+        cost = summarise(
+            [step(1, *mentions), step(5, EDIT)],
+            [[response(id="msg_sub", at=t(3), cwd=ROOT, calls=[MARK])]],
+        )
+        assert cost.orientation is not None
+        self.assertEqual(cost.orientation.ended_by, "Edit")
+
+    def test_takes_the_mark_wherever_the_script_is_reached_from(self) -> None:
+        for command in (
+            "cd /repo && python3 /repo/.claude/costs/oriented.py",
+            "python3 ./.claude/costs/oriented.py; git status",
+        ):
+            cost = summarise([step(1, call("Bash", command=command)), step(2, EDIT)])
+            assert cost.orientation is not None
+            self.assertEqual(cost.orientation.ended_by, "oriented", command)
+
     def test_says_nothing_ended_it_when_nothing_did(self) -> None:
         cost = summarise([step(1), step(2)])
         assert cost.orientation is not None
@@ -558,6 +590,12 @@ class WhatEachCompactionCost(unittest.TestCase):
         self.assertEqual(first.reorientation.spend.responses, 1)
         self.assertEqual(second.reorientation.ended_by, "end_turn")
         self.assertEqual(second.reorientation.spend.responses, 2)
+
+    def test_ends_a_re_orientation_at_a_mark_made_after_its_boundary(self) -> None:
+        cost = summarise([step(1, MARK), boundary(10), step(11), step(12, MARK), step(13, EDIT)])
+        reorientation = cost.compactions[0].reorientation
+        self.assertEqual((reorientation.ended_by, reorientation.ended_at), ("oriented", t(12)))
+        self.assertEqual(reorientation.spend.responses, 1)
 
     def test_cuts_a_phase_that_never_acted_off_at_the_next_boundary(self) -> None:
         cost = summarise([step(1), boundary(10), step(11), boundary(20), step(21, EDIT)])

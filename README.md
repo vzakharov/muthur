@@ -18,11 +18,12 @@ sessions, and the scripts behind it all.
 
 The "keep pulling" part runs on
 [`watermark.json`](.claude/skills/update-muthur/watermark.json), which records
-where your copy came from, the commit you last synced to, and what you adopted
-or declined. `/update-muthur` diffs the source since that commit and triages it
-one commit at a time against the copy you have since edited — so a skill you
-rewrote stays rewritten, a fix to one you left alone lands, and something you
-turned down is remembered rather than offered again.
+where your copy came from and the commit you last synced to, and a
+`divergence.md` beside it that you write: what you took differently, and what
+you declined and why. `/update-muthur` diffs the source since that commit and
+triages it one commit at a time against the copy you have since edited — so a
+skill you rewrote stays rewritten, a fix to one you left alone lands, and
+something you turned down is remembered rather than offered again.
 
 Per-item descriptions live in
 **[`.claude/skills/update-muthur/catalog.md`](.claude/skills/update-muthur/catalog.md)**
@@ -30,8 +31,8 @@ Per-item descriptions live in
 you need:
 
 - **G0** — the sync path, both directions: `/update-muthur` pulls later changes
-  forward (ships as a stub; hydrating it is filling in the watermark),
-  `/spinoff` pushes a new sibling repo out.
+  forward (ships as a stub; hydrating it is filling in the watermark and writing
+  down what you took differently), `/spinoff` pushes a new sibling repo out.
 - **G1** — prose & principles: `CLAUDE.md`, `.claude/rules/`, `/dry`,
   `/tend-prose`, `/polish`, `.claude/voice/`, `/plainly`.
 - **G2** — the PR loop: `/plan`, `/go`, `/pr`, `/finalize` and the mechanical

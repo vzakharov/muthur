@@ -13,6 +13,7 @@ import json
 import tempfile
 import time
 import unittest
+from dataclasses import replace
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, Optional
@@ -21,6 +22,7 @@ HERE = Path(__file__).resolve().parent
 
 from lib.prices import parse_prices
 from lib.restart import (
+    SLICE,
     Reorientation,
     Session,
     line_for,
@@ -28,6 +30,8 @@ from lib.restart import (
     read_history,
     recache,
     reorientation_of,
+    fresh_break_even,
+    fresh_saving_over,
     saving_over,
 )
 
@@ -35,8 +39,8 @@ PRICES = parse_prices((HERE / "prices.json").read_text())
 MODEL = "claude-opus-5-5"
 OPUS = PRICES.rates[f"{MODEL}/standard"].rates
 HOUR = 3600
-# The context budget hook's `finish`, the slice a relay's saving is priced over.
-FINISH = 100_000
+# The worked session's requests per token of context growth.
+WORKED_RATE = 37 / 100_000
 
 
 def iso(at: float) -> str:
@@ -92,33 +96,47 @@ def prompt_record(text: str) -> Dict[str, Any]:
 def worked(context: int) -> Session:
     """A long session's figures: 37 requests per 100k of growth, a successor
     reoriented at 97k for $0.57."""
-    return Session(context, 41_000, 37 / 100_000, Reorientation(97_000, 0.57, "test"), OPUS, OPUS.cache_write_1h)
+    return Session(context, 41_000, WORKED_RATE, Reorientation(97_000, 0.57, "test"), OPUS, OPUS.cache_write_1h)
 
 
 class TheCostModel(unittest.TestCase):
     def test_the_warn_line_is_where_a_relay_starts_saving(self) -> None:
-        line = line_for(worked(0), FINISH, 0.0)
+        line = line_for(worked(0), SLICE, 0.0)
         assert line is not None
         self.assertAlmostEqual(line, 200_000, delta=5_000)
-        self.assertAlmostEqual(saving_over(worked(line), FINISH).usd, 0.0, places=4)
+        self.assertAlmostEqual(saving_over(worked(line), SLICE).usd, 0.0, places=4)
 
     def test_the_pause_line_is_where_it_saves_a_fifth(self) -> None:
-        line = line_for(worked(0), FINISH, 0.2)
+        line = line_for(worked(0), SLICE, 0.2)
         assert line is not None
         self.assertAlmostEqual(line, 300_000, delta=10_000)
-        self.assertAlmostEqual(saving_over(worked(line), FINISH).share, 0.2, places=4)
+        self.assertAlmostEqual(saving_over(worked(line), SLICE).share, 0.2, places=4)
 
     def test_a_relay_costs_the_summary_turn_and_the_reorientation(self) -> None:
-        saving = saving_over(worked(126_000), FINISH)
-        self.assertEqual(f"{saving.relay:.2f}", "0.76")
+        saving = saving_over(worked(126_000), SLICE)
+        self.assertEqual(f"{saving.up_front:.2f}", "0.76")
         self.assertLess(saving.usd, 0)
+
+    def test_a_fresh_session_weighs_its_reorientation_against_the_recache(self) -> None:
+        saving = fresh_saving_over(worked(174_000), SLICE)
+        self.assertEqual(f"{saving.up_front:.2f}", "0.57")
+        # $0.50 of re-cache saved up front, plus 77k less on each of 37 requests.
+        self.assertEqual(f"{saving.usd:.2f}", "1.07")
+        self.assertAlmostEqual(saving.usd, saving.share * saving.carry)
+
+    def test_a_dearer_fresh_session_breaks_even_where_its_saving_reaches_zero(self) -> None:
+        dearer = replace(worked(174_000), reorientation=Reorientation(97_000, 1.50, "test"))
+        tokens = fresh_break_even(dearer)
+        assert tokens is not None
+        self.assertAlmostEqual(fresh_saving_over(dearer, tokens).usd, 0.0, places=4)
+        self.assertEqual(fresh_break_even(worked(174_000)), 0)
 
     def test_a_recache_reads_the_shared_prefix_and_writes_the_rest(self) -> None:
         self.assertEqual(f"{recache(worked(174_000)):.2f}", "1.07")
 
     def test_no_line_when_the_slice_is_too_short_to_pay_the_summary_turn(self) -> None:
-        tiny = Session(0, 0, 0.5 / FINISH, Reorientation(97_000, 0.57, "test"), OPUS, OPUS.cache_write_1h)
-        self.assertIsNone(line_for(tiny, FINISH, 0.0))
+        tiny = Session(0, 0, 0.5 / SLICE, Reorientation(97_000, 0.57, "test"), OPUS, OPUS.cache_write_1h)
+        self.assertIsNone(line_for(tiny, SLICE, 0.0))
 
     def test_a_dated_model_id_is_priced_at_its_undated_row(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

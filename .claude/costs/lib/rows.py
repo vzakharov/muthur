@@ -121,11 +121,14 @@ def json_text(value: Any) -> str:
 
 
 def row_text(cost: SessionCost) -> str:
-    """A row opens on what the session cost, `total`, then on what the work was
-    worth, `estimate` — the one field set by a command rather than read off
-    the transcript."""
+    """A row opens on what the session cost, `total`, then on the two fields
+    the agent sets by a command rather than leaving to the transcript: what the
+    work was worth, `estimate`, and where finding its bearings ended,
+    `orientation`."""
     row = to_json(cost)
-    return _dumped({"total": row.pop("total"), "estimate": row.pop("estimate"), **row})
+    return _dumped(
+        {"total": row.pop("total"), "estimate": row.pop("estimate"), "orientation": row.pop("orientation"), **row}
+    )
 
 
 def write_atomic(out: Path, contents: str) -> None:

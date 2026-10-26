@@ -23,6 +23,7 @@ from pathlib import Path
 
 SCRIPTS = Path(__file__).resolve().parent
 WATERMARK = ".claude/skills/update-muthur/watermark.json"
+RECORD = ".claude/skills/update-muthur/divergence"
 SOURCE_REPO = json.loads((SCRIPTS.parent / WATERMARK).read_text())["repo"]
 DAY = 24 * 3600
 
@@ -100,8 +101,6 @@ class Fixture:
                 {
                     "repo": SOURCE_REPO,
                     "lastSyncedSha": last_synced,
-                    "adopted": [".claude/", {"scripts/": ["ported.", "Split in two."]}],
-                    "declined": {"docs/": ["not taken.", "Ours differ."]},
                 }
             )
         for path, text in files.items():
@@ -156,7 +155,12 @@ class MuthurSyncTestCase(unittest.TestCase):
         self.fx.source_commit("feat: add new.sh", {"scripts/new.sh": "new\n"})
         self.fx.source_commit(
             "chore: bookkeeping",
-            {WATERMARK: "{}", ".claude/costs/sessions/x.json": "{}"},
+            {
+                WATERMARK: "{}",
+                f"{RECORD}.md": "theirs\n",
+                f"{RECORD}/ci.md": "theirs\n",
+                ".claude/costs/sessions/x.json": "{}",
+            },
         )
         return work
 
@@ -184,7 +188,7 @@ class SilentTest(MuthurSyncTestCase):
 
 
 class LagTest(MuthurSyncTestCase):
-    def test_titles_files_and_adopted(self) -> None:
+    def test_titles_and_files(self) -> None:
         out = self.nudge(self.lagging())
         self.assertIn("is 3 commit(s) past the last sync", out)
         self.assertIn("feat: sharpen go", out)
@@ -192,8 +196,8 @@ class LagTest(MuthurSyncTestCase):
         self.assertIn("  here      .claude/skills/go/SKILL.md", out)
         self.assertIn("  not here  scripts/new.sh", out)
         self.assertNotIn("watermark.json", out)
+        self.assertNotIn("divergence", out)
         self.assertNotIn(".claude/costs/sessions/", out)
-        self.assertIn("  .claude/\n  scripts/\n", out)
         self.assertIn("Investigate nothing before the operator says yes", out)
         self.assertIn(
             f"`git ls-remote origin refs/heads/muthur-sync-lock-{self.fx.base[:12]}`", out
