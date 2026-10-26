@@ -152,7 +152,7 @@
   - **Disposition:** adopt
 - `scripts/lib/chars.sh` — Filter text to one byte per UTF-8 character, so the
   checks that cap text in terminal columns count characters whatever the locale.
-  Shared by the two size checks here. POSIX `sh`.
+  POSIX `sh`.
   - **Requires:** `sh`
   - **Disposition:** adopt
 - `scripts/pr-comment.sh` — Post or update the squash proposal or the finalize
