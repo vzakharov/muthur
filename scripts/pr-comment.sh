@@ -18,8 +18,7 @@
 #
 # The comment is the newest one whose body leads with the marker, whoever
 # posted it — a session picking up someone else's PR takes over the comment
-# their session left; older matches are duplicates an earlier run stacked and
-# are deleted. A match already equal to the file is left untouched.
+# their session left. A match already equal to the file is left untouched.
 #
 # Prints one line, `<outcome> <comment-url>`, the outcome being `posted`,
 # `edited` or `current`; or `absent` alone under `--update-only`.
@@ -69,17 +68,13 @@ GH_REPO_PROG="$PROG"
 source "${REPO_ROOT}/scripts/lib/gh-repo.sh"
 gh_resolve_repo
 
-# Oldest first, as the API lists them, so the last id is the newest. A read
-# loop rather than `mapfile`, which the bash 3.2 macOS ships lacks.
-IDS=()
-while IFS= read -r id; do
-  IDS+=("$id")
-done < <(
+# Oldest first, as the API lists them, so the last id is the newest.
+ID="$(
   gh api "repos/${NWO}/issues/${PR}/comments" --paginate --jq \
-    ".[] | select(.body | startswith(\"${MARKER}\")) | .id"
-)
+    ".[] | select(.body | startswith(\"${MARKER}\")) | .id" | tail -n 1
+)"
 
-if [[ "${#IDS[@]}" -eq 0 ]]; then
+if [[ -z "$ID" ]]; then
   if [[ "$UPDATE_ONLY" -eq 1 ]]; then
     echo "absent"
     exit 3
@@ -89,11 +84,7 @@ if [[ "${#IDS[@]}" -eq 0 ]]; then
   exit 0
 fi
 
-LAST=$((${#IDS[@]} - 1))
-KEEP="repos/${NWO}/issues/comments/${IDS[$LAST]}"
-for id in "${IDS[@]:0:$LAST}"; do
-  gh api "repos/${NWO}/issues/comments/${id}" -X DELETE >/dev/null
-done
+KEEP="repos/${NWO}/issues/comments/${ID}"
 
 # `$(…)` drops trailing newlines on both sides, so a file ending in one still
 # reads as equal to the body GitHub stored.

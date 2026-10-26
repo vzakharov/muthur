@@ -10,10 +10,9 @@ the same call.
 scripts/pr-comment.sh <squash|attestation> [--update-only] <pr> <file>
 now does the whole find -> PATCH-or-create for both sticky comments:
 the newest one leading with the kind's marker, whoever posted it, is
-edited in place, older duplicates are deleted, and one is
-posted when none exists (`--update-only` exits 3 instead). It refuses
-a file that does not lead with the marker, so the command can post
-nothing else.
+edited in place, and one is posted when none exists (`--update-only`
+exits 3 instead). It refuses a file that does not lead with the
+marker, so the command can post nothing else.
 
 .claude/settings.json allows exactly that command, bare and
 `./`-prefixed. Per the Claude Code permission docs, a matching allow
