@@ -2,14 +2,22 @@ Proposed squash body:
 
 ```
 An unpriced (model, speed) pair makes the Stop hook's pricing raise, so
-any session that spawned a Haiku 5.5 subagent could not be priced.
+no session that spawned a Claude Haiku 5.5 subagent could be priced.
+Haiku 5.5 also bills by prompt length, which a one-card rate row could
+not express.
 
-`prices.json` gains `claude-haiku-5-5/standard`: 0.10 input, 0.50
-output, 0.125 / 0.2 / 0.01 for 5-minute writes, 1-hour writes and
-reads, per million tokens, from the claude-api skill's model table
-cached 2026-10-06. Those are the rates for prompts up to 100K tokens.
-Beyond that the model bills 0.50 / 2.50, which a per-pair row cannot
-express, and the row's confidence note says so.
+A rate row may now carry `above`: a `prompt_tokens` threshold and a
+second set of rates. A response whose prompt (input plus cache reads
+and writes) runs past it is billed whole at the second set, output
+included. The pick is per response, in the transcript pricer and the
+cold-cache restart estimate alike.
+
+`prices.json` gains `claude-haiku-5-5/standard`: 0.10 / 0.50 per MTok
+up to 100K tokens and 0.50 / 2.50 above, with the usual cache
+multipliers, from the claude-api skill's model table cached
+2026-10-06. Its confidence note flags the open question: the docs say
+only "prompt", so whether cache reads count toward the threshold waits
+on a bill.
 
 Co-authored-by: Claude <noreply@anthropic.com>
 ```
