@@ -148,7 +148,12 @@
 - `scripts/check-squash-message.sh` — Measure the squash proposal against the
   size caps `/squash-message` states, locating it in the worktree or in history
   once `/finalize` has swept it. POSIX `sh`.
-  - **Requires:** `sh`; `git` for the history rungs
+  - **Requires:** `sh`, `scripts/lib/chars.sh`; `git` for the history rungs
+  - **Disposition:** adopt
+- `scripts/lib/chars.sh` — Filter text to one byte per UTF-8 character, so the
+  checks that cap text in terminal columns count characters whatever the locale.
+  POSIX `sh`.
+  - **Requires:** `sh`
   - **Disposition:** adopt
 - `scripts/pr-comment.sh` — Post or update the squash proposal or the finalize
   attestation in one fixed-shape command, which `.claude/settings.json` allows
@@ -167,7 +172,7 @@
   one — with hysteresis: the total may grow to a ceiling, and a branch that
   crosses it lands it at a lower target. The numbers are constants in the
   script, changed in a commit that says why. POSIX `sh`.
-  - **Requires:** `sh`, `git`
+  - **Requires:** `sh`, `git`, `scripts/lib/chars.sh`
   - **Disposition:** adopt
 - `scripts/vet.sh` — The vet run: the fast lint/type-check/test pass before
   pushing review-ready work.
