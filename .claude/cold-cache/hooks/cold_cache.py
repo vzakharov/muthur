@@ -147,7 +147,7 @@ def priced_offer(carry_usd: float, fresh_usd: float, break_even: int) -> str:
     # A reorientation dearer than the re-cache wins only past `break_even`.
     short = f" (for under ~{kilo(break_even)} tokens of work, continuing here is cheaper)" if break_even else ""
     return (
-        f"Over the next {SLICE // 1000}k of context, continuing here costs ~${carry_usd:.2f}."
+        f"Over the next {kilo(SLICE)} of context, continuing here costs ~${carry_usd:.2f}."
         f" The same amount of work in a new session costs ~${fresh_usd:.2f}{short}."
     )
 
