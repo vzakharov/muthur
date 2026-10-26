@@ -19,8 +19,9 @@ Two audiences:
   [`ADOPTING.md`](../../../ADOPTING.md), which owns the procedure. This file
   owns the inventory; it does not restate the steps.
 - **`/update-muthur`, on every run** — when a commit at the source adds a skill
-  that is in neither your `adopted` nor your `declined` list, the sync reads
-  that skill's entry here to surface the decision with its criteria attached.
+  that is neither in your tree nor mentioned in your divergence record, the sync
+  reads that skill's entry here to surface the decision with its criteria
+  attached.
 
 Both audiences read it from a fresh clone of the source repo, which is what lets
 the banner's rule hold: no adopter needs a copy, so no copy can go stale.
@@ -166,25 +167,26 @@ Two G2 entries are adopter choices rather than defaults:
 - **The `/implement` redirect is worth taking only where `/implement` was
   already the shipped name** — that is where a handoff block in a live plan file
   or PR comment might still say it. Never adopted `/implement` → take `/go`
-  alone and put `.claude/skills/implement/` in `declined`: there is no
-  downstream caller to redirect, and the stub would be a permanent extra entry
-  standing in for a name the repo never had. Already adopted it → ask the
-  operator whether the backwards compatibility is worth that extra entry, and
-  record either answer in `watermark.json` so the question does not come back. A
-  **fork** is neither case and asks nothing: it carries `/implement` because it
-  carries everything, and a tree one commit old has no plan file or PR comment
-  old enough to say it, so `/detemplate` deletes it outright.
+  alone and decline `.claude/skills/implement/` in your divergence record: there
+  is no downstream caller to redirect, and the stub would be a permanent extra
+  entry standing in for a name the repo never had. Already adopted it → ask the
+  operator whether the backwards compatibility is worth that extra entry; a yes
+  keeps the file, and a no goes into the record as a decline, so the question
+  does not come back. A **fork** is neither case and asks nothing: it carries
+  `/implement` because it carries everything, and a tree one commit old has no
+  plan file or PR comment old enough to say it, so `/detemplate` deletes it
+  outright.
 
 **The `/issue` redirect is the same choice one group over.** It is worth taking
 only where `/issue` was already the shipped name — that is where a handoff
 block, a PR comment, or an operator's own muscle memory might still say it.
-Never adopted `/issue` → decline the entry and put `.claude/skills/issue/` in
-`declined`: there is nothing to redirect, and the stub would be a permanent
-extra entry standing in for a name the repo never had. **A first adoption is
-that case** — take `/take-issue` alone, and leave the redirect for a later sync
-to offer if the name ever does ship. Already adopted it → take the redirect,
-since the name covers two operations with different destinations, and record the
-answer in `watermark.json` so the question does not come back. A **fork** is
+Never adopted `/issue` → decline `.claude/skills/issue/` in your divergence
+record: there is nothing to redirect, and the stub would be a permanent extra
+entry standing in for a name the repo never had. **A first adoption is that
+case** — take `/take-issue` alone, and leave the redirect for a later sync to
+offer if the name ever does ship. Already adopted it → take the redirect, since
+the name covers two operations with different destinations; the file being in
+your tree is the answer, so the question does not come back. A **fork** is
 neither case and asks nothing: it carries `/issue` because it carries
 everything, and a tree one commit old has no handoff block or muscle memory old
 enough to say it, so `/detemplate` deletes it outright. Declining G3 outright

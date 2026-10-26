@@ -19,10 +19,12 @@ every step of the skill is usable as written. The
   adopted it from: diff since the watermark, triage commit by commit, port what
   applies — claiming a lock first, and handing the candidates to `/task`, which
   can split a long lag across sessions. Carries `watermark.json` — which repo
-  you sync from, the SHA you last synced to, what you adopted or declined, and
-  the ancestry that led here — shipped pointed at this repo with the rest as
-  placeholders, this tree being the root. Carries `scripts/muthur-sync.sh` too,
-  and the `SessionStart` entry that runs its nudge.
+  you sync from, the SHA you last synced to, and the ancestry that led here —
+  shipped pointed at this repo with the rest as placeholders, this tree being
+  the root; what you take differently or decline goes in a `divergence.md` you
+  write beside it. Carries `scripts/muthur-sync.sh` too, the `SessionStart`
+  entry that runs its nudge, and `scripts/check-divergence.sh`, which holds the
+  watermark and the record to their shape from `vet.sh`.
   - **Requires:** `gh`, `$GH_TOKEN`, `jq`, git transport to the source repo;
     hydration (the watermark)
   - **Pulls in:** `/polish` (G1); `/task`, `/pr`, `/squash-message` (G2);

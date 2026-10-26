@@ -219,12 +219,12 @@ them wrong is silent:
   The files are copied out of a tree synced to exactly that point, so that is
   the honest mark; the root's HEAD would claim the target already carries
   commits nobody ported.
-- **The target's `adopted` list derives from the caller's, restricted to the
-  paths that actually travelled — and the caller's list may spell paths that no
-  longer exist, so verify each against the caller's tree before writing it.** A
-  list still naming a since-renamed path silently drops every future commit
-  under the new one from its candidate sets, and copying the list forward
-  propagates that blind spot into a second repo.
+- **The target's divergence record derives from the caller's: its passages on
+  paths that travelled, plus a decline for every root path that did not, with
+  the criterion that kept it back.** A path the target lacks and its record
+  never mentions reads as undecided, so the target's first sync re-offers
+  everything this triage dropped. The caller's record may name paths that no
+  longer exist, so verify each against the caller's tree before carrying it.
 - **`lineage` is the caller's own array with the caller appended.** That is the
   whole operation, the array's shape and meaning living in the contract section
   above. A caller with no `lineage` yields a one-entry array naming the caller —

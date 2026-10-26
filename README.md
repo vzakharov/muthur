@@ -18,11 +18,12 @@ sessions, and the scripts behind it all.
 
 The "keep pulling" part runs on
 [`watermark.json`](.claude/skills/update-muthur/watermark.json), which records
-where your copy came from, the commit you last synced to, and what you adopted
-or declined. `/update-muthur` diffs the source since that commit and triages it
-one commit at a time against the copy you have since edited — so a skill you
-rewrote stays rewritten, a fix to one you left alone lands, and something you
-turned down is remembered rather than offered again.
+where your copy came from and the commit you last synced to, and a
+`divergence.md` beside it that you write: what you took differently, and what
+you declined and why. `/update-muthur` diffs the source since that commit and
+triages it one commit at a time against the copy you have since edited — so a
+skill you rewrote stays rewritten, a fix to one you left alone lands, and
+something you turned down is remembered rather than offered again.
 
 Per-item descriptions live in
 **[`.claude/skills/update-muthur/catalog.md`](.claude/skills/update-muthur/catalog.md)**
