@@ -18,8 +18,8 @@ where it stands, a last step aside. What the agent does on each notice is
   `output_tokens` is left out — the next request carries it, and the next
   reading counts it then.
 - **Both lines are priced by what `/relay` saves over the next 100k tokens of
-  work** (`SLICE` in `.claude/costs/lib/restart.py`, shared with the cold-cache
-  stop): the warning where that saving reaches $0, the pause where it reaches
+  work** (the model's `SLICE`, shared with the cold-cache stop): the warning
+  where that saving reaches $0, the pause where it reaches
   `MUTHUR_CONTEXT_BUDGET_PAUSE_SAVING` percent (default 20) of what carrying on
   costs. The model is `.claude/costs/lib/restart.py`, via
   `hooks/priced_line.py`, and the notice carries the dollars.
