@@ -105,7 +105,7 @@ class WhenAPromptIsStopped(HookCase):
         self.session()
         reason = self.prompt()
         assert reason is not None
-        for figure in ("2.0 h", "174k", "re-caches them for ~$1.07", "pays ~$1.17 to reorient", "from an estimate", "saves ~$0.14 (~4%) over the next 100k tokens", "if everything the work needs"):
+        for figure in ("2.0 h", "174k", "re-caches them for ~$1.07", "takes ~$1.17 of reading to reorient", "from an estimate", "saves ~$0.14 (~4%) over the next 100k tokens", "if everything the work needs"):
             self.assertIn(figure, reason)
 
     def test_a_five_minute_ttl_expires_in_minutes(self) -> None:
@@ -212,7 +212,7 @@ class WhenAPromptIsStopped(HookCase):
         self.session()
         reason = self.prompt()
         assert reason is not None
-        self.assertIn("re-caches them for ~$1.07. A new session pays ~$1.19", reason)
+        self.assertIn("re-caches them for ~$1.07. A new session takes ~$1.19 of reading", reason)
         self.assertIn("saves ~$0.72", reason)
 
     def test_an_unpriced_model_is_stopped_without_dollars(self) -> None:

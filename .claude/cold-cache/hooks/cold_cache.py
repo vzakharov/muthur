@@ -24,6 +24,7 @@ sys.path.insert(0, str(ROOT / ".claude" / "costs"))
 
 from lib.pricing import parse_prices
 from lib.restart import (
+    SLICE,
     History,
     Session,
     context_of,
@@ -39,9 +40,6 @@ PRICES = ROOT / ".claude" / "costs" / "prices.json"
 RESEND = "!"
 DEFAULT_MIN_USD = 0.30
 DEFAULT_MARGIN = 0.10
-# The slice of work a fresh session's saving is priced over, as the context
-# budget's notice prices a relay's.
-SLICE = 100_000
 
 # The commands a cold cache lets through: the ways on that shed context, and the
 # built-ins that make no model request over this session's context, aliases
@@ -152,8 +150,8 @@ def reason(idle: float, context: int, priced: Optional[Session], claude_code_usd
         saving = fresh_saving_over(priced, SLICE)
         lines.append(f"Carrying on re-caches them for ~${recache(priced):.2f}.")
         lines.append(
-            f"A new session pays ~${saving.up_front:.2f} to reorient (priced from"
-            f" {priced.reorientation.source}) but carries less on every request after, so it"
+            f"A new session takes ~${saving.up_front:.2f} of reading to reorient (priced from"
+            f" {priced.reorientation.source}) and ends up carrying less on every request after, so it"
             f" {verdict(saving)} over the next {SLICE // 1000}k tokens of work — if everything the work"
             " needs is already on the branch and nothing decided since lives only in this conversation."
         )

@@ -38,6 +38,10 @@ RAMP_UP_OUT_PER_REQUEST = 700
 REQUESTS_PER_TOKEN = 40 / 100_000
 MIN_GROWTH = 20_000
 
+# The slice of work a switch's saving is priced over, by the context budget's
+# notice and the cold-cache stop alike.
+SLICE = 100_000
+
 # The opening prompt of a session `/relay` started.
 RELAY_TAKE = "/relay take"
 
