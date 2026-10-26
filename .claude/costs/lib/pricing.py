@@ -59,30 +59,62 @@ _DATED = re.compile(r"-\d{8}$")
 
 
 @dataclass(frozen=True)
+class LongPrompt:
+    """A request whose prompt runs past `prompt_tokens` is billed whole, output
+    included, at `rates`."""
+
+    prompt_tokens: int
+    rates: Rates
+
+
+@dataclass(frozen=True)
+class RateCard:
+    rates: Rates
+    above: Optional[LongPrompt] = None
+
+    def for_prompt(self, prompt_tokens: int) -> Rates:
+        if self.above is not None and prompt_tokens > self.above.prompt_tokens:
+            return self.above.rates
+        return self.rates
+
+
+@dataclass(frozen=True)
 class PriceTable:
     as_of: str
-    rates: Dict[str, Rates]
+    rates: Dict[str, RateCard]
 
-    def rates_for(self, model: str, speed: Optional[str]) -> Optional[Rates]:
-        """A dated snapshot id with no row of its own is priced at its undated
-        alias's row; a dated row, where there is one, wins."""
-        rates = self.rates.get(rate_key(model, speed))
-        if rates is None and _DATED.search(model):
-            rates = self.rates.get(rate_key(_DATED.sub("", model), speed))
-        return rates
+    def rates_for(self, model: str, speed: Optional[str], prompt_tokens: int) -> Optional[Rates]:
+        """`prompt_tokens` is everything the request sent, cache reads and writes
+        included. A dated snapshot id with no row of its own is priced at its
+        undated alias's row; a dated row, where there is one, wins."""
+        card = self.rates.get(rate_key(model, speed))
+        if card is None and _DATED.search(model):
+            card = self.rates.get(rate_key(_DATED.sub("", model), speed))
+        return None if card is None else card.for_prompt(prompt_tokens)
+
+
+def parse_rates(entry: Dict[str, Any], where: str) -> Rates:
+    return Rates(**{f.name: required(read_number, entry, f.name, where) for f in fields(Rates)})
 
 
 def parse_prices(text: str) -> PriceTable:
     table = json.loads(text)
     if not isinstance(table, dict):
         raise ShapeError("prices.json: not an object")
-    rates: Dict[str, Rates] = {}
+    rates: Dict[str, RateCard] = {}
     for key, entry in required(read_object, table, "rates", "prices.json").items():
         where = f"prices.json rates[{key!r}]"
         if not isinstance(entry, dict):
             raise ShapeError(f"{where}: not an object")
-        rates[key] = Rates(
-            **{f.name: required(read_number, entry, f.name, where) for f in fields(Rates)}
+        above = read_object(entry, "above", where)
+        rates[key] = RateCard(
+            rates=parse_rates(entry, where),
+            above=None
+            if above is None
+            else LongPrompt(
+                prompt_tokens=required(read_count, above, "prompt_tokens", f"{where}.above"),
+                rates=parse_rates(above, f"{where}.above"),
+            ),
         )
     return PriceTable(as_of=required(read_string, table, "as_of", "prices.json"), rates=rates)
 
@@ -329,7 +361,7 @@ def summarise_transcript(
             # `byRate` keeps the id the response named, as telemetry's own
             # events do, whichever row priced it.
             key = rate_key(response.model, response.speed)
-            rates = prices.rates_for(response.model, response.speed)
+            rates = prices.rates_for(response.model, response.speed, tokens.context_tokens())
             if rates is None:
                 unpriced.add(key)
                 continue

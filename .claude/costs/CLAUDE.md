@@ -60,7 +60,10 @@ are confidently incorrect rather than absent.
   final. A matched event supplies the output; without one, the row warns that
   those responses' output is a floor.
 - **A response is billed at the rates for its `(model, speed)` pair.** Fast mode
-  doubles the rates, so `usage.speed` is read rather than assumed.
+  doubles the rates, so `usage.speed` is read rather than assumed. A row's
+  `above` is a second rate card for a model that bills a long prompt higher: a
+  response whose prompt — input plus cache reads and writes — runs past its
+  `prompt_tokens` is billed whole at it, output included.
 - **Cache writes are billed by TTL.** `usage.cache_creation` splits into
   `ephemeral_5m_input_tokens` and `ephemeral_1h_input_tokens` — ×1.25 and ×2 of
   the input rate, against ×0.1 for reads.

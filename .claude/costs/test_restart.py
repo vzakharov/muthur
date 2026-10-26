@@ -33,7 +33,7 @@ from lib.restart import (
 
 PRICES = parse_prices((HERE / "prices.json").read_text())
 MODEL = "claude-opus-5-5"
-OPUS = PRICES.rates[f"{MODEL}/standard"]
+OPUS = PRICES.rates[f"{MODEL}/standard"].rates
 HOUR = 3600
 # The context budget hook's `finish`, the slice a relay's saving is priced over.
 FINISH = 100_000

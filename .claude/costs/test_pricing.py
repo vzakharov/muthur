@@ -14,6 +14,7 @@ import unittest
 from typing import Any, Dict, List, Optional, Sequence
 
 from lib.billed import parse_events
+from lib.shape import ShapeError
 from lib.pricing import (
     TranscriptSources,
     UnpricedError,
@@ -47,6 +48,21 @@ PRICE_TABLE = {
             "cache_write_5m": 6,
             "cache_write_1h": 12,
             "cache_read": 1.5,
+        },
+        "test-long/standard": {
+            "input": 1,
+            "output": 10,
+            "cache_write_5m": 2,
+            "cache_write_1h": 4,
+            "cache_read": 0.5,
+            "above": {
+                "prompt_tokens": 1_000,
+                "input": 5,
+                "output": 50,
+                "cache_write_5m": 10,
+                "cache_write_1h": 20,
+                "cache_read": 2.5,
+            },
         },
     },
 }
@@ -180,6 +196,31 @@ class WhatAResponseCosts(unittest.TestCase):
     def test_prefers_a_dated_id_s_own_row(self) -> None:
         cost = summarise([response(output=1_000_000, model="test-model-20260201")])
         self.assertEqual(cost.total.cost_usd, 30)
+
+    def test_prices_a_prompt_at_the_threshold_at_the_base_rates(self) -> None:
+        cost = summarise([response(model="test-long", input=600, read=400, output=1_000_000)])
+        self.assertAlmostEqual(cost.total.cost_usd, (600 * 1 + 400 * 0.5) / 1e6 + 10)
+
+    def test_prices_a_longer_prompt_whole_at_the_long_rates(self) -> None:
+        # The cache read is what carries the prompt past the threshold, and the
+        # output is billed at the long rate along with it.
+        cost = summarise([response(model="test-long", input=600, read=401, output=1_000_000)])
+        self.assertAlmostEqual(cost.total.cost_usd, (600 * 5 + 401 * 2.5) / 1e6 + 50)
+
+    def test_prices_each_response_by_its_own_prompt(self) -> None:
+        cost = summarise(
+            [
+                response(id="msg_1", model="test-long", input=1_000, output=1_000_000),
+                response(id="msg_2", model="test-long", input=1_001, output=1_000_000),
+            ]
+        )
+        self.assertAlmostEqual(cost.total.cost_usd, (1_000 * 1 + 1_001 * 5) / 1e6 + 60)
+
+    def test_refuses_a_long_prompt_tier_with_no_threshold(self) -> None:
+        table = json.loads(json.dumps(PRICE_TABLE))
+        del table["rates"]["test-long/standard"]["above"]["prompt_tokens"]
+        with self.assertRaisesRegex(ShapeError, r"above: `prompt_tokens` is missing"):
+            parse_prices(json.dumps(table))
 
     def test_reports_thinking_tokens_without_billing_them_twice(self) -> None:
         cost = summarise([response(output=1_000_000, thinking=400_000)])

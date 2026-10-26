@@ -184,7 +184,7 @@ def read_history(transcript: Path) -> Optional[History]:
 
 
 def rates_of(history: History, prices: PriceTable) -> Optional[Rates]:
-    return prices.rates_for(history.last.model, history.last.speed)
+    return prices.rates_for(history.last.model, history.last.speed, context_of(history.last))
 
 
 def write_rate(r: Rates, ttl: int) -> float:
