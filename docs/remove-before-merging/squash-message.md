@@ -15,10 +15,11 @@ MUTHUR_COLD_CACHE_MARGIN of the re-cache, lets the prompt through,
 since the stop has no real choice to offer.
 
 restart.py's relay saving and the new fresh-session saving share one
-comparison, each side paying its own up-front cost, so Saving.relay
-becomes up_front. The hook tests price a session at 37 requests per
-100k: a two-response transcript prices one, at which no fresh session
-ever pays off.
+comparison, each side paying its own up-front cost, over one SLICE
+constant that the context budget's priced_line.py now reads rather
+than taking from its bash hook. The hook tests price a session at 37
+requests per 100k: a two-response transcript prices one, at which no
+fresh session ever pays off.
 
 Co-authored-by: Claude <noreply@anthropic.com>
 ```
