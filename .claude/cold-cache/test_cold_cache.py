@@ -32,7 +32,7 @@ sys.path.insert(0, str(HOOK.parent))
 import cold_cache as hook
 
 # What `session()`'s defaults price at, with no fresh session in the ledger.
-DEFAULT_OFFER = hook.priced_offer(3.53, 3.39, 0.04, 42_000)
+DEFAULT_OFFER = hook.priced_offer(3.53, 3.39, 42_000)
 
 
 def latest(message_id: str = "last", ago: float = 2 * HOUR, context: int = 174_000, **kw: Any) -> Dict[str, Any]:
@@ -210,7 +210,7 @@ class WhenAPromptIsStopped(HookCase):
     def test_a_fresh_session_dearer_up_front_is_offered_once_it_earns_that_back(self) -> None:
         self.fresh_sessions(60_000, 1.19)
         self.session()
-        self.assertEqual(self.prompt(), hook.stop_text(hook.priced_offer(3.53, 2.80, 0.21, 14_000), 0))
+        self.assertEqual(self.prompt(), hook.stop_text(hook.priced_offer(3.53, 2.80, 14_000), 0))
 
     def test_an_unpriced_model_is_stopped_without_dollars(self) -> None:
         self.session(model="claude-x")
@@ -243,7 +243,7 @@ class TheResumeFlag(HookCase):
             context_tokens=149_773,
             estimated_cache_write_usd=1.1982,
         )
-        self.assertEqual(self.prompt(), hook.stop_text(hook.priced_offer(3.15, 1.91, 0.39, 0), 0))
+        self.assertEqual(self.prompt(), hook.stop_text(hook.priced_offer(3.15, 1.91, 0), 0))
 
     def test_the_flag_speaks_for_an_unpriced_model(self) -> None:
         self.session(ago=600, model="claude-x")

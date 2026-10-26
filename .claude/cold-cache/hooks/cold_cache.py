@@ -143,12 +143,12 @@ def kilo(tokens: float) -> str:
 # --- The stop's text, one helper per figure set, which the tests build on -----
 
 
-def priced_offer(carry_usd: float, fresh_usd: float, share: float, break_even: int) -> str:
+def priced_offer(carry_usd: float, fresh_usd: float, break_even: int) -> str:
     # A reorientation dearer than the re-cache wins only past `break_even`.
     short = f" (for under ~{kilo(break_even)} tokens of work, continuing here is cheaper)" if break_even else ""
     return (
-        f"Continuing here costs ~${carry_usd:.2f} over the next {SLICE // 1000}k tokens of context;"
-        f" a new session costs ~${fresh_usd:.2f}, {share:.0%} less{short}."
+        f"Over the next {SLICE // 1000}k of context, continuing here costs ~${carry_usd:.2f}."
+        f" The same amount of work in a new session costs ~${fresh_usd:.2f}{short}."
     )
 
 
@@ -165,7 +165,7 @@ def unpriced_offer(context: int) -> str:
 
 def stop_text(offer: str, images: int) -> str:
     lines = [
-        "🪫 PROMPT CACHE EXPIRED",
+        "🪫 PROMPT CACHE EXPIRED.",
         offer,
         f'Consider starting a new session, or send any message to continue here. A bare "{RESEND}" will do.',
     ]
@@ -179,7 +179,7 @@ def reason(context: int, priced: Optional[Session], claude_code_usd: Optional[fl
         saving = fresh_saving_over(priced, SLICE)
         # Stopped only on a positive saving over `SLICE`, so it does break even.
         break_even = fresh_break_even(priced) or 0
-        offer = priced_offer(saving.carry, saving.carry - saving.usd, saving.share, break_even)
+        offer = priced_offer(saving.carry, saving.carry - saving.usd, break_even)
     elif claude_code_usd is not None:
         offer = estimated_offer(claude_code_usd, context)
     else:
