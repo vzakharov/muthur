@@ -26,7 +26,7 @@ session):
   free.
 - **Storage is issues**, so two sessions never race on one file, and labels give
   priority and the rest room to grow. The one file the operator reads, the hub's
-  `README.md`, is rendered from them by code (§ "The overview"). A GitHub
+  `OVERVIEW.md`, is rendered from them by code (§ "The overview"). A GitHub
   Project board over them is the follow-up issue filed with this plan, not this
   PR.
 - **The code name is `matter`**; people see an issue.
@@ -83,8 +83,8 @@ hook, tests. `settings.py` goes into `.claude/settings.json`
   sets `true` silently.
 - **Yes** → `settings.py set hub true`, then `.claude/hub/create.sh`
   (allowlisted in `permissions.allow`, so the auto-mode classifier lets it
-  through): `gh repo create <handle>/muthur-hub --private`, the first render of
-  `README.md`, the hub session's files (§ "The hub session"), and the `status:*`
+  through): `gh repo create <handle>/muthur-hub --private`, the hub's files (§
+  "The hub session"), the first render of `OVERVIEW.md`, and the `status:*`
   labels. The creating session's claude.ai account goes into the `accounts`
   setting with an empty label, as the default (§ "A matter"). Then `/hub` runs
   its tour and offers seeding.
@@ -150,7 +150,7 @@ the matter's update without anyone knowing, and the next turn retries.
 
 ## The overview
 
-The hub's `README.md` is the one page the operator reads, so a pin to it
+The hub's `OVERVIEW.md` is the one page the operator reads, so a pin to it
 replaces the dozens of session pins: open matters grouped by repository, ordered
 within a repository by a `P0`–`P3` label where the operator set one, then by
 status; each line the issue title linked, its status, its PR, and its latest
@@ -165,11 +165,11 @@ session with that session's account.
   and the loser re-lists the issues and renders again, up to three tries. Every
   version of the page is therefore a render of a real listing — a stale
   overwrite cannot land. A render equal to the current page is not written, so
-  the hub's history is the overview's history.
+  the file's history is the overview's history.
 - **The operator's own edits** in GitHub's UI — a close, a label — show on the
   page at the next sync from any adopter, or when the hub session renders it.
-- Below the list, a fixed section says what the hub is and how to work it, so
-  the page is also the hub's introduction.
+- **The page is the list and nothing else.** What the hub is and how to work it
+  is the hub's `README.md`, which links to the page.
 
 ## The hub session
 
@@ -178,6 +178,9 @@ A claude.ai session in the hub repository is the place to talk about the matters
 operator keeps. The hub has none of muthur's tooling, so `create.sh` seeds it
 with what that session needs, from `.claude/hub/hub-repo/`:
 
+- `README.md` — what the hub is and how to work it: a matter is an issue, what
+  the loop updates and what is the operator's, a link to `OVERVIEW.md`, and that
+  a session opened here is the hub session.
 - `CLAUDE.md` — what the hub is; that the agent reads the page and the issues
   with `gh`, acts on issues, and changes the page only by rendering it — the
   same `sha`-conditioned write as the sync; and that a session past about 250k
@@ -204,7 +207,7 @@ with what that session needs, from `.claude/hub/hub-repo/`:
   created. `list_sessions` sees only its own claude.ai account, so the tour says
   to run it once from each account the operator works in; a second run merges
   into existing matters rather than duplicating them.
-- **`/hub refresh`** — re-seeds the hub session's files from this adopter's
+- **`/hub refresh`** — re-seeds the hub's files from this adopter's
   `.claude/hub/hub-repo/` when they differ, after saying which.
 
 The `SKILL.md` is new and its description is always loaded, so it is written
