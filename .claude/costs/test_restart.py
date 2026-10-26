@@ -122,6 +122,7 @@ class TheCostModel(unittest.TestCase):
         self.assertEqual(f"{saving.up_front:.2f}", "0.57")
         # $0.50 of re-cache saved up front, plus 77k less on each of 37 requests.
         self.assertEqual(f"{saving.usd:.2f}", "1.07")
+        self.assertAlmostEqual(saving.usd, saving.share * saving.carry)
 
     def test_a_dearer_fresh_session_breaks_even_where_its_saving_reaches_zero(self) -> None:
         dearer = replace(worked(174_000), reorientation=Reorientation(97_000, 1.50, "test"))

@@ -143,17 +143,12 @@ def kilo(tokens: float) -> str:
 # --- The stop's text, one helper per figure set, which the tests build on -----
 
 
-def priced_offer(recache_usd: float, context: int, reorient_usd: float, share: float, break_even: int) -> str:
-    # A reorientation dearer than the re-cache earns the difference back per
-    # request, so it is told by when, lest the two figures read as a contradiction.
-    gain = (
-        f"but breaks even after the next {kilo(break_even)} tokens of work"
-        if break_even > 0
-        else f"and saves ~{share:.0%} over the next {SLICE // 1000}k tokens of work"
-    )
+def priced_offer(carry_usd: float, fresh_usd: float, share: float, break_even: int) -> str:
+    # A reorientation dearer than the re-cache wins only past `break_even`.
+    short = f" (for under ~{kilo(break_even)} tokens of work, continuing here is cheaper)" if break_even else ""
     return (
-        f"Continuing costs ${recache_usd:.2f} ({kilo(context)} tokens) to re-cache, reorienting in a new"
-        f" session costs ~${reorient_usd:.2f}, {gain}."
+        f"Continuing here costs ~${carry_usd:.2f} over the next {SLICE // 1000}k tokens of context;"
+        f" a new session costs ~${fresh_usd:.2f}, {share:.0%} less{short}."
     )
 
 
@@ -182,10 +177,9 @@ def stop_text(offer: str, images: int) -> str:
 def reason(context: int, priced: Optional[Session], claude_code_usd: Optional[float], images: int) -> str:
     if priced is not None:
         saving = fresh_saving_over(priced, SLICE)
-        # Blocked only when the saving over `SLICE` is positive, so it breaks even.
-        break_even = fresh_break_even(priced)
-        assert break_even is not None
-        offer = priced_offer(recache(priced), context, saving.up_front, saving.share, break_even)
+        # Stopped only on a positive saving over `SLICE`, so it does break even.
+        break_even = fresh_break_even(priced) or 0
+        offer = priced_offer(saving.carry, saving.carry - saving.usd, saving.share, break_even)
     elif claude_code_usd is not None:
         offer = estimated_offer(claude_code_usd, context)
     else:

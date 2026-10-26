@@ -10,9 +10,11 @@ context.
 The stop now prices a fresh session as the context budget prices a
 relay: one saving over the next 100k tokens of work, the reorientation
 weighed against the re-cache up front and the smaller context on every
-request after. Its one-line text gives what continuing and reorienting
-each cost and what the latter saves, or, where reorienting costs more,
-after how much work it breaks even. A fresh session that saves nothing,
+request after. Its text gives each way's total over that slice and how
+much less the new session costs, plus, where reorienting costs more
+than the re-cache, the work under which continuing stays cheaper. The
+expected text in the hook tests is built by the hook's own helpers, so
+a test pins figures, not copy. A fresh session that saves nothing,
 or under MUTHUR_COLD_CACHE_MARGIN of the re-cache, lets the prompt
 through, since the stop has no real choice to offer.
 

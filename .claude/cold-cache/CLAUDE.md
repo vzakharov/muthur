@@ -26,11 +26,12 @@ model.
   session skips the re-cache, so the guard prices it as the context budget
   prices a relay, by what it saves over the next 100k tokens of work: the
   reorientation against the re-cache up front, the smaller context on every
-  request after. A reorientation dearer than the re-cache is told by the work
-  after which it breaks even instead, since the two dollar figures alone read as
-  a contradiction. `.claude/context-budget/CLAUDE.md` carries where a
-  reorientation's price comes from; for a fresh successor the sources are the
-  fresh sessions', not the relayed ones'.
+  request after. The stop gives each way's total over that slice, never its
+  parts, since an up-front cost beside a per-request gain reads as a
+  contradiction; where the reorientation is the dearer part, it adds the work
+  under which continuing stays cheaper. `.claude/context-budget/CLAUDE.md`
+  carries where a reorientation's price comes from; for a fresh successor the
+  sources are the fresh sessions', not the relayed ones'.
 - **Once per cold spell.** A block writes the last response's id and the stopped
   prompt to `tmp/cold-cache/<session_id>.blocked`, and a prompt against the same
   id passes. A bare `!` then stands for the stopped prompt: a hook cannot

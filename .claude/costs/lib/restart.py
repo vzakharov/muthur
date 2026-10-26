@@ -74,6 +74,7 @@ class Saving:
     usd: float  # what switching saves over the slice, up-front costs included
     share: float  # of what carrying on costs over it
     up_front: float  # USD the switch pays before its successor's first action
+    carry: float  # USD carrying on costs over the slice, its own up-front included
 
 
 def usd(tokens: float, rate: float) -> float:
@@ -101,7 +102,7 @@ def _switch_over(s: Session, slice_tokens: int, carry_once: float, switch_once: 
     growth = usd(slice_tokens, s.write)
     carry = carry_once + usd(n * (s.context + slice_tokens / 2), r) + growth
     switch = switch_once + usd(n * (s.reorientation.context + slice_tokens / 2), r) + growth
-    return Saving(carry - switch, (carry - switch) / carry, switch_once)
+    return Saving(carry - switch, (carry - switch) / carry, switch_once, carry)
 
 
 def saving_over(s: Session, slice_tokens: int) -> Saving:
