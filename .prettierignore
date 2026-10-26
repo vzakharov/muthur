@@ -4,6 +4,3 @@ docs/pr/
 docs/issue/
 docs/remove-before-merging/squash-message.md
 tmp/
-# A document someone else wrote, kept byte for byte as received
-# (`.claude/rules/external-docs.md`).
-**/*.external.*

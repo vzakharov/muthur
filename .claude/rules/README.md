@@ -26,10 +26,8 @@ tables is its own call, and `markdown-wrap.md` (the 80-column wrap, and the
 GitHub-bound text it leaves alone), which holds whatever tool does the wrapping,
 and `multi-repo.md` (a session with several repositories attached), whose
 `paths:` name only its own scripts so that `CLAUDE.md`'s pointer is what loads
-it, and `external-docs.md` (a document someone else wrote, kept as received),
-which is inert until a file carries its `.external.` suffix. Everything else
-here is yours: rules are mostly project-specific, and the reusable part is the
-mechanism. Add rule files as your conventions emerge.
+it. Everything else here is yours: rules are mostly project-specific, and the
+reusable part is the mechanism. Add rule files as your conventions emerge.
 
 ## Format
 
