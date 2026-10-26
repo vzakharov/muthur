@@ -57,7 +57,13 @@ fields, not the command.
     "scripts/",
     { "scripts/run-parallel.py": "taken as a POSIX sh port, scripts/run-parallel.sh" }
   ],
-  "declined": { ".claude/skills/take-issue/": "we track work in Linear, not GitHub issues" }
+  "declined": {
+    ".claude/skills/take-issue/": "we track work in Linear, not GitHub issues",
+    ".claude/skills/watch-ci/": [
+      "no CI yet — revisit when a workflow runs on PRs.",
+      "The deploy pipeline is a separate repo's, so a workflow here would gate nothing."
+    ]
+  }
 }
 ```
 
@@ -109,6 +115,16 @@ present tense. **Re-read them on every sync** and re-offer anything whose
 condition has stopped holding: a repo that declined the issue skills because it
 used Linear, and has since moved to GitHub issues, should be asked again. A
 reason that says `"never — …"` is the one that does not need re-reading.
+
+**Every explanatory value is a string or an array of strings** — an `adopted`
+entry's note, a `declined` reason, and any free-text field a repo adds to the
+file, such as a `notes` map. An array reads as the paragraphs of one text, an
+element per paragraph or finished thought. **Write an array once the text runs
+past a sentence or two, or once a sentence carries two separate points**: a JSON
+string is one physical line, so a long one cannot be read raw and diffs whole on
+a one-word edit, and a sentence welding two points together cannot lose one when
+its condition stops holding without rewriting the other. Whatever reads the
+watermark accepts both shapes.
 
 A repo with two sources would make **`repo`** an array. Nothing here precludes
 that and nothing here builds it — and it is a separate question from `lineage`,

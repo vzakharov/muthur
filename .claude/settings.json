@@ -1,6 +1,9 @@
 {
   "permissions": {
-    "allow": []
+    "allow": [
+      "Bash(scripts/pr-comment.sh *)",
+      "Bash(./scripts/pr-comment.sh *)"
+    ]
   },
   "hooks": {
     "SessionStart": [
