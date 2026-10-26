@@ -16,6 +16,7 @@ import unittest
 from pathlib import Path
 
 CHECK = Path(__file__).resolve().parent / "check-divergence.sh"
+CHARS = Path(__file__).resolve().parent / "lib" / "chars.sh"
 WATERMARK = ".claude/skills/update-muthur/watermark.json"
 RECORD = ".claude/skills/update-muthur/divergence.md"
 POSITION = {
@@ -32,6 +33,8 @@ class CheckDivergence(unittest.TestCase):
         self.root = Path(self.tmp.name)
         (self.root / "scripts").mkdir()
         shutil.copy2(CHECK, self.root / "scripts" / CHECK.name)
+        (self.root / "scripts" / "lib").mkdir()
+        shutil.copy2(CHARS, self.root / "scripts" / "lib" / CHARS.name)
 
     def tearDown(self) -> None:
         self.tmp.cleanup()

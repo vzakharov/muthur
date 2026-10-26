@@ -6,14 +6,17 @@
 #
 # Each physical line of the record counts ceil(characters / WIDTH): a
 # prettier-wrapped file's line count, and the wrapped length of one that is not.
-# Characters, not bytes, by `check-claude-md-size.sh`'s `count_chars` trick, so
-# a non-Latin record is not measured as two or three times its length. An
+# Characters, not bytes, so a non-Latin record is not measured as two or three
+# times its length. An
 # adopter with its own idea of the right size changes MAX_LINES in its copy, in
 # a commit that says why.
 
 set -uo pipefail
 
 cd "$(dirname "$0")/.." || exit 1
+
+# shellcheck source=lib/chars.sh
+. scripts/lib/chars.sh
 
 PROG="check-divergence"
 WATERMARK=".claude/skills/update-muthur/watermark.json"
@@ -32,7 +35,7 @@ if [ -f "$WATERMARK" ] && grep -Eq '"(adopted|declined)"[[:space:]]*:' "$WATERMA
 fi
 
 if [ -f "$RECORD" ]; then
-  lines=$(LC_ALL=C tr -d '\200-\277' <"$RECORD" | awk -v w="$WIDTH" '
+  lines=$(one_byte_per_char <"$RECORD" | awk -v w="$WIDTH" '
     { n += (length($0) == 0 ? 1 : int((length($0) + w - 1) / w)) }
     END { print n + 0 }
   ')
