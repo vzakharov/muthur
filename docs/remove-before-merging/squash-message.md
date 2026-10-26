@@ -18,7 +18,9 @@ the passages it touches.
 
 scripts/check-divergence.sh, run by vet.sh, fails a watermark still
 carrying adopted/declined and a record past 450 lines counted at 80
-columns, which holds whatever formatter the adopter uses.
+columns, which holds whatever formatter the adopter uses. The nudge no
+longer prints adopted; /detemplate and /spinoff write the record with a
+decline for everything they leave out, so a first sync re-offers none.
 
 Adopters: in the sync that ports this, convert by hand - drop entries
 taken verbatim, rewrite notes and reasons into divergence.md under the
