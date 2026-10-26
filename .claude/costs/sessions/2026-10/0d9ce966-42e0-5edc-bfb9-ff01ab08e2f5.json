@@ -1,0 +1,86 @@
+{
+  "total": {
+    "inputTokens": 18,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 63396,
+    "cacheReadTokens": 850376,
+    "outputTokens": 10571,
+    "thinkingTokens": 5855,
+    "responses": 9,
+    "costUsd": 0.8887352
+  },
+  "estimate": {
+    "at": "2026-10-26T13:50:00.287Z",
+    "parts": [
+      {
+        "hours": 2.0,
+        "grade": "senior",
+        "role": "architect",
+        "comment": "sizing the watermark's growth and choosing a split and a metric means weighing the sync procedure, every reader of the file and the migration cost across adopters"
+      }
+    ],
+    "comment": null
+  },
+  "sessionId": "0d9ce966-42e0-5edc-bfb9-ff01ab08e2f5",
+  "branch": "claude/bold-noether-1dwzoj",
+  "cwd": "/home/user/muthur",
+  "openingPrompt": "некоторые адоптерские вотермарки разрослись до неприличных размеров (см. например https://github.com/metkain/metka/blob/76371efbb1e4a153a6a020f8a2d5effe05cc4d02…",
+  "prs": [],
+  "url": "https://claude.ai/code/session_01Eeow5zrMDxzvWKcnWiw5GK",
+  "operator": null,
+  "firstResponseAt": "2026-10-26T13:48:30.049Z",
+  "lastResponseAt": "2026-10-26T13:50:12.178Z",
+  "pricesAsOf": "2026-10-06",
+  "claudeCodeTotalUsd": null,
+  "ownTurns": {
+    "inputTokens": 18,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 63396,
+    "cacheReadTokens": 850376,
+    "outputTokens": 10571,
+    "thinkingTokens": 5855,
+    "responses": 9,
+    "costUsd": 0.8887352
+  },
+  "subagents": {
+    "inputTokens": 0,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 0,
+    "cacheReadTokens": 0,
+    "outputTokens": 0,
+    "thinkingTokens": 0,
+    "responses": 0,
+    "costUsd": 0.0
+  },
+  "byRate": {
+    "claude-opus-5-5/standard": {
+      "inputTokens": 18,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 63396,
+      "cacheReadTokens": 850376,
+      "outputTokens": 10571,
+      "thinkingTokens": 5855,
+      "responses": 9,
+      "costUsd": 0.8887352
+    }
+  },
+  "warnings": [],
+  "orientation": {
+    "endedBy": "end_turn",
+    "endedOn": null,
+    "endedAt": "2026-10-26T13:50:12.178Z",
+    "contextTokens": 112226,
+    "spend": {
+      "inputTokens": 16,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 63013,
+      "cacheReadTokens": 738535,
+      "outputTokens": 8945,
+      "thinkingTokens": 5848,
+      "responses": 8,
+      "costUsd": 0.8307749999999999
+    }
+  },
+  "compactions": [],
+  "telemetry": null
+}
