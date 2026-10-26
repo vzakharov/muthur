@@ -43,6 +43,10 @@
 #     everything it `@`-imports, each file's staged copy where there is one,
 #     with a ceiling and a lower target for a branch that crossed it. Dropping
 #     it leaves text paid for on every turn free to grow unnoticed.
+#   check-divergence.sh — holds `/update-muthur`'s watermark to the sync's
+#     position and its divergence record to a size every sync can read whole.
+#     Keyed on the watermark, so a repo that declined the sync path has nothing
+#     for it to check.
 #   check-muthur.sh — everything that tests only this repo's own machinery: the
 #     repo-identity check and every `scripts/test_*.py`. One line because an
 #     adopting repo drops them together; it keys on the catalog and exits 0
@@ -66,6 +70,7 @@ set -euo pipefail
 "$(dirname "$0")/check-squash-message.sh"
 "$(dirname "$0")/staged.sh" check
 "$(dirname "$0")/check-claude-md-size.sh"
+[ ! -f "$(dirname "$0")/../.claude/skills/update-muthur/watermark.json" ] || "$(dirname "$0")/check-divergence.sh"
 "$(dirname "$0")/check-muthur.sh"
 for check in "$(dirname "$0")"/../.claude/{costs,context-budget,cold-cache,keepalive}/{test,check}_*.py; do
   [ ! -f "$check" ] || python3 "$check"
