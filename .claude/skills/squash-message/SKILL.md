@@ -299,12 +299,12 @@ yourself.
    ```
 
    `<n>` is the PR number (`gh pr view --json number --jq .number`). The script
-   edits your proposal in place, or posts one when there is none, so the anchor
-   next to the merge button stays stable. **Never do this step with inline
-   `gh api` or `gh pr comment`**: `.claude/settings.json` allows exactly this
-   command, which keeps auto mode's classifier from denying the write as an
-   external one, and any other spelling goes back to the classifier. Its header
-   carries the outputs and exit codes.
+   edits the PR's proposal in place, whoever posted it, or posts one when there
+   is none, so the anchor next to the merge button stays stable. **Never do this
+   step with inline `gh api` or `gh pr comment`**: `.claude/settings.json`
+   allows exactly this command, which keeps auto mode's classifier from denying
+   the write as an external one, and any other spelling goes back to the
+   classifier. Its header carries the outputs and exit codes.
 
    **In `update-only` mode pass `--update-only`**, which creates nothing and
    exits `3` on absence — report it and stop. The one exception is a branch that

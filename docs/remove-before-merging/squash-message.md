@@ -9,8 +9,8 @@ the same call.
 
 scripts/pr-comment.sh <squash|attestation> [--update-only] <pr> <file>
 now does the whole find -> PATCH-or-create for both sticky comments:
-the newest one by the authenticated login leading with the kind's
-marker is edited in place, older duplicates are deleted, and one is
+the newest one leading with the kind's marker, whoever posted it, is
+edited in place, older duplicates are deleted, and one is
 posted when none exists (`--update-only` exits 3 instead). It refuses
 a file that does not lead with the marker, so the command can post
 nothing else.

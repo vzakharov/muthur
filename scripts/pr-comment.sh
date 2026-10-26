@@ -16,9 +16,10 @@
 #   squash       - `Proposed squash`, the squash proposal.
 #   attestation  - `<!-- finalize-attestation`, the finalize attestation.
 #
-# The comment is the newest one by the authenticated login whose body leads
-# with the marker; older matches are duplicates an earlier run stacked and are
-# deleted. A match already equal to the file is left untouched.
+# The comment is the newest one whose body leads with the marker, whoever
+# posted it — a session picking up someone else's PR takes over the comment
+# their session left; older matches are duplicates an earlier run stacked and
+# are deleted. A match already equal to the file is left untouched.
 #
 # Prints one line, `<outcome> <comment-url>`, the outcome being `posted`,
 # `edited` or `current`; or `absent` alone under `--update-only`.
@@ -68,9 +69,6 @@ GH_REPO_PROG="$PROG"
 source "${REPO_ROOT}/scripts/lib/gh-repo.sh"
 gh_resolve_repo
 
-LOGIN="$(gh api user --jq .login)"
-[[ -n "$LOGIN" ]] || die "could not resolve the authenticated login"
-
 # Oldest first, as the API lists them, so the last id is the newest. A read
 # loop rather than `mapfile`, which the bash 3.2 macOS ships lacks.
 IDS=()
@@ -78,7 +76,7 @@ while IFS= read -r id; do
   IDS+=("$id")
 done < <(
   gh api "repos/${NWO}/issues/${PR}/comments" --paginate --jq \
-    ".[] | select(.user.login == \"${LOGIN}\" and (.body | startswith(\"${MARKER}\"))) | .id"
+    ".[] | select(.body | startswith(\"${MARKER}\")) | .id"
 )
 
 if [[ "${#IDS[@]}" -eq 0 ]]; then
