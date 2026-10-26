@@ -117,7 +117,7 @@ there is no condition under which it fails to apply.
   the tree.
   - **Pulls in:** the `**/*.external.*` line in `.prettierignore` (this group);
     the `claude-haiku-5-5` row in `.claude/costs/prices.json` where G7 is
-    adopted, or the map's subagent stops the session's pricing
+    adopted, or pricing a session that ran the map's subagent fails as unpriced
   - **Disposition:** adopt
 - `.gitignore` — Take the `tmp/` entry and keep the rest of yours. `CLAUDE.md`'s
   "dev artifacts go under `tmp/`" principle depends on that path being ignored.
