@@ -95,7 +95,7 @@ class Spread:
 class PhaseStats:
     phases: int
     usd: Spread
-    # Over the phases that acted: one that never did has no context to report.
+    # Over the phases something ended: one that ran out has no context to report.
     context_tokens: Optional[Spread]
     share_of_session: Spread
 
