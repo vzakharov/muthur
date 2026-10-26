@@ -1,0 +1,86 @@
+{
+  "total": {
+    "inputTokens": 12,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 46920,
+    "cacheReadTokens": 506695,
+    "outputTokens": 3574,
+    "thinkingTokens": 1276,
+    "responses": 6,
+    "costUsd": 0.548227
+  },
+  "estimate": {
+    "at": "2026-10-26T04:43:03.908Z",
+    "parts": [
+      {
+        "hours": 0.5,
+        "grade": "senior",
+        "role": "developer",
+        "comment": "telling a harness-owned hook from a repo one, and what can be changed around it, takes someone who knows Claude Code's settings layering and hook semantics"
+      }
+    ],
+    "comment": null
+  },
+  "sessionId": "75b0b370-365f-55ee-867d-7d3cbb3c5826",
+  "branch": "claude/vibrant-darwin-hu3224",
+  "cwd": "/home/user/muthur",
+  "openingPrompt": "~/.claude/stop-hook-git-check.sh -- наш или харнессовый? Если наш, давай НЕ запускать его, если работают подагенты (если это вообще возможно определить)",
+  "prs": [],
+  "url": "https://claude.ai/code/session_01RnxeFHfYH68wfk9Ez33LvU",
+  "operator": "vzakharov",
+  "firstResponseAt": "2026-10-26T04:42:41.379Z",
+  "lastResponseAt": "2026-10-26T04:43:14.376Z",
+  "pricesAsOf": "2026-10-06",
+  "claudeCodeTotalUsd": null,
+  "ownTurns": {
+    "inputTokens": 12,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 46920,
+    "cacheReadTokens": 506695,
+    "outputTokens": 3574,
+    "thinkingTokens": 1276,
+    "responses": 6,
+    "costUsd": 0.548227
+  },
+  "subagents": {
+    "inputTokens": 0,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 0,
+    "cacheReadTokens": 0,
+    "outputTokens": 0,
+    "thinkingTokens": 0,
+    "responses": 0,
+    "costUsd": 0.0
+  },
+  "byRate": {
+    "claude-opus-5-5/standard": {
+      "inputTokens": 12,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 46920,
+      "cacheReadTokens": 506695,
+      "outputTokens": 3574,
+      "thinkingTokens": 1276,
+      "responses": 6,
+      "costUsd": 0.548227
+    }
+  },
+  "warnings": [],
+  "orientation": {
+    "endedBy": "end_turn",
+    "endedOn": null,
+    "endedAt": "2026-10-26T04:43:14.376Z",
+    "contextTokens": 95750,
+    "spend": {
+      "inputTokens": 10,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 46349,
+      "cacheReadTokens": 411518,
+      "outputTokens": 2485,
+      "thinkingTokens": 1268,
+      "responses": 5,
+      "costUsd": 0.5028356
+    }
+  },
+  "compactions": [],
+  "telemetry": null
+}
