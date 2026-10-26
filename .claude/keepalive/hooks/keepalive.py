@@ -163,7 +163,7 @@ def start_line(session: str, transcript: str) -> str:
 SUFFICIENT = (
     "the branch alone lets a fresh session continue: everything committed and pushed, the work"
     " at a loop boundary (a draft plan published awaiting `/go`, a paused plan, `/go` done"
-    " awaiting `/finalize`, a relay summary written), and nothing said since that the repo"
+    " awaiting `/finalize`, a relay summary whose Next step still holds), and nothing said since that the repo"
     " does not hold"
 )
 
