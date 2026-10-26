@@ -1,0 +1,92 @@
+{
+  "total": {
+    "inputTokens": 38,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 90208,
+    "cacheReadTokens": 2207590,
+    "outputTokens": 13189,
+    "thinkingTokens": 3888,
+    "responses": 19,
+    "costUsd": 1.427114
+  },
+  "estimate": {
+    "at": "2026-10-26T03:19:33.164Z",
+    "parts": [
+      {
+        "hours": 2.0,
+        "grade": "middle",
+        "role": "developer",
+        "comment": "a gh-api shell script with lookup, dedupe and update-only semantics, plus an exit-code contract callers depend on"
+      },
+      {
+        "hours": 1.0,
+        "grade": "senior",
+        "role": "prompter",
+        "comment": "rewiring a skill step and the permission rule needs judgement of how auto mode matches commands"
+      }
+    ],
+    "comment": null
+  },
+  "sessionId": "dceca2bc-3d9d-574f-89df-369b6f501513",
+  "branch": "claude/squash-comment-script",
+  "cwd": "/home/user/muthur",
+  "openingPrompt": "/task",
+  "prs": [],
+  "url": "https://claude.ai/code/session_01H1Ko5BVe6VLLHacH3uyRpK",
+  "operator": "vzakharov",
+  "firstResponseAt": "2026-10-26T03:18:33.304Z",
+  "lastResponseAt": "2026-10-26T03:21:51.518Z",
+  "pricesAsOf": "2026-10-06",
+  "claudeCodeTotalUsd": null,
+  "ownTurns": {
+    "inputTokens": 38,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 90208,
+    "cacheReadTokens": 2207590,
+    "outputTokens": 13189,
+    "thinkingTokens": 3888,
+    "responses": 19,
+    "costUsd": 1.427114
+  },
+  "subagents": {
+    "inputTokens": 0,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 0,
+    "cacheReadTokens": 0,
+    "outputTokens": 0,
+    "thinkingTokens": 0,
+    "responses": 0,
+    "costUsd": 0.0
+  },
+  "byRate": {
+    "claude-opus-5-5/standard": {
+      "inputTokens": 38,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 90208,
+      "cacheReadTokens": 2207590,
+      "outputTokens": 13189,
+      "thinkingTokens": 3888,
+      "responses": 19,
+      "costUsd": 1.427114
+    }
+  },
+  "warnings": [],
+  "orientation": {
+    "endedBy": "Write",
+    "endedOn": "scripts/squash-comment.sh",
+    "endedAt": "2026-10-26T03:19:44.594Z",
+    "contextTokens": 129031,
+    "spend": {
+      "inputTokens": 22,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 78839,
+      "cacheReadTokens": 1143046,
+      "outputTokens": 4883,
+      "thinkingTokens": 2323,
+      "responses": 11,
+      "costUsd": 0.9570692000000002
+    }
+  },
+  "compactions": [],
+  "telemetry": null
+}
