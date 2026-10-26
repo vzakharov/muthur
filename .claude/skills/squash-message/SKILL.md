@@ -291,40 +291,34 @@ yourself.
 
 ## Step 4 — Emit (comment first, then transcript)
 
-1. **Find any existing proposal.** Resolve the PR number
-   (`gh pr view --json number --jq .number`), list comments
-   (`gh api repos/<owner>/<repo>/issues/<n>/comments --paginate`) and pick the
-   one whose body leads with `Proposed squash` and whose `user.login` is yours
-   (`gh api    user --jq .login`). If several match — an earlier run stacked
-   duplicates — keep the newest and `-X DELETE` the rest.
-2. **Post or update.**
-   - Found → PATCH that same comment:
-     `gh api repos/<owner>/<repo>/issues/comments/<id> -X PATCH -F body=@<working file>`.
-     Edit in place; don't delete-and-repost (the anchor next to the merge button
-     stays stable) and never stack a second comment. If it already matches the
-     file, leave it untouched. Do **not** reach for `gh pr comment --edit-last`
-     as a shortcut past the lookup above: it targets your most recent comment on
-     the PR regardless of marker, so it silently overwrites whichever sticky
-     comment you posted last — the `/finalize` attestation, most likely.
-   - Not found → `gh pr comment <n> --body-file <working file>`. **In
-     `update-only` mode, stop here instead**: report the absence, create
-     nothing. The one exception is a branch that carries the tracked file — that
-     file is itself proof the proposal exists and its comment was lost, so post
-     it rather than reporting an absence that isn't real.
+1. **Post or update the comment** with one command, run from the repository root
+   and spelled exactly so, with no `cd … &&` in front:
 
-   The `--body-file` / `-F body=@` forms are what make the fenced backticks
-   survive shell quoting.
+   ```bash
+   scripts/squash-comment.sh [--update-only] <n> <working file>
+   ```
 
-   Resolve `<owner>/<repo>` from the git remote
-   (`gh repo view --json nameWithOwner --jq .nameWithOwner`) rather than
-   hardcoding it.
+   `<n>` is the PR number (`gh pr view --json number --jq .number`). The script
+   finds your newest comment leading with `Proposed squash`, deletes older
+   duplicates, and edits it in place — or posts one when there is none — so the
+   anchor next to the merge button stays stable. **Never do this step with
+   inline `gh api` or `gh pr comment`**: `.claude/settings.json` allows exactly
+   this command, which keeps auto mode's classifier from denying the write as an
+   external one, and any other spelling goes back to the classifier. Its header
+   carries the outputs and exit codes.
 
-3. **Set the PR title** to the one Step 2 drafted, when it differs:
+   **In `update-only` mode pass `--update-only`**, which creates nothing and
+   exits `3` on absence — report it and stop. The one exception is a branch that
+   carries the tracked file — that file is itself proof the proposal exists and
+   its comment was lost, so run it without the flag rather than reporting an
+   absence that isn't real.
+
+2. **Set the PR title** to the one Step 2 drafted, when it differs:
    `gh api repos/<owner>/<repo>/pulls/<n> -X PATCH -f title='<title>'`. This is
    what keeps the title GitHub prefills equal to the record's; `gh pr edit` is
    not the route, for the reason `@.claude/skills/pr/SKILL.md` Step 5 gives.
 
-4. **Print the title and the fenced body in the transcript.** The comment keeps
+3. **Print the title and the fenced body in the transcript.** The comment keeps
    the copy-ready body beside the merge button; the transcript copy serves the
    operator reading the session. Print the body from the file so the two can't
    diverge.

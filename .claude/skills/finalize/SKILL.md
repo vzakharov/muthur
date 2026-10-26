@@ -264,11 +264,9 @@ Steps (stop on first unresolved failure):
    <If nothing runs on a PR here: "No workflow runs on a PR; this comment is the verification record.">
    ```
 
-   **Finding the comment: match the marker, never `--edit-last`.** Same mechanic
-   `@.claude/skills/squash-message/SKILL.md` § "Emit" uses for its own sticky
-   comment — list the PR's comments
-   (`gh api repos/<owner>/<repo>/issues/<n>/comments --paginate`), pick the one
-   whose body contains `<!-- finalize-attestation`, and
+   **Finding the comment: match the marker, never `--edit-last`.** List the PR's
+   comments (`gh api repos/<owner>/<repo>/issues/<n>/comments --paginate`), pick
+   the one whose body contains `<!-- finalize-attestation`, and
    `gh api repos/<owner>/<repo>/issues/comments/<id> -X PATCH -F body=@<file>`
    that id; post a new comment only when no match exists.
    `gh pr comment --edit-last` looks like the tool for this and is not: it

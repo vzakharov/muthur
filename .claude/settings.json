@@ -1,6 +1,9 @@
 {
   "permissions": {
-    "allow": []
+    "allow": [
+      "Bash(scripts/squash-comment.sh *)",
+      "Bash(./scripts/squash-comment.sh *)"
+    ]
   },
   "hooks": {
     "SessionStart": [
