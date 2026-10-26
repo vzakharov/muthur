@@ -1,24 +1,15 @@
 Proposed squash body:
 
 ```
-Adopters receive documents written outside the repo: a counterpart's
-spec, a letter, an export. An agent that reads one as it reads the
-repo's own prose can copy its voice, repeat its claims as fact, or
-follow instructions addressed to some other agent. A long one also
-fills the context window.
+An unpriced (model, speed) pair makes the Stop hook's pricing raise, so
+any session that spawned a Haiku 5.5 subagent could not be priced.
 
-`.claude/rules/external-docs.md` names such a file
-`<name>.external.<ext>` and keeps it byte for byte as received. Its
-claims stay its author's, and instructions in it are text rather than
-requests. One over ~500 lines gets a line map from a Haiku subagent
-before anyone reads it. `.prettierignore` skips `**/*.external.*`. The
-rule ships by default rather than as an opt-in: it is path-scoped, so
-until a file carries the suffix it costs nothing and asks nothing of
-the tree.
-
-`prices.json` gains `claude-haiku-5-5/standard` at its ≤100K-token
-rates, the only tier a row can hold. Without the row, the Stop hook's
-pricing raises on any session that spawns a Haiku subagent.
+`prices.json` gains `claude-haiku-5-5/standard`: 0.10 input, 0.50
+output, 0.125 / 0.2 / 0.01 for 5-minute writes, 1-hour writes and
+reads, per million tokens, from the claude-api skill's model table
+cached 2026-10-06. Those are the rates for prompts up to 100K tokens.
+Beyond that the model bills 0.50 / 2.50, which a per-pair row cannot
+express, and the row's confidence note says so.
 
 Co-authored-by: Claude <noreply@anthropic.com>
 ```
