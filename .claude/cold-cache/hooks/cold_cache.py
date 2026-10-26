@@ -22,11 +22,7 @@ from typing import Any, Dict, List, Optional
 ROOT = Path(__file__).resolve().parents[3]
 sys.path.insert(0, str(ROOT / ".claude" / "costs"))
 
-<<<<<<< HEAD
 from lib.prices import parse_prices
-from lib.restart import History, Session, context_of, epoch, read_history, recache, session_of
-=======
-from lib.pricing import parse_prices
 from lib.restart import (
     SLICE,
     History,
@@ -39,7 +35,6 @@ from lib.restart import (
     recache,
     session_of,
 )
->>>>>>> origin/main
 
 PRICES = ROOT / ".claude" / "costs" / "prices.json"
 RESEND = "!"

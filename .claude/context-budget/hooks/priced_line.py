@@ -21,13 +21,8 @@ from typing import Optional
 COSTS = Path(__file__).resolve().parents[2] / "costs"
 sys.path.insert(0, str(COSTS))
 
-<<<<<<< HEAD
 from lib.prices import parse_prices
-from lib.restart import Session, line_for, read_history, saving_over, session_of, verdict
-=======
-from lib.pricing import parse_prices
 from lib.restart import SLICE, Session, line_for, read_history, saving_over, session_of, verdict
->>>>>>> origin/main
 
 
 def priced(transcript: Path, context: Optional[int]) -> Optional[Session]:
