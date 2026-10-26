@@ -12,11 +12,11 @@ relay: one saving over the next 100k tokens of work, the reorientation
 weighed against the re-cache up front and the smaller context on every
 request after. Its text gives each way's total in dollars over that
 slice, plus, where reorienting costs more than the re-cache, the work
-under which continuing stays cheaper. The
-expected text in the hook tests is built by the hook's own helpers, so
-a test pins figures, not copy. A fresh session that saves nothing,
-or under MUTHUR_COLD_CACHE_MARGIN of the re-cache, lets the prompt
-through, since the stop has no real choice to offer.
+under which continuing stays cheaper. The expected text in the hook
+tests is built by the hook's own helpers, so a test pins figures, not
+copy. A fresh session that saves nothing, or under
+MUTHUR_COLD_CACHE_MARGIN of the re-cache, lets the prompt through,
+since the stop has no real choice to offer.
 
 restart.py's relay saving and the new fresh-session saving share one
 comparison, each side paying its own up-front cost, over one SLICE
