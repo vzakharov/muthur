@@ -102,7 +102,8 @@
   `working-file.md`, which picks the working file in the one case the tracked
   draft is not on the branch — a first run, or a run after `/finalize` already
   swept it.
-  - **Requires:** `gh`, `jq`, `scripts/check-squash-message.sh`
+  - **Requires:** `gh`, `jq`, `scripts/check-squash-message.sh`,
+    `scripts/squash-comment.sh`
   - **Pulls in:** `/tend-prose` (G1)
   - **Disposition:** adopt
 - `/qa-checklist` — Generate a QA checklist from the branch's change and write
