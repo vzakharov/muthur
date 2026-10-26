@@ -4,7 +4,7 @@ Proposed squash body:
 Auto mode's classifier denied /squash-message's inline
 `gh api .../issues/comments/<id> -X PATCH` as an external write, so a
 PR kept a stale squash proposal until the operator named the action,
-and not for the first time. /finalize's attestation went out through
+by now on nearly every PR. /finalize's attestation went out through
 the same call.
 
 scripts/pr-comment.sh <squash|attestation> [--update-only] <pr> <file>
