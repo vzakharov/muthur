@@ -6,16 +6,19 @@ answer what its relay summary listed as pending, and leave the summary
 on the branch claiming the work still waits; a later `/relay take`
 would then act on it.
 
-`/relay` now has whichever session holds the branch, a resumed parked
-one or a `/relay take` successor, settle the newest summary at the end
-of any turn that makes its Next step false. When nothing is pending and
-the keepalive's "the branch alone suffices" test holds, every
-relay-*.md is deleted, so no older one becomes current; otherwise the
-next relay-<N>.md supersedes it. Superseding rather than editing in
-place keeps each summary's name for good: the session title counts up,
-and a summary a session already took stays what it took. Numbering
-counts deleted summaries too, so no name is reused, and `/relay take`
-on a branch whose summary was deleted reports that and stops.
+`/relay` now has a parked session its operator comes back to settle
+its summary at the end of any turn that makes the Next step false.
+When nothing is pending and the keepalive's "the branch alone
+suffices" test holds, it deletes that summary; otherwise the next
+relay-<N>.md supersedes it. Superseding rather than editing in place
+keeps each summary's name for good, and earlier summaries always stay,
+each the way back to the session that wrote it.
+
+The current summary is now the highest number the branch ever held,
+read off git history, and only while it is on disk: a deleted one
+leaves no current summary rather than promoting an older one, no
+number is reused, and `/relay take` on such a branch reports the
+deletion and stops.
 
 The keepalive hook counts a relay summary toward "the branch
 suffices" only while its Next step still holds.
