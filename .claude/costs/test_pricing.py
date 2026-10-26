@@ -15,13 +15,9 @@ from typing import Any, Dict, List, Optional, Sequence
 
 from lib.billed import parse_events
 from lib.shape import ShapeError
-from lib.pricing import (
-    TranscriptSources,
-    UnpricedError,
-    is_unwritten_tail,
-    parse_prices,
-    summarise_transcript,
-)
+from lib.prices import parse_prices
+from lib.pricing import UnpricedError, is_unwritten_tail, summarise_transcript
+from lib.transcript import TranscriptSources
 
 # `test_stop_hook.py` writes this table to disk, for the records `response()`
 # builds to be priced by the real script.

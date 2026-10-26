@@ -23,7 +23,7 @@ from typing import Optional
 COSTS = Path(__file__).resolve().parents[2] / "costs"
 sys.path.insert(0, str(COSTS))
 
-from lib.pricing import parse_prices
+from lib.prices import parse_prices
 from lib.restart import Session, line_for, read_history, saving_over, session_of, verdict
 
 

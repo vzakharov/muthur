@@ -12,19 +12,18 @@ from pathlib import Path
 from typing import Iterator, List, Optional, Tuple
 
 from lib.orientation import Phase, is_boundary
-from lib.pricing import (
+from lib.prices import PriceTable
+from lib.pricing import UnpricedError, summarise_transcript
+from lib.rows import parse_session_cost
+from lib.tally import Rates
+from lib.transcript import (
     SYNTHETIC_MODEL,
-    PriceTable,
-    Rates,
     Response,
     TranscriptSources,
-    UnpricedError,
     is_response_record,
     parse_response,
     subagents_of,
-    summarise_transcript,
 )
-from lib.rows import parse_session_cost
 
 # What the transcript cannot tell, as estimates: what the relay's summary turn
 # writes, and — before any orientation has been measured — what a fresh session

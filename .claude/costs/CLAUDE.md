@@ -41,8 +41,8 @@ What each failure costs:
 ## Reading a transcript
 
 Properties of `~/.claude/projects/<cwd-slug>/<session-id>.jsonl` that decide how
-`lib/pricing.py` reads it. Each is load-bearing: get one wrong and the totals
-are confidently incorrect rather than absent.
+`lib/transcript.py` and `lib/pricing.py` read it. Each is load-bearing: get one
+wrong and the totals are confidently incorrect rather than absent.
 
 - **A subagent's spend is in a different file.**
   `<session-id>/subagents/*.jsonl` beside the transcript, one per agent — and it

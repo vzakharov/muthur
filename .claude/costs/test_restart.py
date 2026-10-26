@@ -19,7 +19,7 @@ from typing import Any, Dict, Optional
 
 HERE = Path(__file__).resolve().parent
 
-from lib.pricing import parse_prices
+from lib.prices import parse_prices
 from lib.restart import (
     Reorientation,
     Session,

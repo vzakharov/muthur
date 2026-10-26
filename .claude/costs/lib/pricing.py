@@ -7,11 +7,7 @@ leave out.
 
 from __future__ import annotations
 
-import json
-import re
-from dataclasses import dataclass, fields
-from pathlib import Path
-from typing import Any, Dict, List, Mapping, Optional, Sequence, Set, Tuple
+from typing import Dict, List, Mapping, Optional, Set
 
 from lib.billed import Event, Telemetry, compaction_costs, disagreement
 from lib.identity import (
@@ -24,207 +20,28 @@ from lib.identity import (
 )
 from lib.orientation import (
     Priced,
-    ToolCall,
     Trail,
     boundary_of,
-    calls_in,
     is_boundary,
     measure,
     note_results,
     summary_chars_of,
 )
+from lib.prices import PriceTable, rate_key
 from lib.rows import SessionCost
-from lib.shape import (
-    ShapeError,
-    json_lines,
-    mistyped,
-    read_count,
-    read_number,
-    read_object,
-    read_string,
-    required,
+from lib.shape import json_lines
+from lib.tally import Tally, billable_tokens, cost_of
+from lib.transcript import (
+    SYNTHETIC_MODEL,
+    Response,
+    TranscriptSources,
+    is_response_record,
+    parse_response,
 )
-from lib.tally import Rates, Tally, billable_tokens, cost_of
 
 
 class UnpricedError(ValueError):
     """A response under a `(model, speed)` pair the rate table has no rates for."""
-
-
-# --- The rate table -----------------------------------------------------------
-
-
-# A snapshot id's release-date suffix, as in `claude-haiku-4-5-20251001`.
-_DATED = re.compile(r"-\d{8}$")
-
-
-@dataclass(frozen=True)
-class LongPrompt:
-    """A request whose prompt runs past `prompt_tokens` is billed whole, output
-    included, at `rates`."""
-
-    prompt_tokens: int
-    rates: Rates
-
-
-@dataclass(frozen=True)
-class RateCard:
-    rates: Rates
-    above: Optional[LongPrompt] = None
-
-    def for_prompt(self, prompt_tokens: int) -> Rates:
-        if self.above is not None and prompt_tokens > self.above.prompt_tokens:
-            return self.above.rates
-        return self.rates
-
-
-@dataclass(frozen=True)
-class PriceTable:
-    as_of: str
-    rates: Dict[str, RateCard]
-
-    def rates_for(self, model: str, speed: Optional[str], prompt_tokens: int) -> Optional[Rates]:
-        """`prompt_tokens` is everything the request sent, cache reads and writes
-        included. A dated snapshot id with no row of its own is priced at its
-        undated alias's row; a dated row, where there is one, wins."""
-        card = self.rates.get(rate_key(model, speed))
-        if card is None and _DATED.search(model):
-            card = self.rates.get(rate_key(_DATED.sub("", model), speed))
-        return None if card is None else card.for_prompt(prompt_tokens)
-
-
-def parse_rates(entry: Dict[str, Any], where: str) -> Rates:
-    return Rates(**{f.name: required(read_number, entry, f.name, where) for f in fields(Rates)})
-
-
-def parse_prices(text: str) -> PriceTable:
-    table = json.loads(text)
-    if not isinstance(table, dict):
-        raise ShapeError("prices.json: not an object")
-    rates: Dict[str, RateCard] = {}
-    for key, entry in required(read_object, table, "rates", "prices.json").items():
-        where = f"prices.json rates[{key!r}]"
-        if not isinstance(entry, dict):
-            raise ShapeError(f"{where}: not an object")
-        above = read_object(entry, "above", where)
-        rates[key] = RateCard(
-            rates=parse_rates(entry, where),
-            above=None
-            if above is None
-            else LongPrompt(
-                prompt_tokens=required(read_count, above, "prompt_tokens", f"{where}.above"),
-                rates=parse_rates(above, f"{where}.above"),
-            ),
-        )
-    return PriceTable(as_of=required(read_string, table, "as_of", "prices.json"), rates=rates)
-
-
-def rate_key(model: str, speed: Optional[str]) -> str:
-    """`<model>/<speed>`, the pair a response is billed under."""
-    return f"{model}/{speed if speed is not None else 'standard'}"
-
-
-# --- Reading a transcript -----------------------------------------------------
-
-# Claude Code's placeholder for a turn no model served — a cancellation, an
-# interrupted request. It is not a model, so the unpriced-pair error would be
-# reporting the wrong thing; a warning covers one ever arriving with tokens.
-SYNTHETIC_MODEL = "<synthetic>"
-
-
-@dataclass(frozen=True)
-class Response:
-    message_id: str
-    model: str
-    speed: Optional[str]
-    session_id: Optional[str]
-    git_branch: Optional[str]
-    cwd: Optional[str]
-    timestamp: Optional[str]
-    is_sidechain: bool
-    stop_reason: Optional[str]
-    request_id: Optional[str]
-    calls: Tuple[ToolCall, ...]
-    tokens: Tally
-
-
-def is_response_record(record: Any) -> bool:
-    # Prompts, attachments and tool results share the file and carry no usage,
-    # so only a record that looks like a billed response is held to the shape.
-    if not isinstance(record, dict):
-        return False
-    message = record.get("message")
-    return isinstance(message, dict) and "usage" in message
-
-
-def parse_response(record: Dict[str, Any], where: str, warnings: List[str]) -> Response:
-    message = required(read_object, record, "message", where)
-    message_id = required(read_string, message, "id", where)
-    usage = required(read_object, message, "usage", where)
-    at = f"{where} usage"
-
-    written = read_count(usage, "cache_creation_input_tokens", at) or 0
-    split = read_object(usage, "cache_creation", at) or {}
-    split_5m = read_count(split, "ephemeral_5m_input_tokens", at) or 0
-    split_1h = read_count(split, "ephemeral_1h_input_tokens", at) or 0
-    # A split that does not account for the whole write leaves the rest at the
-    # API's own default TTL, and says so rather than rounding it away.
-    trust_split = split_5m + split_1h == written
-    if not trust_split and written > 0:
-        warnings.append(
-            f"{message_id}: cache_creation split ({split_5m} + {split_1h}) does not"
-            f" account for {written} written tokens; billed at the 5-minute rate"
-        )
-    details = read_object(usage, "output_tokens_details", at) or {}
-    sidechain = record.get("isSidechain")
-    if sidechain is not None and not isinstance(sidechain, bool):
-        raise mistyped(where, "isSidechain", sidechain, "a boolean")
-
-    return Response(
-        message_id=message_id,
-        model=required(read_string, message, "model", where),
-        speed=read_string(usage, "speed", at),
-        session_id=read_string(record, "sessionId", where),
-        git_branch=read_string(record, "gitBranch", where),
-        cwd=read_string(record, "cwd", where),
-        timestamp=read_string(record, "timestamp", where),
-        is_sidechain=sidechain is True,
-        stop_reason=read_string(message, "stop_reason", where),
-        request_id=read_string(record, "requestId", where),
-        calls=calls_in(message, where),
-        tokens=Tally(
-            input_tokens=required(read_count, usage, "input_tokens", at),
-            cache_write_5m_tokens=split_5m if trust_split else written,
-            cache_write_1h_tokens=split_1h if trust_split else 0,
-            cache_read_tokens=read_count(usage, "cache_read_input_tokens", at) or 0,
-            output_tokens=required(read_count, usage, "output_tokens", at),
-            thinking_tokens=read_count(details, "thinking_tokens", at) or 0,
-        ),
-    )
-
-
-@dataclass(frozen=True)
-class TranscriptSources:
-    """A session's transcripts: the main file, and one per subagent it spawned.
-
-    A subagent's responses are billed to the session that spawned it and are
-    written to a **separate file**, so a reading that opens only the main
-    transcript prices the session short by however much it delegated — silently,
-    since the shortfall looks exactly like a session that delegated nothing.
-    """
-
-    main: str
-    subagents: Sequence[str] = ()
-
-
-def subagents_of(main: Path) -> List[str]:
-    """A subagent's responses are billed to this session and written to their own
-    file under `<transcript>/subagents/`, so the directory is read rather than
-    assumed empty. A session that spawned none has no directory at all."""
-    directory = main.parent / main.stem / "subagents"
-    if not directory.is_dir():
-        return []
-    return [path.read_text(encoding="utf-8") for path in sorted(directory.glob("*.jsonl"))]
 
 
 # Marks the warning `at_stop` raises, which is what lets a rewrite of the row
