@@ -13,11 +13,13 @@ is below the usual tenth of input (`.claude/costs/prices.json`).
   and the task's completion notice is the wake.
 - **It runs only while losing the session would lose something.** The
   `UserPromptSubmit` hook asks the agent to start it as a turn's last action,
-  unless the branch alone lets a fresh session continue — the work at a loop
-  boundary, nothing said since that the repo lacks — and to `TaskStop` a running
-  one once that holds. Only the agent knows what the conversation holds that the
-  branch does not. `TaskStop` ends a task without a completion notice, so
-  stopping one wakes nothing.
+  unless the branch and its PR's threads let a fresh session continue — the work
+  at a loop boundary, nothing said since that neither holds — and to `TaskStop`
+  a running one once that holds. The PR counts because `/handle` re-exports it:
+  a review lane whose open items all sit as replies or questions on the PR is at
+  a boundary, the operator answering there rather than in chat. Only the agent
+  knows what the conversation holds that the branch and PR do not. `TaskStop`
+  ends a task without a completion notice, so stopping one wakes nothing.
 - **Every wake is one visible line.** The harness rejects a turn with no visible
   output and forces a second request, so the instruction asks for one line
   rather than silence — and spends it on the two answers that end the spell, in
