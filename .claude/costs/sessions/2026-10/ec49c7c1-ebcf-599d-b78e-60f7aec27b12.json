@@ -1,0 +1,88 @@
+{
+  "total": {
+    "inputTokens": 82,
+    "cacheWrite5mTokens": 85840,
+    "cacheWrite1hTokens": 93681,
+    "cacheReadTokens": 4596711,
+    "outputTokens": 12412,
+    "thinkingTokens": 3149,
+    "responses": 41,
+    "costUsd": 2.3465581999999996
+  },
+  "estimate": {
+    "at": "2026-10-26T19:10:40.435Z",
+    "parts": [
+      {
+        "hours": 0.5,
+        "grade": "senior",
+        "role": "developer",
+        "comment": "landing a reviewed PR means re-running its checks, merging main and judging whether anything it brought in interacts with the change — a call that needs someone who knows the loop"
+      }
+    ],
+    "comment": null
+  },
+  "orientation": {
+    "endedBy": "end_turn",
+    "endedOn": null,
+    "endedAt": "2026-10-26T19:24:54.078Z",
+    "contextTokens": 142511,
+    "spend": {
+      "inputTokens": 80,
+      "cacheWrite5mTokens": 85840,
+      "cacheWrite1hTokens": 93511,
+      "cacheReadTokens": 4454372,
+      "outputTokens": 11141,
+      "thinkingTokens": 2765,
+      "responses": 40,
+      "costUsd": 2.2913024
+    }
+  },
+  "sessionId": "ec49c7c1-ebcf-599d-b78e-60f7aec27b12",
+  "branch": "claude/orientation-mark-738nfp",
+  "cwd": "/home/user/muthur",
+  "openingPrompt": "/merge claude/orientation-mark-738nfp",
+  "prs": [
+    222
+  ],
+  "url": "https://claude.ai/code/session_01Ty4Lotjnsj3VnPmT4zFCUH",
+  "operator": "vzakharov",
+  "firstResponseAt": "2026-10-26T19:09:27.153Z",
+  "lastResponseAt": "2026-10-26T19:24:54.078Z",
+  "pricesAsOf": "2026-10-06",
+  "claudeCodeTotalUsd": null,
+  "ownTurns": {
+    "inputTokens": 72,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 93681,
+    "cacheReadTokens": 4293100,
+    "outputTokens": 10812,
+    "thinkingTokens": 2896,
+    "responses": 36,
+    "costUsd": 1.8245959999999999
+  },
+  "subagents": {
+    "inputTokens": 10,
+    "cacheWrite5mTokens": 85840,
+    "cacheWrite1hTokens": 0,
+    "cacheReadTokens": 303611,
+    "outputTokens": 1600,
+    "thinkingTokens": 253,
+    "responses": 5,
+    "costUsd": 0.5219622
+  },
+  "byRate": {
+    "claude-opus-5-5/standard": {
+      "inputTokens": 82,
+      "cacheWrite5mTokens": 85840,
+      "cacheWrite1hTokens": 93681,
+      "cacheReadTokens": 4596711,
+      "outputTokens": 12412,
+      "thinkingTokens": 3149,
+      "responses": 41,
+      "costUsd": 2.3465581999999996
+    }
+  },
+  "warnings": [],
+  "compactions": [],
+  "telemetry": null
+}
