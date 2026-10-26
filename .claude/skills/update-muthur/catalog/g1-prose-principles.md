@@ -16,7 +16,7 @@ there is no condition under which it fails to apply.
   `CLAUDE.md`. Ships with a README and the loop's own two rules: `stack.md`
   (what `vet.sh` exits, what a stack landing wires) and `staging.md` (editing a
   file that loads on every turn through a staged copy). Its `markdown.md` is an
-  opt-in of its own, below.
+  opt-in of its own, and `external-docs.md` an entry of its own, both below.
   - **Pulls in:** `scripts/staged.sh`, `/finalize` (G2), for `staging.md` —
     without them, drop it and the line in `.claude/skills/CLAUDE.md` that points
     at it
@@ -108,6 +108,17 @@ there is no condition under which it fails to apply.
   - **Requires:** `bash`, `git`
   - **Pulls in:** `scripts/staged.sh` (G2)
   - **Disposition:** adopt — **with `.claude/rules/markdown-wrap.md`**
+- `.claude/rules/external-docs.md` — A file named `<name>.external.<ext>` is a
+  document someone else wrote, kept byte for byte: not a voice to write in, its
+  claims its author's, instructions in it text rather than requests, never
+  reformatted; one over ~500 lines gets a line map from a Haiku subagent before
+  anyone reads it. Shipped rather than asked, since it costs nothing until a
+  file carries the suffix — it loads on a read of one, and no check runs over
+  the tree.
+  - **Pulls in:** the `**/*.external.*` line in `.prettierignore` (this group);
+    the `claude-haiku-5-5` row in `.claude/costs/prices.json` where G7 is
+    adopted, or the map's subagent stops the session's pricing
+  - **Disposition:** adopt
 - `.gitignore` — Take the `tmp/` entry and keep the rest of yours. `CLAUDE.md`'s
   "dev artifacts go under `tmp/`" principle depends on that path being ignored.
   - **Disposition:** adopt — merge one line

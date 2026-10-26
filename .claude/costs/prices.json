@@ -91,6 +91,14 @@
       "cache_write_1h": 2.0,
       "cache_read": 0.1
     },
+    "claude-haiku-5-5/standard": {
+      "input": 0.1,
+      "output": 0.5,
+      "cache_write_5m": 0.125,
+      "cache_write_1h": 0.2,
+      "cache_read": 0.01,
+      "confidence": "These are the rates for prompts up to 100K tokens. Beyond that the model bills $0.50 input and $2.50 output, which a per-pair table cannot express, so a longer prompt is priced short."
+    },
     "claude-fable-5/standard": {
       "input": 10.0,
       "output": 50.0,
