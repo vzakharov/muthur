@@ -127,14 +127,15 @@ one-word edit, and a welded sentence cannot lose one point when its condition
 stops holding without rewriting the other. Whatever reads the watermark accepts
 both shapes.
 
-**An array is written, never cut out of a string.** Write it from scratch with
-the old text in view, so it says what the old text said in as many elements as
-that has thoughts, each standing on its own. A cut at sentence boundaries, by
-script or by hand, is wrong in both directions — welded points stay welded, one
-thought lands in two elements — and leaves fragments like
-`"verbatim but for two things."`. A sweep that moves a file to arrays rewrites
-the whole file that way, with the old one in mind, rather than editing it value
-by value.
+**An array is written, never cut out of a string.** The file's prose, taken
+together, says how this repo differs from its source, so a sweep moving it to
+arrays is that task and nothing else: tell how this repo differs, the old file
+supplying what, and write it from scratch as a coherent account, the way any
+document in the repo is written, rather than editing the old one value by value.
+Each element then holds one thought that stands on its own. A cut at sentence
+boundaries, by script or by hand, is wrong in both directions — welded points
+stay welded, one thought lands in two elements — and leaves fragments like
+`"verbatim but for two things."`.
 
 A repo with two sources would make **`repo`** an array. Nothing here precludes
 that and nothing here builds it — and it is a separate question from `lineage`,
