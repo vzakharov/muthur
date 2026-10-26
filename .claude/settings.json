@@ -1,8 +1,8 @@
 {
   "permissions": {
     "allow": [
-      "Bash(scripts/squash-comment.sh *)",
-      "Bash(./scripts/squash-comment.sh *)"
+      "Bash(scripts/pr-comment.sh *)",
+      "Bash(./scripts/pr-comment.sh *)"
     ]
   },
   "hooks": {
