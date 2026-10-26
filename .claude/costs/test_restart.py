@@ -13,6 +13,7 @@ import json
 import tempfile
 import time
 import unittest
+from dataclasses import replace
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, Optional
@@ -29,6 +30,7 @@ from lib.restart import (
     read_history,
     recache,
     reorientation_of,
+    fresh_break_even,
     fresh_saving_over,
     saving_over,
 )
@@ -120,6 +122,13 @@ class TheCostModel(unittest.TestCase):
         self.assertEqual(f"{saving.up_front:.2f}", "0.57")
         # $0.50 of re-cache saved up front, plus 77k less on each of 37 requests.
         self.assertEqual(f"{saving.usd:.2f}", "1.07")
+
+    def test_a_dearer_fresh_session_breaks_even_where_its_saving_reaches_zero(self) -> None:
+        dearer = replace(worked(174_000), reorientation=Reorientation(97_000, 1.50, "test"))
+        tokens = fresh_break_even(dearer)
+        assert tokens is not None
+        self.assertAlmostEqual(fresh_saving_over(dearer, tokens).usd, 0.0, places=4)
+        self.assertEqual(fresh_break_even(worked(174_000)), 0)
 
     def test_a_recache_reads_the_shared_prefix_and_writes_the_rest(self) -> None:
         self.assertEqual(f"{recache(worked(174_000)):.2f}", "1.07")

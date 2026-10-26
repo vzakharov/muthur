@@ -27,6 +27,13 @@ sys.path.insert(0, str(HERE.parent / "costs"))
 
 from test_restart import HOUR, WORKED_RATE, opening, response, row
 
+# The hook's own text helpers, so a case pins the figures and not the copy.
+sys.path.insert(0, str(HOOK.parent))
+import cold_cache as hook
+
+# What `session()`'s defaults price at, with no fresh session in the ledger.
+DEFAULT_OFFER = hook.priced_offer(1.07, 174_000, 1.17, 0.04, 42_000)
+
 
 def latest(message_id: str = "last", ago: float = 2 * HOUR, context: int = 174_000, **kw: Any) -> Dict[str, Any]:
     return response(message_id, ago=ago, read=context - 1_000, write=1_000, **kw)
@@ -103,17 +110,12 @@ class WhenAPromptIsStopped(HookCase):
 
     def test_a_cache_past_its_ttl_is_stopped_with_the_prices(self) -> None:
         self.session()
-        reason = self.prompt()
-        assert reason is not None
-        for figure in ("2.0 h", "174k", "re-caches them for ~$1.07", "takes ~$1.17 of reading to reorient", "from an estimate", "saves ~$0.14 (~4%) over the next 100k tokens", "if everything the work needs"):
-            self.assertIn(figure, reason)
+        self.assertEqual(self.prompt(), hook.stop_text(DEFAULT_OFFER, 0))
 
     def test_a_five_minute_ttl_expires_in_minutes(self) -> None:
         self.fresh_sessions(60_000, 0.30)
         self.session(ago=600, ttl="5m")
-        reason = self.prompt()
-        assert reason is not None
-        self.assertIn("10 min", reason)
+        self.assertIsNotNone(self.prompt())
 
     def test_the_second_prompt_of_a_cold_spell_passes(self) -> None:
         self.session()
@@ -159,8 +161,7 @@ class WhenAPromptIsStopped(HookCase):
         self.session()
 
         reason = self.prompt("what is this?", scratchpad_dir=scratchpad)
-        assert reason is not None
-        self.assertIn("Its attached images (2) go with ! too.", reason)
+        self.assertEqual(reason, hook.stop_text(DEFAULT_OFFER, 2))
         (images / "2.png").write_bytes(b"overwritten after a restart")
 
         context = json.loads(self.run_hook("UserPromptSubmit", prompt="!"))["hookSpecificOutput"]["additionalContext"]
@@ -171,8 +172,7 @@ class WhenAPromptIsStopped(HookCase):
     def test_a_stop_with_no_images_mentions_none(self) -> None:
         self.session()
         reason = self.prompt("fix it", scratchpad_dir=str(self.root / "nowhere" / "scratchpad"))
-        assert reason is not None
-        self.assertNotIn("image", reason)
+        self.assertEqual(reason, hook.stop_text(DEFAULT_OFFER, 0))
         context = json.loads(self.run_hook("UserPromptSubmit", prompt="!"))["hookSpecificOutput"]["additionalContext"]
         self.assertTrue(context.endswith("verbatim:\n\nfix it"))
 
@@ -210,17 +210,11 @@ class WhenAPromptIsStopped(HookCase):
     def test_a_fresh_session_dearer_up_front_is_offered_once_it_earns_that_back(self) -> None:
         self.fresh_sessions(60_000, 1.19)
         self.session()
-        reason = self.prompt()
-        assert reason is not None
-        self.assertIn("re-caches them for ~$1.07. A new session takes ~$1.19 of reading", reason)
-        self.assertIn("saves ~$0.72", reason)
+        self.assertEqual(self.prompt(), hook.stop_text(hook.priced_offer(1.07, 174_000, 1.19, 0.21, 14_000), 0))
 
     def test_an_unpriced_model_is_stopped_without_dollars(self) -> None:
         self.session(model="claude-x")
-        reason = self.prompt()
-        assert reason is not None
-        self.assertIn("no row in the price table", reason)
-        self.assertNotIn("$", reason)
+        self.assertEqual(self.prompt(), hook.stop_text(hook.unpriced_offer(174_000), 0))
 
     def test_sidechains_and_synthetic_records_are_not_the_last_response(self) -> None:
         self.session()
@@ -249,10 +243,7 @@ class TheResumeFlag(HookCase):
             context_tokens=149_773,
             estimated_cache_write_usd=1.1982,
         )
-        reason = self.prompt()
-        assert reason is not None
-        self.assertIn("6.4 h", reason)
-        self.assertIn("150k", reason)
+        self.assertEqual(self.prompt(), hook.stop_text(hook.priced_offer(0.88, 149_773, 0.30, 0.39, 0), 0))
 
     def test_the_flag_speaks_for_an_unpriced_model(self) -> None:
         self.session(ago=600, model="claude-x")
@@ -262,9 +253,7 @@ class TheResumeFlag(HookCase):
             context_tokens=149_773,
             estimated_cache_write_usd=1.1982,
         )
-        reason = self.prompt()
-        assert reason is not None
-        self.assertIn("Claude Code estimates re-caching at $1.20", reason)
+        self.assertEqual(self.prompt(), hook.stop_text(hook.estimated_offer(1.1982, 149_773), 0))
 
     def test_any_other_start_clears_it(self) -> None:
         self.session(ago=600)

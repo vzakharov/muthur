@@ -115,6 +115,17 @@ def fresh_saving_over(s: Session, slice_tokens: int) -> Saving:
     return _switch_over(s, slice_tokens, recache(s), s.reorientation.cost_usd)
 
 
+def fresh_break_even(s: Session) -> Optional[int]:
+    """The tokens of work after which a fresh session's smaller context has paid
+    back what its reorientation costs over the re-cache: `fresh_saving_over`
+    solved for a zero saving. 0 when it costs less, None when it never does."""
+    extra = s.reorientation.cost_usd - recache(s)
+    if extra <= 0:
+        return 0
+    per_token = s.requests_per_token * usd(s.context - s.reorientation.context, s.rates.cache_read)
+    return round(extra / per_token) if per_token > 0 else None
+
+
 def verdict(saving: Saving) -> str:
     """What the switch does against carrying on, as both hooks' notices say it."""
     if abs(saving.usd) < 0.01:

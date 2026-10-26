@@ -29,11 +29,11 @@ from lib.restart import (
     Session,
     context_of,
     epoch,
+    fresh_break_even,
     fresh_saving_over,
     read_history,
     recache,
     session_of,
-    verdict,
 )
 
 PRICES = ROOT / ".claude" / "costs" / "prices.json"
@@ -119,7 +119,7 @@ def keep_images(event: Dict[str, Any], state: State, since: float) -> List[str]:
 def on_session_start(event: Dict[str, Any], state: State) -> None:
     if event.get("source") in ("resume", "fork") and event.get("prompt_cache_likely_expired") is True:
         state.dir.mkdir(parents=True, exist_ok=True)
-        fields = ("seconds_since_last_response", "context_tokens", "estimated_cache_write_usd")
+        fields = ("context_tokens", "estimated_cache_write_usd")
         state.flag.write_text(json.dumps({**{k: event.get(k) for k in fields}, "written_at": time.time()}))
     else:
         state.flag.unlink(missing_ok=True)
@@ -136,36 +136,61 @@ def read_flag(state: State, last_at: Optional[float]) -> Optional[Dict[str, Any]
     return data
 
 
-def span(seconds: float) -> str:
-    return f"{seconds / 3600:.1f} h" if seconds >= 5400 else f"{seconds / 60:.0f} min"
-
-
 def kilo(tokens: float) -> str:
     return f"{tokens / 1000:.0f}k"
 
 
-def reason(idle: float, context: int, priced: Optional[Session], claude_code_usd: Optional[float], images: int) -> str:
-    lines = [f"Prompt cache expired: {span(idle)} since the last response, {kilo(context)} tokens to re-cache."]
+# --- The stop's text, one helper per figure set, which the tests build on -----
+
+
+def priced_offer(recache_usd: float, context: int, reorient_usd: float, share: float, break_even: int) -> str:
+    # A reorientation dearer than the re-cache earns the difference back per
+    # request, so it is told by when, lest the two figures read as a contradiction.
+    gain = (
+        f"but breaks even after the next {kilo(break_even)} tokens of work"
+        if break_even > 0
+        else f"and saves ~{share:.0%} over the next {SLICE // 1000}k tokens of work"
+    )
+    return (
+        f"Continuing costs ${recache_usd:.2f} ({kilo(context)} tokens) to re-cache, reorienting in a new"
+        f" session costs ~${reorient_usd:.2f}, {gain}."
+    )
+
+
+def estimated_offer(claude_code_usd: float, context: int) -> str:
+    return (
+        f"Continuing costs ~${claude_code_usd:.2f} ({kilo(context)} tokens) to re-cache by Claude Code's"
+        " estimate; this model has no row in the price table to price a new session."
+    )
+
+
+def unpriced_offer(context: int) -> str:
+    return f"Continuing re-caches {kilo(context)} tokens; this model has no row in the price table to price either way."
+
+
+def stop_text(offer: str, images: int) -> str:
+    lines = [
+        "🪫 PROMPT CACHE EXPIRED",
+        offer,
+        f'Consider starting a new session, or send any message to continue here. A bare "{RESEND}" will do.',
+    ]
+    if images:
+        lines.append(f'Its attached images ({images}) go with "{RESEND}" too.')
+    return " ".join(lines)
+
+
+def reason(context: int, priced: Optional[Session], claude_code_usd: Optional[float], images: int) -> str:
     if priced is not None:
         saving = fresh_saving_over(priced, SLICE)
-        lines.append(f"Carrying on re-caches them for ~${recache(priced):.2f}.")
-        lines.append(
-            f"A new session takes ~${saving.up_front:.2f} of reading to reorient (priced from"
-            f" {priced.reorientation.source}) and ends up carrying less on every request after, so it"
-            f" {verdict(saving)} over the next {SLICE // 1000}k tokens of work — if everything the work"
-            " needs is already on the branch and nothing decided since lives only in this conversation."
-        )
+        # Blocked only when the saving over `SLICE` is positive, so it breaks even.
+        break_even = fresh_break_even(priced)
+        assert break_even is not None
+        offer = priced_offer(recache(priced), context, saving.up_front, saving.share, break_even)
     elif claude_code_usd is not None:
-        lines.append(f"Claude Code estimates re-caching at ${claude_code_usd:.2f}; this model has no row in the price table to price a new session.")
+        offer = estimated_offer(claude_code_usd, context)
     else:
-        lines.append("This model has no row in the price table, so the options are not priced.")
-    lines.append(
-        f"This message was not sent: send {RESEND} alone to carry on with it as written, send anything"
-        " else to carry on with that instead, or start a new session on the branch."
-    )
-    if images:
-        lines.append(f"Its attached images ({images}) go with {RESEND} too.")
-    return " ".join(lines)
+        offer = unpriced_offer(context)
+    return stop_text(offer, images)
 
 
 def price(transcript: Path, history: History, context: int, project: Path) -> Optional[Session]:
@@ -227,10 +252,9 @@ def on_prompt(event: Dict[str, Any], state: State, min_usd: float, margin: float
 
     now = time.time()
     if flag is not None:
-        idle = flag["seconds_since_last_response"] + now - flag["written_at"]
         context = flag["context_tokens"]
     elif last_at is not None and now - last_at > history.ttl:
-        idle, context = now - last_at, context_of(history.last)
+        context = context_of(history.last)
     else:
         return Verdict()
 
@@ -243,7 +267,7 @@ def on_prompt(event: Dict[str, Any], state: State, min_usd: float, margin: float
     state.dir.mkdir(parents=True, exist_ok=True)
     images = keep_images(event, state, since=last_at or 0.0)
     state.blocked.write_text(json.dumps({"after": history.last.message_id, "prompt": prompt, "images": images}))
-    return Verdict(block=reason(idle, context, priced, claude_code_usd, len(images)))
+    return Verdict(block=reason(context, priced, claude_code_usd, len(images)))
 
 
 def main() -> None:

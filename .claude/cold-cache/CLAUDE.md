@@ -9,7 +9,7 @@ model.
 
 - **Two sources of "cold".** `SessionStart` on a resume carries
   `prompt_cache_likely_expired`, `context_tokens` and
-  `seconds_since_last_response`; the hook keeps them in
+  `estimated_cache_write_usd`; the hook keeps the last two in
   `tmp/cold-cache/<session_id>.json` until a response lands after them. But the
   cache also expires while the process lives on and no `SessionStart` fires, so
   the transcript's last main-chain response time, against the TTL the session's
@@ -26,10 +26,9 @@ model.
   session skips the re-cache, so the guard prices it as the context budget
   prices a relay, by what it saves over the next 100k tokens of work: the
   reorientation against the re-cache up front, the smaller context on every
-  request after. It is offered only for work that is already all on the branch,
-  a call the operator makes. The hook cannot see a decision made in chat after
-  the last step that wrote one down — a plan, a PR body, a commit — so the offer
-  names that condition too. `.claude/context-budget/CLAUDE.md` carries where a
+  request after. A reorientation dearer than the re-cache is told by the work
+  after which it breaks even instead, since the two dollar figures alone read as
+  a contradiction. `.claude/context-budget/CLAUDE.md` carries where a
   reorientation's price comes from; for a fresh successor the sources are the
   fresh sessions', not the relayed ones'.
 - **Once per cold spell.** A block writes the last response's id and the stopped
@@ -53,7 +52,7 @@ model.
   whose fresh session saves nothing over the next 100k, or less than
   `MUTHUR_COLD_CACHE_MARGIN` (default `0.10`) of the re-cache, where the stop
   has no real choice to offer. An unpriced model is still stopped, with the
-  times and token counts and no dollars.
+  token count and, where a resume carried one, Claude Code's own estimate.
 
 `MUTHUR_COLD_CACHE_GUARD=off` in `.claude/settings.local.json`'s `env` disables
 both halves.
