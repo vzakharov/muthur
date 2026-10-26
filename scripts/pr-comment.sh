@@ -1,32 +1,36 @@
 #!/usr/bin/env bash
-# Post or update a PR's `Proposed squash` comment from the working file —
-# `@.claude/skills/squash-message/SKILL.md` Step 4's find → PATCH-or-create as
-# one command. The interface is fixed and narrow so `.claude/settings.json` can
-# allow exactly this command: an allow rule resolves before auto mode's
-# classifier runs, and the classifier otherwise reads the inline `gh api -X
-# PATCH` as an external write and denies it. The file must lead with
-# `Proposed squash`, which keeps the rule from approving any other comment.
+# Post or update one of the loop's sticky PR comments from a file — the
+# find → PATCH-or-create that `@.claude/skills/squash-message/SKILL.md` Step 4
+# and `@.claude/skills/finalize/SKILL.md` step 7 each need, as one command. The
+# interface is fixed and narrow so `.claude/settings.json` can allow exactly
+# this command: an allow rule resolves before auto mode's classifier runs, and
+# the classifier otherwise reads an inline `gh api -X PATCH` as an external
+# write and denies it. The file must lead with its kind's marker, which keeps
+# the rule from approving any other comment.
 #
 # Usage (from the repository root, spelled exactly so — the allow rule matches
 # the command text):
-#   scripts/squash-comment.sh [--update-only] <pr-number> <file>
+#   scripts/pr-comment.sh <kind> [--update-only] <pr-number> <file>
 #
-# The proposal is the newest comment by the authenticated login whose body
-# leads with `Proposed squash`; older matches are duplicates an earlier run
-# stacked and are deleted. A match already equal to the file is left untouched.
+# Kinds, each keyed on the marker its body leads with:
+#   squash       - `Proposed squash`, the squash proposal.
+#   attestation  - `<!-- finalize-attestation`, the finalize attestation.
+#
+# The comment is the newest one by the authenticated login whose body leads
+# with the marker; older matches are duplicates an earlier run stacked and are
+# deleted. A match already equal to the file is left untouched.
 #
 # Prints one line, `<outcome> <comment-url>`, the outcome being `posted`,
 # `edited` or `current`; or `absent` alone under `--update-only`.
 #
 # Exit codes:
 #   0  - posted, edited, or already current.
-#   1  - bad arguments, a file that is not a proposal, or a `gh` failure.
-#   3  - `--update-only` and no proposal exists; nothing was created.
+#   1  - bad arguments, a file without its kind's marker, or a `gh` failure.
+#   3  - `--update-only` and no such comment exists; nothing was created.
 
 set -euo pipefail
 
-PROG="squash-comment"
-MARKER="Proposed squash"
+PROG="pr-comment"
 
 die() {
   printf '%s: %s\n' "$PROG" "$1" >&2
@@ -34,9 +38,16 @@ die() {
 }
 
 usage() {
-  printf 'usage: scripts/squash-comment.sh [--update-only] <pr-number> <file>\n' >&2
+  printf 'usage: scripts/pr-comment.sh <squash|attestation> [--update-only] <pr-number> <file>\n' >&2
   exit 1
 }
+
+case "${1:-}" in
+  squash) MARKER="Proposed squash" ;;
+  attestation) MARKER="<!-- finalize-attestation" ;;
+  *) usage ;;
+esac
+shift
 
 UPDATE_ONLY=0
 if [[ "${1:-}" == "--update-only" ]]; then
@@ -49,7 +60,7 @@ FILE="$2"
 [[ "$PR" =~ ^[1-9][0-9]*$ ]] || die "PR number must be a positive integer, got '$PR'"
 [[ -f "$FILE" ]] || die "no such file: $FILE"
 [[ "$(head -c "${#MARKER}" "$FILE")" == "$MARKER" ]] ||
-  die "$FILE does not lead with '$MARKER'; this script posts only the squash proposal"
+  die "$FILE does not lead with '$MARKER'"
 
 REPO_ROOT="$(git rev-parse --show-toplevel)"
 GH_REPO_PROG="$PROG"

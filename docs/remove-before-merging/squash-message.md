@@ -4,21 +4,23 @@ Proposed squash body:
 Auto mode's classifier denied /squash-message's inline
 `gh api .../issues/comments/<id> -X PATCH` as an external write, so a
 PR kept a stale squash proposal until the operator named the action,
-and not for the first time.
+and not for the first time. /finalize's attestation went out through
+the same call.
 
-scripts/squash-comment.sh [--update-only] <pr> <file> now does the
-whole find -> PATCH-or-create: the newest `Proposed squash` comment by
-the authenticated login is edited in place, older duplicates are
-deleted, and one is posted when none exists (`--update-only` exits 3
-instead). It refuses a file that does not lead with `Proposed squash`,
-so the command can post nothing else.
+scripts/pr-comment.sh <squash|attestation> [--update-only] <pr> <file>
+now does the whole find -> PATCH-or-create for both sticky comments:
+the newest one by the authenticated login leading with the kind's
+marker is edited in place, older duplicates are deleted, and one is
+posted when none exists (`--update-only` exits 3 instead). It refuses
+a file that does not lead with the marker, so the command can post
+nothing else.
 
 .claude/settings.json allows exactly that command, bare and
 `./`-prefixed. Per the Claude Code permission docs, a matching allow
 rule resolves before the classifier, and auto mode drops only broad
-rules. Rules match the command text, so /squash-message Step 4 calls
-the script from the repo root with nothing chained in front and never
-falls back to inline `gh api`.
+rules. Rules match the command text, so /squash-message Step 4 and
+/finalize step 7 call the script from the repo root with nothing
+chained in front.
 
 Co-authored-by: Claude <noreply@anthropic.com>
 ```

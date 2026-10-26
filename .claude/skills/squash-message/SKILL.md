@@ -295,7 +295,7 @@ yourself.
    and spelled exactly so, with no `cd … &&` in front:
 
    ```bash
-   scripts/squash-comment.sh [--update-only] <n> <working file>
+   scripts/pr-comment.sh squash [--update-only] <n> <working file>
    ```
 
    `<n>` is the PR number (`gh pr view --json number --jq .number`). The script
