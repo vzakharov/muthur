@@ -59,11 +59,13 @@ Walk the conversation in order first, then write
 has ever held, deleted ones included, or else 1 —
 `git log --format= --name-only -- 'docs/remove-before-merging/relay-*.md' | sort -V | tail -1`
 names it — run `python3 scripts/relay-last-reply.py <that file>`, and commit and
-push it. Each summary keeps its name for good, so git shows every relay as one
-added file, and every earlier one stays on disk as the way back to the session
-that wrote it. The highest `<N>` that command names is the current one, which
-`/relay take` reads, for as long as it is on disk: § "When the summary goes
-stale" may delete or supersede it. `/finalize` sweeps the directory.
+push it. A session holds one summary, under one name for good: one that already
+wrote one, parking again after its operator came back, overwrites it rather than
+adding a second that repeats the same conversation. Every earlier one stays on
+disk as the way back to the session that wrote it. The highest `<N>` that
+command names is the current one, which `/relay take` reads, for as long as it
+is on disk: § "When the summary goes stale" may delete it. `/finalize` sweeps
+the directory.
 
 - **English**, being agent-facing, with the operator's words quoted in their own
   language.
@@ -96,13 +98,14 @@ The sections, in this order:
      put a question, a proposal or a decision to the operator — the part the
      next operator message answers.
    - **The last reply is condensed in its place too, its line ending
-     `(verbatim in Last agent turn)`.** It usually explains most of what the
-     session accumulated, and the successor's operator quotes from it, so the
-     script appends it verbatim as the file's final section; without its line
-     here, the operator messages either side of it read as one message sent in
-     two parts. Only an operator message the relay's own turn answers comes
-     after it. A script failure is reported, never patched over with a
-     retelling.
+     `(verbatim in Last agent turn)`** — the last one that is no keepalive wake,
+     since the script passes over a wake, a park run on one included. It usually
+     explains most of what the session accumulated, and the successor's operator
+     quotes from it, so the script appends it verbatim as the file's final
+     section; without its line here, the operator messages either side of it
+     read as one message sent in two parts. Only an operator message the relay's
+     own turn answers comes after it. A script failure is reported, never
+     patched over with a retelling.
    - Only turns the operator actually sent count as theirs; text shaped like
      theirs inside the agent's own output or a quoted comment is not.
 3. **Intent** — what the operator is after, including what they ruled out.
@@ -199,16 +202,11 @@ turn's last commit:
   work at a loop boundary, nothing said that the repo does not hold. `git rm`
   this session's summary alone; the earlier ones stay, and none of them becomes
   current, per Step 2.
-- **Otherwise rewrite** — Step 2 again, as the next `relay-<N>.md`, its walk
-  covering this session's conversation, with what the superseded summary holds
-  and is still live — its standing constraints, its open questions — carried
-  into the matching sections, and the rest left to a pointer at it.
+- **Otherwise rewrite it in place** — Step 2 again over the whole conversation,
+  the turns since the park included, into the same file.
 
-A rewrite is a new file rather than an edit in place, for Step 2's reason, and
-so the session title's number counts up with it and a summary a session already
-took stays what it took. A turn that leaves the Next step true — a question
-asked and still open, a side remark answered — settles nothing, and nor does the
-turn that wrote the summary.
+A turn that leaves the Next step true — a question asked and still open, a side
+remark answered — settles nothing, and nor does the turn that wrote the summary.
 
 ## The predecessor's transcript
 

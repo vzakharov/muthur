@@ -9,10 +9,11 @@ would then act on it.
 `/relay` now has a parked session its operator comes back to settle
 its summary at the end of any turn that makes the Next step false.
 When nothing is pending and the keepalive's "the branch alone
-suffices" test holds, it deletes that summary; otherwise the next
-relay-<N>.md supersedes it. Superseding rather than editing in place
-keeps each summary's name for good, and earlier summaries always stay,
-each the way back to the session that wrote it.
+suffices" test holds, it deletes that summary; otherwise it rewrites
+it in place. A session holds one summary under one name, so a second
+park overwrites rather than adding a file that repeats the same
+conversation, and earlier sessions' summaries always stay, each the
+way back to the session that wrote it.
 
 The current summary is now the highest number the branch ever held,
 read off git history, and only while it is on disk: a deleted one
