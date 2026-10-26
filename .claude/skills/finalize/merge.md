@@ -22,14 +22,14 @@ question: was the flag written after the operator could have looked?
 **An operator's ask to merge a branch not yet finalized is
 `/finalize and merge`**, whatever words carry it — "merge", "мерджи", "land it".
 Finalized means the PR is ready for review and its
-`<!-- finalize-attestation -->` comment names the current head, give or take
-what step 7's last rule lets ride past it; anything short of that is a diff no
-run has verified, so merging it as asked would skip every gate this skill exists
-for. **Open the reply by saying you read the ask that way** — the operator asked
-for a click and is getting land prep, which can stand the merge down at step 8 —
-then run the skill with the flag. The paragraph above holds here too: an ask
-that also requests changes was written before the diff it would merge, so land
-prep runs and the merge is held.
+`<!-- finalize-attestation <sha> -->` comment names the current head, give or
+take what step 7's last rule lets ride past it; anything short of that is a diff
+no run has verified, so merging it as asked would skip every gate this skill
+exists for. **Open the reply by saying you read the ask that way** — the
+operator asked for a click and is getting land prep, which can stand the merge
+down at step 8 — then run the skill with the flag. The paragraph above holds
+here too: an ask that also requests changes was written before the diff it would
+merge, so land prep runs and the merge is held.
 
 ## Step 8 — the gate
 

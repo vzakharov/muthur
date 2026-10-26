@@ -29,6 +29,7 @@ cd "$(dirname "$0")/.." || exit 1
 
 MODE="${1:-}"
 WATERMARK=".claude/skills/update-muthur/watermark.json"
+RECORD=".claude/skills/update-muthur/divergence"
 NUDGE_CLONE="tmp/muthur-source"
 STALE_AFTER=$((24 * 3600))
 NUDGE_CAP=40
@@ -63,7 +64,7 @@ trunk_ref() {
   echo "refs/remotes/origin/$branch"
 }
 
-# Sets SOURCE_REPO, LAST_SHA and ADOPTED from the trunk's watermark. Returns 1 when there
+# Sets SOURCE_REPO and LAST_SHA from the trunk's watermark. Returns 1 when there
 # is nothing to sync against: no watermark (the sync path was declined) or a
 # placeholder SHA (an unhydrated stub, which the template itself ships).
 read_trunk_watermark() {
@@ -71,7 +72,6 @@ read_trunk_watermark() {
   json="$(git show "$TRUNK:$WATERMARK" 2>/dev/null)" || return 1
   SOURCE_REPO="$(jq -r '.repo // empty' <<<"$json")" || die "$TRUNK:$WATERMARK is not valid JSON."
   LAST_SHA="$(jq -r '.lastSyncedSha // empty' <<<"$json")"
-  ADOPTED="$(jq -r '.adopted[]? | if type == "object" then keys[] else . end' <<<"$json")"
   [[ "$LAST_SHA" =~ ^[0-9a-f]{40}$ && -n "$SOURCE_REPO" ]]
 }
 
@@ -167,13 +167,13 @@ session_url() {
   fi
 }
 
-# `here` is the working tree, so a file taken without being listed in `adopted`
-# still shows. The watermark and the source's cost rows are never synced.
+# `here` is the working tree, which is what says a path was taken. The watermark,
+# the divergence record and the source's cost rows are never synced.
 mark_files() {
   local path mark
   while IFS= read -r path; do
     case "$path" in
-    "$WATERMARK" | .claude/costs/sessions/*) continue ;;
+    "$WATERMARK" | "$RECORD.md" | "$RECORD"/* | .claude/costs/sessions/*) continue ;;
     esac
     mark="not here"
     [ -e "$path" ] && mark="here"
@@ -268,9 +268,6 @@ $(mark_files <<<"$files")"
   else
     echo "$data"
   fi
-  echo
-  echo "You adopted the following (the watermark's \`adopted\`):"
-  sed 's/^/  /' <<<"$ADOPTED"
   offer_rules
 }
 

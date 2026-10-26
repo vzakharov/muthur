@@ -2,7 +2,5 @@
   "repo": "vzakharov/muthur",
   "lastSyncedSha": "<the source's HEAD at the moment you cloned it>",
   "lastSyncedAt": "<YYYY-MM-DD>",
-  "lineage": [],
-  "adopted": ["<the paths you took — see the skill's § The watermark>"],
-  "declined": {}
+  "lineage": []
 }

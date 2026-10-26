@@ -3,16 +3,16 @@ description: "STUB — not yet hydrated for this project. Pull the agent infrast
 ---
 
 > ⚠️ **STUB.** This skill has no watermark to run on. Before it can be invoked,
-> fill in `.claude/skills/update-muthur/watermark.json`: `lastSyncedSha` (the
-> source's HEAD when you cloned it), `lastSyncedAt`, and the real
-> `adopted`/`declined` sets for your repo. `repo` already names the template,
-> and needs changing only if you adopted from a repo that itself adopted from
-> it. Delete this banner once you have, and drop `STUB` from the description
-> above. If you took a one-time snapshot and do not intend to re-sync, delete
-> the skill instead.
+> fill in `.claude/skills/update-muthur/watermark.json` — `lastSyncedSha` (the
+> source's HEAD when you cloned it), `lastSyncedAt`, `lineage` — and write
+> `divergence.md` beside it for whatever your repo took differently or declined.
+> `repo` already names the template, and needs changing only if you adopted from
+> a repo that itself adopted from it. Delete this banner once you have, and drop
+> `STUB` from the description above. If you took a one-time snapshot and do not
+> intend to re-sync, delete the skill instead.
 >
-> **Hydration here is a handful of JSON fields, not a procedure.** Unlike the
-> other stubs, every step below this banner is usable exactly as written.
+> **Hydration here is a few JSON fields and a record, not a procedure.** Unlike
+> the other stubs, every step below this banner is usable exactly as written.
 
 ## What this skill is for
 
@@ -39,7 +39,8 @@ fields, not the command.
 
 ## The watermark
 
-`.claude/skills/update-muthur/watermark.json` is the state this skill runs on:
+`.claude/skills/update-muthur/watermark.json` is where the sync stands, and
+nothing else:
 
 ```json
 {
@@ -49,23 +50,13 @@ fields, not the command.
   "lineage": [
     { "repo": "<owner>/<root>",   "atSha": "<root HEAD when the parent was born>" },
     { "repo": "<owner>/<parent>", "atSha": "<parent HEAD when this repo was born>" }
-  ],
-  "adopted": [
-    "CLAUDE.md",
-    "README.md",
-    ".claude/",
-    "scripts/",
-    { "scripts/run-parallel.py": "taken as a POSIX sh port, scripts/run-parallel.sh" }
-  ],
-  "declined": { ".claude/skills/take-issue/": "we track work in Linear, not GitHub issues" }
+  ]
 }
 ```
 
-- **`adopted`** — the paths you took, at whatever granularity is true:
-  directories or individual files, up to the degenerate everything-case. It is
-  what turns a wall of source commits into a handful of candidates.
-- **`declined`** — path → why-not. This is what keeps re-sync quiet: without it,
-  every sync re-offers every skill the repo already refused.
+What this repo took differently or declined is § "The divergence record"'s,
+below.
+
 - **`lineage`** — optional provenance: the whole ancestry, **root first**, so
   the repo actually synced from leads and each later entry is one hop further
   from it. Each entry names an ancestor and its HEAD **at the moment the next
@@ -91,25 +82,6 @@ naming something other than `repo`, is valid rather than malformed.
 the triage at every link, which is exactly the cost `/spinoff`'s
 always-point-at-the-root rule declines to pay.
 
-**An `adopted` entry may be a bare path or a single-key `{path: note}` object.**
-Both are adopted and both filter the log identically — read the key when an
-entry is an object. The note records _how_ the path lives here when that is not
-verbatim: ported to another language, split across files, generalized past the
-source's interface. It is not a soft decline. A path taken with a note still
-surfaces every upstream commit that touches it, which is the point — the local
-version is a re-expression, so upstream's later changes to the original are
-worth reading for the idea even though the file itself never lands. Expect
-`translate` rather than `take` on those commits, and treat the note as the
-standing statement of what the local re-expression already does differently.
-
-**A declined path is not declined forever.** Most reasons are conditions that
-can flip — _no CI yet_, _work isn't tracked as issues yet_ — which is why the
-map stores prose instead of a bare list, and why reasons are written in the
-present tense. **Re-read them on every sync** and re-offer anything whose
-condition has stopped holding: a repo that declined the issue skills because it
-used Linear, and has since moved to GitHub issues, should be asked again. A
-reason that says `"never — …"` is the one that does not need re-reading.
-
 A repo with two sources would make **`repo`** an array. Nothing here precludes
 that and nothing here builds it — and it is a separate question from `lineage`,
 which is provenance nothing syncs from.
@@ -125,20 +97,60 @@ commit on every future run.
 abandoned midway, an un-bumped watermark costs a re-triage; a bumped one that
 merged without its port silently skips commits forever.
 
+## The divergence record
+
+`.claude/skills/update-muthur/divergence.md` is this repo's account of how it
+differs from the source. **A source path that exists here and that the record
+never mentions was taken as is** — the tree says so. Everything else is the
+record's: paths re-expressed here (ported to another language, split across
+files, generalized past the source's interface), paths and ideas declined, and
+differences that cut across many paths — "this repo's `AGENTS.md` is upstream's
+`CLAUDE.md`" — stated once rather than per path.
+
+**The form is free.** Order, headings and grouping are whatever reads best for
+this repo, which its own agent knows better than this file does. Three things
+are not free, because the procedure below depends on them:
+
+1. **Every path the record discusses is named literally**, in backticks, from
+   the repo root. Step 3 answers "does the record say anything about `P`?" with
+   `grep -F`, and a path named only by description reads as unmentioned — taken
+   as is — so its next upstream change gets ported over the local version.
+2. **A decline reads as a decline**, its reason a condition in the present tense
+   — _work is tracked in Linear_, _no CI yet_ — because most conditions can
+   flip, and **every sync re-reads them** to re-offer a path whose condition
+   stopped holding. A repo that declined the issue skills for Linear and has
+   since moved to GitHub issues is asked again. A permanent refusal says
+   "never", and is the one that needs no re-reading.
+3. **It states the current difference, never the sync that produced it.** A sync
+   that changes a difference rewrites the passage saying it (Step 7); which
+   upstream commit prompted the change, and when, is the sync PR's to record.
+   Appending a paragraph per sync is what grows the record without bound.
+
+**A record may split into files under `divergence/` beside it**; the record is
+then `divergence.md` and all of them, and every step below that reads or greps
+it covers both.
+
+A re-expressed path still surfaces every upstream commit that touches it, which
+is the point — upstream's later changes to the original are worth reading for
+the idea even though the file itself never lands. Expect `translate` rather than
+`take` on those commits.
+
 ## Three invariants
 
 Each holds at every link in the chain, so they live here rather than in the
 watermark.
 
-### Never sync the watermark file itself
+### Never sync the watermark or the divergence record
 
-`watermark.json` lives inside `.claude/`, which is inside `adopted` — so a naive
-sync overwrites this repo's watermark with the source's. That silently repoints
-the sync at a repo this one may not be able to clone and resets `lastSyncedSha`
-to a foreign history. **The failure surfaces one sync later, as an unresolvable
-SHA**, by which point the cause is several commits back.
+Both live inside `.claude/`, which a sync covers — so a naive one overwrites
+this repo's watermark with the source's. That silently repoints the sync at a
+repo this one may not be able to clone and resets `lastSyncedSha` to a foreign
+history. **The failure surfaces one sync later, as an unresolvable SHA**, by
+which point the cause is several commits back. A source that adopted from
+somewhere itself carries a record too, describing _its_ differences from _its_
+source, and porting it would replace this repo's account with a stranger's.
 
-Exclude it unconditionally, whatever `adopted` says.
+Exclude both unconditionally.
 
 ### Never sync the source's cost rows
 
@@ -165,11 +177,15 @@ it. Bare, the sync claims its own lock.
 
 ## Procedure
 
-### Step 1 — Read the watermark, and claim the sync
+### Step 1 — Read the watermark and the record, and claim the sync
 
 Read `watermark.json`. Stop and report if it is missing, or if `lastSyncedSha`
 is still a placeholder — there is no baseline to diff against, and guessing one
 would either re-port work already here or skip work that isn't.
+
+Read `divergence.md` whole: its cross-cutting differences bear on candidates
+that never name a path it mentions, and its declines are re-read on every sync.
+No record means nothing here differs from the source.
 
 Then claim the lock with `scripts/muthur-sync.sh claim`, so no parallel session
 runs a second sync of the same range — unless invoked with `claimed`. A claim
@@ -198,25 +214,26 @@ every command that needs to be inside it.
 ### Step 3 — Build the candidate set
 
 ```bash
-cd tmp/muthur-source && git log --oneline <lastSyncedSha>..HEAD -- <adopted paths>
+cd tmp/muthur-source && git log --oneline --name-only <lastSyncedSha>..HEAD
 ```
-
-`<adopted paths>` is every entry in `adopted`, taking the single key of any
-entry written as an object.
 
 Record `git rev-parse HEAD` **now**, before triage — that value is a whole
 sync's boundary regardless of how the triage goes.
 
-**The clone is whole; `adopted` filters only this log.** A commit touching
-nothing on the list is never surfaced, which is right while the list is complete
-and silent when it isn't: the moment the source puts agent infrastructure
-somewhere new — a `.github/` workflow, another top-level directory — it stays
-invisible until the list names it. So run the log once unfiltered too
-(`git log --oneline --name-only <lastSyncedSha>..HEAD`, skimmed for unfamiliar
-paths) and widen `adopted` in the same commit that bumps the watermark.
+The log is unfiltered, so a source that puts agent infrastructure somewhere new
+— a `.github/` workflow, another top-level directory — surfaces like anything
+else. Sort each path it names, minus the ones § "Three invariants" excludes, by
+two questions — does it exist here, and does the record mention it
+(`grep -rF '<path>' divergence.md divergence/`, the path and each directory
+above it):
 
-**A path in neither `adopted` nor `declined` is a decision, not noise** — see
-Step 4's `skip (not adopted)` verdict and Step 4a.
+- **Here, unmentioned** — taken as is: a port candidate for Step 4.
+- **Mentioned** — what the record says decides: re-expressed here, or declined
+  for a reason Step 4 re-checks.
+- **Not here, unmentioned** — never decided: Step 4a's question, not noise.
+
+A commit is a candidate when any path it touches is in the first two groups or
+raises the third.
 
 ### Step 3a — The sync is a task
 
@@ -236,16 +253,16 @@ diff" caveat above. Verdicts:
 
 - **take** — applies as-is to this repo's vocabulary.
 - **translate** — the intent applies; the wording, paths or commands do not.
-- **skip (stack-bound)** — touches an adopted path but is about the source's
+- **skip (stack-bound)** — touches a path taken here but is about the source's
   stack — a build script, a migration, a framework config.
 - **skip (already have)** — this repo reached the same end state independently.
-- **skip (not adopted)** — the path is in `declined` **and its recorded reason
-  still holds** — if it doesn't, re-offer the path per Step 4a and move it to
-  `adopted` if taken. Or the path is in neither list, which is Step 4a's other
-  case. Never skip silently on either.
+- **skip (declined)** — the record declines the path **and its reason still
+  holds** — if it doesn't, re-offer the path per Step 4a and, on a yes, rewrite
+  the record's passage to match. Or the path is neither here nor mentioned,
+  which is Step 4a's other case. Never skip silently on either.
 - **skip (diverged locally)** — this repo rewrote the file for its own stack —
-  `scripts/vet.sh`, the watermark, anything the source marks `rewrite`. The
-  source's edit is advice at best; read it for an idea, don't port it.
+  `scripts/vet.sh`, anything the source marks `rewrite`. The source's edit is
+  advice at best; read it for an idea, don't port it.
 
 **A subject marked `[attn adopters]` — or, in older commits, any prose to the
 same effect, such as `ADOPTERS, read body` — addresses this repo whatever its
@@ -263,8 +280,9 @@ first, and say so.
 
 ### Step 4a — New skills get offered, not taken
 
-A commit that adds a skill in neither `adopted` nor `declined` is an open
-question, and the answer belongs in the watermark so it is asked exactly once.
+A commit that adds a skill neither here nor mentioned in the record is an open
+question, and the answer belongs in the tree or the record so it is asked
+exactly once.
 
 Read the new skill's entry in the source's catalog:
 `.claude/skills/update-muthur/catalog.md` and its parts under `catalog/` are the
@@ -274,20 +292,20 @@ construction. The entry is found with
 opt-in path is looked up the same way. Surface the decision **with its criteria
 attached** rather than as a bare "upstream added `/foo`, want it?".
 
-- **Taken** → add the path to `adopted` — as a `{path: note}` entry if it landed
-  as anything other than a verbatim copy — and **re-run the closure check**: a
-  new skill can `@`-reference a sibling this repo declined.
+- **Taken** → the path lands in the tree, which is the record of a verbatim
+  take; anything other than a verbatim copy also gets its difference written
+  into the record. Then **re-run the closure check**: a new skill can
+  `@`-reference a sibling this repo declined.
   `bash scripts/check-skill-catalog.sh` is that check where it was adopted.
-- **Declined** → add the path to `declined` with the reason.
+- **Declined** → the record declines the path, with the reason.
 
 Either way the question does not come back.
 
-**An opt-in entry is offered by its own path, the same way**, even when a
-broader `adopted` entry such as `.claude/` already covers it. The catalog marks
-such an entry `opt-in: ask`, as it does `.claude/costs/`, and a parent directory
-having been taken says nothing about whether the operator wants what it costs.
-Ask with the entry's criteria, and record the answer as an entry of its own,
-under the entry's path, in `adopted` or `declined`.
+**An opt-in entry is offered by its own path, the same way**, even when the
+directory around it was taken. The catalog marks such an entry `opt-in: ask`, as
+it does `.claude/costs/`, and a parent directory having been taken says nothing
+about whether the operator wants what it costs. Ask with the entry's criteria; a
+no is declined in the record under the entry's own path.
 
 ### Step 5 — Apply by intent, not by patch
 
@@ -298,19 +316,21 @@ vocabulary and file layout.
 
 ### Step 6 — Consistency sweep
 
-When a port renames a term, grep the old one across the whole of `adopted` —
-**including frontmatter `description:` lines**. Those are a separate surface
-from skill bodies: they are what the operator scans in the skills list and what
-an invocation matches against, so a stale description mis-advertises a skill
-whose every prose site is correct.
+When a port renames a term, grep the old one across the whole tree, the record
+included — **and frontmatter `description:` lines**. Those are a separate
+surface from skill bodies: they are what the operator scans in the skills list
+and what an invocation matches against, so a stale description mis-advertises a
+skill whose every prose site is correct.
 
 ### Step 7 — Bump the watermark, last
 
-Set `lastSyncedSha` to the sync's **boundary** and `lastSyncedAt` to today,
-along with any `adopted`/`declined` edits from Step 4a, as the final commit of
-the sync. The boundary is the HEAD recorded in Step 3 for a whole sync, and the
-last source commit a slice or bite triaged for a split one; candidates past it
-are the next one's.
+Set `lastSyncedSha` to the sync's **boundary** and `lastSyncedAt` to today, as
+the final commit of the sync, with the record's edits from Steps 4 and 4a in the
+same commit. **Each passage the sync touched is rewritten to the difference as
+it now stands** (rule 3 of § "The divergence record"): a passage whose
+difference the port erased goes. The boundary is the HEAD recorded in Step 3 for
+a whole sync, and the last source commit a slice or bite triaged for a split
+one; candidates past it are the next one's.
 
 **Any commit on the source's first-parent line is a clean boundary.** One inside
 a merged side branch is not: its ancestry leaves out mainline commits the slice
@@ -348,10 +368,10 @@ body's opening sentence and nothing more.
 
 A `SessionStart` hook runs `scripts/muthur-sync.sh nudge`. When the source has
 moved past the trunk's watermark and nobody holds a fresh lock, it prints the
-commit titles, the changed files marked `here` or `not here`, the `adopted`
-keys, and the rules for making the offer. A lock over a day old is printed
-instead, with its holder and session link, for the operator to decide on; only
-their say-so makes `claim --takeover` right.
+commit titles, the changed files marked `here` or `not here`, and the rules for
+making the offer. A lock over a day old is printed instead, with its holder and
+session link, for the operator to decide on; only their say-so makes
+`claim --takeover` right.
 
 **The nudge is an offer, not a sync.** Nothing is cloned, read or claimed before
 the operator says yes, so an offer nobody answers holds nothing. The price is
