@@ -114,9 +114,8 @@ reorientation clause (last offer), and the two open calls from turn 1 (unify the
 ## Last agent turn
 
 The agent's last turn before the relay, verbatim, appended by
-`scripts/relay-last-reply.py`. It includes the turn's interim messages,
-usually unneeded but harmless; the reply proper is usually its last
-paragraphs.
+`scripts/relay-last-reply.py`. It includes the turn's interim messages, usually
+unneeded but harmless; the reply proper is usually its last paragraphs.
 
 ```text
 Вова, X — это цена дороги к контексту, а не его размер. Поэтому новая сессия может заплатить больше и при этом остаться с меньшим контекстом.

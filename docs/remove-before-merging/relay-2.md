@@ -211,9 +211,8 @@ contract moved — or run `finalize`.
 ## Last agent turn
 
 The agent's last turn before the relay, verbatim, appended by
-`scripts/relay-last-reply.py`. It includes the turn's interim messages,
-usually unneeded but harmless; the reply proper is usually its last
-paragraphs.
+`scripts/relay-last-reply.py`. It includes the turn's interim messages, usually
+unneeded but harmless; the reply proper is usually its last paragraphs.
 
 ````text
 Пусть остывает, Вова: убираю keepalive, иначе он не даст кешу протухнуть.
