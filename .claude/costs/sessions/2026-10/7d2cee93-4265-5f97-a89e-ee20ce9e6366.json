@@ -1,0 +1,94 @@
+{
+  "total": {
+    "inputTokens": 50,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 102324,
+    "cacheReadTokens": 3162367,
+    "outputTokens": 25361,
+    "thinkingTokens": 11627,
+    "responses": 25,
+    "costUsd": 1.9584853999999998
+  },
+  "estimate": {
+    "at": "2026-10-26T02:14:41.997Z",
+    "parts": [
+      {
+        "hours": 2.0,
+        "grade": "senior",
+        "role": "architect",
+        "comment": "answering five review threads on a plan means redesigning the overview's concurrency and the hub session's shape, judgement a senior architect makes"
+      },
+      {
+        "hours": 0.5,
+        "grade": "middle",
+        "role": "copywriter",
+        "comment": "five Russian thread replies and the revised plan prose"
+      }
+    ],
+    "comment": null
+  },
+  "sessionId": "7d2cee93-4265-5f97-a89e-ee20ce9e6366",
+  "branch": "claude/muthur-hub-discussion-u6b63n",
+  "cwd": "/home/user/muthur",
+  "openingPrompt": "/handle claude/muthur-hub-discussion-u6b63n",
+  "prs": [
+    224
+  ],
+  "url": "https://claude.ai/code/session_01C91e327JEhZjuTauSGFbFU",
+  "operator": "vzakharov",
+  "firstResponseAt": "2026-10-26T02:09:55.324Z",
+  "lastResponseAt": "2026-10-26T02:14:49.838Z",
+  "pricesAsOf": "2026-10-06",
+  "claudeCodeTotalUsd": null,
+  "ownTurns": {
+    "inputTokens": 50,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 102324,
+    "cacheReadTokens": 3162367,
+    "outputTokens": 25361,
+    "thinkingTokens": 11627,
+    "responses": 25,
+    "costUsd": 1.9584853999999998
+  },
+  "subagents": {
+    "inputTokens": 0,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 0,
+    "cacheReadTokens": 0,
+    "outputTokens": 0,
+    "thinkingTokens": 0,
+    "responses": 0,
+    "costUsd": 0.0
+  },
+  "byRate": {
+    "claude-opus-5-5/standard": {
+      "inputTokens": 50,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 102324,
+      "cacheReadTokens": 3162367,
+      "outputTokens": 25361,
+      "thinkingTokens": 11627,
+      "responses": 25,
+      "costUsd": 1.9584853999999998
+    }
+  },
+  "warnings": [],
+  "orientation": {
+    "endedBy": "Edit",
+    "endedOn": "docs/plans/muthur-hub-discussion.draft.do-not-implement.md",
+    "endedAt": "2026-10-26T02:12:16.467Z",
+    "contextTokens": 132489,
+    "spend": {
+      "inputTokens": 18,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 82672,
+      "cacheReadTokens": 881682,
+      "outputTokens": 9720,
+      "thinkingTokens": 8014,
+      "responses": 9,
+      "costUsd": 1.0321844
+    }
+  },
+  "compactions": [],
+  "telemetry": null
+}
