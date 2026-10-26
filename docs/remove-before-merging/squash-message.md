@@ -20,11 +20,6 @@ on a branch whose summary was deleted reports that and stops.
 The keepalive hook counts a relay summary toward "the branch
 suffices" only while its Next step still holds.
 
-Adopters: on any branch carrying a relay-<N>.md whose Next step the
-work has since overtaken, settle it per the new section of
-.claude/skills/relay/SKILL.md (delete or supersede). This stays in
-your tree; it needs no operator yes.
-
 Co-authored-by: Claude <noreply@anthropic.com>
 ```
 
