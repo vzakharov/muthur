@@ -73,9 +73,9 @@ but _whether its stated reason still holds_, and that has to be re-read at sync
 time either way.
 
 A reason — or any other explanatory value in the file — may be an array of
-strings instead, one per paragraph or finished thought; the skill's
+strings instead; the skill's
 [§ "The watermark"](../../.claude/skills/update-muthur/SKILL.md#the-watermark)
-says when to write one.
+says when to write one and how to split it.
 
 From here on, pulling later changes forward is just `/update-muthur`. Nothing
 further to install.
