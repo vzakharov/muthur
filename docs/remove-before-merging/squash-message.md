@@ -10,17 +10,18 @@ appeared.
 
 update-muthur's § "The watermark" now makes the unit a thought, not a
 sentence, in both directions: a sentence welding two points with a `;`
-or an `, and` splits, and two sentences making one point stay one. It
-also says splitting is a read-and-rewrite pass, never a script.
+or an `, and` splits, and two sentences making one point stay one. An
+array is written from scratch with the old text in view, never cut out
+of a string, and a sweep rewrites the whole file that way.
 docs/adopting/sync.md points there rather than restating the unit, and
 /squash-message asks an Adopters paragraph whose ask a script could
 carry out wrongly to say what doing it right takes.
 
 Adopters: if you already split your watermark.json's explanatory values
 by sentence, or with a script, redo it by § "The watermark" as it now
-reads: one thought per element, welded sentences split, consecutive
-sentences making one thought rejoined, fragments reworded to stand on
-their own. It is a sweep of your own file and needs no operator's yes.
+reads: write the file anew with the old one in view, one thought per
+element, each standing on its own. It is a sweep of your own file and
+needs no operator's yes.
 
 Co-authored-by: Claude <noreply@anthropic.com>
 ```
