@@ -1,0 +1,88 @@
+{
+  "total": {
+    "inputTokens": 108,
+    "cacheWrite5mTokens": 89026,
+    "cacheWrite1hTokens": 107168,
+    "cacheReadTokens": 6505689,
+    "outputTokens": 19686,
+    "thinkingTokens": 7197,
+    "responses": 54,
+    "costUsd": 2.997763799999999
+  },
+  "estimate": {
+    "at": "2026-10-26T19:13:10.982Z",
+    "parts": [
+      {
+        "hours": 0.5,
+        "grade": "senior",
+        "role": "developer",
+        "comment": "landing a reviewed change takes a senior's read of the squash body against the final diff, a vet run and a base merge, with judgement on whatever the run turns up"
+      }
+    ],
+    "comment": null
+  },
+  "sessionId": "65b91aca-132f-5d85-a280-4f434b997248",
+  "branch": "claude/cold-cache-fresh-session-saving-286i3o",
+  "cwd": "/home/user/muthur",
+  "openingPrompt": "/relay take claude/cold-cache-fresh-session-saving-286i3o",
+  "prs": [
+    220
+  ],
+  "url": "https://claude.ai/code/session_019bPVaGVnwtkp8DeUPoC6JM",
+  "operator": "vzakharov",
+  "firstResponseAt": "2026-10-26T19:12:36.899Z",
+  "lastResponseAt": "2026-10-26T19:23:11.500Z",
+  "pricesAsOf": "2026-10-06",
+  "claudeCodeTotalUsd": null,
+  "ownTurns": {
+    "inputTokens": 66,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 107168,
+    "cacheReadTokens": 4290242,
+    "outputTokens": 10627,
+    "thinkingTokens": 2613,
+    "responses": 33,
+    "costUsd": 1.9281963999999996
+  },
+  "subagents": {
+    "inputTokens": 42,
+    "cacheWrite5mTokens": 89026,
+    "cacheWrite1hTokens": 0,
+    "cacheReadTokens": 2215447,
+    "outputTokens": 9059,
+    "thinkingTokens": 4584,
+    "responses": 21,
+    "costUsd": 1.0695674000000002
+  },
+  "byRate": {
+    "claude-opus-5-5/standard": {
+      "inputTokens": 108,
+      "cacheWrite5mTokens": 89026,
+      "cacheWrite1hTokens": 107168,
+      "cacheReadTokens": 6505689,
+      "outputTokens": 19686,
+      "thinkingTokens": 7197,
+      "responses": 54,
+      "costUsd": 2.997763799999999
+    }
+  },
+  "warnings": [],
+  "orientation": {
+    "endedBy": "Edit",
+    "endedOn": ".claude/cold-cache/hooks/cold_cache.py",
+    "endedAt": "2026-10-26T19:13:57.217Z",
+    "contextTokens": 109788,
+    "spend": {
+      "inputTokens": 28,
+      "cacheWrite5mTokens": 65439,
+      "cacheWrite1hTokens": 74309,
+      "cacheReadTokens": 1211701,
+      "outputTokens": 4114,
+      "thinkingTokens": 1518,
+      "responses": 14,
+      "costUsd": 1.2463992000000004
+    }
+  },
+  "compactions": [],
+  "telemetry": null
+}
