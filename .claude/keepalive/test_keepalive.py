@@ -112,6 +112,7 @@ class WhenAnOperatorPromptArrives(HookCase):
         self.assertIn(f"{HOOK} watch sess {self.transcript}", out)
         self.assertIn("Skip it when", out)
         self.assertIn("loop boundary", out)
+        self.assertIn("question posted on the PR", out)
 
     def test_a_running_watcher_is_left_to_the_agent_to_stop(self) -> None:
         self.session(ago=1)
