@@ -10,9 +10,11 @@ context.
 The stop now prices a fresh session as the context budget prices a
 relay: one saving over the next 100k tokens of work, the reorientation
 weighed against the re-cache up front and the smaller context on every
-request after. A fresh session that saves nothing, or under
-MUTHUR_COLD_CACHE_MARGIN of the re-cache, lets the prompt through,
-since the stop has no real choice to offer.
+request after. Its one-line text gives what continuing and reorienting
+each cost and what the latter saves, or, where reorienting costs more,
+after how much work it breaks even. A fresh session that saves nothing,
+or under MUTHUR_COLD_CACHE_MARGIN of the re-cache, lets the prompt
+through, since the stop has no real choice to offer.
 
 restart.py's relay saving and the new fresh-session saving share one
 comparison, each side paying its own up-front cost, over one SLICE
