@@ -31,8 +31,8 @@ Per-item descriptions live in
 you need:
 
 - **G0** — the sync path, both directions: `/update-muthur` pulls later changes
-  forward (ships as a stub; hydrating it is filling in the watermark),
-  `/spinoff` pushes a new sibling repo out.
+  forward (ships as a stub; hydrating it is filling in the watermark and writing
+  down what you took differently), `/spinoff` pushes a new sibling repo out.
 - **G1** — prose & principles: `CLAUDE.md`, `.claude/rules/`, `/dry`,
   `/tend-prose`, `/polish`, `.claude/voice/`, `/plainly`.
 - **G2** — the PR loop: `/plan`, `/go`, `/pr`, `/finalize` and the mechanical

@@ -45,9 +45,9 @@ print its keys under the nudge, and nothing reads `declined` but the agent.
 1. **`scripts/check-divergence.sh`** (new), wired into `scripts/vet.sh` keyed on
    the watermark's presence, with a header paragraph beside the others: fails
    when `watermark.json` carries `adopted` or `declined` (an unconverted
-   watermark), and when `divergence.md` is over the cap. POSIX `sh` + `awk`, no
-   `jq` (the floor `check-squash-message.sh` states). Tests in
-   `scripts/test_check_divergence.py`, which `check-muthur.sh` already runs.
+   watermark), and when `divergence.md` is over the cap. bash + `awk`, no `jq`,
+   like `check-markdown-tables.sh`. Tests in `scripts/test_check_divergence.py`,
+   which `check-muthur.sh` already runs.
 2. **`scripts/muthur-sync.sh`**: drop `ADOPTED` and the "You adopted the
    following" block from the nudge; `mark_files` also skips the record
    (`divergence.md`), which is never synced, like the watermark. Update

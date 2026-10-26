@@ -26,7 +26,7 @@ every step of the skill is usable as written. The
   entry that runs its nudge, and `scripts/check-divergence.sh`, which holds the
   watermark and the record to their shape from `vet.sh`.
   - **Requires:** `gh`, `$GH_TOKEN`, `jq`, git transport to the source repo;
-    hydration (the watermark)
+    hydration (the watermark, and the divergence record wherever you differ)
   - **Pulls in:** `/polish` (G1); `/task`, `/pr`, `/squash-message` (G2);
     `/override-gh` (G4)
   - **Disposition:** adopt — **rewrite the watermark**
