@@ -81,18 +81,18 @@ if [[ "${#IDS[@]}" -eq 0 ]]; then
 fi
 
 LAST=$((${#IDS[@]} - 1))
-KEEP="${IDS[$LAST]}"
+KEEP="repos/${NWO}/issues/comments/${IDS[$LAST]}"
 for id in "${IDS[@]:0:$LAST}"; do
   gh api "repos/${NWO}/issues/comments/${id}" -X DELETE >/dev/null
 done
 
 # `$(…)` drops trailing newlines on both sides, so a file ending in one still
 # reads as equal to the body GitHub stored.
-CURRENT="$(gh api "repos/${NWO}/issues/comments/${KEEP}" --jq .body)"
+CURRENT="$(gh api "$KEEP" --jq .body)"
 if [[ "$CURRENT" == "$(cat "$FILE")" ]]; then
-  echo "current $(gh api "repos/${NWO}/issues/comments/${KEEP}" --jq .html_url)"
+  echo "current $(gh api "$KEEP" --jq .html_url)"
   exit 0
 fi
 
-URL="$(gh api "repos/${NWO}/issues/comments/${KEEP}" -X PATCH -F "body=@${FILE}" --jq .html_url)"
+URL="$(gh api "$KEEP" -X PATCH -F "body=@${FILE}" --jq .html_url)"
 echo "edited ${URL}"
