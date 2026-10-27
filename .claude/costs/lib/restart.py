@@ -12,19 +12,18 @@ from pathlib import Path
 from typing import Iterator, List, Optional, Tuple
 
 from lib.orientation import Phase, is_boundary
-from lib.pricing import (
+from lib.prices import PriceTable
+from lib.pricing import UnpricedError, summarise_transcript
+from lib.rows import parse_session_cost
+from lib.tally import Rates
+from lib.transcript import (
     SYNTHETIC_MODEL,
-    PriceTable,
-    Rates,
     Response,
     TranscriptSources,
-    UnpricedError,
     is_response_record,
     parse_response,
     subagents_of,
-    summarise_transcript,
 )
-from lib.rows import parse_session_cost
 
 # What the transcript cannot tell, as estimates: what the relay's summary turn
 # writes, and — before any orientation has been measured — what a fresh session
@@ -211,7 +210,7 @@ def read_history(transcript: Path) -> Optional[History]:
 
 
 def rates_of(history: History, prices: PriceTable) -> Optional[Rates]:
-    return prices.rates_for(history.last.model, history.last.speed)
+    return prices.rates_for(history.last.model, history.last.speed, context_of(history.last))
 
 
 def write_rate(r: Rates, ttl: int) -> float:

@@ -20,7 +20,7 @@ from typing import Any, Dict, Optional
 
 HERE = Path(__file__).resolve().parent
 
-from lib.pricing import parse_prices
+from lib.prices import parse_prices
 from lib.restart import (
     SLICE,
     Reorientation,
@@ -37,7 +37,7 @@ from lib.restart import (
 
 PRICES = parse_prices((HERE / "prices.json").read_text())
 MODEL = "claude-opus-5-5"
-OPUS = PRICES.rates[f"{MODEL}/standard"]
+OPUS = PRICES.rates[f"{MODEL}/standard"].rates
 HOUR = 3600
 # The worked session's requests per token of context growth.
 WORKED_RATE = 37 / 100_000

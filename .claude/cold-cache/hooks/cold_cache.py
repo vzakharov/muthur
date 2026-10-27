@@ -22,7 +22,7 @@ from typing import Any, Dict, List, Optional
 ROOT = Path(__file__).resolve().parents[3]
 sys.path.insert(0, str(ROOT / ".claude" / "costs"))
 
-from lib.pricing import parse_prices
+from lib.prices import parse_prices
 from lib.restart import (
     SLICE,
     History,
