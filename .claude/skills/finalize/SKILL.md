@@ -1,5 +1,5 @@
 ---
-description: Finalize (a.k.a. "prep merge") — land prep: verify there's a draft PR, run the quality passes (`/polish`), run the vet suite, merge the base branch, mark ready for review, propose a squash body and settle the PR title it lands under, and post the attestation comment. Pass an optional branch/PR target first (`/finalize <branch|#PR|PR-url>`) to attach to that existing branch before finalizing. `/finalize no vet` is the docs-only mode; `/finalize revoke` withdraws an attestation; `/finalize and merge` squash-merges the PR as well, but only if the run turned up nothing to decide. An operator's ask to merge a branch not yet finalized — "merge", "мерджи", in any words — is `/finalize and merge`, and the reply opens by saying so.
+description: Finalize (a.k.a. "prep merge") — land prep: verify there's a draft PR, run the quality passes (`/polish`), run the vet suite, merge the base branch, mark ready for review, propose a squash body and settle the PR title it lands under, and post the attestation comment. Pass an optional branch/PR target first (`/finalize <branch|#PR|PR-url>`) to attach to that existing branch before finalizing. `/finalize no vet` is the docs-only mode; `/finalize revoke` withdraws an attestation; `/finalize and merge` squash-merges the PR as well, but only if the run turned up nothing to decide. An operator's ask to merge — "merge", "мерджи", in any words — is `/merge`, which sends a branch not yet finalized here.
 ---
 
 **Optional branch/PR target**: if the first token of the argument is a branch
@@ -23,10 +23,9 @@ needs work again after it was finalized. It runs
 
 **`and merge`** — recognized anywhere in the argument, bare `merge` too — asks
 you to squash-merge the PR yourself at step 8, but only if the run gives you no
-reason not to. **An operator's ask to merge** a branch not yet finalized
-("merge", "мерджи", in any words) is this flag. Either way, load
-`@.claude/skills/finalize/merge.md` before anything else: it says how the reply
-opens, and the step-8 gate is its.
+reason not to. An operator's ask to merge reaches it through
+`@.claude/skills/merge/SKILL.md`. Load `@.claude/skills/finalize/merge.md`
+before anything else: the step-8 gate is its.
 
 **Pre-check**:
 
@@ -223,6 +222,7 @@ Steps (stop on first unresolved failure):
    operator, or by step 8 itself.
 
 7. **Attest** — the last act, and the only durable record that this branch was
+<<<<<<< HEAD
    verified beyond whatever CI reports. Post it on the PR — or, on a re-run,
    edit it in place; it is sticky, keyed on the `<!-- finalize-attestation`
    marker (posting mechanic below the templates). The marker carries the head's
@@ -303,6 +303,10 @@ Steps (stop on first unresolved failure):
      branch's display copy once the marker's SHA holds, and treats a commit
      touching anything else past that SHA as the branch reopened. Re-attest only
      for a commit that does.
+=======
+   verified beyond whatever CI reports. Load
+   `@.claude/skills/finalize/attest.md` and follow it.
+>>>>>>> origin/main
 
 8. **Merge — under `and merge` only, and only if the run was uneventful.**
    Without the flag, stop at step 7 and report. With it, walk the gate in
