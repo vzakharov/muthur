@@ -14,7 +14,7 @@ from typing import Iterator, List, Optional, Tuple
 from lib.orientation import Phase, is_boundary
 from lib.prices import PriceTable
 from lib.pricing import UnpricedError, summarise_transcript
-from lib.rows import parse_session_cost
+from lib.rows import parse_session_cost, tree_rows
 from lib.tally import Rates
 from lib.transcript import (
     SYNTHETIC_MODEL,
@@ -252,7 +252,7 @@ def ledger_orientations(sessions: Path, relay: bool) -> List[Tuple[int, float]]:
     """The orientation of each session the ledger records `/relay` starting, or
     of each it records starting any other way."""
     found = []
-    for path in sorted(sessions.glob("*/*.json")):
+    for path in tree_rows(sessions):
         row = parse_session_cost(path.read_text(encoding="utf-8"), str(path))
         measured = acted(row.orientation)
         if relayed(row.opening_prompt) == relay and measured is not None:

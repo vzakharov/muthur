@@ -2,8 +2,8 @@
 outright or as `cur` / `prev` from today — and which rows fall inside it.
 
 A row belongs to the period its session **started** in, the rule every bucket
-of the report already follows. Rows are stored by month, so a period is also
-the months whose directories hold its rows.
+of the report already follows, read off the row rather than the directory it
+is filed in, since a branch's later sessions sit under its first month.
 """
 
 from __future__ import annotations
@@ -11,7 +11,6 @@ from __future__ import annotations
 import re
 from dataclasses import dataclass
 from datetime import date, timedelta
-from typing import List
 
 from lib.rows import SessionCost
 
@@ -41,37 +40,25 @@ class Period:
     label: str
     first: date
     last: date
-    whole_month: bool
-
-    def months(self) -> List[str]:
-        months = []
-        cursor = self.first.replace(day=1)
-        while cursor <= self.last:
-            months.append(cursor.strftime("%Y-%m"))
-            cursor = (cursor + timedelta(days=32)).replace(day=1)
-        return months
 
     def holds(self, row: SessionCost) -> bool:
-        """For a row read from one of `months()`. One with no priced response
-        has no day, so it counts toward its month and toward no week or day."""
+        """A row with no priced response has no start, so it is in no period."""
         started = row.first_response_at
-        if started is None:
-            return self.whole_month
-        return self.first <= date.fromisoformat(started[:10]) <= self.last
+        return started is not None and self.first <= date.fromisoformat(started[:10]) <= self.last
 
 
 def month_of(day: date) -> Period:
     following = (day.replace(day=1) + timedelta(days=32)).replace(day=1)
-    return Period(day.strftime("%Y-%m"), day.replace(day=1), following - timedelta(days=1), True)
+    return Period(day.strftime("%Y-%m"), day.replace(day=1), following - timedelta(days=1))
 
 
 def week_of(day: date) -> Period:
     monday = day - timedelta(days=day.weekday())
-    return Period(iso_week(day), monday, monday + timedelta(days=6), False)
+    return Period(iso_week(day), monday, monday + timedelta(days=6))
 
 
 def day_of(day: date) -> Period:
-    return Period(day.isoformat(), day, day, False)
+    return Period(day.isoformat(), day, day)
 
 
 def period(kind: str, value: str, today: date) -> Period:

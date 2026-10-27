@@ -6,7 +6,8 @@ Usage:
   python3 .claude/costs/ledger.py fetch
   python3 .claude/costs/ledger.py stop-plan <branch>
   python3 .claude/costs/ledger.py commit-row <parent> <path> <file>
-  python3 .claude/costs/ledger.py append-row <path> <file>
+  python3 .claude/costs/ledger.py append-row <file>
+  python3 .claude/costs/ledger.py path-for <file>
 
 `backfill` carries into the ledger every row the named refs hold that it lacks
 or holds older — by default every branch on `origin` and every PR's head — and
@@ -15,9 +16,12 @@ commits nothing.
 
 The rest are `hooks/stop-session-cost.sh`'s. `stop-plan` prints
 `display=yes|no`: whether the branch still gets the row's display copy, which
-it does until it is finalized. `commit-row` prints the commit of `<file>` at
-`<path>` on `<parent>`, or nothing where `<parent>` already holds it.
-`append-row` commits and pushes the row to the ledger.
+it does until it is finalized. `append-row` files the row on the ledger,
+commits and pushes it, and prints the path it was filed at; `path-for` prints
+where the local copy of the ledger would file it, for a turn whose fetch
+failed. `commit-row` prints the commit of `<file>` at `<path>` on `<parent>`,
+removing the session's other copies there, or nothing where `<parent>` already
+holds it alone.
 
 Stdlib only — Python 3.9+.
 """
@@ -30,7 +34,7 @@ from pathlib import Path
 
 from lib.finalized import finalized
 from lib.github import Client
-from lib.ledger_branch import BRANCH, LedgerError, append_row, backfill, commit, every_ref, fetch, row_change
+from lib.ledger_branch import BRANCH, LedgerError, append_row, backfill, commit, display_change, every_ref, fetch, path_for
 
 TRUNKS = ("", "main", "master")
 
@@ -43,9 +47,8 @@ def main() -> int:
     commands.add_parser("stop-plan").add_argument("branch")
     committing = commands.add_parser("commit-row")
     committing.add_argument("parent")
-    appending = commands.add_parser("append-row")
-    for command in (committing, appending):
-        command.add_argument("path")
+    committing.add_argument("path")
+    for command in (committing, commands.add_parser("append-row"), commands.add_parser("path-for")):
         command.add_argument("file", type=Path)
     args = parser.parse_args()
 
@@ -60,11 +63,13 @@ def main() -> int:
             display = args.branch not in TRUNKS and not finalized(args.branch, Client())
             print(f"display={'yes' if display else 'no'}")
         elif args.command == "commit-row":
-            rows, message = row_change(args.parent, args.path, args.file.read_text(encoding="utf-8"))
+            rows, message = display_change(args.parent, args.path, args.file.read_text(encoding="utf-8"))
             if rows:
                 print(commit(args.parent, rows, message))
+        elif args.command == "append-row":
+            print(append_row(args.file.read_text(encoding="utf-8")))
         else:
-            append_row(args.path, args.file.read_text(encoding="utf-8"))
+            print(path_for(args.file.read_text(encoding="utf-8")))
     except LedgerError as error:
         print(f"ledger: {error}", file=sys.stderr)
         return 1

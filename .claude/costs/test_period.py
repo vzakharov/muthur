@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """A period is what `--month`, `--week` and `--day` narrow the report to, named
 outright or as `cur` / `prev`. What it protects is the edges: which days a
-period spans, which month directories hold its rows, and which rows it keeps.
+period spans, and which rows it keeps.
 
 Run by path (`python3 .claude/costs/test_period.py`), as `scripts/vet.sh`
 does, which puts this directory on `sys.path` for `lib`.
@@ -79,17 +79,14 @@ class Relative(unittest.TestCase):
 
 
 class WhichRowsItKeeps(unittest.TestCase):
-    def test_a_week_spanning_two_months_reads_both(self) -> None:
-        self.assertEqual(period("week", "2026-W40", TODAY).months(), ["2026-09", "2026-10"])
-
     def test_a_row_belongs_to_the_day_it_started(self) -> None:
         self.assertTrue(period("week", "2026-W40", TODAY).holds(ROW))
         self.assertTrue(period("month", "2026-09", TODAY).holds(ROW))
         self.assertFalse(period("day", "2026-10-01", TODAY).holds(ROW))
 
-    def test_an_undated_row_counts_toward_its_month_alone(self) -> None:
+    def test_an_undated_row_is_in_no_period(self) -> None:
         undated = replace(ROW, first_response_at=None)
-        self.assertTrue(month_of(TODAY).holds(undated))
+        self.assertFalse(month_of(TODAY).holds(undated))
         self.assertFalse(period("week", "cur", TODAY).holds(undated))
 
     def test_the_label_matches_the_week_table_s(self) -> None:

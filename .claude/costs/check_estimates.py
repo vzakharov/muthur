@@ -19,8 +19,8 @@ import sys
 from typing import List, Optional, Tuple
 
 from lib.estimate_model import latest, shadow_notes
-from lib.ledger_branch import BRANCH, RATES_PATH, REMOTE_REF, LedgerError, fetch, latest_row, ledger_rates, rows_at, union
-from lib.rows import ROOT, SESSIONS, SessionCost, parse_session_cost, read_pending_estimate
+from lib.ledger_branch import BRANCH, RATES_PATH, REMOTE_REF, LedgerError, fetch, latest_row, ledger_rates, rows_at
+from lib.rows import ROOT, SESSIONS, SessionCost, parse_session_cost, read_pending_estimate, union
 from lib.shape import ShapeError
 
 PROG = "check-estimates"

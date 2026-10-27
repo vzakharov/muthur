@@ -124,6 +124,12 @@ commit_row() {
     git -C "$top" update-index --add -- "$path" ||
     return 1
 
+  # The session's copies the commit moved away from: an older layout's, or the
+  # branch's before a rename.
+  repo diff --name-only --diff-filter=D "$head" "$commit" | while IFS= read -r moved; do
+    git -C "$top" rm -q -f --ignore-unmatch -- "$moved"
+  done
+
   state=committed
   [ "$pushed" = false ] || state=pushed
 }
@@ -140,7 +146,7 @@ last_line() { awk 'NF { line = $0 } END { print line }' "$1" 2>/dev/null; }
 all_lines() { awk 'NF { printf "%s%s", sep, $0; sep = " " }' "$1" 2>/dev/null; }
 
 run_ledger() {
-  local transcript staged row path err display
+  local transcript staged row path='' err display
   transcript="$(field transcript_path)"
   [ -n "$transcript" ] && [ -f "$transcript" ] || return 0
 
@@ -160,21 +166,28 @@ run_ledger() {
     fetched=false
   }
 
-  row="$(python3 "$root/.claude/costs/session_cost.py" \
+  python3 "$root/.claude/costs/session_cost.py" \
     --transcript "$transcript" \
     --session-id "$(field session_id)" \
-    --row-path --at-stop --out "$staged" 2>"$err")" ||
+    --at-stop --out "$staged" >/dev/null 2>"$err" ||
     {
       unpriced_reason="$(last_line "$err")"
       rm -f -- "$staged" "$err"
       state=unpriced
       return 0
     }
-  path="${row#"$(repo rev-parse --show-toplevel)"/}"
 
+  # The ledger decides where the row is filed, and the display copy goes to
+  # the same path; a write that did not reach it files against the local copy.
   if [ "$fetched" = true ]; then
-    ledger append-row "$path" "$staged" 2>"$err" || ledger_error="$(all_lines "$err")"
+    path="$(ledger append-row "$staged" 2>"$err")" || ledger_error="$(all_lines "$err")"
   fi
+  [ -n "$path" ] || path="$(ledger path-for "$staged" 2>"$err")" || {
+    ledger_error="${ledger_error:-$(all_lines "$err")}"
+    rm -f -- "$staged" "$err"
+    return 0
+  }
+  row="$(repo rev-parse --show-toplevel)/$path"
 
   # Until the branch is finalized, its PR's diff shows what the work cost.
   display="$(ledger stop-plan "$branch" 2>"$err")" || {
