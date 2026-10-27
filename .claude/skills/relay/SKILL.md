@@ -196,8 +196,21 @@ A parked summary is a claim about what the absent session would do next, and
 `/relay take` acts on it with nobody checking it first. So a parked session its
 operator comes back to rewrites the summary it wrote at the end of any turn that
 makes its Next step false or answers a question it lists as pending, in that
+<<<<<<< HEAD
 turn's last commit: Step 2 again over the whole conversation, the turns since
 the park included, into the same file.
+=======
+turn's last commit:
+
+- **Delete** when the keepalive hook's test holds — the one its
+  `UserPromptSubmit` line prints every turn, `SUFFICIENT` in
+  `.claude/keepalive/hooks/keepalive.py`: an item still pending as a question on
+  the PR passes it, since `/handle` picks it up from there. `git rm` this
+  session's summary alone; the earlier ones stay, and none of them becomes
+  current, per Step 2.
+- **Otherwise rewrite it in place** — Step 2 again over the whole conversation,
+  the turns since the park included, into the same file.
+>>>>>>> origin/main
 
 A turn that leaves the Next step true — a question asked and still open, a side
 remark answered — leaves it as it is, and so does the turn that wrote the

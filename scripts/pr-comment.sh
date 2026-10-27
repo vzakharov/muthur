@@ -8,8 +8,8 @@
 # write and denies it. The file must lead with its kind's marker, which keeps
 # the rule from approving any other comment.
 #
-# Usage (from the repository root, spelled exactly so — the allow rule matches
-# the command text):
+# Usage (from the repository root, spelled exactly so, with no `cd … &&` or
+# anything else chained in front — the allow rule matches the command text):
 #   scripts/pr-comment.sh <kind> [--update-only] <pr-number> <file>
 #
 # Kinds, each keyed on the marker its body leads with:

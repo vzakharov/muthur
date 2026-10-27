@@ -222,10 +222,10 @@ Steps (stop on first unresolved failure):
 7. **Attest** — the last act, and the only durable record that this branch was
    verified beyond whatever CI reports. Post it on the PR — or, on a re-run,
    edit it in place; it is sticky, keyed on the `<!-- finalize-attestation`
-   marker, and the marker is how you find it (mechanic below the templates). The
-   marker carries the head's full SHA, which the cost ledger's `Stop` hook
-   parses (`.claude/costs/lib/finalized.py`) to stop writing display copies onto
-   a finalized branch:
+   marker (posting mechanic below the templates). The marker carries the head's
+   full SHA, which the cost ledger's `Stop` hook parses
+   (`.claude/costs/lib/finalized.py`) to stop writing display copies onto a
+   finalized branch:
 
    ```md
    <!-- finalize-attestation <full-head-sha> -->
@@ -265,16 +265,14 @@ Steps (stop on first unresolved failure):
    ```
 
    **Posting it: `scripts/pr-comment.sh attestation <n> <file>`**, run from the
-   repository root with nothing chained in front, the file holding the comment
-   as templated above. It edits the comment that leads with the marker in place,
-   or posts one when there is none. `.claude/settings.json` allows exactly this
-   command, so auto mode's classifier never sees the write, which it denies as
-   an external one when spelled as inline `gh api`. `gh pr comment --edit-last`
-   looks like the tool for this and is not: it targets your most recent comment
-   on the PR whatever that happens to be, so on the ordinary finalize ordering —
-   squash proposal posted at step 5, attestation at step 7 — it overwrites the
-   squash proposal with the attestation. Both comments are then one comment, and
-   the loss is silent.
+   repository root with nothing chained in front, as the script's header
+   requires, the file holding the comment as templated above. It edits the
+   comment that leads with the marker in place, or posts one when there is none.
+   `gh pr comment --edit-last` looks like the tool for this and is not: it
+   targets your most recent comment on the PR whatever that happens to be, so on
+   the ordinary finalize ordering — squash proposal posted at step 5,
+   attestation at step 7 — it overwrites the squash proposal with the
+   attestation. Both comments are then one comment, and the loss is silent.
 
    Rules that make it worth trusting:
    - **Attest what you vetted, not what you meant to vet.** If the vet run was
