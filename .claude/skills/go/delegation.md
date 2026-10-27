@@ -73,7 +73,7 @@ discarded and done in-session.
 After each delegation, put what it cost beside what doing it yourself would have
 cost. `python3 .claude/costs/delegation.py <agent-id> --turns <n>` prints both
 at `.claude/costs/prices.json` rates, `<n>` being the turns you would have taken
-— your judgement, and the one figure in it that is: a stronger model often needs
+— the one figure that is your judgement, since a stronger model often needs
 fewer than the subagent did. It also prints what each later turn of yours
 re-reads either way; multiply by the turns the session has left. Your review is
 in neither figure, so charge it to the delegation by eye.
