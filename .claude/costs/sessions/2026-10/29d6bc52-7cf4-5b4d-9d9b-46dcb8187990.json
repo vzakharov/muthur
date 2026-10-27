@@ -1,0 +1,100 @@
+{
+  "total": {
+    "inputTokens": 72,
+    "cacheWrite5mTokens": 57452,
+    "cacheWrite1hTokens": 99022,
+    "cacheReadTokens": 3918577,
+    "outputTokens": 22532,
+    "thinkingTokens": 8045,
+    "responses": 36,
+    "costUsd": 2.3140794
+  },
+  "estimate": {
+    "at": "2026-10-27T08:58:11.722Z",
+    "parts": [
+      {
+        "hours": 3.0,
+        "grade": "senior",
+        "role": "developer",
+        "comment": "a hook on every prompt calling the network needs fail-open handling, a per-HEAD cache and tests with a stubbed gh; a misjudged edge strands sessions unparked or parks merged ones"
+      },
+      {
+        "hours": 0.5,
+        "grade": "middle",
+        "role": "copywriter",
+        "comment": "three docs restate the watcher's cadence and each needs the exception in its own voice"
+      }
+    ],
+    "comment": null
+  },
+  "orientation": {
+    "endedBy": "oriented",
+    "endedOn": null,
+    "endedAt": "2026-10-27T08:56:31.614Z",
+    "contextTokens": 99171,
+    "spend": {
+      "inputTokens": 4,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 42325,
+      "cacheReadTokens": 140417,
+      "outputTokens": 503,
+      "thinkingTokens": 17,
+      "responses": 2,
+      "costUsd": 0.3767594
+    }
+  },
+  "sessionId": "29d6bc52-7cf4-5b4d-9d9b-46dcb8187990",
+  "branch": "claude/keepalive-skips-landed-pr",
+  "cwd": "/home/user/muthur",
+  "openingPrompt": "/task Сделать исключение в cache keepalive (`.claude/keepalive/`): не запускать watcher и не парковать сессию (`/relay park`), когда PR ветки уже смерджен или з…",
+  "prs": [
+    237
+  ],
+  "url": "https://claude.ai/code/session_01DaohkFA7GcyVRfJ49bpGCB",
+  "operator": "vzakharov",
+  "firstResponseAt": "2026-10-27T08:56:08.031Z",
+  "lastResponseAt": "2026-10-27T09:01:40.333Z",
+  "pricesAsOf": "2026-10-06",
+  "claudeCodeTotalUsd": null,
+  "ownTurns": {
+    "inputTokens": 52,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 99022,
+    "cacheReadTokens": 3142367,
+    "outputTokens": 16680,
+    "thinkingTokens": 5339,
+    "responses": 26,
+    "costUsd": 1.7544573999999997
+  },
+  "subagents": {
+    "inputTokens": 20,
+    "cacheWrite5mTokens": 57452,
+    "cacheWrite1hTokens": 0,
+    "cacheReadTokens": 776210,
+    "outputTokens": 5852,
+    "thinkingTokens": 2706,
+    "responses": 10,
+    "costUsd": 0.5596220000000001
+  },
+  "byRate": {
+    "claude-opus-5-5/standard": {
+      "inputTokens": 72,
+      "cacheWrite5mTokens": 57452,
+      "cacheWrite1hTokens": 99022,
+      "cacheReadTokens": 3918577,
+      "outputTokens": 22532,
+      "thinkingTokens": 8045,
+      "responses": 36,
+      "costUsd": 2.3140794
+    }
+  },
+  "warnings": [],
+  "compactions": [],
+  "telemetry": {
+    "events": 36,
+    "matched": 36,
+    "matchedTableUsd": 2.3140794,
+    "matchedEventUsd": 2.3140794,
+    "unseen": {}
+  }
+}
