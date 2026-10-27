@@ -1,10 +1,8 @@
 # Delegating sub-tasks to weaker models
 
-Loaded with `/go` — by `.claude/hooks/go-delegation.py`, or by Step 2's pointer
-— whenever `MUTHUR_DELEGATION` is not `off`. It applies to Step 2's work: hand a
-sub-task you judge clear to a cheaper model working in its own worktree, and
-review what it produces before it reaches the branch. The point is spending your
-own context and tokens on the parts that need judgement.
+In `/go`'s Step 2, hand a sub-task you judge clear to a cheaper model working in
+its own worktree, and review what it produces before it reaches the branch. The
+point is spending your own context and tokens on the parts that need judgement.
 
 ## What qualifies
 
