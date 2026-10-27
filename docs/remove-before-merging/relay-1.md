@@ -17,10 +17,10 @@
    > spelled exactly as the rule,
    > `scripts/pr-comment.sh squash --update-only 242 <file equal to the current comment>`,
    > was denied as [External System Writes]. Same for a second project allow
-   > rule (`Bash(python3 work/...hh-web.py *)`), denied as [Real-World >
-   > Transactions], in a fresh session started on a commit carrying the rule —
-   > so project `permissions.allow` is not honoured in these sessions at all; no
-   > `classifyAllShell` is set. Per
+   > rule (`Bash(python3 work/...hh-web.py *)`), denied as
+   > `[Real-World Transactions]`, in a fresh session started on a commit
+   > carrying the rule — so project `permissions.allow` is not honoured in these
+   > sessions at all; no `classifyAllShell` is set. Per
    > https://code.claude.com/docs/en/auto-mode-config the classifier never reads
    > `autoMode` from project settings, only from `~/.claude/settings.json`,
    > managed settings or `--settings`; both denials are soft_deny rules, which
@@ -103,9 +103,8 @@ Wait for the operator. The PR is ready for `/finalize` when they ask for it.
 ## Last agent turn
 
 The agent's last turn before the relay, verbatim, appended by
-`scripts/relay-last-reply.py`. It includes the turn's interim messages,
-usually unneeded but harmless; the reply proper is usually its last
-paragraphs.
+`scripts/relay-last-reply.py`. It includes the turn's interim messages, usually
+unneeded but harmless; the reply proper is usually its last paragraphs.
 
 ```text
 JSON сниппета валиден. Теперь правлю `/squash-message` и каталог.
