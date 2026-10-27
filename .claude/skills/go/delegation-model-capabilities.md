@@ -17,12 +17,14 @@ the lessons that hold for every model first.
 
 - **Handles:** a unittest suite against a hook written as the contract, in a
   named reference's style — needed one rename the brief could not have known;
-  went past the brief with sound extra cases.
+  went past the brief with sound extra cases. Reworking an existing suite
+  against two changed hooks, with its fixture split into a shared module, came
+  back clean with nothing to repair.
 - **Misses:** —
 - **Brief:** naming the style reference and the run-until-green command was
   enough; ask for "anything that surprised you" — it reports useful edges.
 - **Cost, by eye:** that suite, a few hundred lines, cost about twice as much
-  delegated as written in-session.
+  delegated as written in-session; the rework ran to about 137k subagent tokens.
 
 ## haiku
 
