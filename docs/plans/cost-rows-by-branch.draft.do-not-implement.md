@@ -11,42 +11,49 @@
 A session's row moves from `.claude/costs/sessions/<YYYY-MM>/<uuid>.json` to
 
 ```
-.claude/costs/sessions/<full/branch/path>/<N>/<uuid>.json
+.claude/costs/sessions/<YYYY-MM>/<full/branch/path>/<N>/<uuid>.json
 ```
 
-where `<N>` is the session's ordinal on that branch, 1-based. A row with no
-branch goes under `.no-branch/` the same way. Every existing row is re-filed: in
-this repository's ledger, and in any adopter's, by code that knows nothing about
-their rows in advance.
+- **`<YYYY-MM>` is the month of the branch's first session**, so every session
+  on a branch sits in one directory, whichever month it ran in.
+- **`<N>` is the session's 1-based ordinal on that branch**, a plain integer.
+  GitHub's file view then sorts `10` before `2`, which is accepted.
+- **A row with no branch goes under `<YYYY-MM>/.no-branch/<N>/`**, `<YYYY-MM>`
+  being that session's own month and `<N>` its ordinal within that month's
+  branchless rows. Git forbids a ref component that starts with a dot, so no
+  real branch can collide with `.no-branch`.
 
-## Decisions (each a recommendation in force; see Questions)
+Every existing row is re-filed: in this repository's ledger, and in any
+adopter's, by code that knows nothing about their rows in advance.
 
-- **The month folder goes.** The branch is the grouping, and the month is
-  already in `firstResponseAt`, which is what `--month` filters on. Keeping it
-  (`<YYYY-MM>/<branch>/<N>/`) would split a branch that spans a month boundary
-  and restart its ordinals.
-- **Branchless rows go under `.no-branch/`.** Git forbids a ref component that
-  starts with a dot, so no real branch can collide with it. Leaving those rows
-  in the month layout would keep two layouts alive for good.
-- **`<N>` is plain, unpadded.** The width cannot be known in advance. The cost
-  is that GitHub's file view sorts `10` before `2`.
+Rejected: dropping the month level (`sessions/<branch>/<N>/`) — the month at the
+top keeps the ledger browsable by period. Leaving branchless rows in the month
+layout — that would keep two layouts alive for good. Zero-padding `<N>` — the
+width cannot be known in advance.
 
-## How the ordinal is assigned
+## How the month and the ordinal are assigned
 
-- **The ledger decides it**, because only the ledger sees every session on a
-  branch. A new session on branch `b` gets one more than the highest `<N>` in
-  the ledger's `sessions/b/`. The highest, not the count, so the gap a moved row
-  leaves is never reused.
-- **Once assigned, it stays**, as long as the row's `branch` stays the same.
+- **The ledger decides both**, because only the ledger sees every session on a
+  branch.
+- **A branch's month is fixed once it has a directory.** A new session on branch
+  `b` goes under the month that already holds `b` in the ledger. Only a branch
+  the ledger has never filed takes a month, from the earliest `firstResponseAt`
+  among its rows: the session's own month when it is the first, and the earliest
+  of them in a backfill. A row found later that started earlier does not move
+  the branch.
+- **The ordinal is one more than the highest `<N>` in the branch's directory.**
+  The highest, not the count, so the gap a moved row leaves is never reused.
+  Once assigned, it stays for as long as the row's `branch` does.
 - **A row whose `branch` changes moves.** `pricing.py` already takes the last
-  `gitBranch` it sees, so a session that renames its auto-branch (this one did)
-  or attaches with `/from-branch` gets a new `<N>` on the new branch, and its
-  old path is deleted in the same commit.
-- **A race heals itself.** Two sessions that claim the same `<N>` at once: the
+  `gitBranch` it sees. So a session that renames its auto-branch or attaches
+  with `/from-branch` goes to the new branch's directory with a new `<N>`, and
+  its old path is deleted in the same commit. This is the only way a row moves
+  once it is filed.
+- **A race heals itself.** When two sessions claim the same `<N>` at once, the
   push that loses re-plans on the new tip (`append`'s existing retry) and takes
-  the next number. If the ledger fetch failed and a row was filed against a
-  stale local ref, the next good write sees two rows in one `<N>` and moves the
-  one that started later.
+  the next number. A row filed against a stale local ref after a failed fetch
+  can still collide. The next good write then sees two rows in one `<N>`, or one
+  branch under two months, and moves the later-started row to its proper place.
 - **Backfill orders by `firstResponseAt`**, falling back to `lastResponseAt` and
   then the session id, so the result is deterministic and a second run changes
   nothing.
@@ -58,17 +65,19 @@ One function, `refile(listing, read)`. Given a ledger tip, it returns the
 
 1. Group the paths by session id. More than one copy → keep the winner by
    `recency` and delete the rest.
-2. A path that is already `<dir of its branch>/<N>/<id>.json`, with no other
-   session in that `<N>`, stays. Nothing has to be read to know that, because
-   the branch can be read off the path. A row is read only when its path is in
-   the old layout or does not match.
-3. Every other row gets the next free `<N>` on its branch, in the order above.
+2. A path already of the form `<month>/<branch>/<N>/<id>.json` stays when its
+   branch appears under no other month and no other session shares its `<N>`.
+   The branch and the month are read off the path, so nothing has to be read to
+   know that.
+3. Every other row is read for its `branch` and `firstResponseAt` and filed by
+   the rules above.
 
-**The steady-state check reads names only, never row text.** An old-layout path,
-a duplicate id and two ids in one `<N>` all show in the listing, and no other
-session's row changes branch without its own session re-filing it. Only
-misplaced rows are read. Measured on this ledger's 202 rows: 3 ms to list, 9 ms
-to read every row, and the re-filing rides the push `append` already makes.
+**The steady-state check reads names only, never row text.** An old-layout path
+(a `.json` directly under a month), a duplicate id, two ids in one `<N>` and one
+branch under two months all show in the listing. No other session's row changes
+branch without its own session re-filing it. Only misplaced rows are read.
+Measured on this ledger's 202 rows: 3 ms to list, 9 ms to read every row. The
+re-filing rides the push `append` already makes.
 
 `append` runs it on every ledger write, so the migration needs nobody to
 remember to run it. In an adopter, the first `Stop` after `/update-muthur`
@@ -81,9 +90,9 @@ Its row then exists twice, and the next new-code write merges the two.
 
 ## Changes, file by file
 
-- **`lib/filing.py`** (new): `row_dir(branch)`, `canonical(path, row)`,
-  `next_ordinal(listing, branch)`, `refile(...)`, and the predicate "is a row
-  path" (any `*.json` under `sessions/`, at any depth).
+- **`lib/filing.py`** (new): `parse_path(path)` (month, branch, ordinal, id, or
+  the old layout), `next_place(listing, branch, started)`, `refile(...)`, and
+  the predicate "is a row path" (any `*.json` under `sessions/`, at any depth).
 - **`lib/ledger_branch.py`**: `append` adds `refile`'s changes to the plan's
   own. `append_row(text)` files the row and returns the path it used, so it no
   longer takes a path. `path_of` and `copies` look at any depth.
@@ -100,37 +109,55 @@ Its row then exists twice, and the next new-code write merges the two.
   `append-row`, or from `path-for` when the fetch failed, instead of from
   `session_cost.py`. Old-layout display copies of _other_ sessions stay on the
   branch until `/finalize` carries and deletes them, as today.
-- **`report.py`, `lib/restart.py`**: read the tree's rows at any depth. The
-  month directories no longer prune the read: `span.holds(row)` filters, as it
-  already does for ledger rows.
+- **`report.py`, `lib/restart.py`**: read the tree's rows at any depth. A month
+  directory no longer bounds when its rows started, because a branch's later
+  sessions sit under its first month. So `--month` and friends stop pruning by
+  directory and filter with `span.holds(row)`, as they already do for ledger
+  rows.
 - **`estimate.py` `edit`**: goes through `append_row(text)`, and rewrites the
   tree copy at the filed path.
-- **`lib/github.py`**: GraphQL cannot list a tree recursively, so discovery
-  keeps its GraphQL probe (does `sessions/` exist on each side), and the rows
-  are listed with REST `git/trees/<rev>?recursive=1` through `gh api`, then read
-  as blobs in GraphQL batches as now. A `truncated` listing raises, like a
-  truncated row. The `MONTH` regex and `Candidate.months` go. Both layouts read
-  the same way, which is what an adopter who has not updated still needs.
+- **`lib/github.py`**: GraphQL lists one tree level at a time, and the rows now
+  sit at varying depth under each month. Discovery keeps its GraphQL probe for
+  the month directories on each side. The rows are listed with REST
+  `git/trees/<rev>:.claude/costs/sessions?recursive=1` through `gh api`, then
+  read as blobs in GraphQL batches as now. A `truncated` listing raises, like a
+  truncated row. The month narrowing goes, for the reason under `report.py`.
+  Both layouts read the same way, which is what an adopter who has not updated
+  still needs.
 - **`check_estimates.py`**: a move reads as `D` plus `A` under `--no-renames`.
   The `A` is checked as a new row, which is right, since the session is the
   branch's either way.
-- **Tests**: a new `test_filing.py` (canonical paths, ordinal after a gap, a
-  branch change moves the row, two rows in one `<N>`, a duplicate copy across
-  layouts, an idempotent second pass, `.no-branch`), plus updates to
-  `test_stop_hook.py`, `test_totals.py`, `test_github.py` and `test_estimate.py`
-  for the new paths.
+- **Tests**: a new `test_filing.py` covering:
+  - canonical paths;
+  - a branch's month fixed by its first row;
+  - a later session landing in an earlier month;
+  - the ordinal after a gap;
+  - a branch change moving the row;
+  - two rows in one `<N>`, and one branch under two months;
+  - a duplicate copy across layouts;
+  - `.no-branch` per month;
+  - an idempotent second pass.
+
+  Updates to `test_stop_hook.py`, `test_totals.py`, `test_github.py` and
+  `test_estimate.py` for the new paths.
+
 - **Prose**: `.claude/costs/CLAUDE.md` (the layout line, § "Where rows live",
-  and a short § on filing: ordinals, moves, the self-healing pass), the G7
-  catalog entry, and `docs/adopting/costs.md` where it names the layout.
+  and a short § on filing: month, ordinals, moves, the self-healing pass), the
+  G7 catalog entry, and `docs/adopting/costs.md` where it names the layout.
   `scripts/check-repo-identity.sh` and `scripts/muthur-sync.sh` already match
   `sessions/*` at any depth.
 
 ## What it costs
 
 - **An older `report.py --all-my-repos` undercounts a repository that has
-  migrated.** Its GraphQL reader only knows month directories. This is the same
-  cost the ledger branch's own arrival had, and it is paid until that checkout
-  updates.
+  migrated.** Its GraphQL reader takes only the files directly under a month.
+  This is the same cost the ledger branch's own arrival had, and it is paid
+  until that checkout updates.
+- **The trunk lives in its first month forever**: every session on `main` goes
+  under the month of `main`'s first one, with `<N>` in the hundreds. The same
+  holds for any long-lived branch. A branch name reused after deletion joins the
+  old directory and continues its numbering. Totals are unaffected either way,
+  since they come from the rows.
 - **The first new-code `Stop` in a repository re-files every row in one
   commit**: about 200 rows here. After that, a write spends one extra name
   listing of the tip, which `append` already fetches.
@@ -148,17 +175,10 @@ Its row then exists twice, and the next new-code write merges the two.
   re-plan-on-rejected-push loop settles the ordinal race, with no new retry
   logic.
 - **Kept apart:** the remote listing in `github.py` stays its own code. It reads
-  over GitHub's API, not git, and shares only the "is a row path" predicate,
-  which it imports from `filing.py`. An abstraction over local git and remote
-  REST would cost more than the two call sites it joins.
+  over GitHub's API, not git, and shares only `parse_path` and the "is a row
+  path" predicate, which it imports from `filing.py`. An abstraction over local
+  git and remote REST would cost more than the two call sites it joins.
 - **Folded together:** `rows.row_path`, `ledger_branch.copies`'s glob,
   `report.rows_in` and `restart.ledger_orientations` each glob `*/<id>.json` or
   `*/*.json`. All four become one `tree_rows()` / `tree_copies(id)` pair in
   `lib/rows.py`.
-
-## Questions
-
-1. Month folder: **a) drop it (recommended)**; b) keep it above the branch.
-2. Rows with no branch: **a) `.no-branch/<N>/` (recommended)**; b) leave them in
-   the month layout.
-3. `<N>`: **a) plain integers (recommended)**; b) zero-padded to 3 digits.

@@ -1,21 +1,18 @@
-Proposed squash title/body:
+Proposed squash body:
 
 ```
-feat: file cost rows by branch, numbered per session (#236)
-```
+The ledger filed each session's row loose under the month it started,
+so what a branch cost took a report run to see. Rows are now filed as
+sessions/<YYYY-MM>/<branch/path>/<N>/<uuid>.json: the month of the
+branch's first session, so a branch never splits across months, and N
+the session's 1-based ordinal on that branch. A branchless row goes
+under its own month's .no-branch/, a name git forbids as a ref
+component.
 
-```
-The ledger filed each session's row under the month it started, so
-what a branch cost took a report run to see. Rows are now filed as
-sessions/<branch/path>/<N>/<uuid>.json, N being the session's 1-based
-ordinal on that branch; a row with no branch goes under .no-branch/,
-a name git forbids as a ref component.
-
-The ledger assigns the ordinal, since only it sees every session on a
-branch: the next one after the highest held, kept for as long as the
-row's branch stays the same. A session that changes branch moves to
-the new one. The Stop hook files the display copy at the path the
-ledger chose.
+The ledger assigns both, since only it sees every session on a branch:
+the month once, when the branch is first filed, and the ordinal one
+past the highest held. A row moves only when its session changes
+branch. The Stop hook files the display copy where the ledger chose.
 
 Every ledger write re-files any row that is not at its place: an old
 layout path, a duplicate copy, two sessions in one ordinal. That pass
@@ -24,8 +21,9 @@ this code, and the old-layout rows that branches without it keep
 writing are folded in as they arrive. Backfill orders by start time,
 and a second pass changes nothing.
 
-Local readers take rows at any depth. report.py --all-my-repos lists
-each ledger recursively instead of by month, so it reads both layouts.
+Readers take rows at any depth and filter periods by each row's start
+rather than by directory; report.py --all-my-repos lists each ledger
+recursively, so it reads both layouts.
 An older checkout's cross-repo report undercounts a migrated ledger
 until that checkout updates.
 
