@@ -1,5 +1,29 @@
 # Cost rows filed by branch
 
+## Progress
+
+**Done** — implementation, tests and prose, every ledger test green:
+
+- `cfb27fd` — `lib/filing.py` and everything the plan lists file by file.
+- `57d87a6` — the tests on the new layout, plus the hook's `--no-renames` fix.
+- `d8fdcde` — `.claude/costs/CLAUDE.md` § "Where a row is filed", the G7 entry.
+
+Deviations from the plan below, each a call the next session should not re-open:
+
+- `session_cost.py --row-path` is gone rather than kept: the hook takes the path
+  from `append-row` / `path-for`, so nothing called it.
+- `recency` and `union` moved to `lib/rows.py`, since `filing.py` needs them and
+  `ledger_branch.py` imports `filing.py`.
+- `Period.holds` puts a row with no `firstResponseAt` in no period. It used to
+  count toward its month because the month directory bounded it. `months()` and
+  `whole_month` went with that.
+- `github.py` lists by the `sessions/` tree's oid, taken from the GraphQL probe
+  (`git/trees/<oid>?recursive=1`), and reads rows by blob oid, 50 per query.
+- `docs/adopting/costs.md` never named the layout, so it is unchanged.
+
+**Left** — `/go` Step 3 (`/polish` over the whole branch) and Step 4 (`/pr`,
+which refreshes #236's body and the squash proposal to the implemented state).
+
 ## Goal
 
 A session's row moves from `.claude/costs/sessions/<YYYY-MM>/<uuid>.json` to
