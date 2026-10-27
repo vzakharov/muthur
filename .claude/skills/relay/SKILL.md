@@ -64,8 +64,7 @@ session holds one summary, under one name for good: parking again after its
 operator came back overwrites it, since a second would repeat the same
 conversation. Every earlier one stays on disk as the way back to the session
 that wrote it. The highest `<N>` that command names is the current one, which
-`/relay take` reads, for as long as it is on disk: § "When the summary goes
-stale" may delete it. `/finalize` sweeps the directory.
+`/relay take` reads, until `/finalize` sweeps the directory.
 
 - **English**, being agent-facing, with the operator's words quoted in their own
   language.
@@ -138,7 +137,9 @@ Its prompt is one line, `/relay take <branch> — <what now>`, `<what now>` bein
 one sentence: the summary's Next step in plain words, in the human-facing
 language (CLAUDE.md § "Language"), a skill in it named bare. The prompt is what
 an operator switching in from other work sees first, and a branch name does not
-say what the session is for.
+say what the session is for. The successor reads it too, as its first message,
+so the sentence addresses nobody — a "you" in it names the successor to itself —
+and says where the work stands and what comes next: `PR готов, дальше finalize`.
 
 - **Web/remote**: `create_session` from the Claude Code Remote tools, with
   `source_url` the `origin` URL, `source_revision` the branch, a `title` per
@@ -193,20 +194,14 @@ summary is theirs to settle, per the next section.
 
 A parked summary is a claim about what the absent session would do next, and
 `/relay take` acts on it with nobody checking it first. So a parked session its
-operator comes back to settles the summary it wrote at the end of any turn that
+operator comes back to rewrites the summary it wrote at the end of any turn that
 makes its Next step false or answers a question it lists as pending, in that
-turn's last commit:
-
-- **Delete** when nothing it lists is still pending and the branch alone lets a
-  fresh session continue — the keepalive hook's test: everything pushed, the
-  work at a loop boundary, nothing said that the repo does not hold. `git rm`
-  this session's summary alone; the earlier ones stay, and none of them becomes
-  current, per Step 2.
-- **Otherwise rewrite it in place** — Step 2 again over the whole conversation,
-  the turns since the park included, into the same file.
+turn's last commit: Step 2 again over the whole conversation, the turns since
+the park included, into the same file.
 
 A turn that leaves the Next step true — a question asked and still open, a side
-remark answered — settles nothing, and nor does the turn that wrote the summary.
+remark answered — leaves it as it is, and so does the turn that wrote the
+summary.
 
 ## The predecessor's transcript
 
@@ -237,8 +232,8 @@ the context the relay was run to free.
    by naming the session it was relayed from — its link from Pointers, written
    bare — so the operator can click back to it. A remainder in its State becomes
    this session's estimate, set before anything else. **That file gone from
-   disk** means the session that wrote it found nothing pending and deleted it,
-   leaving no current summary: report that, with the commit
+   disk** means `/finalize` swept it, leaving no current summary: report that,
+   with the commit
    `git log -1 --format=%h --diff-filter=D -- 'docs/remove-before-merging/relay-*.md'`
    names, and the branch's state in a few lines, dispatch any follow-up the
    operator's own words carry, and otherwise stop.
