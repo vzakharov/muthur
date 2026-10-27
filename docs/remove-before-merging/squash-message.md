@@ -18,6 +18,10 @@ to the branch. A row that no commit took is put back to HEAD's copy, so
 the harness's git check never finds the tree unclean. A session that
 never commits leaves no copy on the branch; the ledger still counts it.
 
+Separately, the lead relay-last-reply.py appends to a relay summary is
+wrapped as prettier fills it, so a summary no longer fails the vet
+run's markdown-wrap check.
+
 Co-authored-by: Claude <noreply@anthropic.com>
 ```
 
