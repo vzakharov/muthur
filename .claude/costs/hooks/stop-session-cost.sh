@@ -1,11 +1,10 @@
 #!/bin/bash
-# `Stop` hook: price the session and commit its cost row to the branch.
+# `Stop` hook: price the session and append its cost row to the ledger.
 #
 # It shares the event with the harness's own `Stop` check, which refuses to end a
 # turn on an unclean or unpushed tree.
 # `.claude/costs/CLAUDE.md` § "Running beside the harness's Stop check" carries
-# how the row is committed without the tree ever looking unfinished, and what the
-# closing verdict covers when the tree was unclean before this ran.
+# why a row left in the tree is put back, and what the closing verdict covers.
 
 . "$(dirname "${BASH_SOURCE[0]}")/../../hooks/lib.sh" || exit 0
 read_payload
@@ -83,49 +82,18 @@ wait_out_harness_check() {
   done
 }
 
-# Only the states that touch git can be mistaken for the agent's own work, which
-# is what the verdict at the foot reads this for.
+# What happened to a row left in the tree, which the verdict at the foot reads:
+# `put_back`, `stuck`, or `none` where the tree held none.
 state=none
 
-# Whether the row already differed from HEAD when the turn ended — a hand run of
-# `session_cost.py` writes it in place. The check read the same tree, so it was
-# counting the row.
-row_left=false
-
-place_row() { mkdir -p -- "$(dirname "$2")" && mv -f -- "$1" "$2"; }
-
-# The display copy reaches origin, then the branch, then the tree. The commit
-# is `ledger.py`'s, built in a throwaway index, and pushed before the branch
-# moves, so the branch is never ahead of origin while a push is in flight. What
-# is left is two steps — the ref move and the rename — between which the tree
-# differs from HEAD.
-commit_row() {
-  local staged=$1 row=$2 path=$3 top head subject commit
-
-  top="$(repo rev-parse --show-toplevel)" &&
-    head="$(repo rev-parse -q --verify HEAD)" &&
-    commit="$(ledger commit-row "$head" "$path" "$staged")" ||
-    return 1
-
-  if [ -z "$commit" ]; then
-    place_row "$staged" "$row"
-    return 0
+# The row back at HEAD's copy, index and file alike, or gone where HEAD has
+# none.
+put_back() {
+  if repo cat-file -e "HEAD:$1" 2>/dev/null; then
+    repo restore --source=HEAD --staged --worktree -- "$1"
+  else
+    repo rm -q --cached --ignore-unmatch -- "$1" && rm -f -- "$root/$1"
   fi
-  subject="$(repo log -1 --format=%s "$commit")"
-
-  local pushed=false
-  repo push -q origin "$commit:refs/heads/$branch" 2>/dev/null && pushed=true
-
-  # `place_row`, split so the directory is made first and the ref move and the
-  # rename run back to back.
-  mkdir -p -- "$(dirname "$row")" &&
-    repo update-ref -m "$subject" "refs/heads/$branch" "$commit" "$head" &&
-    mv -f -- "$staged" "$row" &&
-    git -C "$top" update-index --add -- "$path" ||
-    return 1
-
-  state=committed
-  [ "$pushed" = false ] || state=pushed
 }
 
 # What the pricing step and the ledger write said when they failed, for the
@@ -140,13 +108,12 @@ last_line() { awk 'NF { line = $0 } END { print line }' "$1" 2>/dev/null; }
 all_lines() { awk 'NF { printf "%s%s", sep, $0; sep = " " }' "$1" 2>/dev/null; }
 
 run_ledger() {
-  local transcript staged row path err display
+  local transcript staged row path err
   transcript="$(field transcript_path)"
   [ -n "$transcript" ] && [ -f "$transcript" ] || return 0
 
-  # Priced off the tree: `tmp/` is ignored, and on the row's filesystem, so the
-  # rename that puts the row in place is atomic. Nothing up to the display copy
-  # touches the tree or the branch, so none of it waits for the harness's check.
+  # Priced into the ignored `tmp/`: nothing up to the put-back touches the tree
+  # or the branch, so none of it waits for the harness's check.
   staged="$root/tmp/cost-row.$$.json"
   err="$root/tmp/cost-row.$$.err"
   mkdir -p -- "$root/tmp" || return 0
@@ -175,36 +142,23 @@ run_ledger() {
   if [ "$fetched" = true ]; then
     ledger append-row "$path" "$staged" 2>"$err" || ledger_error="$(all_lines "$err")"
   fi
+  rm -f -- "$staged" "$err"
 
-  # Until the branch is finalized, its PR's diff shows what the work cost.
-  display="$(ledger stop-plan "$branch" 2>"$err")" || {
-    ledger_error="${ledger_error:-$(all_lines "$err")}"
-    display=display=yes
-  }
-  rm -f -- "$err"
-  if [ "$display" != display=yes ]; then
-    rm -f -- "$staged"
-    return 0
-  fi
+  # A row differing from HEAD is one no commit took — staged by
+  # `stage-cost-row.sh` for a commit that left it out, or written by a hand run
+  # of `session_cost.py` — and the ledger holds this turn's anyway.
+  dirty "$row" || return 0
 
   # The last moment before anything here touches the tree, and so the latest —
   # which is what gives the look for the check's process time to find it.
   wait_out_harness_check
 
-  ! dirty "$row" || row_left=true
-
-  commit_row "$staged" "$row" "$path" && return 0
-
-  # A row that could not be committed still goes in place, for the verdict to
-  # name rather than for the turn to lose.
-  [ ! -f "$staged" ] || place_row "$staged" "$row"
-  state=uncommitted
+  if put_back "$path"; then state=put_back; else state=stuck; fi
 }
 
 run_ledger
 
-# The harness check's two conditions, re-read once the row is in: a push that
-# failed leaves a commit it would refuse on the next turn, blamed on nobody.
+# The harness check's two conditions, re-read once the row is put back.
 outstanding() {
   dirty && return 0
   repo rev-parse -q --verify "$upstream" >/dev/null 2>&1 || return 1
@@ -230,25 +184,16 @@ if [ -n "$ledger_error" ]; then
   exit 2
 fi
 
-case "$state" in
-  committed | uncommitted | pushed)
-    if outstanding; then
-      case "$state" in
-        pushed) did="committed and pushed" ;;
-        committed) did="committed but not pushed" ;;
-        *) did="written but not committed" ;;
-      esac
-      say "this session's cost row is ${did}. A git check complaining above may be counting it rather than your work: read \`git status\` before acting, push whatever is outstanding, and then just stop — the check passes on the next try and nothing here needs redoing."
-      exit 2
-    fi
-    ;;
-esac
+if [ "$state" = stuck ]; then
+  say "this session's cost row differs from HEAD and could not be put back, so a git check complaining above is counting it. Restore it to HEAD's copy (\`git restore --source=HEAD --staged --worktree -- <row>\`, or \`git rm --cached\` and delete it where HEAD has none) — the ledger already holds this turn's row — then just stop."
+  exit 2
+fi
 
-# Nothing is outstanding, but the check read the row before it was committed.
-# Its exit 2 is continuing the turn already, so saying so costs no turn — which
-# is also why this stays silent where no check is registered to have read it.
-if [ "$row_left" = true ] && ! outstanding && harness_check_registered; then
-  say "this session's cost row was left uncommitted when the turn ended, so a git check complaining above was counting it. The row is committed and pushed now and nothing is outstanding: just stop."
+# Nothing is outstanding, but the check read the row before it was put back. Its
+# exit 2 is continuing the turn already, so saying so costs no turn — which is
+# also why this stays silent where no check is registered to have read it.
+if [ "$state" = put_back ] && ! outstanding && harness_check_registered; then
+  say "this session's cost row was left in the tree with no commit to carry it, so a git check complaining above was counting it. It is back at HEAD's copy now — the ledger holds this turn's row, and your next commit carries a fresh one — and nothing is outstanding: just stop."
   exit 2
 fi
 
