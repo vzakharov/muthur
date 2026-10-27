@@ -18,12 +18,10 @@ is below the usual tenth of input (`.claude/costs/prices.json`).
   start it as a turn's last action unless the operator asks to stop the
   keepalive. `TaskStop` ends a task without a completion notice, so stopping one
   wakes nothing.
-- **A branch whose PR is merged or closed is not live**: nobody needs its
-  summary, and a commit on it is work on top of landed history. On a turn with
-  no live watcher the hook asks `gh pr view` about the checked-out branch and,
-  with HEAD at or behind the PR's head, starts no watcher, and a wake neither
-  parks nor renews. A landed answer is remembered against HEAD in the state
-  file; anything `git` or `gh` fails to answer reads as live.
+- **A branch whose PR is merged or closed is not live**, unless it carries
+  commits past the PR's head: nobody needs its summary, and a commit on it is
+  work on top of landed history. It gets no watcher, and a wake on it neither
+  parks nor renews.
 - **Every wake is one visible line.** The harness rejects a turn with no visible
   output and forces a second request, so the instruction asks for one line
   rather than silence — and spends it on the two answers that end the spell, in

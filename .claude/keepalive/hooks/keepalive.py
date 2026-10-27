@@ -116,12 +116,10 @@ def output(cmd: List[str], cwd: Path) -> Optional[str]:
 
 def landed(state: State, project: Path) -> bool:
     """Whether the checked-out branch's PR is merged or closed with HEAD at or
-    behind its head: such a session has nothing a park would summarize, and a
-    commit there is work on top of landed history. A branch carrying commits
-    past its PR, and any failure to tell, reads as live.
+    behind its head. Commits past the PR, and any failure to tell, read as live.
 
-    A landed answer is remembered against HEAD in the state file, so a session
-    on a landed branch asks GitHub once per commit rather than once per turn."""
+    A landed answer is remembered against HEAD in the state file, so GitHub is
+    asked once per commit rather than once per turn."""
     head = output(["git", "rev-parse", "HEAD"], project)
     if head is None:
         return False

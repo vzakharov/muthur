@@ -179,8 +179,7 @@ it.
 For an operator who will come back to the work later, not now: a successor
 started today is a session nobody is waiting for, and this one kept alive is a
 cache the keepalive (`.claude/keepalive/`) pays to keep warm. Its last wake
-parks unasked for the same reason — on a live branch; one whose PR is merged or
-closed gets no watcher and no park, having nothing left to summarize.
+parks unasked for the same reason, on a branch whose PR has not landed.
 
 Steps 1–2 as the handoff runs them, the argument becoming the Next step the same
 way; then no Step 3. The report gives the line the operator starts a new session
