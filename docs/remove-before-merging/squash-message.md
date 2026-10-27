@@ -22,10 +22,11 @@ writing are folded in as they arrive. Backfill orders by start time,
 and a second pass changes nothing.
 
 Readers take rows at any depth and filter periods by each row's start
-rather than by directory; report.py --all-my-repos lists each ledger
-recursively, so it reads both layouts.
-An older checkout's cross-repo report undercounts a migrated ledger
-until that checkout updates.
+rather than by directory, so a row with no priced response now falls
+in no period, though it still counts in totals and its branch.
+report.py --all-my-repos lists each ledger recursively, reading both
+layouts; an older checkout's cross-repo report undercounts a migrated
+ledger until that checkout updates.
 
 Co-authored-by: Claude <noreply@anthropic.com>
 ```
