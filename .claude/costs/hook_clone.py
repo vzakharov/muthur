@@ -1,10 +1,9 @@
-"""The repository the cost hooks' tests run over: a branch pushed to a bare
-`origin`, carrying the ledger's code and none of its rows.
+"""The fixture every suite that drives a cost hook, or the ledger over a real
+repository, builds on.
 
-Not a suite itself — its name keeps the `test_*.py` glob in `scripts/vet.sh` from
-running it — but the fixture every suite that drives a hook, or the ledger over a
-real repository, builds on. Importing it needs this directory on `sys.path`, which
-running a suite by path provides.
+Its name keeps the `test_*.py` glob in `scripts/vet.sh` from running it as a
+suite. Importing it needs this directory on `sys.path`, which running a suite by
+path provides.
 """
 
 from __future__ import annotations

@@ -16,8 +16,7 @@ to the successor: two sessions acting on one branch overwrite each other.
   this session's link; then the operator's message verbatim; then this session's
   reply it answers, condensed to a line, so the successor reads it against what
   it answers.
-- **Leave the branch alone** — no edit, no commit, no push. This session's turns
-  still reach the cost ledger, which lives on its own branch.
+- **Leave the branch alone** — no edit, no commit, no push.
 - **Reply to the operator** in a line or two: the message went to the successor,
   its link bare, and the successor sees it at its next turn boundary — so a
   successor still busy with its pickup, saying it has not seen it, means "not

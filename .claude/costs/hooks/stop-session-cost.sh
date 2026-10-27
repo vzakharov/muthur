@@ -76,14 +76,14 @@ wait_out_harness_check() {
     sleep 0.05
     waited=$((waited + 1))
     [ "$waited" -lt 100 ] || {
-      say "the harness's Stop check has run for 5s; writing the row without waiting for it"
+      say "the harness's Stop check has run for 5s; putting the row back without waiting for it"
       return 0
     }
   done
 }
 
-# What happened to a row left in the tree, which the verdict at the foot reads:
-# `put_back`, `stuck`, or `none` where the tree held none.
+# What the verdict at the foot reads: `unpriced`, or what became of a row left
+# in the tree — `put_back` or `stuck`.
 state=none
 
 # The row back at HEAD's copy, index and file alike, or gone where HEAD has
@@ -144,9 +144,8 @@ run_ledger() {
   fi
   rm -f -- "$staged" "$err"
 
-  # A row differing from HEAD is one no commit took — staged by
-  # `stage-cost-row.sh` for a commit that left it out, or written by a hand run
-  # of `session_cost.py` — and the ledger holds this turn's anyway.
+  # A row differing from HEAD is one no commit took, and the ledger holds this
+  # turn's anyway.
   dirty "$row" || return 0
 
   # The last moment before anything here touches the tree, and so the latest —
