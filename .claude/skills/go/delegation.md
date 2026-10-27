@@ -70,21 +70,21 @@ discarded and done in-session.
 
 ## Weighing the cost
 
-After each delegation, put two dollar figures side by side, by eye, at the rates
-in `.claude/costs/prices.json`:
+After each delegation, put what it cost beside what doing it yourself would have
+cost. `python3 .claude/costs/delegation.py <agent-id> --turns <n>` prints both
+at `.claude/costs/prices.json` rates, `<n>` being the turns you would have taken
+— your judgement, and the one figure in it that is: a stronger model often needs
+fewer than the subagent did. It also prints what each later turn of yours
+re-reads either way; multiply by the turns the session has left. Your review is
+in neither figure, so charge it to the delegation by eye.
 
-- **What it cost** — from the task notification's `subagent_tokens` and tool-use
-  count: each turn re-reads the agent's context, so the bulk is cache reads over
-  a context growing toward that token count, plus its output.
-- **What doing it yourself would have cost** — the output tokens at your own
-  rate, plus your whole context re-read on every extra turn it would have taken,
-  plus what the work and its tool output would have added to that context for
-  the rest of the session. Charge the delegation with your brief and your review
-  too.
+Where the script is not in the tree, weigh the same terms by eye: the subagent's
+turns re-reading a context growing toward its `subagent_tokens`, against its
+output at your rate plus your context re-read on each turn you would have taken.
 
 The verdict goes into the model's entry in `delegation-model-capabilities.md`,
-and what it teaches about every model into that file's § "Across models". It is
-an estimate made by eye, so say so wherever you report it.
+and what it teaches about every model into that file's § "Across models". Say
+which turn count you assumed wherever you report it.
 
 ## Keeping `delegation-model-capabilities.md`
 

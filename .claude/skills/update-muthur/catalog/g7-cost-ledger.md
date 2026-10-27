@@ -13,7 +13,8 @@ session — so the entry is `opt-in: ask`.
   carries the agent's revisable estimate of the work in senior-hours, and
   `report.py` sums the rows by month, week, day and branch and prices a
   senior-hour of work, over this repo or, with `--all-my-repos`, every repo the
-  `gh` user can see that carries a ledger. **The cost, which is why it is
+  `gh` user can see that carries a ledger; `delegation.py` weighs one of `/go`'s
+  delegations against doing it in-session. **The cost, which is why it is
   asked:** a `cost-ledger` branch on `origin`, and a commit and a push to it per
   turn, plus one to the working branch until it is finalized, a line of estimate
   notice on every prompt and one asking for the orientation mark until the

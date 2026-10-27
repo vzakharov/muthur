@@ -40,7 +40,7 @@
   as if neither were there.
   - **Pulls in:** `/polish` (G1); `/from-branch`, `/plan`, `/pr`, `/task`;
     `.claude/hooks/go-delegation.py`; **conditionally** `/take-issue`,
-    `/propose-issue` (G3)
+    `/propose-issue` (G3), `.claude/costs/` (G7) for the delegation's weighing
   - **Disposition:** adopt — `delegation-model-capabilities.md` as it stands,
     its lessons being general, then merged by lesson on every sync
     (`/update-muthur` Step 5)
