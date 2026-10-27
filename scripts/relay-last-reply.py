@@ -39,11 +39,12 @@ from pathlib import Path
 from typing import Dict, List, NoReturn, Optional, Tuple
 
 HEADING = "## Last agent turn"
+# Wrapped as prettier wraps it, since the summary is tracked Markdown the vet
+# run's wrap check reads; the tests hold the two equal.
 LEAD = (
     "The agent's last turn before the relay, verbatim, appended by\n"
-    "`scripts/relay-last-reply.py`. It includes the turn's interim messages,\n"
-    "usually unneeded but harmless; the reply proper is usually its last\n"
-    "paragraphs."
+    "`scripts/relay-last-reply.py`. It includes the turn's interim messages, usually\n"
+    "unneeded but harmless; the reply proper is usually its last paragraphs."
 )
 # `MARK` in `.claude/keepalive/hooks/keepalive.py`, which opens the watcher's
 # task description and so every wake's prompt; the tests hold the two equal.
