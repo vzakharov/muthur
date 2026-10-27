@@ -1,0 +1,94 @@
+{
+  "total": {
+    "inputTokens": 166,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 254470,
+    "cacheReadTokens": 18450997,
+    "outputTokens": 85263,
+    "thinkingTokens": 25933,
+    "responses": 83,
+    "costUsd": 7.431883400000002
+  },
+  "estimate": {
+    "at": "2026-10-27T12:54:44.666Z",
+    "parts": [
+      {
+        "hours": 7.0,
+        "grade": "senior",
+        "role": "developer",
+        "comment": "re-filing had to stay correct under concurrent pushes, stale branches writing the old layout and adopters' unknown ledgers; a middle would miss the race and dedup cases"
+      }
+    ],
+    "comment": null
+  },
+  "orientation": {
+    "endedBy": "oriented",
+    "endedOn": null,
+    "endedAt": "2026-10-27T12:37:42.748Z",
+    "contextTokens": 115570,
+    "spend": {
+      "inputTokens": 10,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 58443,
+      "cacheReadTokens": 460758,
+      "outputTokens": 1104,
+      "thinkingTokens": 151,
+      "responses": 5,
+      "costUsd": 0.5818156000000001
+    }
+  },
+  "sessionId": "4aae3ac1-5bcf-5d59-bb4d-a58921b9120e",
+  "branch": "claude/cost-rows-by-branch-qyu06w",
+  "cwd": "/home/user/muthur",
+  "openingPrompt": "/go claude/cost-rows-by-branch-qyu06w",
+  "prs": [
+    236
+  ],
+  "url": "https://claude.ai/code/session_01DaohkDAyJYMUZqxv5a2sUX",
+  "operator": "vzakharov",
+  "firstResponseAt": "2026-10-27T12:37:19.260Z",
+  "lastResponseAt": "2026-10-27T12:56:03.526Z",
+  "pricesAsOf": "2026-10-06",
+  "claudeCodeTotalUsd": null,
+  "ownTurns": {
+    "inputTokens": 166,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 254470,
+    "cacheReadTokens": 18450997,
+    "outputTokens": 85263,
+    "thinkingTokens": 25933,
+    "responses": 83,
+    "costUsd": 7.431883400000002
+  },
+  "subagents": {
+    "inputTokens": 0,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 0,
+    "cacheReadTokens": 0,
+    "outputTokens": 0,
+    "thinkingTokens": 0,
+    "responses": 0,
+    "costUsd": 0.0
+  },
+  "byRate": {
+    "claude-opus-5-5/standard": {
+      "inputTokens": 166,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 254470,
+      "cacheReadTokens": 18450997,
+      "outputTokens": 85263,
+      "thinkingTokens": 25933,
+      "responses": 83,
+      "costUsd": 7.431883400000002
+    }
+  },
+  "warnings": [],
+  "compactions": [],
+  "telemetry": {
+    "events": 83,
+    "matched": 83,
+    "matchedTableUsd": 7.431883400000002,
+    "matchedEventUsd": 7.431883400000002,
+    "unseen": {}
+  }
+}
