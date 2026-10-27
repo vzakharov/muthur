@@ -22,8 +22,9 @@ in a stand-down rather than a merge.
 
 ## Finalized?
 
-**Finalized means the PR is ready for review and its attestation comment names
-the current head** — or a head past it only by `.claude/costs/sessions/`, which
+**Finalized means the PR is ready for review and its
+`<!-- finalize-attestation <sha> -->` comment names the current head** — or a
+head past it only by `.claude/costs/sessions/`, which
 `@.claude/skills/finalize/attest.md` § "What makes it worth trusting" counts as
 the same head. Anything short of that is a diff no run has verified.
 

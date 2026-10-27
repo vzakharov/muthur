@@ -5,10 +5,10 @@ Loaded by `@.claude/skills/finalize/SKILL.md` at step 7, and by
 read the comment it posts. Step numbers below are `/finalize`'s.
 
 Post the attestation on the PR — or, on a re-run, edit it in place; it is
-sticky, keyed on the `<!-- finalize-attestation` marker, and the marker is how
-you find it (§ "Finding the comment"). The marker carries the head's full SHA,
-which the cost ledger's `Stop` hook parses (`.claude/costs/lib/finalized.py`) to
-stop writing display copies onto a finalized branch:
+sticky, keyed on the `<!-- finalize-attestation` marker (§ "Posting it"). The
+marker carries the head's full SHA, which the cost ledger's `Stop` hook parses
+(`.claude/costs/lib/finalized.py`) to stop writing display copies onto a
+finalized branch:
 
 ```md
 <!-- finalize-attestation <full-head-sha> -->
@@ -46,20 +46,17 @@ Finalized in `no vet` mode: <why the diff has nothing to verify — e.g. "markdo
 <If nothing runs on a PR here: "No workflow runs on a PR; this comment is the verification record.">
 ```
 
-## Finding the comment
+## Posting it
 
-**Match the marker, never `--edit-last`.** Same mechanic
-`@.claude/skills/squash-message/SKILL.md` § "Emit" uses for its own sticky
-comment — list the PR's comments
-(`gh api repos/<owner>/<repo>/issues/<n>/comments --paginate`), pick the one
-whose body contains `<!-- finalize-attestation`, and
-`gh api repos/<owner>/<repo>/issues/comments/<id> -X PATCH -F body=@<file>` that
-id; post a new comment only when no match exists. `gh pr comment --edit-last`
-looks like the tool for this and is not: it targets your most recent comment on
-the PR whatever that happens to be, so on the ordinary finalize ordering —
-squash proposal posted at step 5, attestation at step 7 — it overwrites the
-squash proposal with the attestation. Both comments are then one comment, and
-the loss is silent.
+**`scripts/pr-comment.sh attestation <n> <file>`**, run from the repository root
+with nothing chained in front, as the script's header requires, the file holding
+the comment as templated above. It edits the comment that leads with the marker
+in place, or posts one when there is none. `gh pr comment --edit-last` looks
+like the tool for this and is not: it targets your most recent comment on the PR
+whatever that happens to be, so on the ordinary finalize ordering — squash
+proposal posted at step 5, attestation at step 7 — it overwrites the squash
+proposal with the attestation. Both comments are then one comment, and the loss
+is silent.
 
 ## What makes it worth trusting
 

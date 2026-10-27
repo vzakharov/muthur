@@ -64,11 +64,11 @@
 - `/finalize` — Land prep: swap in staged copies, the quality passes, vet, merge
   the base, sweep working artifacts, flip to ready, reconcile the squash
   message, attest — and, on `and merge`, merge the PR when the run turned up
-<<<<<<< HEAD
   nothing to decide. Carries `merge.md`, that gate and the merge; `attest.md`,
   the attestation comment; `base-advanced.md`, the call on re-verifying when the
   base moved; and `revoke.md`, withdrawing an attestation.
-  - **Requires:** `gh`, `scripts/vet.sh`, `scripts/staged.sh`
+  - **Requires:** `gh`, `scripts/vet.sh`, `scripts/staged.sh`,
+    `scripts/pr-comment.sh`
   - **Pulls in:** `/polish` (G1); `/check-merge`, `/from-branch`, `/merge`,
     `/plan`, `/squash-message`, `/sync-branch`; **conditionally** `/take-issue`
     (G3), `/watch-ci` (G5)
@@ -78,16 +78,6 @@
   gate, merging when it passes, syncing and standing down when the base moved.
   - **Requires:** `gh`
   - **Pulls in:** `/check-merge`, `/finalize`, `/from-branch`, `/sync-branch`
-=======
-  nothing to decide. Carries `merge.md`, that gate and the merge;
-  `base-advanced.md`, the call on re-verifying when the base moved; and
-  `revoke.md`, withdrawing an attestation.
-  - **Requires:** `gh`, `scripts/vet.sh`, `scripts/staged.sh`,
-    `scripts/pr-comment.sh`
-  - **Pulls in:** `/polish` (G1); `/check-merge`, `/from-branch`, `/plan`,
-    `/squash-message`, `/sync-branch`; **conditionally** `/take-issue` (G3),
-    `/watch-ci` (G5)
->>>>>>> origin/main
   - **Disposition:** adopt
 - `/from-branch` — Attach the session to an existing branch or PR, abandoning
   the auto-created session branch.
