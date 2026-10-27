@@ -3,7 +3,7 @@
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Sequence, Tuple
 
@@ -40,6 +40,18 @@ def is_response_record(record: Any) -> bool:
         return False
     message = record.get("message")
     return isinstance(message, dict) and "usage" in message
+
+
+def merged(earlier: Response, later: Response) -> Response:
+    """One API response is written as one record per content block, each carrying
+    the whole response's usage: the usage counts once, the calls are every
+    record's, and the turn ended if any record says it did."""
+    ended = "end_turn" in (earlier.stop_reason, later.stop_reason)
+    return replace(
+        earlier,
+        calls=earlier.calls + later.calls,
+        stop_reason="end_turn" if ended else later.stop_reason or earlier.stop_reason,
+    )
 
 
 def parse_response(record: Dict[str, Any], where: str, warnings: List[str]) -> Response:

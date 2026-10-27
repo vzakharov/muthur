@@ -26,7 +26,7 @@ from __future__ import annotations
 import argparse
 import json
 import sys
-from dataclasses import dataclass, replace
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Dict, List, Optional
 
@@ -34,7 +34,7 @@ from lib.prices import PriceTable, parse_prices, rate_key
 from lib.pricing import UnpricedError, summarise_transcript
 from lib.shape import ShapeError, json_lines, read_string, required
 from lib.tally import Rates
-from lib.transcript import SYNTHETIC_MODEL, Response, TranscriptSources, is_response_record, parse_response
+from lib.transcript import SYNTHETIC_MODEL, Response, TranscriptSources, is_response_record, merged, parse_response
 
 COSTS = Path(__file__).resolve().parent
 
@@ -59,9 +59,7 @@ class Weighing:
 
 
 def responses_of(text: str, label: str, warnings: List[str]) -> List[Response]:
-    """Billed responses once each, in file order, the placeholder model skipped.
-    A response is written as one record per content block, each with the whole
-    usage, so its calls are gathered across them and its usage taken once."""
+    """Billed responses once each, in file order, the placeholder model skipped."""
     seen: Dict[str, Response] = {}
     for where, _, record in json_lines(text, label):
         if not is_response_record(record):
@@ -70,9 +68,7 @@ def responses_of(text: str, label: str, warnings: List[str]) -> List[Response]:
         if response.model == SYNTHETIC_MODEL:
             continue
         earlier = seen.get(response.message_id)
-        seen[response.message_id] = (
-            response if earlier is None else replace(earlier, calls=earlier.calls + response.calls)
-        )
+        seen[response.message_id] = response if earlier is None else merged(earlier, response)
     return list(seen.values())
 
 
