@@ -5,7 +5,7 @@ roles. What it protects is the line such a role earns: a role merely listed
 among the shared ones has its work booked under the nearest of them.
 
 Run by path (`python3 .claude/costs/test_estimate_notice.py`), as `scripts/vet.sh`
-does, which puts this directory on `sys.path` for `test_stop_hook`.
+does, which puts this directory on `sys.path` for `hook_clone`.
 """
 
 from __future__ import annotations
@@ -19,7 +19,7 @@ import unittest
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
-from test_stop_hook import Clone
+from hook_clone import Clone
 
 SESSION = "sess"
 WORK = "creative writing in a persona's voice, such as its reflections on songs"
@@ -126,11 +126,10 @@ class EstimateNoticeTest(unittest.TestCase):
         self.assertIn("`estimate.py role drop artist` adopts the shared rate", notice)
 
     def test_a_table_that_does_not_parse_is_said_rather_than_skipped(self) -> None:
-        parent = self.clone.seed_ledger()
-        broken = self.clone.root.parent / "broken.json"
-        broken.write_text(json.dumps({"roles": {}}))
-        built = self.run_costs("ledger.py", "commit-row", parent, ".claude/costs/rates.repo.json", str(broken))
-        self.clone.git("push", "-q", "origin", f"{built.stdout.strip()}:refs/heads/cost-ledger")
+        built = self.clone.ledger_commit(
+            self.clone.seed_ledger(), {".claude/costs/rates.repo.json": json.dumps({"roles": {}})}
+        )
+        self.clone.git("push", "-q", "origin", f"{built}:refs/heads/cost-ledger")
         notice = self.notice()
         self.assertIn("rate table does not parse", notice)
         self.assertIn("roles: not a non-empty object", notice)

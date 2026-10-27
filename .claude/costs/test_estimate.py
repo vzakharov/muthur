@@ -38,7 +38,7 @@ from lib.rows import ROOT, SessionCost, parse_session_cost, read_row, row_text
 from lib.shape import ShapeError, to_json
 from lib.tally import Tally
 from lib.totals import effort_of, main_model
-from test_stop_hook import Clone
+from hook_clone import Clone
 
 RATES = Rates(roles={"copywriter": 0.5, "developer": 1}, grades={"junior": 0.4, "senior": 1})
 COSTS = Path(__file__).resolve().parent

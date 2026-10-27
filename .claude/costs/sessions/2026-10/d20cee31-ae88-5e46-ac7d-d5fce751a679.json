@@ -1,13 +1,13 @@
 {
   "total": {
-    "inputTokens": 666,
-    "cacheWrite5mTokens": 118582,
-    "cacheWrite1hTokens": 186041,
-    "cacheReadTokens": 13208690,
-    "outputTokens": 67230,
-    "thinkingTokens": 26068,
-    "responses": 81,
-    "costUsd": 5.687710499999998
+    "inputTokens": 1200,
+    "cacheWrite5mTokens": 137475,
+    "cacheWrite1hTokens": 193178,
+    "cacheReadTokens": 15682713,
+    "outputTokens": 86470,
+    "thinkingTokens": 30571,
+    "responses": 96,
+    "costUsd": 6.494195599999998
   },
   "estimate": {
     "at": "2026-10-27T08:54:23.013Z",
@@ -44,7 +44,7 @@
     }
   },
   "sessionId": "d20cee31-ae88-5e46-ac7d-d5fce751a679",
-  "branch": "worktree-agent-a44e830bb8ae452fb",
+  "branch": "claude/cost-row-rides-agent-commits-8xxzcz",
   "cwd": "/home/user/muthur",
   "openingPrompt": "давай коммитить стоимость (в ветку) не автоматически, а вместе с любым коммитом который делает сам агент (но только он должен не упускать это, а то на -A будет …",
   "prs": [
@@ -53,70 +53,70 @@
   "url": "https://claude.ai/code/session_01DaohkDWN84poDmQDgPxDzL",
   "operator": "vzakharov",
   "firstResponseAt": "2026-10-27T08:50:27.288Z",
-  "lastResponseAt": "2026-10-27T09:21:17.868Z",
+  "lastResponseAt": "2026-10-27T09:25:12.031Z",
   "pricesAsOf": "2026-10-06",
   "claudeCodeTotalUsd": null,
   "ownTurns": {
-    "inputTokens": 136,
+    "inputTokens": 144,
     "cacheWrite5mTokens": 0,
-    "cacheWrite1hTokens": 186041,
-    "cacheReadTokens": 11977036,
-    "outputTokens": 57805,
-    "thinkingTokens": 24568,
-    "responses": 68,
-    "costUsd": 5.0403791999999985
+    "cacheWrite1hTokens": 193178,
+    "cacheReadTokens": 12934497,
+    "outputTokens": 58945,
+    "thinkingTokens": 24903,
+    "responses": 72,
+    "costUsd": 5.311799399999998
   },
   "subagents": {
-    "inputTokens": 24,
-    "cacheWrite5mTokens": 117105,
+    "inputTokens": 44,
+    "cacheWrite5mTokens": 135746,
     "cacheWrite1hTokens": 0,
-    "cacheReadTokens": 1041453,
-    "outputTokens": 9415,
-    "thinkingTokens": 1500,
-    "responses": 12,
-    "costUsd": 0.5952510999999998
+    "cacheReadTokens": 2320803,
+    "outputTokens": 27508,
+    "thinkingTokens": 5668,
+    "responses": 22,
+    "costUsd": 1.0786935999999996
   },
   "byRate": {
     "claude-opus-5-5/standard": {
-      "inputTokens": 642,
-      "cacheWrite5mTokens": 1477,
-      "cacheWrite1hTokens": 186041,
-      "cacheReadTokens": 12167237,
-      "outputTokens": 57815,
-      "thinkingTokens": 24568,
-      "responses": 69,
-      "costUsd": 5.092459399999998
+      "inputTokens": 1156,
+      "cacheWrite5mTokens": 1729,
+      "cacheWrite1hTokens": 193178,
+      "cacheReadTokens": 13361910,
+      "outputTokens": 58962,
+      "thinkingTokens": 24903,
+      "responses": 74,
+      "costUsd": 5.415501999999998
     },
     "claude-sonnet-5-5/standard": {
-      "inputTokens": 24,
-      "cacheWrite5mTokens": 117105,
+      "inputTokens": 44,
+      "cacheWrite5mTokens": 135746,
       "cacheWrite1hTokens": 0,
-      "cacheReadTokens": 1041453,
-      "outputTokens": 9415,
-      "thinkingTokens": 1500,
-      "responses": 12,
-      "costUsd": 0.5952510999999998
+      "cacheReadTokens": 2320803,
+      "outputTokens": 27508,
+      "thinkingTokens": 5668,
+      "responses": 22,
+      "costUsd": 1.0786935999999996
     }
   },
   "warnings": [
-    "prices.json priced the 79 responses the events also priced at $5.5745, against the events' $5.4704: a rate in the table is likely out of date"
+    "prices.json priced the 94 responses the events also priced at $6.3905, against the events' $6.1584: a rate in the table is likely out of date"
   ],
   "compactions": [],
   "telemetry": {
-    "events": 80,
-    "matched": 79,
-    "matchedTableUsd": 5.5745106999999985,
-    "matchedEventUsd": 5.4703654,
+    "events": 96,
+    "matched": 94,
+    "matchedTableUsd": 6.3904929999999975,
+    "matchedEventUsd": 6.1584127,
     "unseen": {
       "prompt_suggestion": {
-        "inputTokens": 506,
-        "cacheWrite5mTokens": 1477,
+        "inputTokens": 1012,
+        "cacheWrite5mTokens": 1729,
         "cacheWrite1hTokens": 0,
-        "cacheReadTokens": 190201,
-        "outputTokens": 10,
+        "cacheReadTokens": 427413,
+        "outputTokens": 17,
         "thinkingTokens": 0,
-        "responses": 1,
-        "costUsd": 0.0520802
+        "responses": 2,
+        "costUsd": 0.1037026
       }
     }
   }

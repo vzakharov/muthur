@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """What `lib/finalized.py` reads off the attestation query's answer; the hook
-tests in `test_stop_hook.py` cover what the branch does with it."""
+tests in `test_stage_cost_row.py` cover what the branch does with it."""
 
 from __future__ import annotations
 
