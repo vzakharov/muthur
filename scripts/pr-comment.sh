@@ -13,8 +13,8 @@
 #     — a cloud session does not.
 # A denial on the web means the setup script lacks the first: the reply that
 # meets it names that entry beside the phrase CLAUDE.md asks for, so the
-# operator can add it. The file must lead with its kind's marker, which keeps either approval from
-# covering any other comment.
+# operator can add it. The file must lead with its kind's marker, which keeps
+# either approval from covering any other comment.
 #
 # Usage (from the repository root, spelled exactly so, with no `cd … &&` or
 # anything else chained in front — both approvals match the command's text):
