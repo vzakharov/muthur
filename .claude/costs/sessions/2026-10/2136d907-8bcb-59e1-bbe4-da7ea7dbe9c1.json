@@ -1,0 +1,94 @@
+{
+  "total": {
+    "inputTokens": 80,
+    "cacheWrite5mTokens": 100463,
+    "cacheWrite1hTokens": 105681,
+    "cacheReadTokens": 4538354,
+    "outputTokens": 20795,
+    "thinkingTokens": 6731,
+    "responses": 40,
+    "costUsd": 2.671653800000001
+  },
+  "estimate": {
+    "at": "2026-10-27T02:29:24.299Z",
+    "parts": [
+      {
+        "hours": 1.5,
+        "grade": "senior",
+        "role": "prompter",
+        "comment": "Deciding which stop conditions in the keepalive and relay rules to drop takes judgement of how the loop's sessions end, and the prose has to stay consistent across four files"
+      },
+      {
+        "hours": 0.5,
+        "grade": "middle",
+        "role": "developer",
+        "comment": "A small hook change and its test"
+      }
+    ],
+    "comment": null
+  },
+  "orientation": {
+    "endedBy": "oriented",
+    "endedOn": null,
+    "endedAt": "2026-10-27T02:27:00.529Z",
+    "contextTokens": 115119,
+    "spend": {
+      "inputTokens": 14,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 62432,
+      "cacheReadTokens": 636136,
+      "outputTokens": 3084,
+      "thinkingTokens": 1678,
+      "responses": 7,
+      "costUsd": 0.6884192
+    }
+  },
+  "sessionId": "2136d907-8bcb-59e1-bbe4-da7ea7dbe9c1",
+  "branch": "claude/keepalive-always-parks-9khkys",
+  "cwd": "/home/user/muthur",
+  "openingPrompt": "давай парковать всегда, даже если \"ветка всё знает\", потому что даже в таких случаях последняя сессия иногда наговорит всякого, на которое легче (было бы) ответ…",
+  "prs": [
+    232
+  ],
+  "url": "https://claude.ai/code/session_01DaohkD2amc2dynSfpzvst3",
+  "operator": "vzakharov",
+  "firstResponseAt": "2026-10-27T02:26:09.490Z",
+  "lastResponseAt": "2026-10-27T02:33:11.423Z",
+  "pricesAsOf": "2026-10-06",
+  "claudeCodeTotalUsd": null,
+  "ownTurns": {
+    "inputTokens": 62,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 105681,
+    "cacheReadTokens": 3867005,
+    "outputTokens": 16112,
+    "thinkingTokens": 4916,
+    "responses": 31,
+    "costUsd": 1.9413370000000008
+  },
+  "subagents": {
+    "inputTokens": 18,
+    "cacheWrite5mTokens": 100463,
+    "cacheWrite1hTokens": 0,
+    "cacheReadTokens": 671349,
+    "outputTokens": 4683,
+    "thinkingTokens": 1815,
+    "responses": 9,
+    "costUsd": 0.7303168
+  },
+  "byRate": {
+    "claude-opus-5-5/standard": {
+      "inputTokens": 80,
+      "cacheWrite5mTokens": 100463,
+      "cacheWrite1hTokens": 105681,
+      "cacheReadTokens": 4538354,
+      "outputTokens": 20795,
+      "thinkingTokens": 6731,
+      "responses": 40,
+      "costUsd": 2.671653800000001
+    }
+  },
+  "warnings": [],
+  "compactions": [],
+  "telemetry": null
+}
