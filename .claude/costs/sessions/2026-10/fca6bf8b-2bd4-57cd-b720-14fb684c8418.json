@@ -1,0 +1,100 @@
+{
+  "total": {
+    "inputTokens": 144,
+    "cacheWrite5mTokens": 100116,
+    "cacheWrite1hTokens": 128911,
+    "cacheReadTokens": 9514429,
+    "outputTokens": 25615,
+    "thinkingTokens": 7898,
+    "responses": 72,
+    "costUsd": 3.9476297999999996
+  },
+  "estimate": {
+    "at": "2026-10-27T12:41:09.730Z",
+    "parts": [
+      {
+        "hours": 0.25,
+        "grade": "senior",
+        "role": "prompter",
+        "comment": "picking up a parked relay and running land prep needs someone who knows the loop's gates well enough to tell an eventful run from an uneventful one"
+      },
+      {
+        "hours": 0.25,
+        "grade": "middle",
+        "role": "developer",
+        "comment": "the wrap fix is a one-constant change with a pure-Python regression test, routine work"
+      }
+    ],
+    "comment": null
+  },
+  "orientation": {
+    "endedBy": "end_turn",
+    "endedOn": null,
+    "endedAt": "2026-10-27T12:30:38.934Z",
+    "contextTokens": 106448,
+    "spend": {
+      "inputTokens": 16,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 56895,
+      "cacheReadTokens": 743345,
+      "outputTokens": 2367,
+      "thinkingTokens": 670,
+      "responses": 8,
+      "costUsd": 0.6512330000000001
+    }
+  },
+  "sessionId": "fca6bf8b-2bd4-57cd-b720-14fb684c8418",
+  "branch": "claude/cost-row-rides-agent-commits-8xxzcz",
+  "cwd": "/home/user/muthur",
+  "openingPrompt": "/relay take claude/cost-row-rides-agent-commits-8xxzcz — хуки, тесты и доки готовы, дальше polish и обновление PR",
+  "prs": [
+    235
+  ],
+  "url": "https://claude.ai/code/session_01DaohkFrNSe3svvBMYsrdt3",
+  "operator": "vzakharov",
+  "firstResponseAt": "2026-10-27T12:29:50.021Z",
+  "lastResponseAt": "2026-10-27T13:00:00.317Z",
+  "pricesAsOf": "2026-10-06",
+  "claudeCodeTotalUsd": null,
+  "ownTurns": {
+    "inputTokens": 128,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 128911,
+    "cacheReadTokens": 8935070,
+    "outputTokens": 21997,
+    "thinkingTokens": 6562,
+    "responses": 64,
+    "costUsd": 3.2587539999999993
+  },
+  "subagents": {
+    "inputTokens": 16,
+    "cacheWrite5mTokens": 100116,
+    "cacheWrite1hTokens": 0,
+    "cacheReadTokens": 579359,
+    "outputTokens": 3618,
+    "thinkingTokens": 1336,
+    "responses": 8,
+    "costUsd": 0.6888758
+  },
+  "byRate": {
+    "claude-opus-5-5/standard": {
+      "inputTokens": 144,
+      "cacheWrite5mTokens": 100116,
+      "cacheWrite1hTokens": 128911,
+      "cacheReadTokens": 9514429,
+      "outputTokens": 25615,
+      "thinkingTokens": 7898,
+      "responses": 72,
+      "costUsd": 3.9476297999999996
+    }
+  },
+  "warnings": [],
+  "compactions": [],
+  "telemetry": {
+    "events": 72,
+    "matched": 72,
+    "matchedTableUsd": 3.9476297999999996,
+    "matchedEventUsd": 3.947629799999999,
+    "unseen": {}
+  }
+}
