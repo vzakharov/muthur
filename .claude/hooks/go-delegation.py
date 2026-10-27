@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """Deliver `/go`'s delegation procedure the first time `/go` enters a session.
 
-`.claude/skills/go/SKILL.md` points at `delegation.md` and `models.md` beside it
+`.claude/skills/go/SKILL.md` points at `delegation.md` and
+`delegation-model-capabilities.md` beside it
 only conditionally, so that `MUTHUR_DELEGATION=off` leaves `/go` reading as if
 delegation had never been written. This hook saves the agent the round trip of
 reading them: it prints both as additional context when `/go`'s body arrives,
@@ -31,7 +32,7 @@ SWITCH = "MUTHUR_DELEGATION"
 SKILLS = {"go", "implement"}
 TYPED = re.compile(r"^\s*/(go|implement)(\s|$)")
 SKILL_DIR = Path(".claude") / "skills" / "go"
-FILES = ("delegation.md", "models.md")
+FILES = ("delegation.md", "delegation-model-capabilities.md")
 
 
 def say(message: str) -> None:

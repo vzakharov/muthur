@@ -43,6 +43,10 @@
 #     everything it `@`-imports, each file's staged copy where there is one,
 #     with a ceiling and a lower target for a branch that crossed it. Dropping
 #     it leaves text paid for on every turn free to grow unnoticed.
+#   the delegation notes cap — holds `/go`'s
+#     `delegation-model-capabilities.md` to the 100 lines its keeping rule
+#     sets, so a summary rewritten every session cannot drift into a log.
+#     Keyed on the file, so a repo that drops delegation has nothing to check.
 #   check-muthur.sh — everything that tests only this repo's own machinery: the
 #     repo-identity check and every `scripts/test_*.py`. One line because an
 #     adopting repo drops them together; it keys on the catalog and exits 0
@@ -66,6 +70,11 @@ set -euo pipefail
 "$(dirname "$0")/check-squash-message.sh"
 "$(dirname "$0")/staged.sh" check
 "$(dirname "$0")/check-claude-md-size.sh"
+notes="$(dirname "$0")/../.claude/skills/go/delegation-model-capabilities.md"
+if [ -f "$notes" ] && [ "$(wc -l < "$notes")" -gt 100 ]; then
+  echo "vet: $notes runs past 100 lines; fold it back into a summary (.claude/skills/go/delegation.md)." >&2
+  exit 1
+fi
 "$(dirname "$0")/check-muthur.sh"
 for check in "$(dirname "$0")"/../.claude/{costs,context-budget,cold-cache,keepalive}/{test,check}_*.py; do
   [ ! -f "$check" ] || python3 "$check"
