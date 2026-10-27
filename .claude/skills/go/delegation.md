@@ -82,10 +82,9 @@ in `.claude/costs/prices.json`:
   the rest of the session. Charge the delegation with your brief and your review
   too.
 
-A cache read costs the same on several models, so the saving comes from output
-and from keeping your own context small, and grows with the size of the
-sub-task. The verdict goes into the model's entry below. It is an estimate made
-by eye, so say so wherever you report it.
+The verdict goes into the model's entry, and what it teaches about every model
+into § "Across models". It is an estimate made by eye, so say so wherever you
+report it.
 
 ## Keeping `delegation-model-capabilities.md`
 
@@ -96,3 +95,9 @@ work it came from. It is a compressed summary, not a log: fold the new
 observation into what the entry already says, replace what it contradicts, and
 drop detail that no longer changes which model you pick or how you brief it.
 Stay under 100 lines; `scripts/vet.sh` fails it past that.
+
+**An entry names the kind of work, never the task.** "A unittest suite against a
+hook" holds in any repo; a branch, file, PR or case count does not, and every
+repo that adopted this loop folds the file into its own on each sync
+(`@.claude/skills/update-muthur/SKILL.md` § "Step 5 — Apply by intent, not by
+patch").

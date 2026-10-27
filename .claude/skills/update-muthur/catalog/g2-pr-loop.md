@@ -41,7 +41,9 @@
   - **Pulls in:** `/polish` (G1); `/from-branch`, `/plan`, `/pr`, `/task`;
     `.claude/hooks/go-delegation.py`; **conditionally** `/take-issue`,
     `/propose-issue` (G3)
-  - **Disposition:** adopt
+  - **Disposition:** adopt — `delegation-model-capabilities.md` as it stands,
+    its lessons being general, then merged by lesson on every sync
+    (`/update-muthur` Step 5)
 - `.claude/hooks/go-delegation.py` — Deliver `/go`'s two delegation files as
   context the first time `/go` enters a session — through the `Skill` tool, a
   `Read` of its `SKILL.md`, or a typed `/go` — so the agent spends no round trip

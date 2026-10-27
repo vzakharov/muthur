@@ -314,6 +314,15 @@ de-vendored rewrites, not copies, so every hunk conflicts. Read the source's
 diff to understand what changed and why, then re-express it in this repo's
 vocabulary and file layout.
 
+**`.claude/skills/go/delegation-model-capabilities.md` is merged by lesson,
+never ported or skipped.** Each repo's copy holds what its own delegations
+taught, so it differs from the source's by design and the record never mentions
+it. Read the source's file whole — not the diff, since an entry the source
+folded away may still be news here — and fold in each lesson this file lacks
+that holds for the models and setup this repo runs, in its own words, keeping
+every lesson of its own. The result stays under its 100-line cap; where the two
+disagree, this repo's own runs win over the source's.
+
 ### Step 6 — Consistency sweep
 
 When a port renames a term, grep the old one across the whole tree, the record
