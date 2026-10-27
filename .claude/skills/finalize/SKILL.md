@@ -196,7 +196,10 @@ Steps (stop on first unresolved failure):
    the same commit: `python3 .claude/costs/ledger.py backfill HEAD` first,
    because a branch that merged the ledger in mid-flight carries rows the
    `cost-ledger` branch never received, then `git rm -r .claude/costs/sessions`
-   — they are display copies, and the trunk carries none. Then `git rm -r` the
+   — they are display copies, and the trunk carries none. That `git rm` runs in
+   the same command as the sweep's `git commit`: the cost ledger's staging hook
+   stays out of a command naming the directory, and would otherwise re-stage
+   this session's row into the commit that deletes it. Then `git rm -r` the
    **entire** tree, not just the `squash-message.md` that
    `@.claude/skills/squash-message/SKILL.md` tracks there: the directory's name
    is a standing declaration that nothing inside it may land, so a screenshot or
