@@ -6,11 +6,10 @@ conversation at 20 times what a cache read costs — 40 on a model whose read ra
 is below the usual tenth of input (`.claude/costs/prices.json`).
 
 - **The watcher is a background Bash task, because nothing else keeps an idle
-  container alive.** The platform reclaims one within minutes unless a
-  background task is running; an async hook does not count. `keepalive.py watch`
-  polls the transcript and exits `MUTHUR_CACHE_KEEPALIVE_LEAD` seconds
-  (default 300) before the cache expires, and the task's completion notice is
-  the wake.
+  container alive**: the platform reclaims one within minutes, and an async hook
+  does not count. `keepalive.py watch` polls the transcript and exits
+  `MUTHUR_CACHE_KEEPALIVE_LEAD` seconds (default 300) before the cache expires,
+  and the task's completion notice is the wake.
 - **It runs after every turn, because its last wake parks**: the summary keeps
   the session's last reply verbatim, which the operator answers more easily than
   they dig the same points out of files, and hands them a `/relay take` line to
