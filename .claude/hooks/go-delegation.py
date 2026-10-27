@@ -28,6 +28,8 @@ import sys
 from pathlib import Path
 from typing import Optional
 
+from session_state import project_root, state_file
+
 SWITCH = "MUTHUR_DELEGATION"
 SKILLS = {"go", "implement"}
 TYPED = re.compile(r"^\s*/(go|implement)(\s|$)")
@@ -87,17 +89,12 @@ def main() -> int:
         return 0
     if not isinstance(payload, dict):
         return 0
-    session = payload.get("session_id")
-    if not isinstance(session, str) or not session or "/" in session or session.startswith("."):
+    root = project_root(payload)
+    if root is None:
         return 0
-    root_text = os.environ.get("CLAUDE_PROJECT_DIR") or payload.get("cwd") or ""
-    if not isinstance(root_text, str) or not root_text or not Path(root_text).is_dir():
+    marker = state_file(root, "go-delegation", payload)
+    if marker is None or not enters_go(payload, root):
         return 0
-    root = Path(root_text)
-    if not enters_go(payload, root):
-        return 0
-
-    marker = root / "tmp" / "go-delegation" / session
     if marker.exists():
         return 0
     text = brief(root)

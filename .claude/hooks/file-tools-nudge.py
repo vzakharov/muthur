@@ -34,6 +34,8 @@ from itertools import takewhile
 from pathlib import Path
 from typing import Callable, Iterator, Optional
 
+from session_state import project_root, state_file
+
 PUNCTUATION = "();<>|&\n"
 HEREDOC = re.compile(r"<<(?!<)-?\s*(['\"]?)([A-Za-z_][A-Za-z0-9_]*)\1")
 ASSIGNMENT = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*=")
@@ -324,28 +326,27 @@ def main() -> int:
     try:
         payload = json.loads(sys.stdin.read())
         command = payload["tool_input"]["command"]
-        session = payload["session_id"]
     except (ValueError, KeyError, TypeError):
         say("unreadable payload; command allowed.")
         return 0
     if payload.get("tool_name") != "Bash" or not isinstance(command, str):
         return 0
-    if not isinstance(session, str) or not session or "/" in session or session.startswith("."):
+    root = project_root(payload)
+    if root is None:
+        return 0
+    state = state_file(root, "file-tools-nudge", payload)
+    if state is None:
         return 0
 
-    root = os.environ.get("CLAUDE_PROJECT_DIR") or payload.get("cwd") or ""
-    if not root or not Path(root).is_dir():
-        return 0
     cwd = payload.get("cwd")
-    base = Path(cwd) if isinstance(cwd, str) and Path(cwd).is_dir() else Path(root)
+    base = Path(cwd) if isinstance(cwd, str) and Path(cwd).is_dir() else root
     try:
-        found = detect(command, within(Path(root).resolve(), base.resolve()))
+        found = detect(command, within(root.resolve(), base.resolve()))
     except (ValueError, OSError, RuntimeError):
         return 0
     if found is None:
         return 0
 
-    state = Path(root) / "tmp" / "file-tools-nudge" / session
     digest = hashlib.sha256(command.encode()).hexdigest()
     try:
         if state.is_file() and digest in state.read_text().split():
