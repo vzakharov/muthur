@@ -11,14 +11,13 @@ is below the usual tenth of input (`.claude/costs/prices.json`).
   `keepalive.py watch` polls the transcript and exits
   `MUTHUR_CACHE_KEEPALIVE_LEAD` seconds (default 300) before the cache expires,
   and the task's completion notice is the wake.
-- **It runs after every turn, a branch that holds all the work included.** The
-  `UserPromptSubmit` hook asks the agent to start it as a turn's last action,
-  unless the operator asks to stop the keepalive, because its last wake parks:
-  the summary keeps the session's last reply verbatim, which the operator
-  answers more easily than they dig the same points out of files, and hands them
-  a `/relay take` line to paste. A session left to go cold leaves neither.
-  `TaskStop` ends a task without a completion notice, so stopping one wakes
-  nothing.
+- **It runs after every turn, a branch that holds all the work included, because
+  its last wake parks**: the summary keeps the session's last reply verbatim,
+  which the operator answers more easily than they dig the same points out of
+  files, and hands them a `/relay take` line to paste. A session left to go cold
+  leaves neither. The `UserPromptSubmit` hook asks the agent to start it as a
+  turn's last action unless the operator asks to stop the keepalive. `TaskStop`
+  ends a task without a completion notice, so stopping one wakes nothing.
 - **Every wake is one visible line.** The harness rejects a turn with no visible
   output and forces a second request, so the instruction asks for one line
   rather than silence — and spends it on the two answers that end the spell, in
