@@ -1,0 +1,100 @@
+{
+  "total": {
+    "inputTokens": 114,
+    "cacheWrite5mTokens": 57605,
+    "cacheWrite1hTokens": 123588,
+    "cacheReadTokens": 7052015,
+    "outputTokens": 22133,
+    "thinkingTokens": 5731,
+    "responses": 57,
+    "costUsd": 3.1302480000000004
+  },
+  "estimate": {
+    "at": "2026-10-27T12:40:09.972Z",
+    "parts": [
+      {
+        "hours": 1.5,
+        "grade": "senior",
+        "role": "prompter",
+        "comment": "landing a skill-procedure PR whose base conflicts means judging, clause by clause, which rule each side's prose meant to keep"
+      },
+      {
+        "hours": 0.5,
+        "grade": "middle",
+        "role": "qa",
+        "comment": "the vet run, the attestation and the merge gate must be walked and recorded honestly"
+      }
+    ],
+    "comment": null
+  },
+  "orientation": {
+    "endedBy": "oriented",
+    "endedOn": null,
+    "endedAt": "2026-10-27T12:39:37.197Z",
+    "contextTokens": 87900,
+    "spend": {
+      "inputTokens": 2,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 37629,
+      "cacheReadTokens": 49176,
+      "outputTokens": 332,
+      "thinkingTokens": 187,
+      "responses": 1,
+      "costUsd": 0.3175152
+    }
+  },
+  "sessionId": "a1af1bcc-a1cf-5dc2-b693-60d24ee6278e",
+  "branch": "claude/merge-skill-rnvj7p",
+  "cwd": "/home/user/muthur",
+  "openingPrompt": "мы уснули?",
+  "prs": [
+    217
+  ],
+  "url": "https://claude.ai/code/session_01DaohkDvi6EfkCJXTkr31sZ",
+  "operator": "vzakharov",
+  "firstResponseAt": "2026-10-27T12:39:32.516Z",
+  "lastResponseAt": "2026-10-27T12:51:31.345Z",
+  "pricesAsOf": "2026-10-06",
+  "claudeCodeTotalUsd": null,
+  "ownTurns": {
+    "inputTokens": 92,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 123588,
+    "cacheReadTokens": 6151438,
+    "outputTokens": 18663,
+    "thinkingTokens": 4508,
+    "responses": 46,
+    "costUsd": 2.5926196000000004
+  },
+  "subagents": {
+    "inputTokens": 22,
+    "cacheWrite5mTokens": 57605,
+    "cacheWrite1hTokens": 0,
+    "cacheReadTokens": 900577,
+    "outputTokens": 3470,
+    "thinkingTokens": 1223,
+    "responses": 11,
+    "costUsd": 0.5376284
+  },
+  "byRate": {
+    "claude-opus-5-5/standard": {
+      "inputTokens": 114,
+      "cacheWrite5mTokens": 57605,
+      "cacheWrite1hTokens": 123588,
+      "cacheReadTokens": 7052015,
+      "outputTokens": 22133,
+      "thinkingTokens": 5731,
+      "responses": 57,
+      "costUsd": 3.1302480000000004
+    }
+  },
+  "warnings": [],
+  "compactions": [],
+  "telemetry": {
+    "events": 57,
+    "matched": 57,
+    "matchedTableUsd": 3.1302480000000004,
+    "matchedEventUsd": 3.1302480000000004,
+    "unseen": {}
+  }
+}
