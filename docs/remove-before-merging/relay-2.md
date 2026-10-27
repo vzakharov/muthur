@@ -80,9 +80,8 @@ is ready for `/finalize` whenever the operator asks for it.
 ## Last agent turn
 
 The agent's last turn before the relay, verbatim, appended by
-`scripts/relay-last-reply.py`. It includes the turn's interim messages,
-usually unneeded but harmless; the reply proper is usually its last
-paragraphs.
+`scripts/relay-last-reply.py`. It includes the turn's interim messages, usually
+unneeded but harmless; the reply proper is usually its last paragraphs.
 
 ```text
 Теперь `/pr`, режим refresh.
