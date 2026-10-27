@@ -1,0 +1,92 @@
+{
+  "total": {
+    "inputTokens": 18,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 68573,
+    "cacheReadTokens": 892173,
+    "outputTokens": 3393,
+    "thinkingTokens": 468,
+    "responses": 9,
+    "costUsd": 0.7949506
+  },
+  "estimate": {
+    "at": "2026-10-27T08:00:28.067Z",
+    "parts": [
+      {
+        "hours": 0.25,
+        "grade": "senior",
+        "role": "developer",
+        "comment": "explaining which process environment a hook sees and why /proc environ lags needs someone fluent in exec and env inheritance"
+      }
+    ],
+    "comment": null
+  },
+  "sessionId": "0edead8a-a49d-5f3d-9fcd-b48baf25a6f5",
+  "branch": "fix/telemetry-hook-stale-proc-environ",
+  "cwd": "/home/user/muthur",
+  "openingPrompt": "/relay take fix/telemetry-hook-stale-proc-environ — ждём указаний по исправлению хука телеметрии",
+  "prs": [],
+  "url": "https://claude.ai/code/session_01DaohkEEkHq4BxUvmFD3fLm",
+  "operator": "vzakharov",
+  "firstResponseAt": "2026-10-27T07:59:49.049Z",
+  "lastResponseAt": "2026-10-27T08:00:40.277Z",
+  "pricesAsOf": "2026-10-06",
+  "claudeCodeTotalUsd": null,
+  "ownTurns": {
+    "inputTokens": 18,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 68573,
+    "cacheReadTokens": 892173,
+    "outputTokens": 3393,
+    "thinkingTokens": 468,
+    "responses": 9,
+    "costUsd": 0.7949506
+  },
+  "subagents": {
+    "inputTokens": 0,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 0,
+    "cacheReadTokens": 0,
+    "outputTokens": 0,
+    "thinkingTokens": 0,
+    "responses": 0,
+    "costUsd": 0.0
+  },
+  "byRate": {
+    "claude-opus-5-5/standard": {
+      "inputTokens": 18,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 68573,
+      "cacheReadTokens": 892173,
+      "outputTokens": 3393,
+      "thinkingTokens": 468,
+      "responses": 9,
+      "costUsd": 0.7949506
+    }
+  },
+  "warnings": [],
+  "orientation": {
+    "endedBy": "end_turn",
+    "endedOn": null,
+    "endedAt": "2026-10-27T08:00:40.277Z",
+    "contextTokens": 117751,
+    "spend": {
+      "inputTokens": 16,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 68189,
+      "cacheReadTokens": 774808,
+      "outputTokens": 2156,
+      "thinkingTokens": 395,
+      "responses": 8,
+      "costUsd": 0.7436575999999999
+    }
+  },
+  "compactions": [],
+  "telemetry": {
+    "events": 5,
+    "matched": 5,
+    "matchedTableUsd": 0.2827228,
+    "matchedEventUsd": 0.2827228,
+    "unseen": {}
+  }
+}
