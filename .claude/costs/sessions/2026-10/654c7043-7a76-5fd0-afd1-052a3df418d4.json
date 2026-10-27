@@ -1,0 +1,100 @@
+{
+  "total": {
+    "inputTokens": 108,
+    "cacheWrite5mTokens": 68101,
+    "cacheWrite1hTokens": 103063,
+    "cacheReadTokens": 6039075,
+    "outputTokens": 27323,
+    "thinkingTokens": 9601,
+    "responses": 54,
+    "costUsd": 2.9197159999999998
+  },
+  "estimate": {
+    "at": "2026-10-27T09:33:26.336Z",
+    "parts": [
+      {
+        "hours": 1.5,
+        "grade": "senior",
+        "role": "prompter",
+        "comment": "the fix rewrites a permission premise several skills lean on; the wording decides what agents and the classifier do"
+      },
+      {
+        "hours": 0.5,
+        "grade": "senior",
+        "role": "analyst",
+        "comment": "settling which settings layer the cloud classifier honours needs the docs read against an adopter's denials"
+      }
+    ],
+    "comment": null
+  },
+  "orientation": {
+    "endedBy": "oriented",
+    "endedOn": null,
+    "endedAt": "2026-10-27T09:32:42.851Z",
+    "contextTokens": 92280,
+    "spend": {
+      "inputTokens": 2,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 41268,
+      "cacheReadTokens": 49176,
+      "outputTokens": 220,
+      "thinkingTokens": 42,
+      "responses": 1,
+      "costUsd": 0.3443872
+    }
+  },
+  "sessionId": "654c7043-7a76-5fd0-afd1-052a3df418d4",
+  "branch": "claude/pr-comment-auto-mode-allow-zjfgg6",
+  "cwd": "/home/user/muthur",
+  "openingPrompt": "/task",
+  "prs": [
+    239
+  ],
+  "url": "https://claude.ai/code/session_01DaohkDXL9zjmNp5GkkH7Ve",
+  "operator": "vzakharov",
+  "firstResponseAt": "2026-10-27T09:32:38.383Z",
+  "lastResponseAt": "2026-10-27T09:37:49.769Z",
+  "pricesAsOf": "2026-10-06",
+  "claudeCodeTotalUsd": null,
+  "ownTurns": {
+    "inputTokens": 68,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 103063,
+    "cacheReadTokens": 4217416,
+    "outputTokens": 17948,
+    "thinkingTokens": 4957,
+    "responses": 34,
+    "costUsd": 2.0272191999999998
+  },
+  "subagents": {
+    "inputTokens": 40,
+    "cacheWrite5mTokens": 68101,
+    "cacheWrite1hTokens": 0,
+    "cacheReadTokens": 1821659,
+    "outputTokens": 9375,
+    "thinkingTokens": 4644,
+    "responses": 20,
+    "costUsd": 0.8924968000000001
+  },
+  "byRate": {
+    "claude-opus-5-5/standard": {
+      "inputTokens": 108,
+      "cacheWrite5mTokens": 68101,
+      "cacheWrite1hTokens": 103063,
+      "cacheReadTokens": 6039075,
+      "outputTokens": 27323,
+      "thinkingTokens": 9601,
+      "responses": 54,
+      "costUsd": 2.9197159999999998
+    }
+  },
+  "warnings": [],
+  "compactions": [],
+  "telemetry": {
+    "events": 54,
+    "matched": 54,
+    "matchedTableUsd": 2.9197159999999998,
+    "matchedEventUsd": 2.9197159999999998,
+    "unseen": {}
+  }
+}
