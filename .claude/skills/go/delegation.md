@@ -20,7 +20,9 @@ It stays with you when any of these hold:
   reads to decide something;
 - it is authorization or permission code;
 - writing the brief would take about as long as doing it, or the brief would
-  have to explain most of the conversation.
+  have to explain most of the conversation;
+- it is too small for the saving to beat the brief and the review — § "Weighing
+  the cost" below, and what the model's entry says it cost last time.
 
 Delegating is a judgement, never a quota: a task with nothing that qualifies is
 done in-session without comment.
@@ -36,9 +38,10 @@ piece first.
 ## Launching
 
 `Agent` with `model:` set and `isolation: "worktree"`, so it works on its own
-copy branched from your last commit — commit what it needs to build on first.
-Independent sub-tasks launch together, in the background, while you carry on
-with work that does not touch their files. The brief is all it knows:
+copy. That copy starts from the default branch, not yours: commit what it needs
+to build on, and have the brief's first step be `git merge --ff-only <sha>` onto
+that commit. Independent sub-tasks launch together, in the background, while you
+carry on with work that does not touch their files. The brief is all it knows:
 
 - the goal and the files, including which ones to read first as the contract or
   the style reference;
@@ -54,8 +57,10 @@ with work that does not touch their files. The brief is all it knows:
 
 Its result is a stranger's PR. Read `git diff HEAD...<its branch>` whole, run
 the acceptance check yourself, and hold it to the standard of your own commits.
-Fix what is wrong — a follow-up message to the same agent for a slip in its own
-brief, your own edit for anything else.
+Review from your own tree — `git diff`, `git show <its branch>:<path>` — never a
+`Read` under `.claude/worktrees/`, which loads that copy's whole skill listing
+into your context. Fix what is wrong — a follow-up message to the same agent for
+a slip in its own brief, your own edit for anything else.
 
 Land it with `git merge --squash <its branch>` and one commit whose body names
 the model that wrote it and what the review changed, so the operator reads a
@@ -65,12 +70,31 @@ is never pushed.
 A result needing more repair than the sub-task would have cost to write is
 discarded and done in-session.
 
+## Weighing the cost
+
+After each delegation, put two dollar figures side by side, by eye, at the rates
+in `.claude/costs/prices.json`:
+
+- **What it cost** — from the task notification's `subagent_tokens` and tool-use
+  count: each turn re-reads the agent's context, so the bulk is cache reads over
+  a context growing toward that token count, plus its output.
+- **What doing it yourself would have cost** — the output tokens at your own
+  rate, plus your whole context re-read on every extra turn it would have taken,
+  plus what the work and its tool output would have added to that context for
+  the rest of the session. Charge the delegation with your brief and your review
+  too.
+
+A cache read costs the same on several models, so the saving comes from output
+and from keeping your own context small, and grows with the size of the
+sub-task. The verdict goes into the model's entry below. It is an estimate made
+by eye, so say so wherever you report it.
+
 ## Keeping `delegation-model-capabilities.md`
 
 After a review that taught something — a kind of work the model handled cleanly,
-a mistake it made, a brief wording that prevented one — rewrite that model's
-entry in place and commit it with the work it came from. It is a compressed
-summary, not a log: fold the new observation into what the entry already says,
-replace what it contradicts, and drop detail that no longer changes which model
-you pick or how you brief it. Stay under 100 lines; `scripts/vet.sh` fails it
-past that.
+a mistake it made, a brief wording that prevented one, what it cost against
+doing it in-session — rewrite that model's entry in place and commit it with the
+work it came from. It is a compressed summary, not a log: fold the new
+observation into what the entry already says, replace what it contradicts, and
+drop detail that no longer changes which model you pick or how you brief it.
+Stay under 100 lines; `scripts/vet.sh` fails it past that.

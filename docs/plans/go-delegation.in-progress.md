@@ -33,8 +33,9 @@ Self-contained, loaded only when the switch is not off. Covers:
   across files, a script whose interface is fixed). Anything touching design,
   prose the loop executes, authorization code, or a call the plan left open
   stays with the Opus agent.
-- **Picking the model** against `models.md`, cheapest that the notes say handles
-  the kind of work; no note → try the cheaper one on a small piece.
+- **Picking the model** against `delegation-model-capabilities.md`, cheapest
+  that the notes say handles the kind of work; no note → try the cheaper one on
+  a small piece.
 - **Launching.** `Agent` with `model:` and `isolation: "worktree"`; the brief
   states goal, files, constraints from CLAUDE.md that bite (no suppressions,
   Read/Edit/Write, no narrating comments), the acceptance check, and "commit in
@@ -48,10 +49,18 @@ Self-contained, loaded only when the switch is not off. Covers:
   worktree branch.
 - **When it goes badly.** A result that needs more fixing than writing it would
   have taken is discarded and done in-session — and that is a note for
-  `models.md`.
-- **Updating `models.md`** after each review that taught something: rewrite the
-  model's entry in place rather than appending, keep it ≤ 100 lines, commit it
-  with the work.
+  `delegation-model-capabilities.md`.
+- **Updating `delegation-model-capabilities.md`** after each review that taught
+  something: rewrite the model's entry in place rather than appending, keep it ≤
+  100 lines, commit it with the work.
+
+### 2b. Weighing the cost (operator follow-up)
+
+After each delegation, `delegation.md` has the agent set, by eye, what the
+subagent cost (from the task notification's token and tool-use counts at
+`.claude/costs/prices.json` rates) against what doing it in-session would have
+cost, and record the verdict in the model's entry. A rigorous count, priced like
+the session ledger, comes later.
 
 ### 3. `.claude/skills/go/models.md` — the capability notes
 
@@ -65,15 +74,16 @@ deletes the feature has nothing left for it to find).
 ### 4. `SKILL.md` — one conditional pointer
 
 In Step 2, one sentence: unless `MUTHUR_DELEGATION` is `off`, follow
-`delegation.md` (and `models.md`) — already in context when the hook delivered
-them, otherwise `Read` them. Body-only edit, so in place, no staging.
+`delegation.md` (and `delegation-model-capabilities.md`) — already in context
+when the hook delivered them, otherwise `Read` them. Body-only edit, so in
+place, no staging.
 
 ### 5. The hook — `.claude/hooks/go-delegation.py`
 
-Prints `delegation.md` and `models.md` as additional context the first time
-`/go`'s body enters a session, and nothing when the switch is off. `/go` is
-entered three ways, so three registrations of the one script in
-`.claude/settings.json`:
+Prints `delegation.md` and `delegation-model-capabilities.md` as additional
+context the first time `/go`'s body enters a session, and nothing when the
+switch is off. `/go` is entered three ways, so three registrations of the one
+script in `.claude/settings.json`:
 
 - `PostToolUse` on `Skill` with `skill` = `go` or `implement`;
 - `PostToolUse` on `Read` of `.claude/skills/go/SKILL.md` (`/task`, `/handle`,
@@ -95,7 +105,7 @@ Entries for the three new files in
 
 This branch's own implementation uses it: the hook's test file (a contract the
 plan fixes) goes to a `sonnet` subagent in a worktree, reviewed and merged per
-`delegation.md`, and what that teaches seeds `models.md`.
+`delegation.md`, and what that teaches seeds `delegation-model-capabilities.md`.
 
 ## DRY notes
 
@@ -115,6 +125,6 @@ plan fixes) goes to a `sonnet` subagent in a worktree, reviewed and merged per
 
 1. **Switch semantics.** a) `MUTHUR_DELEGATION=off` _(recommended — matches
    every other switch here)_; b) any non-empty value, as literally asked.
-2. **Where `models.md` lives.** a) beside the skill, committed _(recommended —
-   learning outlives the session and the branch)_; b) gitignored under `tmp/`,
-   per machine.
+2. **Where `delegation-model-capabilities.md` lives.** a) beside the skill,
+   committed _(recommended — learning outlives the session and the branch)_; b)
+   gitignored under `tmp/`, per machine.
