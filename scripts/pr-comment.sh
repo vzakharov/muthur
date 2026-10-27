@@ -11,7 +11,9 @@
 #   - the `.claude/settings.json` allow rule, which resolves before the
 #     classifier in a session that honours the project's `permissions.allow`
 #     — a cloud session does not.
-# The file must lead with its kind's marker, which keeps either approval from
+# A denial on the web means the setup script lacks the first: the reply that
+# meets it names that entry beside the phrase CLAUDE.md asks for, so the
+# operator can add it. The file must lead with its kind's marker, which keeps either approval from
 # covering any other comment.
 #
 # Usage (from the repository root, spelled exactly so, with no `cd … &&` or
