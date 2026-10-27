@@ -82,9 +82,9 @@ in `.claude/costs/prices.json`:
   the rest of the session. Charge the delegation with your brief and your review
   too.
 
-The verdict goes into the model's entry, and what it teaches about every model
-into § "Across models". It is an estimate made by eye, so say so wherever you
-report it.
+The verdict goes into the model's entry in `delegation-model-capabilities.md`,
+and what it teaches about every model into that file's § "Across models". It is
+an estimate made by eye, so say so wherever you report it.
 
 ## Keeping `delegation-model-capabilities.md`
 

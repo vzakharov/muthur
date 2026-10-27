@@ -8,9 +8,10 @@ the lessons that hold for every model first.
 
 - **Cache reads set the floor.** Most of a delegated run's cost is cache reads,
   and at `.claude/costs/prices.json` rates Sonnet 5.5 reads its cache for what
-  Opus 5.5 does. Only output tokens and the delegator's context kept small save
-  anything, so a sub-task of a few hundred lines costs more delegated than done
-  in-session. Recheck when the rates change; Haiku 5.5 reads at a twentieth.
+  Opus 5.5 does. The saving is in output tokens and in the delegator's context
+  staying small, so a sub-task of a few hundred lines costs more delegated than
+  done in-session. Recheck when the rates change; Haiku 5.5 reads at a twentieth
+  of Opus 5.5's rate, a quarter once its prompt passes 100k tokens.
 
 ## sonnet
 
