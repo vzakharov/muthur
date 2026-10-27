@@ -269,14 +269,14 @@ Same grammar, opposite verdicts: residue guards against something a previous
 draft did, which no longer threatens anyone.
 
 **A change whose point is removing something is where bears breed, and whoever
-holds the removed thing in mind is the worst judge of them.** The test asks
-whether the subject would cross a fresh reader's mind, and an author — or a
-reviewer reading the diff, whose `-` lines show the removed thing — cannot stop
-thinking of it to find out. On such a change, judge each candidate against the
-resulting file with the diff closed, and read every line touching the removed
-behaviour's situation, not only the negator hits: "a branch that holds all the
-work included" denies a removed skip with no negator in it. A call still close
-after that goes to the operator, who reads the result rather than the history.
+has the removed thing in mind — its author, or a reviewer reading the `-` lines
+— cannot tell whether a fresh reader would think of it.** On such a change,
+judge each candidate against the resulting file with the diff closed, and read
+every line touching the removed behaviour's situation, not only the negator
+hits: once a skip for branches that hold all the work is gone, "it runs after
+every turn, a branch that holds all the work included" denies the skip without a
+negator. A call still close after that goes to the operator, who reads the
+result rather than the history.
 
 ## Step 3: Fix
 

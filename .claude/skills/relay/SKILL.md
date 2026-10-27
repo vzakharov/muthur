@@ -138,9 +138,8 @@ one sentence: the summary's Next step in plain words, in the human-facing
 language (CLAUDE.md § "Language"), a skill in it named bare. The prompt is what
 an operator switching in from other work sees first, and a branch name does not
 say what the session is for. The successor reads it too, as its first message,
-so the sentence addresses nobody: a "you" in it names the successor to itself.
-It says where the work stands and what comes next — `PR готов, дальше finalize`
-— in the third person or impersonally.
+so the sentence addresses nobody — a "you" in it names the successor to itself —
+and says where the work stands and what comes next: `PR готов, дальше finalize`.
 
 - **Web/remote**: `create_session` from the Claude Code Remote tools, with
   `source_url` the `origin` URL, `source_revision` the branch, a `title` per
