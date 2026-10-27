@@ -67,9 +67,8 @@ Wait for the operator.
 ## Last agent turn
 
 The agent's last turn before the relay, verbatim, appended by
-`scripts/relay-last-reply.py`. It includes the turn's interim messages,
-usually unneeded but harmless; the reply proper is usually its last
-paragraphs.
+`scripts/relay-last-reply.py`. It includes the turn's interim messages, usually
+unneeded but harmless; the reply proper is usually its last paragraphs.
 
 ```text
 Вова, привет. Ветка подключена: `fix/telemetry-hook-stale-proc-environ`, PR [vzakharov/muthur#219](https://github.com/vzakharov/muthur/pull/219), черновик, база `main`, конфликтов нет. Коммитить и пушить теперь буду в эту ветку. Пустую авто-ветку `claude/telemetry-hook-stale-proc-9saxu7` git удалять не стал: ответил `stale info`, скорее всего её на origin просто никогда не было. Я её больше не трогаю.
