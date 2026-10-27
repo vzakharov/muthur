@@ -10,10 +10,9 @@ worth keeping warm is the operator's call — so the entry is `opt-in: ask`.
 - `.claude/keepalive/` — Wake an idle session shortly before its one-hour prompt
   cache expires, so the next prompt does not re-cache the whole conversation at
   20–40 times a cache read. A `UserPromptSubmit` hook has the agent start a
-  background watcher as each turn's last action — unless the branch and its PR's
-  threads let a fresh session continue — and the watcher's exit is the wake.
-  **The cost, which is why it is asked:** a background watcher on every idle
-  turn, which is **the one exception to CLAUDE.md's ban on
+  background watcher as each turn's last action, and the watcher's exit is the
+  wake. **The cost, which is why it is asked:** a background watcher on every
+  idle turn, which is **the one exception to CLAUDE.md's ban on
   `run_in_background`**, so that line changes in your `CLAUDE.md` too;
   `MUTHUR_CACHE_KEEPALIVE_RENEWALS` (default 0, at most 5 recommended) renewals
   per idle spell, each a visible line in chat; and the wake after them runs
