@@ -2,6 +2,11 @@
 .DS_Store
 Thumbs.db
 
+# Worktrees Claude Code creates for an isolated delegate. The path is the
+# harness's, so it cannot move under tmp/; unignored, `git add -A` commits
+# each one as a gitlink.
+.claude/worktrees/
+
 # Editors
 .idea/
 .vscode/

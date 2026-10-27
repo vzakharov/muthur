@@ -19,7 +19,7 @@ from lib.prices import parse_prices
 from lib.pricing import UnpricedError, is_unwritten_tail, summarise_transcript
 from lib.transcript import TranscriptSources
 
-# `test_stop_hook.py` writes this table to disk, for the records `response()`
+# `hook_clone.py` writes this table to disk, for the records `response()`
 # builds to be priced by the real script.
 PRICE_TABLE = {
     "as_of": "2026-01-01",

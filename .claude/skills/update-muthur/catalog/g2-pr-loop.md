@@ -64,14 +64,20 @@
 - `/finalize` — Land prep: swap in staged copies, the quality passes, vet, merge
   the base, sweep working artifacts, flip to ready, reconcile the squash
   message, attest — and, on `and merge`, merge the PR when the run turned up
-  nothing to decide. Carries `merge.md`, that gate and the merge;
-  `base-advanced.md`, the call on re-verifying when the base moved; and
-  `revoke.md`, withdrawing an attestation.
+  nothing to decide. Carries `merge.md`, that gate and the merge; `attest.md`,
+  the attestation comment; `base-advanced.md`, the call on re-verifying when the
+  base moved; and `revoke.md`, withdrawing an attestation.
   - **Requires:** `gh`, `scripts/vet.sh`, `scripts/staged.sh`,
     `scripts/pr-comment.sh`
-  - **Pulls in:** `/polish` (G1); `/check-merge`, `/from-branch`, `/plan`,
-    `/squash-message`, `/sync-branch`; **conditionally** `/take-issue` (G3),
-    `/watch-ci` (G5)
+  - **Pulls in:** `/polish` (G1); `/check-merge`, `/from-branch`, `/merge`,
+    `/plan`, `/squash-message`, `/sync-branch`; **conditionally** `/take-issue`
+    (G3), `/watch-ci` (G5)
+  - **Disposition:** adopt
+- `/merge` — The one entry for an ask to merge: a branch not yet finalized goes
+  to `/finalize and merge`; a finalized one gets `/check-merge` and the same
+  gate, merging when it passes, syncing and standing down when the base moved.
+  - **Requires:** `gh`
+  - **Pulls in:** `/check-merge`, `/finalize`, `/from-branch`, `/sync-branch`
   - **Disposition:** adopt
 - `/from-branch` — Attach the session to an existing branch or PR, abandoning
   the auto-created session branch.
@@ -95,7 +101,7 @@
   branch you are on.
   - **Requires:** `gh`; `scripts/export-github-item.py` (G3) for the review
     lane's thread export
-  - **Pulls in:** `/from-branch`, `/go`, `/plan`, `/finalize`
+  - **Pulls in:** `/from-branch`, `/go`, `/plan`, `/finalize`, `/merge`
   - **Disposition:** adopt
 - `.claude/hooks/prompt-handle-pr-export.sh` — Re-export the PR of the branch a
   `/handle` prompt names, on **every** such prompt rather than a session's
@@ -172,9 +178,10 @@
   - **Requires:** `sh`
   - **Disposition:** adopt
 - `scripts/pr-comment.sh` — Post or update the squash proposal or the finalize
-  attestation in one fixed-shape command, which `.claude/settings.json` allows
-  so auto mode's classifier never sees the write. The allow rule travels with
-  it.
+  attestation in one fixed-shape command narrow enough to approve for auto mode:
+  by the `.claude/settings.json` allow rule, which travels with it, and on the
+  web by the setup script's `autoMode.allow` entry, which only the operator can
+  add (`docs/adopting/web-remote.md`).
   - **Requires:** `bash`, `gh`, `git`, `scripts/lib/gh-repo.sh`
   - **Disposition:** adopt
 - `scripts/staged.sh` — Stage an always-loaded file as a byte-identical copy at

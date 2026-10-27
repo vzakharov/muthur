@@ -12,6 +12,7 @@ import json
 import subprocess
 import sys
 import tempfile
+import textwrap
 import unittest
 from pathlib import Path
 from types import ModuleType
@@ -174,6 +175,11 @@ class LastReplyTest(unittest.TestCase):
             load("relay_last_reply", SCRIPT).KEEPALIVE_MARK,
             load("keepalive", KEEPALIVE).MARK,
         )
+
+    def test_the_lead_is_wrapped_as_prettier_fills_a_paragraph(self) -> None:
+        lead = load("relay_last_reply", SCRIPT).LEAD
+        filled = textwrap.fill(" ".join(lead.split()), width=80, break_long_words=False, break_on_hyphens=False)
+        self.assertEqual(lead, filled)
 
     def test_fences_a_reply_holding_a_fence_with_a_longer_one(self) -> None:
         out = self.appended(

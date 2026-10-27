@@ -4,16 +4,22 @@
 Usage:
   python3 .claude/costs/ledger.py backfill [<ref>...]
   python3 .claude/costs/ledger.py fetch
+<<<<<<< HEAD
   python3 .claude/costs/ledger.py stop-plan <branch>
   python3 .claude/costs/ledger.py commit-row <parent> <path> <file>
   python3 .claude/costs/ledger.py append-row <file>
   python3 .claude/costs/ledger.py path-for <file>
+=======
+  python3 .claude/costs/ledger.py display <branch>
+  python3 .claude/costs/ledger.py append-row <path> <file>
+>>>>>>> origin/main
 
 `backfill` carries into the ledger every row the named refs hold that it lacks
 or holds older — by default every branch on `origin` and every PR's head — and
 prints how many sessions the ledger holds after. It pushes, and a second run
 commits nothing.
 
+<<<<<<< HEAD
 The rest are `hooks/stop-session-cost.sh`'s. `stop-plan` prints
 `display=yes|no`: whether the branch still gets the row's display copy, which
 it does until it is finalized. `append-row` files the row on the ledger,
@@ -22,6 +28,12 @@ where the local copy of the ledger would file it, for a turn whose fetch
 failed. `commit-row` prints the commit of `<file>` at `<path>` on `<parent>`,
 removing the session's other copies there, or nothing where `<parent>` already
 holds it alone.
+=======
+The rest are the hooks'. `display` prints `display=yes|no`: whether the branch
+still gets the row's display copy, which it does until it is finalized —
+`hooks/stage-cost-row.sh` asks it. `append-row` commits and pushes the row to
+the ledger, for `hooks/stop-session-cost.sh`.
+>>>>>>> origin/main
 
 Stdlib only — Python 3.9+.
 """
@@ -34,7 +46,11 @@ from pathlib import Path
 
 from lib.finalized import finalized
 from lib.github import Client
+<<<<<<< HEAD
 from lib.ledger_branch import BRANCH, LedgerError, append_row, backfill, commit, display_change, every_ref, fetch, path_for
+=======
+from lib.ledger_branch import BRANCH, LedgerError, append_row, backfill, every_ref, fetch
+>>>>>>> origin/main
 
 TRUNKS = ("", "main", "master")
 
@@ -44,12 +60,19 @@ def main() -> int:
     commands = parser.add_subparsers(dest="command", required=True)
     commands.add_parser("backfill").add_argument("refs", nargs="*")
     commands.add_parser("fetch")
+<<<<<<< HEAD
     commands.add_parser("stop-plan").add_argument("branch")
     committing = commands.add_parser("commit-row")
     committing.add_argument("parent")
     committing.add_argument("path")
     for command in (committing, commands.add_parser("append-row"), commands.add_parser("path-for")):
         command.add_argument("file", type=Path)
+=======
+    commands.add_parser("display").add_argument("branch")
+    appending = commands.add_parser("append-row")
+    appending.add_argument("path")
+    appending.add_argument("file", type=Path)
+>>>>>>> origin/main
     args = parser.parse_args()
 
     try:
@@ -58,16 +81,19 @@ def main() -> int:
             print(f"ledger: {held} sessions in {BRANCH}{f', carried in {built[:7]}' if built else ', nothing to carry'}")
         elif args.command == "fetch":
             fetch()
-        elif args.command == "stop-plan":
+        elif args.command == "display":
             # The trunk has no PR to finalize, and no branch to carry a copy.
             display = args.branch not in TRUNKS and not finalized(args.branch, Client())
             print(f"display={'yes' if display else 'no'}")
+<<<<<<< HEAD
         elif args.command == "commit-row":
             rows, message = display_change(args.parent, args.path, args.file.read_text(encoding="utf-8"))
             if rows:
                 print(commit(args.parent, rows, message))
         elif args.command == "append-row":
             print(append_row(args.file.read_text(encoding="utf-8")))
+=======
+>>>>>>> origin/main
         else:
             print(path_for(args.file.read_text(encoding="utf-8")))
     except LedgerError as error:
