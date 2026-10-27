@@ -4,17 +4,20 @@ Proposed squash body:
 A session whose branch and PR already held all its work skipped the
 cache keepalive's watcher, so it went cold with nothing left behind.
 Its last reply often raises points the operator would rather answer
-directly than dig back out of files, and a park would have kept that
-reply verbatim with a ready `/relay take` line to paste, in place of a
-trip to the PR and a hand-typed `/handle`.
+directly than dig back out of files, and a park keeps that reply
+verbatim with a ready `/relay take` line to paste, in place of a trip
+to the PR and a hand-typed `/handle`.
 
-The keepalive's UserPromptSubmit hook now asks for the watcher after
-every turn, skipping it only when the operator asks to stop the
-keepalive, so its last wake always parks.
+The keepalive's hook now asks for the watcher after every turn unless
+the operator asks to stop it, so its last wake always parks. A parked
+session its operator comes back to rewrites its summary rather than
+deleting it once nothing is pending.
 
-For the same reason, a parked session its operator comes back to
-rewrites its summary rather than deleting it once nothing is pending;
-a summary missing from disk now only means `/finalize` swept it.
+The caption on a `/relay take` line addresses nobody, since the
+successor reads it as its own first message and took a "you" in it as
+itself. tend-prose's negation lens now warns that a removal breeds
+bears its author cannot see, so candidates are judged against the
+resulting file with the diff closed.
 
 Co-authored-by: Claude <noreply@anthropic.com>
 ```
