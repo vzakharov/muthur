@@ -1,0 +1,92 @@
+{
+  "total": {
+    "inputTokens": 18,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 57270,
+    "cacheReadTokens": 849416,
+    "outputTokens": 3124,
+    "thinkingTokens": 763,
+    "responses": 9,
+    "costUsd": 0.6905952000000001
+  },
+  "estimate": {
+    "at": "2026-10-27T12:30:27.293Z",
+    "parts": [
+      {
+        "hours": 0.25,
+        "grade": "senior",
+        "role": "prompter",
+        "comment": "picking up a parked relay means checking its claims against the branch and PR before re-raising the open question, which takes someone who knows the loop"
+      }
+    ],
+    "comment": null
+  },
+  "orientation": {
+    "endedBy": "end_turn",
+    "endedOn": null,
+    "endedAt": "2026-10-27T12:30:38.934Z",
+    "contextTokens": 106448,
+    "spend": {
+      "inputTokens": 16,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 56895,
+      "cacheReadTokens": 743345,
+      "outputTokens": 2367,
+      "thinkingTokens": 670,
+      "responses": 8,
+      "costUsd": 0.6512330000000001
+    }
+  },
+  "sessionId": "fca6bf8b-2bd4-57cd-b720-14fb684c8418",
+  "branch": "claude/cost-row-rides-agent-commits-8xxzcz",
+  "cwd": "/home/user/muthur",
+  "openingPrompt": "/relay take claude/cost-row-rides-agent-commits-8xxzcz — хуки, тесты и доки готовы, дальше polish и обновление PR",
+  "prs": [],
+  "url": "https://claude.ai/code/session_01DaohkFrNSe3svvBMYsrdt3",
+  "operator": "vzakharov",
+  "firstResponseAt": "2026-10-27T12:29:50.021Z",
+  "lastResponseAt": "2026-10-27T12:30:38.934Z",
+  "pricesAsOf": "2026-10-06",
+  "claudeCodeTotalUsd": null,
+  "ownTurns": {
+    "inputTokens": 18,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 57270,
+    "cacheReadTokens": 849416,
+    "outputTokens": 3124,
+    "thinkingTokens": 763,
+    "responses": 9,
+    "costUsd": 0.6905952000000001
+  },
+  "subagents": {
+    "inputTokens": 0,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 0,
+    "cacheReadTokens": 0,
+    "outputTokens": 0,
+    "thinkingTokens": 0,
+    "responses": 0,
+    "costUsd": 0.0
+  },
+  "byRate": {
+    "claude-opus-5-5/standard": {
+      "inputTokens": 18,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 57270,
+      "cacheReadTokens": 849416,
+      "outputTokens": 3124,
+      "thinkingTokens": 763,
+      "responses": 9,
+      "costUsd": 0.6905952000000001
+    }
+  },
+  "warnings": [],
+  "compactions": [],
+  "telemetry": {
+    "events": 9,
+    "matched": 9,
+    "matchedTableUsd": 0.6905952000000001,
+    "matchedEventUsd": 0.6905952000000001,
+    "unseen": {}
+  }
+}
