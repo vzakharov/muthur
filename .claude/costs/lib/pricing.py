@@ -36,6 +36,7 @@ from lib.transcript import (
     Response,
     TranscriptSources,
     is_response_record,
+    merged,
     parse_response,
 )
 
@@ -75,7 +76,8 @@ def summarise_transcript(
     totals at the event's own price."""
     warnings: List[str] = []
     last_own: Optional[Response] = None
-    seen: Set[str] = set()
+    # Each response as merged from its records so far, by message id.
+    seen: Dict[str, Response] = {}
     by_rate: Dict[str, Tally] = {}
     total, own_turns, subagents = Tally(), Tally(), Tally()
     unpriced: Set[str] = set()
@@ -143,15 +145,15 @@ def summarise_transcript(
             response = parse_response(record, where, warnings)
             if not (delegated or response.is_sidechain or response.model == SYNTHETIC_MODEL):
                 last_own = response
-            # One API response is written as one record per content block, each
-            # carrying the whole response's usage, so the id counts it once.
-            if response.message_id in seen:
-                earlier = held.get(response.message_id)
-                if earlier is not None:
-                    earlier.calls.extend(response.calls)
-                    earlier.ended_turn |= response.stop_reason == "end_turn"
+            earlier = seen.get(response.message_id)
+            if earlier is not None:
+                whole = seen[response.message_id] = merged(earlier, response)
+                priced = held.get(response.message_id)
+                if priced is not None:
+                    priced.calls = list(whole.calls)
+                    priced.ended_turn = whole.stop_reason == "end_turn"
                 continue
-            seen.add(response.message_id)
+            seen[response.message_id] = response
 
             if not delegated:
                 if session_id is None:

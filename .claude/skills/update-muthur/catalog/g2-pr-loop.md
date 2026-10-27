@@ -32,10 +32,26 @@
   - **Disposition:** adopt
 - `/go` — The go-ahead: flip the plan file, file the issues the plan proposed,
   do the work, run the quality passes, hand the PR back to `/pr`. Also takes a
-  branch to attach to, or a task with no plan behind it.
+  branch to attach to, or a task with no plan behind it. Carries
+  `delegation.md`, handing sub-tasks that need no judgement to cheaper models in
+  worktrees and reviewing them before they merge, and
+  `delegation-model-capabilities.md`, the ≤100-line summary of what each model
+  has handled, which `scripts/vet.sh` caps. `MUTHUR_DELEGATION=off` leaves `/go`
+  as if neither were there.
   - **Pulls in:** `/polish` (G1); `/from-branch`, `/plan`, `/pr`, `/task`;
-    **conditionally** `/take-issue`, `/propose-issue` (G3)
-  - **Disposition:** adopt
+    `.claude/hooks/go-delegation.py`; **conditionally** `/take-issue`,
+    `/propose-issue` (G3), `.claude/costs/` (G7) for the delegation's weighing
+  - **Disposition:** adopt — `delegation-model-capabilities.md` as it stands,
+    its lessons being general, then merged by lesson on every sync
+    (`/update-muthur` Step 5)
+- `.claude/hooks/go-delegation.py` — Deliver `/go`'s two delegation files as
+  context the first time `/go` enters a session — through the `Skill` tool, a
+  `Read` of its `SKILL.md`, or a typed `/go` — so the agent spends no round trip
+  on them; silent under `MUTHUR_DELEGATION=off`. Stdlib-only, tested by
+  `scripts/test_go_delegation.py`.
+  - **Requires:** `python3` ≥3.9, `.claude/settings.json` wiring (G4)
+  - **Pulls in:** `/go`, `.claude/hooks/session_state.py` (G4)
+  - **Disposition:** adopt — **with `/go`'s delegation files**
 - `/implement` — Redirect to `/go`, for handoff blocks written before the
   rename.
   - **Pulls in:** `/go`
