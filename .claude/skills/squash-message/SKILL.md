@@ -304,9 +304,8 @@ yourself.
    step with inline `gh api` or `gh pr comment`**: only this spelling is
    approved for auto mode, and the script's header says by what, along with its
    outputs and exit codes. Denied on the web, it means the environment setup
-   script lacks that header's `autoMode.allow` entry: hand the operator the
-   phrase that lets this run through, and name the missing entry so the next
-   session does not need it.
+   script lacks that header's `autoMode.allow` entry: name it beside the phrase
+   the denial calls for, so the operator can add it.
 
    **In `update-only` mode pass `--update-only`**, which creates nothing and
    exits `3` on absence — report it and stop. The one exception is a branch that

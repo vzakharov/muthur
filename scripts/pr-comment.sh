@@ -4,14 +4,13 @@
 # and `@.claude/skills/finalize/SKILL.md` step 7 each need, as one command.
 # Auto mode's classifier reads such a write as External System Writes and
 # denies it, so the interface is fixed and narrow enough to approve as exactly
-# this command, by two approvals because neither reaches every session:
-#   - the `autoMode.allow` entry "Sticky PR Comments", which the classifier
-#     reads from user or managed settings only — on the web, the
-#     `~/.claude/settings.json` the environment setup script writes
-#     (`docs/adopting/web-remote.md` § "A worked example"). Cloud sessions do
-#     not honour the project's `permissions.allow`.
+# this command — twice, since neither approval reaches every session:
+#   - the `autoMode.allow` entry "Sticky PR Comments", read from user or managed
+#     settings only: on the web, the `~/.claude/settings.json` the environment
+#     setup script writes (`docs/adopting/web-remote.md` § "A worked example").
 #   - the `.claude/settings.json` allow rule, which resolves before the
-#     classifier runs in the sessions that honour it.
+#     classifier in a session that honours the project's `permissions.allow`
+#     — a cloud session does not.
 # The file must lead with its kind's marker, which keeps either approval from
 # covering any other comment.
 #
