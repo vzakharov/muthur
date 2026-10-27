@@ -15,7 +15,7 @@ from datetime import date
 from statistics import mean, median
 from typing import Callable, Dict, Iterable, List, Mapping, Optional, Sequence, Tuple
 
-from lib.estimate import Rates, checked, senior_hours
+from lib.estimate_model import Rates, checked, senior_hours
 from lib.hours import HoursTable, hours_of
 from lib.orientation import Phase
 from lib.period import Period, iso_week
@@ -95,7 +95,7 @@ class Spread:
 class PhaseStats:
     phases: int
     usd: Spread
-    # Over the phases that acted: one that never did has no context to report.
+    # Over the phases something ended: one that ran out has no context to report.
     context_tokens: Optional[Spread]
     share_of_session: Spread
 
@@ -270,11 +270,15 @@ def _rated(rate: Rate) -> Rate:
     )
 
 
-def effort_of(rows: Sequence[SessionCost], rates: Rates) -> EffortSummary:
+def effort_of(
+    rows: Sequence[SessionCost], rates: Rates, rates_of: Optional[Mapping[str, Rates]] = None
+) -> EffortSummary:
     """A ratio of sums per bucket, never a mean of each session's own ratio: one
     session estimated at a few minutes would otherwise swamp the mean. A row
     whose estimate fails the rate table raises, since quietly leaving
-    it out would move every figure it belongs to."""
+    it out would move every figure it belongs to. `rates_of` maps a session id
+    to the table its row is rated by where that is not `rates`: the table of the
+    repository it was read from, with the roles that repository adds."""
     overall = Rate()
     by_month: Dict[str, Rate] = {}
     by_week: Dict[str, Rate] = {}
@@ -285,7 +289,8 @@ def effort_of(rows: Sequence[SessionCost], rates: Rates) -> EffortSummary:
         if row.estimate is None:
             continue
         estimated += 1
-        hours = senior_hours(checked(row.estimate, rates, f"{row.session_id} estimate"), rates)
+        table = rates if rates_of is None else rates_of.get(row.session_id, rates)
+        hours = senior_hours(checked(row.estimate, table, f"{row.session_id} estimate"), table)
         overall.count(hours, row.total.cost_usd)
         started_at = row.first_response_at
         if started_at is None:
@@ -324,11 +329,12 @@ def totals_of(
     rates: Rates,
     repo_of: Optional[Mapping[str, str]] = None,
     hours_period: Optional[Period] = None,
+    rates_of: Optional[Mapping[str, Rates]] = None,
 ) -> Totals:
     """A session is filed under where it **started**, the rule that already picks
     its row's month, so one running past midnight stays whole. A row with no
     priced response has no day to file under and lands in the grand total, its
-    branch and its operator alone."""
+    branch and its operator alone. `rates_of` is `effort_of`'s."""
     grand = Bucket()
     by_month: Dict[str, Bucket] = {}
     by_week: Dict[str, Bucket] = {}
@@ -360,6 +366,6 @@ def totals_of(
         by_operator=_rounded(by_operator),
         orientation=orientation_of(rows),
         telemetry=telemetry_of(rows),
-        effort=effort_of(rows, rates),
+        effort=effort_of(rows, rates, rates_of),
         hours=None if hours_period is None else hours_of(rows, rates, hours_period),
     )

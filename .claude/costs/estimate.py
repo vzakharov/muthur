@@ -4,10 +4,17 @@
 Usage:
   python3 .claude/costs/estimate.py set --part <hours> <grade> <role> <why> [--part ...] [--session <id>]
   python3 .claude/costs/estimate.py show [--session <id>]
+  python3 .claude/costs/estimate.py rates
+  python3 .claude/costs/estimate.py role set <name> <multiplier> <grade> <work>
+  python3 .claude/costs/estimate.py role drop <name>
 
 Each `--part` is the hours one role at one grade would spend on the task, and
 why that role, at that grade, for those hours; the parts add up to the
-estimate, and `set` replaces the whole of it. Without
+estimate, and `set` replaces the whole of it. `rates` prints the table an
+estimate is checked against as JSON — `rates.json` plus the roles this
+repository's `rates.repo.json` on the `cost-ledger` branch adds, each at its one
+grade, and a note per role both rate. `role set` adds a role there or re-rates
+one, and `role drop` removes one; both push. Without
 `--session` the session is this one, read off `CLAUDE_CODE_SESSION_ID`: the
 estimate goes to `tmp/estimates/<id>.json`, and the row folds it in when the
 turn ends. Another session's id edits that session's row on the `cost-ledger`
@@ -20,19 +27,31 @@ Stdlib only — Python 3.9+.
 from __future__ import annotations
 
 import argparse
+import json
 import os
 import sys
 from datetime import datetime, timezone
-from pathlib import Path
-from typing import List, Optional
+from typing import Any, Dict, List, Mapping, Optional, Tuple
 
-from lib.estimate import Estimate, Part, Rates, checked, senior_hours, latest, parse_rates
-from lib.ledger import BRANCH, LedgerError, append_row, fetch, latest_row, path_of
-from lib.rows import ROOT, SESSIONS, SessionCost, read_pending_estimate, row_path, row_text, write_atomic, write_pending_estimate
-from lib.shape import ShapeError
-
-COSTS = Path(__file__).resolve().parent
-
+from lib.estimate_model import Estimate, Part, Rates, checked, senior_hours, latest, role_change, shadow_notes
+from lib.ledger_branch import (
+    BRANCH,
+    RATES_ON_LEDGER,
+    RATES_PATH,
+    REMOTE_REF,
+    LedgerError,
+    append,
+    append_row,
+    fetch,
+    latest_row,
+    ledger_rates,
+    path_of,
+    rates_text,
+    rows_at,
+    shared_rates,
+)
+from lib.rows import ROOT, SESSIONS, SessionCost, read_pending_estimate, reshape, row_path, row_text, write_atomic, write_pending_estimate
+from lib.shape import ShapeError, to_json
 
 def describe(estimate: Optional[Estimate], rates: Rates) -> str:
     if estimate is None:
@@ -66,9 +85,40 @@ def edit(row: SessionCost) -> None:
     append_row(held, text)
 
 
+def booking(tip: Optional[str], role: str) -> List[str]:
+    """The sessions whose ledger rows at `tip` book a part under `role`."""
+    rows = (reshape(text, f"{BRANCH}:{path}")[0] for path, text in rows_at(tip)) if tip else ()
+    return [row.session_id for row in rows if row.estimate and any(p.role == role for p in row.estimate.parts)]
+
+
+def push_role(name: str, entry: Optional[Mapping[str, Any]]) -> Optional[str]:
+    """`role set` where `entry` is given, `role drop` where it is None. A drop
+    is refused while a ledger row books the role and the shared table does not
+    rate it, so every role a row names stays rateable."""
+    shared = shared_rates()
+
+    def plan(tip: Optional[str]) -> Tuple[Dict[str, Optional[str]], str]:
+        before = rates_text(tip)
+        if entry is None and name not in shared.roles:
+            booked = booking(tip, name)
+            if booked:
+                raise ShapeError(f"{RATES_ON_LEDGER}: `{name}` is booked by {len(booked)} ledger row(s), {booked[0]} first")
+        text, message = role_change(shared, before, name, entry, RATES_ON_LEDGER)
+        return ({} if text == before else {RATES_PATH: text}), message
+
+    return append(plan)
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
     commands = parser.add_subparsers(dest="command", required=True)
+    role = commands.add_parser("role").add_subparsers(dest="action", required=True)
+    setting_role = role.add_parser("set")
+    setting_role.add_argument("name")
+    setting_role.add_argument("multiplier", type=float)
+    setting_role.add_argument("grade")
+    setting_role.add_argument("work")
+    role.add_parser("drop").add_argument("name")
     setting = commands.add_parser("set")
     setting.add_argument(
         "--part",
@@ -81,14 +131,35 @@ def main() -> int:
     showing = commands.add_parser("show")
     for command in (setting, showing):
         command.add_argument("--session", help="another session's id; this one's by default")
+    commands.add_parser("rates")
     args = parser.parse_args()
+
+    try:
+        if args.command == "role":
+            entry = None
+            if args.action == "set":
+                entry = {"multiplier": args.multiplier, "grade": args.grade, "work": args.work}
+            built = push_role(args.name, entry)
+            print(f"estimate: {BRANCH} {'already holds that' if built is None else f'updated in {built[:7]}'}")
+            return 0
+        # The local copy of the ledger, so a prompt's notice makes no network
+        # call; a role it does not rate is fetched for before being refused.
+        rates = ledger_rates(REMOTE_REF)
+        if args.command == "set" and any(part.role not in rates.roles for part in parts_of(args.part)):
+            fetch()
+            rates = ledger_rates(REMOTE_REF)
+    except (ShapeError, LedgerError) as error:
+        print(f"estimate: {error}", file=sys.stderr)
+        return 1
+    if args.command == "rates":
+        print(json.dumps({**to_json(rates), "notes": shadow_notes(rates, "This repository")}, ensure_ascii=False))
+        return 0
 
     current = os.environ.get("CLAUDE_CODE_SESSION_ID")
     session_id: Optional[str] = args.session or current
     if session_id is None:
         print("estimate: no CLAUDE_CODE_SESSION_ID; name the session with --session", file=sys.stderr)
         return 1
-    rates = parse_rates((COSTS / "rates.json").read_text(encoding="utf-8"))
     running = session_id == current
 
     try:

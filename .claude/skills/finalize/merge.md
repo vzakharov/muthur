@@ -19,10 +19,24 @@ forward it, and `@.claude/skills/handle/SKILL.md` § "Argument shape" holds the
 merge back rather than passing it on. Any future caller answers the same
 question: was the flag written after the operator could have looked?
 
+<<<<<<< HEAD
 **`@.claude/skills/merge/SKILL.md` is the caller that forwards it**, on a branch
 not yet finalized, and passes that test: an ask to merge names a diff that
 already exists. A run carrying the flag is past that routing and never goes back
 through `/merge`.
+=======
+**An operator's ask to merge a branch not yet finalized is
+`/finalize and merge`**, whatever words carry it — "merge", "мерджи", "land it".
+Finalized means the PR is ready for review and its
+`<!-- finalize-attestation <sha> -->` comment names the current head, give or
+take what step 7's last rule lets ride past it; anything short of that is a diff
+no run has verified, so merging it as asked would skip every gate this skill
+exists for. **Open the reply by saying you read the ask that way** — the
+operator asked for a click and is getting land prep, which can stand the merge
+down at step 8 — then run the skill with the flag. The paragraph above holds
+here too: an ask that also requests changes was written before the diff it would
+merge, so land prep runs and the merge is held.
+>>>>>>> origin/main
 
 ## Step 8 — the gate
 
@@ -98,6 +112,9 @@ the source, so read both back rather than reconstructing them:
 gh pr view <n> --json title --jq '.title + " (#<n>)"' > tmp/squash-title.txt
 gh api repos/<owner>/<repo>/issues/comments/<id> --jq .body > tmp/proposal.md
 ```
+
+`<id>` is the `#issuecomment-<id>` fragment of the URL `scripts/pr-comment.sh`
+printed when step 5 posted the proposal.
 
 Extract the comment's last fenced block — the body, after the title block a
 one-commit PR carries — into `tmp/squash-body.txt`, then **print both files and

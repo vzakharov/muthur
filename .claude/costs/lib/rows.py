@@ -10,7 +10,7 @@ from pathlib import Path
 from typing import Any, Dict, List, Mapping, Optional, Tuple
 
 from lib.billed import Telemetry, parse_telemetry
-from lib.estimate import Estimate, parse_estimate, split_comment
+from lib.estimate_model import Estimate, parse_estimate, split_comment
 from lib.orientation import Compaction, Phase, parse_compaction, parse_phase
 from lib.shape import ShapeError, read_number, read_object, read_string, required, to_json
 from lib.tally import Tally, parse_tally
@@ -121,11 +121,14 @@ def json_text(value: Any) -> str:
 
 
 def row_text(cost: SessionCost) -> str:
-    """A row opens on what the session cost, `total`, then on what the work was
-    worth, `estimate` — the one field set by a command rather than read off
-    the transcript."""
+    """A row opens on what the session cost, `total`, then on the two fields
+    the agent sets by a command rather than leaving to the transcript: what the
+    work was worth, `estimate`, and where finding its bearings ended,
+    `orientation`."""
     row = to_json(cost)
-    return _dumped({"total": row.pop("total"), "estimate": row.pop("estimate"), **row})
+    return _dumped(
+        {"total": row.pop("total"), "estimate": row.pop("estimate"), "orientation": row.pop("orientation"), **row}
+    )
 
 
 def write_atomic(out: Path, contents: str) -> None:

@@ -26,6 +26,7 @@ import threading
 import time
 import unittest
 import urllib.request
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any, Dict, List
 
@@ -178,9 +179,9 @@ def free_port() -> int:
         return int(probe.getsockname()[1])
 
 
-class WhenTheHookStartsTheReceiver(unittest.TestCase):
-    """Over a `python3` stub that records its arguments, on a port of the
-    test's own so the session's receiver on 4318 is no obstacle, and under a
+class UnderClaude(unittest.TestCase):
+    """The hook over a `python3` stub that records its arguments, on a port of
+    the test's own so the session's receiver on 4318 is no obstacle, and under a
     shell named `claude` that holds the exporter's variables and strips `OTEL_*`
     from the hook, as Claude Code does."""
 
@@ -198,6 +199,10 @@ class WhenTheHookStartsTheReceiver(unittest.TestCase):
         self.claude = stubs / "claude"
         self.claude.symlink_to(shutil.which("bash") or "/bin/bash")
         self.path = f"{stubs}:{os.environ['PATH']}"
+        self.transcript = Path(base.name) / "transcript.jsonl"
+        self.transcript.touch()
+        self.events = self.root / "tmp" / "telemetry"
+        self.pending = self.events / f"{SESSION}.unconfirmed"
         self.port = free_port()
         self.export = {
             "CLAUDE_CODE_ENABLE_TELEMETRY": "1",
@@ -206,7 +211,9 @@ class WhenTheHookStartsTheReceiver(unittest.TestCase):
             "OTEL_EXPORTER_OTLP_ENDPOINT": f"http://127.0.0.1:{self.port}",
         }
 
-    def run_hook(self, event: str = "SessionStart", **env: str) -> str:
+    def run_hook(self, event: str = "SessionStart", late: str = "", **env: str) -> str:
+        """`late` is assignments the hook gets and `claude`'s `/proc` environ
+        does not, as a `claude` exec'd from a preloaded spare hands them on."""
         inherited = {
             k: v
             for k, v in os.environ.items()
@@ -214,10 +221,12 @@ class WhenTheHookStartsTheReceiver(unittest.TestCase):
         }
         # The trailing `:` keeps `claude` from exec'ing into the hook, which
         # would leave it no such ancestor.
-        strip_otel = 'env $(env | sed -n "s/^\\(OTEL_[A-Z_]*\\)=.*/-u \\1/p") bash "$0"; :'
+        strip_otel = f'env $(env | sed -n "s/^\\(OTEL_[A-Z_]*\\)=.*/-u \\1/p") {late} bash "$0"; :'
         ran = subprocess.run(
             [str(self.claude), "-c", strip_otel, str(HOOK)],
-            input=json.dumps({"hook_event_name": event}),
+            input=json.dumps(
+                {"hook_event_name": event, "session_id": SESSION, "transcript_path": str(self.transcript)}
+            ),
             capture_output=True,
             text=True,
             check=True,
@@ -231,6 +240,8 @@ class WhenTheHookStartsTheReceiver(unittest.TestCase):
         )
         return ran.stdout
 
+
+class WhenTheHookStartsTheReceiver(UnderClaude):
     def test_names_what_to_set_and_starts_nothing_when_the_variables_are_unset(self) -> None:
         notice = self.run_hook(**{**self.export, "OTEL_EXPORTER_OTLP_ENDPOINT": "http://collector:4318"})
         self.assertIn("listens for: OTEL_EXPORTER_OTLP_ENDPOINT.", notice)
@@ -242,8 +253,8 @@ class WhenTheHookStartsTheReceiver(unittest.TestCase):
         time.sleep(0.2)
         self.assertFalse(self.started.exists())
 
-    def assert_started(self, event: str) -> None:
-        self.assertEqual(self.run_hook(event, **self.export), "")
+    def assert_started(self, event: str, late: str = "") -> None:
+        self.assertEqual(self.run_hook(event, late, **({} if late else self.export)), "")
         for _ in range(50):
             if self.started.exists():
                 break
@@ -252,13 +263,80 @@ class WhenTheHookStartsTheReceiver(unittest.TestCase):
 
     def test_starts_the_receiver_into_tmp_when_they_are_set(self) -> None:
         self.assert_started("SessionStart")
+        self.assertFalse(self.pending.exists())
 
     def test_starts_a_missing_receiver_after_a_tool_call_too(self) -> None:
         self.assert_started("PostToolUse")
 
+    def test_starts_on_its_own_telemetry_flag_when_claudes_environ_predates_it(self) -> None:
+        self.assert_started("SessionStart", late="CLAUDE_CODE_ENABLE_TELEMETRY=1")
+        self.assertTrue(self.pending.exists())
+
     def test_says_nothing_after_a_tool_call_when_the_variables_are_unset(self) -> None:
         self.assertEqual(self.run_hook("PostToolUse"), "")
         self.assert_nothing_started()
+
+
+def stamp(seconds_ago: float) -> str:
+    moment = datetime.now(timezone.utc) - timedelta(seconds=seconds_ago)
+    return moment.isoformat(timespec="milliseconds").replace("+00:00", "Z")
+
+
+class WhenTheReceiverRunsOnTheFlagAlone(UnderClaude):
+    """After a tool call, with a receiver listening that was started on
+    `CLAUDE_CODE_ENABLE_TELEMETRY` a minute ago and has no event yet."""
+
+    def setUp(self) -> None:
+        super().setUp()
+        listener = socket.socket()
+        self.addCleanup(listener.close)
+        listener.bind(("127.0.0.1", self.port))
+        listener.listen()
+        self.events.mkdir(parents=True)
+        self.pending.write_text(stamp(60)[:19] + "Z\n")
+
+    def responses(self, *seconds_ago: float) -> None:
+        """One main-thread response per age, the last the current one, each
+        written as two records the way a response with a tool call is, and
+        compact, as Claude Code writes its transcript."""
+        with self.transcript.open("w", encoding="utf-8") as transcript:
+            for n, age in enumerate(seconds_ago):
+                for block_age in (age + 5, age):
+                    record = {"type": "assistant", "timestamp": stamp(block_age), "message": {"id": f"msg_{n}"}}
+                    transcript.write(json.dumps(record, separators=(",", ":")) + "\n")
+
+    def confirm(self) -> str:
+        return self.run_hook("PostToolUse")
+
+    def test_settles_quietly_on_the_sessions_first_event(self) -> None:
+        self.responses(30, 0)
+        (self.events / f"{SESSION}.jsonl").write_text('{"cost_usd": 0.01}\n')
+        self.assertEqual(self.confirm(), "")
+        self.assertFalse(self.pending.exists())
+
+    def test_waits_while_only_the_current_response_has_run(self) -> None:
+        self.responses(30)
+        self.assertEqual(self.confirm(), "")
+        self.assertTrue(self.pending.exists())
+
+    def test_waits_while_a_finished_responses_event_may_be_in_flight(self) -> None:
+        self.responses(2, 0)
+        self.assertEqual(self.confirm(), "")
+        self.assertTrue(self.pending.exists())
+
+    def test_ignores_responses_from_before_the_receiver_started(self) -> None:
+        self.responses(120, 0)
+        self.assertEqual(self.confirm(), "")
+        self.assertTrue(self.pending.exists())
+
+    def test_says_once_that_capture_looks_off_when_a_finished_response_brought_no_event(self) -> None:
+        self.responses(30, 0)
+        context = json.loads(self.confirm())["hookSpecificOutput"]
+        self.assertEqual(context["hookEventName"], "PostToolUse")
+        self.assertIn("telemetry capture looks off", context["additionalContext"])
+        self.assertIn(f"    OTEL_EXPORTER_OTLP_ENDPOINT=http://127.0.0.1:{self.port}\n", context["additionalContext"])
+        self.assertFalse(self.pending.exists())
+        self.assertEqual(self.confirm(), "")
 
 
 if __name__ == "__main__":

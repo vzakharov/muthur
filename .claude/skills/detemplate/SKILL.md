@@ -208,9 +208,12 @@ Ordering is load-bearing at exactly one point, and it is the first step:
    `/plan` carves an over-broad one when the next session gets there. The only
    thing that cancels this is the operator declining G3 at plan review (Step 1),
    and then the `CLAUDE.md` brief is the whole record and the report says so.
-6. **Write the watermark** (Step 3) and clear both of `/update-muthur`'s stub
-   markers: the banner and the `STUB` in its frontmatter description. Assertion
-   4 fails a half-cleared pair.
+6. **Write the watermark** (Step 3) and **the divergence record**: each group or
+   entry the prune dropped, declined with the criterion that dropped it, per
+   `@.claude/skills/update-muthur/SKILL.md` § "The divergence record" — without
+   it the first sync re-offers every one. Then clear both of `/update-muthur`'s
+   stub markers: the banner and the `STUB` in its frontmatter description.
+   Assertion 4 fails a half-cleared pair.
 7. **`scripts/vet.sh`**: leave the exit alone, which is the normal case — a fork
    taken to start a project has no stack for the script to check. Wire the real
    checks only where the operator pushed a stack before realising they should

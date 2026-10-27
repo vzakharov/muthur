@@ -32,10 +32,26 @@
   - **Disposition:** adopt
 - `/go` — The go-ahead: flip the plan file, file the issues the plan proposed,
   do the work, run the quality passes, hand the PR back to `/pr`. Also takes a
-  branch to attach to, or a task with no plan behind it.
+  branch to attach to, or a task with no plan behind it. Carries
+  `delegation.md`, handing sub-tasks that need no judgement to cheaper models in
+  worktrees and reviewing them before they merge, and
+  `delegation-model-capabilities.md`, the ≤100-line summary of what each model
+  has handled, which `scripts/vet.sh` caps. `MUTHUR_DELEGATION=off` leaves `/go`
+  as if neither were there.
   - **Pulls in:** `/polish` (G1); `/from-branch`, `/plan`, `/pr`, `/task`;
-    **conditionally** `/take-issue`, `/propose-issue` (G3)
-  - **Disposition:** adopt
+    `.claude/hooks/go-delegation.py`; **conditionally** `/take-issue`,
+    `/propose-issue` (G3), `.claude/costs/` (G7) for the delegation's weighing
+  - **Disposition:** adopt — `delegation-model-capabilities.md` as it stands,
+    its lessons being general, then merged by lesson on every sync
+    (`/update-muthur` Step 5)
+- `.claude/hooks/go-delegation.py` — Deliver `/go`'s two delegation files as
+  context the first time `/go` enters a session — through the `Skill` tool, a
+  `Read` of its `SKILL.md`, or a typed `/go` — so the agent spends no round trip
+  on them; silent under `MUTHUR_DELEGATION=off`. Stdlib-only, tested by
+  `scripts/test_go_delegation.py`.
+  - **Requires:** `python3` ≥3.9, `.claude/settings.json` wiring (G4)
+  - **Pulls in:** `/go`, `.claude/hooks/session_state.py` (G4)
+  - **Disposition:** adopt — **with `/go`'s delegation files**
 - `/implement` — Redirect to `/go`, for handoff blocks written before the
   rename.
   - **Pulls in:** `/go`
@@ -48,6 +64,7 @@
 - `/finalize` — Land prep: swap in staged copies, the quality passes, vet, merge
   the base, sweep working artifacts, flip to ready, reconcile the squash
   message, attest — and, on `and merge`, merge the PR when the run turned up
+<<<<<<< HEAD
   nothing to decide. Carries `merge.md`, that gate and the merge; `attest.md`,
   the attestation comment; `base-advanced.md`, the call on re-verifying when the
   base moved; and `revoke.md`, withdrawing an attestation.
@@ -61,6 +78,16 @@
   gate, merging when it passes, syncing and standing down when the base moved.
   - **Requires:** `gh`
   - **Pulls in:** `/check-merge`, `/finalize`, `/from-branch`, `/sync-branch`
+=======
+  nothing to decide. Carries `merge.md`, that gate and the merge;
+  `base-advanced.md`, the call on re-verifying when the base moved; and
+  `revoke.md`, withdrawing an attestation.
+  - **Requires:** `gh`, `scripts/vet.sh`, `scripts/staged.sh`,
+    `scripts/pr-comment.sh`
+  - **Pulls in:** `/polish` (G1); `/check-merge`, `/from-branch`, `/plan`,
+    `/squash-message`, `/sync-branch`; **conditionally** `/take-issue` (G3),
+    `/watch-ci` (G5)
+>>>>>>> origin/main
   - **Disposition:** adopt
 - `/from-branch` — Attach the session to an existing branch or PR, abandoning
   the auto-created session branch.
@@ -69,12 +96,14 @@
   - **Disposition:** adopt
 - `/relay` — Hand the session to a fresh one instead of compacting it: write a
   summary to a committed `docs/remove-before-merging/relay-<N>.md`, numbered one
-  past the branch's previous relay, start a successor on the branch with
-  `/relay take <branch>`, and stop. The successor attaches, reads the
-  highest-numbered summary, and dispatches on its Next step.
-  - **Requires:** `create_session` for the spawn on the web; a typed line
-    locally
-  - **Pulls in:** `/from-branch`, `/go`, `/finalize`
+  past the branch's previous relay, with the agent's last reply appended
+  verbatim from the transcript by `scripts/relay-last-reply.py`, start a
+  successor on the branch with `/relay take <branch>`, and stop. The successor
+  attaches, reads the highest-numbered summary, and dispatches on its Next step.
+  - **Requires:** `python3`; `create_session` for the spawn on the web; a typed
+    line locally
+  - **Pulls in:** `/from-branch`, `/go`, `/finalize`,
+    `scripts/relay-last-reply.py`
   - **Disposition:** adopt
 - `/handle` — Pick up a branch and do what it needs: attach, read off whether it
   carries an approved plan, a plan still under review, or feedback on shipped
@@ -106,7 +135,8 @@
   `working-file.md`, which picks the working file in the one case the tracked
   draft is not on the branch — a first run, or a run after `/finalize` already
   swept it.
-  - **Requires:** `gh`, `jq`, `scripts/check-squash-message.sh`
+  - **Requires:** `gh`, `jq`, `scripts/check-squash-message.sh`,
+    `scripts/pr-comment.sh`
   - **Pulls in:** `/tend-prose` (G1)
   - **Disposition:** adopt
 - `/qa-checklist` — Generate a QA checklist from the branch's change and write
@@ -150,7 +180,19 @@
 - `scripts/check-squash-message.sh` — Measure the squash proposal against the
   size caps `/squash-message` states, locating it in the worktree or in history
   once `/finalize` has swept it. POSIX `sh`.
-  - **Requires:** `sh`; `git` for the history rungs
+  - **Requires:** `sh`, `scripts/lib/chars.sh`; `git` for the history rungs
+  - **Disposition:** adopt
+- `scripts/lib/chars.sh` — Filter text to one byte per UTF-8 character, so the
+  checks that cap text in terminal columns count characters whatever the locale.
+  POSIX `sh`.
+  - **Requires:** `sh`
+  - **Disposition:** adopt
+- `scripts/pr-comment.sh` — Post or update the squash proposal or the finalize
+  attestation in one fixed-shape command narrow enough to approve for auto mode:
+  by the `.claude/settings.json` allow rule, which travels with it, and on the
+  web by the setup script's `autoMode.allow` entry, which only the operator can
+  add (`docs/adopting/web-remote.md`).
+  - **Requires:** `bash`, `gh`, `git`, `scripts/lib/gh-repo.sh`
   - **Disposition:** adopt
 - `scripts/staged.sh` — Stage an always-loaded file as a byte-identical copy at
   `.claude/staged/<path>.staged`, and swap it back at `/finalize` — merging in
@@ -163,7 +205,7 @@
   one — with hysteresis: the total may grow to a ceiling, and a branch that
   crosses it lands it at a lower target. The numbers are constants in the
   script, changed in a commit that says why. POSIX `sh`.
-  - **Requires:** `sh`, `git`
+  - **Requires:** `sh`, `git`, `scripts/lib/chars.sh`
   - **Disposition:** adopt
 - `scripts/vet.sh` — The vet run: the fast lint/type-check/test pass before
   pushing review-ready work.

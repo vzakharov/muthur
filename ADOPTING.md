@@ -175,8 +175,9 @@ to the shared tail.
 
 **Keep every decline with its reason** — G4's, each `opt-in: ask` no, any group
 you skip — written as a present-tense condition (_no CI yet_) rather than a
-verdict. Taking `/update-muthur`, they land in its watermark, where the reason
-is what lets a later sync re-offer the path; otherwise they go in your report.
+verdict. Taking `/update-muthur`, they land in its divergence record, where the
+reason is what lets a later sync re-offer the path; otherwise they go in your
+report.
 
 ## Template fork
 

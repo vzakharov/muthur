@@ -6,7 +6,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Dict, Iterable, List, Mapping, Tuple
 
-from lib.estimate import Rates
+from lib.estimate_model import Rates
 from lib.period import Period
 from lib.rows import SessionCost
 

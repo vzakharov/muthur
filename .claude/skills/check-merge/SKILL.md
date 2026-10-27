@@ -59,9 +59,8 @@ same call — no second lookup.
 
 ## Step 1: Run the check once
 
-Run `scripts/check-merge.sh` once via the Bash tool — synchronously
-(foreground), **no `run_in_background`**. It returns immediately. Read the
-printed line / exit code and act:
+Run `scripts/check-merge.sh` once via the Bash tool. It returns immediately.
+Read the printed line / exit code and act:
 
 - `0` — the branch already **contains** the target's current tip (nothing to
   merge), and the PR is still open. → Report "no movement; branch is current

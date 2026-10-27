@@ -17,7 +17,7 @@ import unittest
 from typing import Any, Dict, List, Mapping, Optional
 
 from lib.github import Client, GitHubError, ServerError, discover, remote_ledger
-from lib.ledger import BRANCH
+from lib.ledger_branch import BRANCH
 from lib.rows import SessionCost, row_text
 from lib.shape import ShapeError
 from lib.tally import Tally
@@ -64,10 +64,13 @@ class FakeGitHub:
         failures: int = 0,
         errors: Optional[List[Dict[str, Any]]] = None,
         branches: Optional[Mapping[str, Months]] = None,
+        added_roles: Optional[Mapping[str, Any]] = None,
     ) -> None:
         self.ledgers = dict(sorted({**{repo: None for repo in branches or {}}, **ledgers}.items()))
         self.sides = {"HEAD": self.ledgers, f"refs/heads/{BRANCH}": dict(branches or {})}
         self.watermarked = set(watermarked)
+        # A repo to its `rates.repo.json` text, or TRUNCATED.
+        self.added_roles = dict(added_roles or {})
         self.page = page
         self.failures = failures
         self.errors = errors
@@ -84,20 +87,21 @@ class FakeGitHub:
             "tree": side(self.ledgers[repo]),
             "ledger": side(self.sides[f"refs/heads/{BRANCH}"].get(repo)),
             "watermark": {"__typename": "Blob"} if repo in self.watermarked else None,
+            "addedRoles": None if repo not in self.added_roles else self.blob(self.added_roles[repo]),
         }
+
+    @staticmethod
+    def blob(text: Any) -> Dict[str, Any]:
+        if text is TRUNCATED:
+            return {"isTruncated": True, "isBinary": False, "text": "{"}
+        return {"isTruncated": False, "isBinary": False, "text": text}
 
     def tree(self, rev: str, repo: str, month: str) -> Dict[str, Any]:
         files = (self.sides[rev].get(repo) or {})[month]
         return {
             "object": {
                 "entries": [
-                    {
-                        "name": name,
-                        "type": "blob",
-                        "object": {"isTruncated": True, "isBinary": False, "text": "{"}
-                        if text is TRUNCATED
-                        else {"isTruncated": False, "isBinary": False, "text": text},
-                    }
+                    {"name": name, "type": "blob", "object": self.blob(text)}
                     for name, text in files.items()
                 ]
             }
@@ -119,7 +123,7 @@ class FakeGitHub:
                     "viewer": {
                         "repositories": {
                             "pageInfo": {"hasNextPage": more, "endCursor": str(start + self.page) if more else None},
-                            "nodes": [self.node(repo) for repo in repos],
+                            "nodes": [self.node_answer(query, self.node(repo)) for repo in repos],
                         }
                     }
                 }
@@ -129,8 +133,14 @@ class FakeGitHub:
         for found in re.finditer(alias + r'object\(expression: "([^":]+):[^"]*/(\d{4}-\d{2})"\)', query):
             data[found[1]] = self.tree(found[4], f"{found[2]}/{found[3]}", found[5])
         for found in re.finditer(alias + r"\s*nameWithOwner", query):
-            data[found[1]] = self.node(f"{found[2]}/{found[3]}")
+            data[found[1]] = self.node_answer(query, self.node(f"{found[2]}/{found[3]}"))
         return {"data": data}
+
+    def node_answer(self, query: str, node: Dict[str, Any]) -> Dict[str, Any]:
+        """A repository's table is on the ledger, so a query reading it anywhere
+        else finds nothing."""
+        ledger_side = f'addedRoles: object(expression: "refs/heads/{BRANCH}:.claude/costs/rates.repo.json")' in query
+        return node if ledger_side else {**node, "addedRoles": None}
 
 
 def no_sleep(_: float) -> None:
@@ -184,8 +194,15 @@ class FailuresAreLoud(unittest.TestCase):
 
     def test_a_truncated_row_raises(self) -> None:
         github = FakeGitHub({"a/ledger": {"2026-03": {"s.json": TRUNCATED}}})
-        with self.assertRaisesRegex(ShapeError, "a/ledger:.*s.json: GitHub did not return the row whole"):
+        with self.assertRaisesRegex(ShapeError, "a/ledger:.*s.json: GitHub did not return the file whole"):
             remote_ledger(Client(github, no_sleep))
+
+    def test_a_truncated_rates_repo_json_raises(self) -> None:
+        github = FakeGitHub({"a/ledger": {"2026-03": {}}}, added_roles={"a/ledger": TRUNCATED})
+        with self.assertRaisesRegex(
+            ShapeError, f"a/ledger:refs/heads/{BRANCH}:.claude/costs/rates.repo.json: GitHub did not return"
+        ):
+            discover(Client(github, no_sleep))
 
 
 class WhatIsRead(unittest.TestCase):
@@ -234,6 +251,14 @@ class WhatIsRead(unittest.TestCase):
         ledger = remote_ledger(Client(FakeGitHub({"a/ledger": {"2026-03": {"s.json": text}}}), no_sleep))
         self.assertEqual([r.session_id for r in ledger.rows], ["s"])
         self.assertEqual(ledger.repos[0].warnings, ["1 row in an older or newer shape than this ledger's"])
+
+    def test_each_ledger_repo_s_own_roles_are_read_beside_its_rows(self) -> None:
+        github = FakeGitHub(
+            {"a/ledger": {"2026-03": {"s.json": row("s")}}, "b/ledger": {"2026-03": {}}, "c/plain": None},
+            added_roles={"a/ledger": '{"roles": {}}', "c/plain": '{"roles": {}}'},
+        )
+        ledger = remote_ledger(Client(github, no_sleep))
+        self.assertEqual(ledger.added_roles, {"a/ledger": '{"roles": {}}'})
 
     def test_a_repo_with_no_month_under_the_filter_is_left_out(self) -> None:
         github = FakeGitHub({"a/ledger": {"2026-03": {"s.json": row("s")}}, "b/ledger": {"2026-04": {}}})

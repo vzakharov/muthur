@@ -43,6 +43,9 @@ set -euf
 
 cd "$(dirname "$0")/.."
 
+# shellcheck source=lib/chars.sh
+. scripts/lib/chars.sh
+
 PROG="check-claude-md-size"
 CEILING_CHARS=30000
 TARGET_CHARS=29000
@@ -56,11 +59,8 @@ if [ ! -f "$FILE" ]; then
   exit 0
 fi
 
-# Characters, not bytes: deleting UTF-8 continuation bytes leaves one byte per
-# character, whatever the locale — `check-squash-message.sh`'s `char_len` says
-# why `wc -m` is not used.
 count_chars() {
-  LC_ALL=C tr -d '\200-\277' | wc -c | tr -d ' '
+  one_byte_per_char | wc -c | tr -d ' '
 }
 
 # The same bound `check-squash-message.sh` draws on its history rung, for the

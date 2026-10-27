@@ -210,6 +210,11 @@ silently reshaping scope. The plan file is the exception to durable prose, being
 transient: keep it current as the work deviates, with checklist items in
 forward-looking voice.
 
+**When `.claude/hooks/go-delegation.py` delivered
+`@.claude/skills/go/delegation.md` this session, the work follows it too.**
+Under a harness that runs no hooks, `Read` it yourself unless
+`MUTHUR_DELEGATION` is `off`.
+
 Commit/push discipline is already governed by CLAUDE.md — don't reinvent it
 here:
 

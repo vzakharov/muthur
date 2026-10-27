@@ -106,12 +106,11 @@ class HookCase(unittest.TestCase):
 
 
 class WhenAnOperatorPromptArrives(HookCase):
-    def test_the_agent_is_told_to_start_the_watcher_unless_the_repo_suffices(self) -> None:
+    def test_the_agent_is_told_to_start_the_watcher_unless_told_to_stop(self) -> None:
         out, _ = self.prompt()
         self.assertIn("As this turn's last action, start the cache keepalive's watcher", out)
         self.assertIn(f"{HOOK} watch sess {self.transcript}", out)
-        self.assertIn("Skip it when", out)
-        self.assertIn("loop boundary", out)
+        self.assertIn("Skip it when the operator's message asks to stop the keepalive", out)
 
     def test_a_running_watcher_is_left_to_the_agent_to_stop(self) -> None:
         self.session(ago=1)
