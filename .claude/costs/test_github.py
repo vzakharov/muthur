@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
-"""The cross-repo ledger is read through one transport, so each case is a fake
+"""The cross-repo ledger is read through two transports, so each case is a fake
 GitHub answering in the shapes the real one returns: a repository listing
-paged by cursor, and aliased month trees whose blobs carry the rows' text.
-What it protects is which repositories count, that every row arrives or the
-run stops, and that a row is counted once however many repositories carry it.
+paged by cursor, a recursive REST tree listing, and aliased blobs carrying the
+rows' text. What it protects is which repositories count, that every row
+arrives at any depth or the run stops, and that a row is counted once however
+many repositories carry it.
 
 Run by path (`python3 .claude/costs/test_github.py`), as `scripts/vet.sh`
 does, which puts this directory on `sys.path` for `lib`.
@@ -11,6 +12,7 @@ does, which puts this directory on `sys.path` for `lib`.
 
 from __future__ import annotations
 
+import hashlib
 import json
 import re
 import unittest
@@ -52,9 +54,10 @@ def row(session_id: str, branch: str = "a-branch", last: str = "2026-03-04T06:06
 
 class FakeGitHub:
     """`ledgers` maps a repo to the months its default branch holds, each
-    month's files to their text, or to None for a repo with none there;
-    `branches` does the same for its `cost-ledger` branch. The listing pages
-    `page` repos at a time; a 5xx is thrown on the first `failures` calls."""
+    month's files, by their path under it, to their text, or to None for a repo
+    with none there; `branches` does the same for its `cost-ledger` branch. The
+    listing pages `page` repos at a time; a 5xx is thrown on the first
+    `failures` GraphQL calls."""
 
     def __init__(
         self,
@@ -75,17 +78,25 @@ class FakeGitHub:
         self.failures = failures
         self.errors = errors
         self.queries: List[str] = []
+        self.listings: List[str] = []
+        self.truncated_listing = False
+        # Each blob a listing has named, by its oid.
+        self.blobs: Dict[str, Any] = {}
 
     def node(self, repo: str) -> Dict[str, Any]:
-        def side(months: Optional[Months]) -> Optional[Dict[str, Any]]:
+        def side(rev: str) -> Optional[Dict[str, Any]]:
+            months = self.sides[rev].get(repo)
             if months is None:
                 return None
-            return {"entries": [{"name": m, "type": "tree"} for m in months] + [{"name": ".gitkeep", "type": "blob"}]}
+            return {
+                "oid": f"{repo}@{rev}",
+                "entries": [{"name": m, "type": "tree"} for m in months] + [{"name": ".gitkeep", "type": "blob"}],
+            }
 
         return {
             "nameWithOwner": repo,
-            "tree": side(self.ledgers[repo]),
-            "ledger": side(self.sides[f"refs/heads/{BRANCH}"].get(repo)),
+            "tree": side("HEAD"),
+            "ledger": side(f"refs/heads/{BRANCH}"),
             "watermark": {"__typename": "Blob"} if repo in self.watermarked else None,
             "addedRoles": None if repo not in self.added_roles else self.blob(self.added_roles[repo]),
         }
@@ -96,16 +107,19 @@ class FakeGitHub:
             return {"isTruncated": True, "isBinary": False, "text": "{"}
         return {"isTruncated": False, "isBinary": False, "text": text}
 
-    def tree(self, rev: str, repo: str, month: str) -> Dict[str, Any]:
-        files = (self.sides[rev].get(repo) or {})[month]
-        return {
-            "object": {
-                "entries": [
-                    {"name": name, "type": "blob", "object": self.blob(text)}
-                    for name, text in files.items()
-                ]
-            }
-        }
+    def rest(self, path: str) -> Dict[str, Any]:
+        """`repos/<repo>/git/trees/<oid>?recursive=1`, the oid naming its side."""
+        self.listings.append(path)
+        found = re.fullmatch(r"repos/[^/]+/[^/]+/git/trees/([^@]+)@(.+)\?recursive=1", path)
+        assert found, path
+        tree: List[Dict[str, Any]] = [{"path": ".gitkeep", "type": "blob", "sha": "keep"}]
+        for month, files in (self.sides[found[2]].get(found[1]) or {}).items():
+            tree.append({"path": month, "type": "tree", "sha": f"tree-{month}"})
+            for name, text in files.items():
+                oid = "truncated" if text is TRUNCATED else hashlib.sha1(text.encode()).hexdigest()
+                self.blobs[oid] = text
+                tree.append({"path": f"{month}/{name}", "type": "blob", "sha": oid})
+        return {"tree": tree, "truncated": self.truncated_listing}
 
     def __call__(self, query: str, variables: Mapping[str, Any]) -> Dict[str, Any]:
         self.queries.append(query)
@@ -130,8 +144,8 @@ class FakeGitHub:
             }
         data: Dict[str, Any] = {}
         alias = r'(\w+): repository\(owner: "([^"]+)", name: "([^"]+)"\) \{ '
-        for found in re.finditer(alias + r'object\(expression: "([^":]+):[^"]*/(\d{4}-\d{2})"\)', query):
-            data[found[1]] = self.tree(found[4], f"{found[2]}/{found[3]}", found[5])
+        for found in re.finditer(alias + r'object\(oid: "([^"]+)"\)', query):
+            data[found[1]] = {"object": self.blob(self.blobs[found[4]])}
         for found in re.finditer(alias + r"\s*nameWithOwner", query):
             data[found[1]] = self.node_answer(query, self.node(f"{found[2]}/{found[3]}"))
         return {"data": data}
@@ -145,6 +159,10 @@ class FakeGitHub:
 
 def no_sleep(_: float) -> None:
     pass
+
+
+def client(github: FakeGitHub, said: Optional[List[str]] = None) -> Client:
+    return Client(github, no_sleep, (said if said is not None else []).append, github.rest)
 
 
 class WhichRepositoriesCount(unittest.TestCase):
@@ -195,7 +213,13 @@ class FailuresAreLoud(unittest.TestCase):
     def test_a_truncated_row_raises(self) -> None:
         github = FakeGitHub({"a/ledger": {"2026-03": {"s.json": TRUNCATED}}})
         with self.assertRaisesRegex(ShapeError, "a/ledger:.*s.json: GitHub did not return the file whole"):
-            remote_ledger(Client(github, no_sleep))
+            remote_ledger(client(github))
+
+    def test_a_truncated_listing_raises(self) -> None:
+        github = FakeGitHub({"a/ledger": {"2026-03": {"s.json": row("s")}}})
+        github.truncated_listing = True
+        with self.assertRaisesRegex(ShapeError, "a/ledger:HEAD:.claude/costs/sessions: GitHub truncated"):
+            remote_ledger(client(github))
 
     def test_a_truncated_rates_repo_json_raises(self) -> None:
         github = FakeGitHub({"a/ledger": {"2026-03": {}}}, added_roles={"a/ledger": TRUNCATED})
@@ -206,29 +230,29 @@ class FailuresAreLoud(unittest.TestCase):
 
 
 class WhatIsRead(unittest.TestCase):
-    def test_a_month_filter_requests_only_that_months_trees(self) -> None:
+    def test_rows_at_any_depth_are_read_in_either_layout(self) -> None:
         github = FakeGitHub(
-            {"a/ledger": {"2026-03": {"s.json": row("s")}, "2026-04": {"t.json": row("t")}}}
+            {"a/ledger": {"2026-03": {"s.json": row("s"), "claude/b-x/2/t.json": row("t"), "a-branch/1/notes.txt": "x"}}}
         )
-        ledger = remote_ledger(Client(github, no_sleep), months={"2026-04"})
-        self.assertEqual([r.session_id for r in ledger.rows], ["t"])
-        self.assertEqual(ledger.repos[0].months, ["2026-04"])
-        self.assertFalse(any("2026-03" in query for query in github.queries[1:]))
+        ledger = remote_ledger(client(github))
+        self.assertEqual(sorted(r.session_id for r in ledger.rows), ["s", "t"])
+        self.assertEqual(github.listings, ["repos/a/ledger/git/trees/a/ledger@HEAD?recursive=1"])
 
-    def test_month_trees_are_fetched_in_batches_and_each_step_is_said(self) -> None:
-        months = {f"2026-{n:02d}": {f"s{n}.json": row(f"s{n}")} for n in range(1, 8)}
+    def test_rows_are_read_in_batches_and_each_step_is_said(self) -> None:
+        months = {f"2026-{n:02d}": {f"b/{i}/s{n}-{i}.json": row(f"s{n}-{i}") for i in range(1, 11)} for n in range(1, 7)}
         github = FakeGitHub({"a/ledger": months})
         said: List[str] = []
-        ledger = remote_ledger(Client(github, no_sleep, said.append))
-        self.assertEqual(len(ledger.rows), 7)
+        ledger = remote_ledger(client(github, said))
+        self.assertEqual(len(ledger.rows), 60)
         self.assertEqual(len(github.queries), 1 + 2)
         self.assertEqual(
             said,
             [
                 "listing your repositories: 0 so far",
                 "1 ledger among 1 repository",
-                "reading 1 ledger: 0 of 7 months, 0 rows so far",
-                "reading 1 ledger: 5 of 7 months, 5 rows so far",
+                "listing a/ledger's rows on HEAD",
+                "reading 1 ledger: 0 of 60 rows",
+                "reading 1 ledger: 50 of 60 rows",
             ],
         )
 
@@ -239,7 +263,7 @@ class WhatIsRead(unittest.TestCase):
                 "b/fork": {"2026-03": {"s.json": row("s"), "t.json": row("t")}},
             }
         )
-        ledger = remote_ledger(Client(github, no_sleep))
+        ledger = remote_ledger(client(github))
         self.assertEqual(sorted(r.session_id for r in ledger.rows), ["s", "t"])
         self.assertEqual(ledger.repo_of, {"s": "a/source", "t": "b/fork"})
         warnings = {repo.name: repo.warnings for repo in ledger.repos}
@@ -248,7 +272,7 @@ class WhatIsRead(unittest.TestCase):
 
     def test_a_row_in_another_shape_is_reshaped_and_reported(self) -> None:
         text = json.dumps({**json.loads(row("s")), "retiredKey": 1})
-        ledger = remote_ledger(Client(FakeGitHub({"a/ledger": {"2026-03": {"s.json": text}}}), no_sleep))
+        ledger = remote_ledger(client(FakeGitHub({"a/ledger": {"2026-03": {"s.json": text}}})))
         self.assertEqual([r.session_id for r in ledger.rows], ["s"])
         self.assertEqual(ledger.repos[0].warnings, ["1 row in an older or newer shape than this ledger's"])
 
@@ -257,19 +281,14 @@ class WhatIsRead(unittest.TestCase):
             {"a/ledger": {"2026-03": {"s.json": row("s")}}, "b/ledger": {"2026-03": {}}, "c/plain": None},
             added_roles={"a/ledger": '{"roles": {}}', "c/plain": '{"roles": {}}'},
         )
-        ledger = remote_ledger(Client(github, no_sleep))
+        ledger = remote_ledger(client(github))
         self.assertEqual(ledger.added_roles, {"a/ledger": '{"roles": {}}'})
-
-    def test_a_repo_with_no_month_under_the_filter_is_left_out(self) -> None:
-        github = FakeGitHub({"a/ledger": {"2026-03": {"s.json": row("s")}}, "b/ledger": {"2026-04": {}}})
-        ledger = remote_ledger(Client(github, no_sleep), months={"2026-03"})
-        self.assertEqual([repo.name for repo in ledger.repos], ["a/ledger"])
 
 
 class TheTwoSides(unittest.TestCase):
     def test_a_repo_whose_rows_are_on_the_ledger_branch_alone_counts(self) -> None:
         github = FakeGitHub({}, branches={"a/moved": {"2026-03": {"s.json": row("s")}}})
-        ledger = remote_ledger(Client(github, no_sleep))
+        ledger = remote_ledger(client(github))
         self.assertEqual([r.session_id for r in ledger.rows], ["s"])
         self.assertEqual(discover(Client(github, no_sleep), ["a/moved"]).ledgers[0].months, ["2026-03"])
 
@@ -277,11 +296,13 @@ class TheTwoSides(unittest.TestCase):
         later = "2026-03-04T09:00:00.000Z"
         github = FakeGitHub(
             {"a/ledger": {"2026-03": {"s.json": row("s"), "t.json": row("t")}}},
-            branches={"a/ledger": {"2026-03": {"s.json": row("s", last=later)}}},
+            branches={"a/ledger": {"2026-03": {"s.json": row("s", last=later), "a-branch/1/t.json": row("t")}}},
         )
-        ledger = remote_ledger(Client(github, no_sleep))
+        ledger = remote_ledger(client(github))
         self.assertEqual(sorted(r.session_id for r in ledger.rows), ["s", "t"])
         self.assertEqual(next(r for r in ledger.rows if r.session_id == "s").last_response_at, later)
+        # `t` is the same blob on both sides, read once.
+        self.assertEqual(sum(query.count("object(oid:") for query in github.queries), 3)
         self.assertEqual(ledger.repos[0].warnings, [])
 
 

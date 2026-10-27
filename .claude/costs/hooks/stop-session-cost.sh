@@ -126,7 +126,7 @@ commit_row() {
 
   # The session's copies the commit moved away from: an older layout's, or the
   # branch's before a rename.
-  repo diff --name-only --diff-filter=D "$head" "$commit" | while IFS= read -r moved; do
+  repo diff --no-renames --name-only --diff-filter=D "$head" "$commit" | while IFS= read -r moved; do
     git -C "$top" rm -q -f --ignore-unmatch -- "$moved"
   done
 

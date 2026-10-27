@@ -19,6 +19,7 @@ import unittest
 from pathlib import Path
 from typing import List
 
+from test_filing import row as made_row
 from test_pricing import PRICE_TABLE, response
 
 COSTS = Path(__file__).resolve().parent
@@ -26,7 +27,9 @@ LIB = COSTS.parent / "hooks" / "lib.sh"
 HOOK = ".claude/costs/hooks/stop-session-cost.sh"
 SESSIONS = ".claude/costs/sessions"
 SESSION = "sess"
-ROW = f"{SESSIONS}/2026-03/{SESSION}.json"
+ROW = f"{SESSIONS}/2026-03/a-branch/1/{SESSION}.json"
+OTHER = f"{SESSIONS}/2026-03/other-branch/1/other.json"
+EARLIER = "2026-03-01T00:00:00.000Z"
 
 class Clone:
     """A branch pushed to a bare `origin`, carrying the ledger's code and nothing
@@ -107,13 +110,12 @@ class Clone:
         self.git("push", "-q", "origin", f"{root}:refs/heads/cost-ledger")
         return root
 
-    def other_row(self, parent: str) -> str:
+    def other_row(self, parent: str, path: str = OTHER, text: str = made_row("other", "other-branch", EARLIER)) -> str:
         """Another session's row committed on `parent`, and not pushed."""
         staged = self.root.parent / "other.json"
-        staged.write_text(json.dumps({"sessionId": "other"}))
+        staged.write_text(text)
         return subprocess.run(
-            ["python3", str(self.root / ".claude" / "costs" / "ledger.py"), "commit-row",
-             parent, f"{SESSIONS}/2026-03/other.json", str(staged)],
+            ["python3", str(self.root / ".claude" / "costs" / "ledger.py"), "commit-row", parent, path, str(staged)],
             capture_output=True, text=True, check=True, env=self.env(),
         ).stdout.strip()
 
@@ -170,7 +172,7 @@ class Clone:
         )
 
     def row(self) -> Path:
-        [row] = (self.root / ".claude" / "costs" / "sessions").glob(f"*/{SESSION}.json")
+        [row] = (self.root / ".claude" / "costs" / "sessions").rglob(f"{SESSION}.json")
         return row
 
     def status(self) -> str:
@@ -349,8 +351,35 @@ class LedgerWriteTest(unittest.TestCase):
         root = self.clone.seed_ledger()
         self.clone.git("push", "-q", "origin", f"{self.clone.other_row(root)}:refs/heads/cost-ledger")
         self.stop()
-        self.assertEqual(self.clone.ledger_files(), [f"{SESSIONS}/2026-03/other.json", ROW])
+        self.assertEqual(self.clone.ledger_files(), [ROW, OTHER])
         self.assertEqual(self.clone.origin_git("rev-list", "--count", "cost-ledger"), "3")
+
+    def test_a_new_session_on_a_branch_takes_the_next_number_on_both_sides(self) -> None:
+        held = f"{SESSIONS}/2026-03/a-branch/1/other.json"
+        tip = self.clone.other_row(self.clone.seed_ledger(), held, made_row("other", "a-branch", EARLIER))
+        self.clone.git("push", "-q", "origin", f"{tip}:refs/heads/cost-ledger")
+        self.stop()
+        second = f"{SESSIONS}/2026-03/a-branch/2/{SESSION}.json"
+        self.assertEqual(self.clone.ledger_files(), [held, second])
+        self.assertEqual(self.clone.files_in("HEAD"), [second])
+
+    def test_a_branch_change_moves_the_row_on_the_ledger_and_the_branch(self) -> None:
+        self.stop()
+        self.clone.respond(branch="renamed")
+        self.stop()
+        moved = f"{SESSIONS}/2026-03/renamed/1/{SESSION}.json"
+        self.assertEqual(self.clone.ledger_files(), [moved])
+        self.assertEqual(self.clone.git("ls-tree", "-r", "--name-only", "HEAD", "--", SESSIONS), moved)
+        self.assertEqual(self.clone.status(), "")
+
+    def test_a_stale_branch_s_month_only_rows_are_folded_in(self) -> None:
+        root = self.clone.seed_ledger()
+        stale = self.clone.other_row(root, f"{SESSIONS}/2026-03/other.json")
+        mine = self.clone.other_row(stale, f"{SESSIONS}/2026-03/{SESSION}.json", made_row(SESSION, "a-branch", EARLIER))
+        self.clone.git("push", "-q", "origin", f"{mine}:refs/heads/cost-ledger")
+        self.stop()
+        self.assertEqual(self.clone.ledger_files(), [ROW, OTHER])
+        self.assertTrue(self.clone.origin_git("log", "-1", "--format=%s", "cost-ledger").endswith("; re-file 1 session row"))
 
     def test_a_writer_that_takes_the_tip_first_loses_no_row(self) -> None:
         # The other session's push lands while this one's is being received, so
@@ -370,7 +399,7 @@ class LedgerWriteTest(unittest.TestCase):
         probe.chmod(0o755)
         self.stop()
         self.assertTrue(raced.exists())
-        self.assertEqual(self.clone.ledger_files(), [f"{SESSIONS}/2026-03/other.json", ROW])
+        self.assertEqual(self.clone.ledger_files(), [ROW, OTHER])
 
     def test_the_trunk_s_row_goes_to_the_ledger_alone(self) -> None:
         self.clone.git("checkout", "-q", "main")
