@@ -197,10 +197,11 @@ operator comes back to settles the summary it wrote at the end of any turn that
 makes its Next step false or answers a question it lists as pending, in that
 turn's last commit:
 
-- **Delete** when nothing it lists is still pending and the branch alone lets a
-  fresh session continue — the keepalive hook's test: everything pushed, the
-  work at a loop boundary, nothing said that the repo does not hold. `git rm`
-  this session's summary alone; the earlier ones stay, and none of them becomes
+- **Delete** when the keepalive hook's test holds — the one its
+  `UserPromptSubmit` line prints every turn, `SUFFICIENT` in
+  `.claude/keepalive/hooks/keepalive.py`: an item still pending as a question on
+  the PR passes it, since `/handle` picks it up from there. `git rm` this
+  session's summary alone; the earlier ones stay, and none of them becomes
   current, per Step 2.
 - **Otherwise rewrite it in place** — Step 2 again over the whole conversation,
   the turns since the park included, into the same file.

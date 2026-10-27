@@ -106,6 +106,9 @@ gh pr view <n> --json title --jq '.title + " (#<n>)"' > tmp/squash-title.txt
 gh api repos/<owner>/<repo>/issues/comments/<id> --jq .body > tmp/proposal.md
 ```
 
+`<id>` is the `#issuecomment-<id>` fragment of the URL `scripts/pr-comment.sh`
+printed when step 5 posted the proposal.
+
 Extract the comment's last fenced block — the body, after the title block a
 one-commit PR carries — into `tmp/squash-body.txt`, then **print both files and
 read them** — the title against the `<type>: #<issue> <essence> (#<n>)` shape,
