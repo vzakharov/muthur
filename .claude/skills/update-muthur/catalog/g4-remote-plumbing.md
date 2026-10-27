@@ -36,6 +36,12 @@ the working tree clean, and behaves the same everywhere.
   rather than failing the turn, which is a hook doing nothing at all.
   - **Requires:** `bash`, `jq`
   - **Disposition:** adopt — **with any hook that sources it**
+- `.claude/hooks/session_state.py` — Imported by G1's `file-tools-nudge.py` and
+  G2's `go-delegation.py`: the project root, and the per-session state file
+  `tmp/<hook>/<session_id>`, refused for a session id that could name a path
+  elsewhere.
+  - **Requires:** `python3` ≥3.9
+  - **Disposition:** adopt — **with any hook that imports it**
 - `.claude/hooks/operator-voice.sh` — On session start, name the operator —
   their GitHub name and handle, plus their `.claude/voice/operators/` entry —
   into the session context. Runs everywhere: a laptop session needs to know who

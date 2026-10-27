@@ -160,14 +160,6 @@ def start_line(session: str, transcript: str) -> str:
     )
 
 
-SUFFICIENT = (
-    "the branch alone lets a fresh session continue: everything committed and pushed, the work"
-    " at a loop boundary (a draft plan published awaiting `/go`, a paused plan, `/go` done"
-    " awaiting `/finalize`, a relay summary written), and nothing said since that the repo"
-    " does not hold"
-)
-
-
 STOP = "the operator's message asks to stop the keepalive (\"стоп\", \"stop\", in any words)"
 PARK = (
     "If the operator's message asks to park the session (\"запаркуй\", \"park it\", in any words),"
@@ -178,14 +170,14 @@ PARK = (
 def context(data: Dict[str, Any], alive: bool, renewals: int, session: str, transcript: str) -> Optional[str]:
     if alive:
         return (
-            f"A {MARK.lower()} watcher is running. {PARK} If {STOP}, or if, as this turn ends, {SUFFICIENT},"
+            f"A {MARK.lower()} watcher is running. {PARK} If {STOP},"
             " stop it with TaskStop (its id is in the Bash result that started it)."
         )
     spent = int(data.get("wakes", 0))
     if not data.get("fired"):
         return (
             f"As this turn's last action, {start_line(session, transcript)}"
-            f" Skip it when {STOP}, or when, at that point, {SUFFICIENT}."
+            f" Skip it when {STOP}."
         )
     if spent > renewals:
         return (

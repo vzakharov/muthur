@@ -1,6 +1,9 @@
 {
   "permissions": {
-    "allow": []
+    "allow": [
+      "Bash(scripts/pr-comment.sh *)",
+      "Bash(./scripts/pr-comment.sh *)"
+    ]
   },
   "hooks": {
     "SessionStart": [
@@ -32,6 +35,15 @@
             "type": "command",
             "command": "$CLAUDE_PROJECT_DIR/scripts/muthur-sync.sh nudge",
             "timeout": 30
+          }
+        ]
+      },
+      {
+        "matcher": "compact",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "$CLAUDE_PROJECT_DIR/.claude/costs/hooks/estimate-notice.sh"
           }
         ]
       },
@@ -71,6 +83,10 @@
           },
           {
             "type": "command",
+            "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/go-delegation.py"
+          },
+          {
+            "type": "command",
             "command": "$CLAUDE_PROJECT_DIR/.claude/costs/hooks/estimate-notice.sh"
           },
           {
@@ -96,6 +112,15 @@
       }
     ],
     "PostToolUse": [
+      {
+        "matcher": "Skill|Read",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/go-delegation.py"
+          }
+        ]
+      },
       {
         "matcher": "Edit|Write|MultiEdit",
         "hooks": [

@@ -16,6 +16,7 @@ import unittest
 from pathlib import Path
 
 CHECK = Path(__file__).resolve().parent / "check-claude-md-size.sh"
+CHARS = Path(__file__).resolve().parent / "lib" / "chars.sh"
 
 
 def constant(name: str) -> int:
@@ -33,6 +34,8 @@ class CheckClaudeMdSize(unittest.TestCase):
         self.root = Path(self.tmp.name)
         (self.root / "scripts").mkdir()
         shutil.copy2(CHECK, self.root / "scripts" / CHECK.name)
+        (self.root / "scripts" / "lib").mkdir()
+        shutil.copy2(CHARS, self.root / "scripts" / "lib" / CHARS.name)
         self.git("init", "-q")
         self.git("config", "user.email", "test@example.com")
         self.git("config", "user.name", "Test")

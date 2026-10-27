@@ -5,7 +5,7 @@
 
 Adopt on top of G2, and only if work is genuinely tracked as GitHub issues. If
 you plan in Linear, Jira or a doc, decline the group and record why in
-`watermark.json`'s `declined` map so re-sync stops offering it.
+`/update-muthur`'s divergence record so re-sync stops offering it.
 
 **A fork reverses the default.** The rule above weighs the group against a
 process the repo already has; a whole-tree fork has none and inherits this

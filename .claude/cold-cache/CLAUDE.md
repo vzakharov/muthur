@@ -9,7 +9,7 @@ model.
 
 - **Two sources of "cold".** `SessionStart` on a resume carries
   `prompt_cache_likely_expired`, `context_tokens` and
-  `seconds_since_last_response`; the hook keeps them in
+  `estimated_cache_write_usd`; the hook keeps the last two in
   `tmp/cold-cache/<session_id>.json` until a response lands after them. But the
   cache also expires while the process lives on and no `SessionStart` fires, so
   the transcript's last main-chain response time, against the TTL the session's
@@ -23,14 +23,15 @@ model.
   turn is a request at the whole context, so on a cold cache it pays the same
   re-cache carrying on does; the two cancel, and what is left is the context
   budget's question, which that hook asks once the session goes on. Only a fresh
-  session skips the re-cache, so the guard prices it — the reorientation up
-  front, the smaller context on every request after — and offers it only for
-  work that is already all on the branch, a call the operator makes. The hook
-  cannot see a decision made in chat after the last step that wrote one down — a
-  plan, a PR body, a commit — so the offer names that condition too.
-  `.claude/context-budget/CLAUDE.md` carries where a reorientation's price comes
-  from; for a fresh successor the sources are the fresh sessions', not the
-  relayed ones'.
+  session skips the re-cache, so the guard prices it as the context budget
+  prices a relay, by what it saves over the next 100k tokens of work: the
+  reorientation against the re-cache up front, the smaller context on every
+  request after. The stop gives each way's total over that slice, never its
+  parts, since an up-front cost beside a per-request gain reads as a
+  contradiction; where the reorientation is the dearer part, it adds the work
+  under which continuing stays cheaper. `.claude/context-budget/CLAUDE.md`
+  carries where a reorientation's price comes from; for a fresh successor the
+  sources are the fresh sessions', not the relayed ones'.
 - **Once per cold spell.** A block writes the last response's id and the stopped
   prompt to `tmp/cold-cache/<session_id>.blocked`, and a prompt against the same
   id passes. A bare `!` then stands for the stopped prompt: a hook cannot
@@ -49,11 +50,10 @@ model.
   model (`/go`, `/btw`, `/init`, `/plan`) are prompts like any other. Also
   passing: a session whose re-cache costs under `MUTHUR_COLD_CACHE_MIN_USD`
   (default `0.30`), where the stop costs more attention than it saves; and one
-  whose fresh session beats carrying on by less than `MUTHUR_COLD_CACHE_MARGIN`
-  (default `0.10`) both on its up-front cost against the re-cache and on the
-  context it carries after, where the stop has no real choice to offer. An
-  unpriced model is still stopped, with the times and token counts and no
-  dollars.
+  whose fresh session saves nothing over the next 100k, or less than
+  `MUTHUR_COLD_CACHE_MARGIN` (default `0.10`) of the re-cache, where the stop
+  has no real choice to offer. An unpriced model is still stopped, with the
+  token count and, where a resume carried one, Claude Code's own estimate.
 
 `MUTHUR_COLD_CACHE_GUARD=off` in `.claude/settings.local.json`'s `env` disables
 both halves.

@@ -12,19 +12,18 @@ from pathlib import Path
 from typing import Iterator, List, Optional, Tuple
 
 from lib.orientation import Phase, is_boundary
-from lib.pricing import (
+from lib.prices import PriceTable
+from lib.pricing import UnpricedError, summarise_transcript
+from lib.rows import parse_session_cost
+from lib.tally import Rates
+from lib.transcript import (
     SYNTHETIC_MODEL,
-    PriceTable,
-    Rates,
     Response,
     TranscriptSources,
-    UnpricedError,
     is_response_record,
     parse_response,
     subagents_of,
-    summarise_transcript,
 )
-from lib.rows import parse_session_cost
 
 # What the transcript cannot tell, as estimates: what the relay's summary turn
 # writes, and — before any orientation has been measured — what a fresh session
@@ -37,6 +36,10 @@ RAMP_UP_OUT_PER_REQUEST = 700
 # far enough since its last boundary to be measured.
 REQUESTS_PER_TOKEN = 40 / 100_000
 MIN_GROWTH = 20_000
+
+# The slice of work a switch's saving is priced over, by the context budget's
+# notice and the cold-cache stop alike.
+SLICE = 100_000
 
 # The opening prompt of a session `/relay` started.
 RELAY_TAKE = "/relay take"
@@ -67,9 +70,10 @@ class Session:
 
 @dataclass(frozen=True)
 class Saving:
-    usd: float  # what relaying saves over the slice, up-front costs included
+    usd: float  # what switching saves over the slice, up-front costs included
     share: float  # of what carrying on costs over it
-    relay: float  # USD a relay pays before its successor's first action
+    up_front: float  # USD the switch pays before its successor's first action
+    carry: float  # USD carrying on costs over the slice, its own up-front included
 
 
 def usd(tokens: float, rate: float) -> float:
@@ -87,21 +91,43 @@ def relay_once(s: Session) -> float:
     return usd(s.context, s.rates.cache_read) + usd(SUMMARY_OUT, s.rates.output) + s.reorientation.cost_usd
 
 
-def saving_over(s: Session, slice_tokens: int) -> Saving:
-    """Carrying on against relaying, over the requests `slice_tokens` of context
-    growth takes. New context is written at the same rate under both, so the
-    writes cancel out of the saving and stay in carrying on's total."""
+def _switch_over(s: Session, slice_tokens: int, carry_once: float, switch_once: float) -> Saving:
+    """Carrying on against a successor, over the requests `slice_tokens` of
+    context growth takes, each side paying its own up-front cost first. New
+    context is written at the same rate under both, so the writes cancel out of
+    the saving and stay in carrying on's total."""
     n = slice_tokens * s.requests_per_token
     r = s.rates.cache_read
     growth = usd(slice_tokens, s.write)
-    carry = usd(n * (s.context + slice_tokens / 2), r) + growth
-    once = relay_once(s)
-    relay = once + usd(n * (s.reorientation.context + slice_tokens / 2), r) + growth
-    return Saving(carry - relay, (carry - relay) / carry, once)
+    carry = carry_once + usd(n * (s.context + slice_tokens / 2), r) + growth
+    switch = switch_once + usd(n * (s.reorientation.context + slice_tokens / 2), r) + growth
+    return Saving(carry - switch, (carry - switch) / carry, switch_once, carry)
+
+
+def saving_over(s: Session, slice_tokens: int) -> Saving:
+    """Relaying a warm session."""
+    return _switch_over(s, slice_tokens, 0.0, relay_once(s))
+
+
+def fresh_saving_over(s: Session, slice_tokens: int) -> Saving:
+    """Starting a fresh session instead of re-caching a cold one: carrying on
+    pays the re-cache, the fresh session its reorientation."""
+    return _switch_over(s, slice_tokens, recache(s), s.reorientation.cost_usd)
+
+
+def fresh_break_even(s: Session) -> Optional[int]:
+    """The tokens of work after which a fresh session's smaller context has paid
+    back what its reorientation costs over the re-cache: `fresh_saving_over`
+    solved for a zero saving. 0 when it costs less, None when it never does."""
+    extra = s.reorientation.cost_usd - recache(s)
+    if extra <= 0:
+        return 0
+    per_token = s.requests_per_token * usd(s.context - s.reorientation.context, s.rates.cache_read)
+    return round(extra / per_token) if per_token > 0 else None
 
 
 def verdict(saving: Saving) -> str:
-    """What relaying does against carrying on, as both hooks' notices say it."""
+    """What the switch does against carrying on, as both hooks' notices say it."""
     if abs(saving.usd) < 0.01:
         return "about breaks even with carrying on"
     if saving.usd > 0:
@@ -184,7 +210,7 @@ def read_history(transcript: Path) -> Optional[History]:
 
 
 def rates_of(history: History, prices: PriceTable) -> Optional[Rates]:
-    return prices.rates_for(history.last.model, history.last.speed)
+    return prices.rates_for(history.last.model, history.last.speed, context_of(history.last))
 
 
 def write_rate(r: Rates, ttl: int) -> float:
