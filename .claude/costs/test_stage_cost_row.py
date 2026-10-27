@@ -17,7 +17,7 @@ import subprocess
 import tempfile
 import unittest
 from pathlib import Path
-from typing import Dict, List, Optional
+from typing import List, Optional
 
 from hook_clone import ROW, SESSION, Clone
 
@@ -35,21 +35,17 @@ class StageCostRowTest(unittest.TestCase):
     def stage(self, command: str, *, cwd: Optional[Path] = None, **payload: str) -> None:
         """The hook run for `command` as the harness would, asserting that it
         let the command through quietly."""
-        event: Dict[str, object] = {
-            "hook_event_name": "PreToolUse",
-            "tool_name": "Bash",
-            "tool_input": {"command": command},
-            "cwd": str(cwd or self.clone.root),
-            "transcript_path": str(self.clone.transcript),
-            "session_id": SESSION,
-            **payload,
-        }
-        result = subprocess.run(
-            [str(self.clone.root / HOOK)],
-            input=json.dumps(event),
-            capture_output=True,
-            text=True,
-            env={**self.clone.env(), "CLAUDE_PROJECT_DIR": str(self.clone.root)},
+        result = self.clone.hook(
+            HOOK,
+            {
+                "hook_event_name": "PreToolUse",
+                "tool_name": "Bash",
+                "tool_input": {"command": command},
+                "cwd": str(cwd or self.clone.root),
+                "transcript_path": str(self.clone.transcript),
+                "session_id": SESSION,
+                **payload,
+            },
         )
         self.assertEqual((result.returncode, result.stdout, result.stderr), (0, "", ""), command)
 
@@ -59,10 +55,11 @@ class StageCostRowTest(unittest.TestCase):
     def staged(self) -> List[str]:
         return self.clone.git("diff", "--cached", "--name-only").splitlines()
 
-    def stage_work(self) -> None:
-        """Something else for a commit to take, staged by the agent."""
-        (self.clone.root / "work.txt").write_text("in flight\n")
-        self.clone.git("add", "work.txt")
+    def other_work_tree(self) -> Path:
+        """A second work tree of the clone, the way a delegate's sits beside it."""
+        elsewhere = self.base / "elsewhere"
+        self.clone.git("worktree", "add", "-q", "-b", "other", str(elsewhere))
+        return elsewhere
 
     def test_the_row_is_staged_for_an_add_and_a_commit_and_lands_in_the_commit(self) -> None:
         (self.clone.root / "work.txt").write_text("in flight\n")
@@ -89,12 +86,12 @@ class StageCostRowTest(unittest.TestCase):
                 self.clone.git("rm", "-q", "--cached", ROW)
 
     def test_the_row_is_staged_beside_work_the_agent_staged(self) -> None:
-        self.stage_work()
+        self.clone.stage_work()
         self.stage("git commit -m x")
         self.assertEqual(sorted(self.staged()), sorted([ROW, "work.txt"]))
 
     def test_a_commit_with_options_before_the_subcommand_stages_the_row(self) -> None:
-        self.stage_work()
+        self.clone.stage_work()
         for command in (
             "git -c user.name=a commit -m x",
             "git -C . commit -m x",
@@ -109,7 +106,7 @@ class StageCostRowTest(unittest.TestCase):
                 self.clone.git("rm", "-q", "--cached", ROW)
 
     def test_staging_twice_leaves_one_row(self) -> None:
-        self.stage_work()
+        self.clone.stage_work()
         self.stage("git commit -m x")
         self.stage("git commit -m x")
         self.assertEqual(sorted(self.staged()), sorted([ROW, "work.txt"]))
@@ -128,7 +125,7 @@ class StageCostRowTest(unittest.TestCase):
                 self.clone.git("rm", "-q", "--cached", ROW)
 
     def test_a_command_that_only_mentions_commit_stages_nothing(self) -> None:
-        self.stage_work()
+        self.clone.stage_work()
         for command in (
             "git log --grep commit",
             "git commit-tree HEAD^{tree} -m x",
@@ -141,7 +138,7 @@ class StageCostRowTest(unittest.TestCase):
                 self.assertEqual(self.staged(), ["work.txt"])
 
     def test_a_command_naming_the_rows_directory_stages_nothing(self) -> None:
-        self.stage_work()
+        self.clone.stage_work()
         for command in (
             "git rm -r -q --cached .claude/costs/sessions && git commit -m x",
             "git add .claude/costs/sessions/2026-03/sess.json && git commit -m x",
@@ -151,7 +148,7 @@ class StageCostRowTest(unittest.TestCase):
                 self.assertEqual(self.staged(), ["work.txt"])
 
     def test_a_commit_concluding_a_merge_or_a_rebase_stages_nothing(self) -> None:
-        self.stage_work()
+        self.clone.stage_work()
         head = self.clone.git("rev-parse", "HEAD")
         git_dir = self.clone.root / ".git"
         for marker in ("MERGE_HEAD", "CHERRY_PICK_HEAD", "REVERT_HEAD"):
@@ -171,42 +168,41 @@ class StageCostRowTest(unittest.TestCase):
 
     def test_a_commit_on_the_trunk_stages_nothing(self) -> None:
         self.clone.git("checkout", "-q", "main")
-        self.stage_work()
+        self.clone.stage_work()
         self.stage("git commit -m x")
         self.assertEqual(self.staged(), ["work.txt"])
 
     def test_a_detached_head_stages_nothing(self) -> None:
         self.clone.git("checkout", "-q", "--detach")
-        self.stage_work()
+        self.clone.stage_work()
         self.stage("git commit -m x")
         self.assertEqual(self.staged(), ["work.txt"])
 
     def test_a_branch_attested_on_github_stages_nothing_and_the_yes_is_cached(self) -> None:
         head = self.clone.git("rev-parse", "HEAD")
         self.clone.answer(f"Attested.\n<!-- finalize-attestation {head} -->")
-        self.stage_work()
+        self.clone.stage_work()
         self.stage("git commit -m x")
         self.assertEqual(self.staged(), ["work.txt"])
-        cached = self.clone.root / "tmp" / "costs" / "finalized" / "feature"
-        self.assertEqual(cached.read_text().strip(), head)
+        self.assertEqual(self.clone.cached.read_text().strip(), head)
 
     def test_a_cached_attestation_needs_no_github(self) -> None:
         self.clone.cache(self.clone.git("rev-parse", "HEAD"))
-        self.stage_work()
+        self.clone.stage_work()
         self.stage("git commit -m x")
         self.assertEqual(self.staged(), ["work.txt"])
 
     def test_a_revoked_attestation_stages_the_row(self) -> None:
         head = self.clone.git("rev-parse", "HEAD")
         self.clone.answer(f"<!-- finalize-attestation {head} -->", "<!-- finalize-attestation revoked -->")
-        self.stage_work()
+        self.clone.stage_work()
         self.stage("git commit -m x")
         self.assertEqual(sorted(self.staged()), sorted([ROW, "work.txt"]))
 
     def test_a_work_commit_after_the_attestation_brings_the_row_back(self) -> None:
         head = self.clone.git("rev-parse", "HEAD")
         self.clone.answer(f"<!-- finalize-attestation {head} -->")
-        self.stage_work()
+        self.clone.stage_work()
         self.stage("git commit -m work")
         self.assertEqual(self.staged(), ["work.txt"])
         self.run_command("git commit -q -m work")
@@ -215,12 +211,11 @@ class StageCostRowTest(unittest.TestCase):
         self.clone.git("add", "more.txt")
         self.stage("git commit -m more")
         self.assertEqual(sorted(self.staged()), sorted([ROW, "more.txt"]))
-        cached = self.clone.root / "tmp" / "costs" / "finalized" / "feature"
-        self.assertFalse(cached.exists())
+        self.assertFalse(self.clone.cached.exists())
 
     def test_a_cache_the_branch_has_outgrown_brings_the_row_back(self) -> None:
         self.clone.cache(self.clone.git("rev-parse", "HEAD"))
-        self.stage_work()
+        self.clone.stage_work()
         self.run_command("git commit -q -m work")
         (self.clone.root / "more.txt").write_text("more\n")
         self.clone.git("add", "more.txt")
@@ -228,18 +223,16 @@ class StageCostRowTest(unittest.TestCase):
         self.assertEqual(sorted(self.staged()), sorted([ROW, "more.txt"]))
 
     def test_a_commit_in_another_work_tree_leaves_this_index_alone(self) -> None:
-        elsewhere = self.base / "elsewhere"
-        self.clone.git("worktree", "add", "-q", "-b", "other", str(elsewhere))
-        self.stage_work()
+        elsewhere = self.other_work_tree()
+        self.clone.stage_work()
         for command in ("git commit -m x", f"cd {elsewhere} && git commit -m x", "cd ../elsewhere && git commit -m x"):
             with self.subTest(command):
                 self.stage(command, cwd=elsewhere)
                 self.assertEqual(self.staged(), ["work.txt"])
 
     def test_a_commit_in_another_work_tree_that_names_this_one_stages_the_row(self) -> None:
-        elsewhere = self.base / "elsewhere"
-        self.clone.git("worktree", "add", "-q", "-b", "other", str(elsewhere))
-        self.stage_work()
+        elsewhere = self.other_work_tree()
+        self.clone.stage_work()
         for command in (
             f"cd {self.top} && git commit -m x",
             f'cd "{self.top}" && git commit -m x',
@@ -252,32 +245,30 @@ class StageCostRowTest(unittest.TestCase):
                 self.clone.git("rm", "-q", "--cached", ROW)
 
     def test_a_command_naming_a_path_inside_this_work_tree_is_not_naming_it(self) -> None:
-        elsewhere = self.base / "elsewhere"
-        self.clone.git("worktree", "add", "-q", "-b", "other", str(elsewhere))
-        self.stage_work()
-        self.stage(f"cd {self.top}/.claude && git commit -m x", cwd=elsewhere)
+        self.clone.stage_work()
+        self.stage(f"cd {self.top}/.claude && git commit -m x", cwd=self.other_work_tree())
         self.assertEqual(self.staged(), ["work.txt"])
 
     def test_a_session_that_cannot_be_priced_stages_nothing(self) -> None:
-        self.stage_work()
+        self.clone.stage_work()
         self.clone.respond(model="unheard-of")
         self.stage("git commit -m x")
         self.assertEqual(self.staged(), ["work.txt"])
         self.assertEqual(self.clone.git("ls-files", "--others", "--exclude-standard"), "")
 
     def test_a_payload_without_a_transcript_stages_nothing(self) -> None:
-        self.stage_work()
+        self.clone.stage_work()
         self.stage("git commit -m x", transcript_path="")
         self.stage("git commit -m x", transcript_path=str(self.base / "missing.jsonl"))
         self.assertEqual(self.staged(), ["work.txt"])
 
     def test_a_payload_without_a_command_stages_nothing(self) -> None:
-        self.stage_work()
+        self.clone.stage_work()
         self.stage("", tool_input={})
         self.assertEqual(self.staged(), ["work.txt"])
 
     def test_the_hook_leaves_no_priced_copy_behind(self) -> None:
-        self.stage_work()
+        self.clone.stage_work()
         self.stage("git commit -m x")
         self.assertEqual(sorted((self.clone.root / "tmp").glob("cost-row.*")), [])
 

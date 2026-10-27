@@ -88,8 +88,7 @@ class StopHookTest(unittest.TestCase):
         self.assertEqual(self.clone.status(), "")
 
     def test_work_the_agent_has_staged_stays_staged_beside_a_row_put_back(self) -> None:
-        (self.clone.root / "work.txt").write_text("in flight\n")
-        self.clone.git("add", "work.txt")
+        self.clone.stage_work()
         self.clone.cost()
         self.clone.git("add", ROW)
         head = self.clone.git("rev-parse", "HEAD")
@@ -117,8 +116,7 @@ class StopHookTest(unittest.TestCase):
 
     def test_a_row_put_back_is_not_named_while_work_is_outstanding(self) -> None:
         self.clone.register_check()
-        (self.clone.root / "work.txt").write_text("in flight\n")
-        self.clone.git("add", "work.txt")
+        self.clone.stage_work()
         self.clone.cost()
         result = self.clone.stop()
         self.assertEqual((result.returncode, result.stderr), (0, ""))

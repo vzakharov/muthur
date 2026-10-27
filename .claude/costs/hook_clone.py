@@ -136,13 +136,22 @@ class Clone:
         pulls = {"nodes": [{"comments": {"nodes": nodes}}]}
         self.answer_file.write_text(json.dumps({"data": {"repository": {"pullRequests": pulls}}}))
 
+    @property
+    def cached(self) -> Path:
+        """Where `lib/finalized.py` caches the branch's attestation."""
+        return self.root / "tmp" / "costs" / "finalized" / "feature"
+
     def cache(self, sha: str) -> Path:
         """`sha` cached as the branch's attestation, the way a yes from GitHub
         leaves it."""
-        cached = self.root / "tmp" / "costs" / "finalized" / "feature"
-        cached.parent.mkdir(parents=True, exist_ok=True)
-        cached.write_text(sha + "\n")
-        return cached
+        self.cached.parent.mkdir(parents=True, exist_ok=True)
+        self.cached.write_text(sha + "\n")
+        return self.cached
+
+    def stage_work(self) -> None:
+        """Something else for a commit to take, staged by the agent."""
+        (self.root / "work.txt").write_text("in flight\n")
+        self.git("add", "work.txt")
 
     def respond(self, **fields: str) -> None:
         """One more priced turn in the transcript, so the next row differs."""
@@ -156,20 +165,26 @@ class Clone:
         (self.home / ".claude").mkdir(exist_ok=True)
         (self.home / ".claude" / "launcher-settings.json").write_text(json.dumps(settings))
 
-    def stop(self, *, active: bool = False) -> subprocess.CompletedProcess:
-        payload = {
-            "hook_event_name": "Stop",
-            "session_id": SESSION,
-            "transcript_path": str(self.transcript),
-            "cwd": str(self.root),
-            "stop_hook_active": active,
-        }
+    def hook(self, path: str, payload: Dict[str, object]) -> subprocess.CompletedProcess:
+        """The hook at `path` run as the harness runs it, `payload` on stdin."""
         return subprocess.run(
-            [str(self.root / STOP_HOOK)],
+            [str(self.root / path)],
             input=json.dumps(payload),
             capture_output=True,
             text=True,
             env={**self.env(), "CLAUDE_PROJECT_DIR": str(self.root)},
+        )
+
+    def stop(self, *, active: bool = False) -> subprocess.CompletedProcess:
+        return self.hook(
+            STOP_HOOK,
+            {
+                "hook_event_name": "Stop",
+                "session_id": SESSION,
+                "transcript_path": str(self.transcript),
+                "cwd": str(self.root),
+                "stop_hook_active": active,
+            },
         )
 
     def cost(self, *args: str) -> None:
