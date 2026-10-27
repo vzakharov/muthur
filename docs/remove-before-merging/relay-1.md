@@ -115,9 +115,8 @@ Wait for the operator. The plan awaits their review and go-ahead, which a
 ## Last agent turn
 
 The agent's last turn before the relay, verbatim, appended by
-`scripts/relay-last-reply.py`. It includes the turn's interim messages,
-usually unneeded but harmless; the reply proper is usually its last
-paragraphs.
+`scripts/relay-last-reply.py`. It includes the turn's interim messages, usually
+unneeded but harmless; the reply proper is usually its last paragraphs.
 
 ````text
 Squash-предложение тоже говорит о пути, обновляю его.
