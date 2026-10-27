@@ -64,6 +64,12 @@ One function, `refile(listing, read)`. Given a ledger tip, it returns the
    the old layout or does not match.
 3. Every other row gets the next free `<N>` on its branch, in the order above.
 
+**The steady-state check reads names only, never row text.** An old-layout path,
+a duplicate id and two ids in one `<N>` all show in the listing, and no other
+session's row changes branch without its own session re-filing it. Only
+misplaced rows are read. Measured on this ledger's 202 rows: 3 ms to list, 9 ms
+to read every row, and the re-filing rides the push `append` already makes.
+
 `append` runs it on every ledger write, so the migration needs nobody to
 remember to run it. In an adopter, the first `Stop` after `/update-muthur`
 brings this code in re-files the whole ledger in one commit, and every write
