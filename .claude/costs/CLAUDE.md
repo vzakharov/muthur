@@ -23,9 +23,9 @@ ledger and deletes them before the branch lands, and `/finalize revoke`
 withdraws the attestation.
 
 **Readers union the ledger with the default branch's tree**, one row per session
-id, the later by `lib/ledger_branch.py`'s `recency` winning. The tree side is
-how a repository that has not migrated still counts, and how a copy that reached
-the trunk without `/finalize` is counted once.
+id, the later by `lib/rows.py`'s `recency` winning. The tree side is how a
+repository that has not migrated still counts, and how a copy that reached the
+trunk without `/finalize` is counted once.
 
 What each failure costs:
 

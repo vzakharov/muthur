@@ -229,9 +229,7 @@ def notes(lines: List[str]) -> None:
 def this_repo(span: Optional[Period], as_json: bool) -> int:
     """The ledger's rows and the tree's, one per session: the tree's side is a
     branch's display copies, or rows a repository still keeps in its tree. The
-    rows and the table rating them come from one ledger commit. A period is
-    read off each row's start, since a branch's later sessions sit under its
-    first month."""
+    rows and the table rating them come from one ledger commit."""
     tip = fetch()
     rates = ledger_rates(tip)
     notes(shadow_notes(rates, "this repository"))

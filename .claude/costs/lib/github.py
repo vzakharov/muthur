@@ -345,8 +345,7 @@ def remote_ledger(client: Client, only: Optional[Sequence[str]] = None) -> Remot
     parser is the one in force, but the rows are another branch's to change.
     Within a repository the two sides' copies of a row are one session, the
     later copy winning. A session id in two repositories — a fork carries its
-    source's rows — is counted in the first, by name. Every row is read, since
-    a month directory does not bound when its rows started."""
+    source's rows — is counted in the first, by name."""
     found = discover(client, only)
     client.progress(f"{_count(len(found.ledgers), 'ledger')} among {_count(found.seen, 'repository', 'repositories')}")
     repos = {c.repo: RepoLedger(c.repo, c.months) for c in found.ledgers}
