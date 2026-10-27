@@ -8,17 +8,18 @@ faster than a team the work went.
 Each row now carries activeSeconds: the wall-clock union of every turn,
 from the prompt or a background task's wake to the reply, and of the
 background tasks and agents the session launched, overlaps counted
-once. The cache keepalive watcher and the turns its wakes start are
-left out. The Stop hook derives it from the transcript's timestamps on
-every turn rather than keeping a clock in hook state, so a resume in a
-fresh container, an interrupted turn and a task that ends with no hook
-all read correctly.
+once, and any silence past 20 minutes counted as 20. The cache
+keepalive watcher and its renewal wakes are left out; a wake that
+parks the session counts. The Stop hook derives it from the
+transcript's timestamps on every turn rather than keeping a clock in
+hook state, so a resume in a fresh container, an interrupted turn and
+a task that ends with no hook all read correctly.
 
-Beside it, speedup divides the estimate's hours, every part summed as
-plain hours, by the active hours. row_text computes it, so every path
-that writes a row keeps it current. report.py prints the same ratio,
-as a ratio of sums with its own session count, in each per-senior-hour
-table.
+Beside it, speedup divides the estimate's senior-hours, weighted by
+role and grade as the ledger prices them, by the active hours: a
+write-time snapshot, as a row's dollars are. report.py re-rates it
+under the current table and prints it, as a ratio of sums with its own
+session count, in each per-senior-hour table.
 
 Co-authored-by: Claude <noreply@anthropic.com>
 ```
