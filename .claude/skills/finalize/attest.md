@@ -6,8 +6,8 @@ read the comment it posts. Step numbers below are `/finalize`'s.
 
 Post the attestation on the PR — or, on a re-run, edit it in place; it is
 sticky, keyed on the `<!-- finalize-attestation` marker (§ "Posting it"). The
-marker carries the head's full SHA, which the cost ledger's `Stop` hook parses
-(`.claude/costs/lib/finalized.py`) to stop writing display copies onto a
+marker carries the head's full SHA, which the cost ledger's staging hook parses
+(`.claude/costs/lib/finalized.py`) to stop staging display copies onto a
 finalized branch:
 
 ```md
@@ -81,7 +81,7 @@ is silent.
 - End the body with the attribution footer the repo requires of every GitHub
   comment.
 - **A head that moved only by `.claude/costs/sessions/` is still the head you
-  verified.** The cost ledger's `Stop` hook relies on it: it stops writing a
+  verified.** The cost ledger's staging hook relies on it: it stops staging a
   branch's display copy once the marker's SHA holds, and treats a commit
   touching anything else past that SHA as the branch reopened. Re-attest only
   for a commit that does.
