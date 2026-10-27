@@ -248,8 +248,7 @@ def append_row(text: str) -> str:
 
 
 def path_for(text: str) -> str:
-    """Where the local copy of the ledger would file the row: the place a
-    write that could not reach `origin` files its display copy at."""
+    """Where the local copy of the ledger, as last fetched, would file the row."""
     return filed(REMOTE_REF, [text]).placed[parse_session_cost(text, "row").session_id]
 
 

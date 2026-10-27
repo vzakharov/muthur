@@ -61,11 +61,11 @@ What each failure costs:
 ## Where a row is filed
 
 The ledger reads as what each branch cost, session by session, and only the
-ledger sees every session on a branch, so it decides the path, and the staging
-hook files the display copy where `path-for` says the local copy of the ledger
-files it. That copy is as fresh as the last `Stop` hook's fetch, so a session's
-first commit before its first `Stop` can take an ordinal the ledger then gives
-another session; its next commit moves it. `lib/filing.py` holds the rules.
+ledger sees every session on a branch, so it decides the path. The display copy
+goes where the local copy of the ledger files it (`ledger.py path-for`), which
+is as fresh as the last `Stop` hook's fetch, so a session's first commit before
+its first `Stop` can take an ordinal the ledger then gives another session; its
+next commit moves it. `lib/filing.py` holds the rules.
 
 - **`<YYYY-MM>` is the month of the branch's first filed session**, fixed once
   the branch has a directory, so a branch never splits across months: the trunk

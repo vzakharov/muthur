@@ -61,9 +61,8 @@ transcript="$(field transcript_path)"
 mkdir -p tmp || exit 0
 session="$(field session_id)"
 staged="tmp/cost-row.$$.json"
-# The copy goes where the ledger files the row, read off the local copy the
-# `Stop` hook fetched: a session's first commit before its first `Stop` may take
-# an ordinal the ledger then gives another session, and a later commit moves it.
+# The copy goes where the `Stop` hook's last fetch of the ledger files the row;
+# `.claude/costs/CLAUDE.md` § "Where a row is filed" names what that costs.
 python3 .claude/costs/session_cost.py \
   --transcript "$transcript" \
   --session-id "$session" \

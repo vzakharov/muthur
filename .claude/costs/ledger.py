@@ -13,12 +13,12 @@ or holds older — by default every branch on `origin` and every PR's head — a
 prints how many sessions the ledger holds after. It pushes, and a second run
 commits nothing.
 
-The rest are the hooks'. `display` prints `display=yes|no`: whether the branch
-still gets the row's display copy, which it does until it is finalized — and
-`path-for` prints where the local copy of the ledger files the row, which is
-where that copy goes; `hooks/stage-cost-row.sh` asks both. `append-row` files
-the row on the ledger, commits and pushes it, and prints the path it was filed
-at, for `hooks/stop-session-cost.sh`.
+The rest are the hooks'. `hooks/stage-cost-row.sh` asks `display`, which prints
+`display=yes|no` — whether the branch still gets the row's display copy, which
+it does until it is finalized — and `path-for`, which prints where the local
+copy of the ledger files the row, and so where that copy goes.
+`hooks/stop-session-cost.sh` runs `append-row`, which files the row on the
+ledger, commits and pushes it, and prints the path it was filed at.
 
 Stdlib only — Python 3.9+.
 """
