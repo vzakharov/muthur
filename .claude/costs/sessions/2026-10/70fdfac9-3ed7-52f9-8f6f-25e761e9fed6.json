@@ -1,0 +1,92 @@
+{
+  "total": {
+    "inputTokens": 6,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 38785,
+    "cacheReadTokens": 223475,
+    "outputTokens": 810,
+    "thinkingTokens": 385,
+    "responses": 3,
+    "costUsd": 0.371199
+  },
+  "estimate": {
+    "at": "2026-10-27T09:32:25.326Z",
+    "parts": [
+      {
+        "hours": 0.05,
+        "grade": "junior",
+        "role": "analyst",
+        "comment": "a greeting needs only someone to answer it; no repository work to size"
+      }
+    ],
+    "comment": null
+  },
+  "orientation": {
+    "endedBy": "end_turn",
+    "endedOn": null,
+    "endedAt": "2026-10-27T09:32:32.211Z",
+    "contextTokens": 87963,
+    "spend": {
+      "inputTokens": 4,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 38187,
+      "cacheReadTokens": 136112,
+      "outputTokens": 769,
+      "thinkingTokens": 385,
+      "responses": 2,
+      "costUsd": 0.3481144
+    }
+  },
+  "sessionId": "70fdfac9-3ed7-52f9-8f6f-25e761e9fed6",
+  "branch": "claude/eager-lamport-3gsa17",
+  "cwd": "/home/user/muthur",
+  "openingPrompt": "куку?",
+  "prs": [],
+  "url": "https://claude.ai/code/session_01DaohkFaYhHzt7Uw9F1Nshh",
+  "operator": "vzakharov",
+  "firstResponseAt": "2026-10-27T09:32:23.361Z",
+  "lastResponseAt": "2026-10-27T09:32:32.211Z",
+  "pricesAsOf": "2026-10-06",
+  "claudeCodeTotalUsd": null,
+  "ownTurns": {
+    "inputTokens": 6,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 38785,
+    "cacheReadTokens": 223475,
+    "outputTokens": 810,
+    "thinkingTokens": 385,
+    "responses": 3,
+    "costUsd": 0.371199
+  },
+  "subagents": {
+    "inputTokens": 0,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 0,
+    "cacheReadTokens": 0,
+    "outputTokens": 0,
+    "thinkingTokens": 0,
+    "responses": 0,
+    "costUsd": 0.0
+  },
+  "byRate": {
+    "claude-opus-5-5/standard": {
+      "inputTokens": 6,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 38785,
+      "cacheReadTokens": 223475,
+      "outputTokens": 810,
+      "thinkingTokens": 385,
+      "responses": 3,
+      "costUsd": 0.371199
+    }
+  },
+  "warnings": [],
+  "compactions": [],
+  "telemetry": {
+    "events": 3,
+    "matched": 3,
+    "matchedTableUsd": 0.371199,
+    "matchedEventUsd": 0.371199,
+    "unseen": {}
+  }
+}
