@@ -19,7 +19,7 @@ import unittest
 from pathlib import Path
 from typing import List, Optional
 
-from hook_clone import EARLIER, ROW, SESSION, SESSIONS, Clone
+from hook_clone import EARLIER, RENAMED, ROW, SESSION, SESSIONS, Clone
 from test_filing import row as made_row
 
 HOOK = ".claude/costs/hooks/stage-cost-row.sh"
@@ -130,11 +130,10 @@ class StageCostRowTest(unittest.TestCase):
         (self.clone.root / "more.txt").write_text("more\n")
         self.clone.git("add", "more.txt")
         self.stage(command)
-        moved = f"{SESSIONS}/2026-03/renamed/1/{SESSION}.json"
         staged = self.clone.git("diff", "--cached", "--no-renames", "--name-only").splitlines()
-        self.assertEqual(sorted(staged), sorted([ROW, moved, "more.txt"]))
+        self.assertEqual(sorted(staged), sorted([ROW, RENAMED, "more.txt"]))
         self.run_command(command)
-        self.assertEqual(self.clone.git("ls-tree", "-r", "--name-only", "HEAD", "--", SESSIONS), moved)
+        self.assertEqual(self.clone.git("ls-tree", "-r", "--name-only", "HEAD", "--", SESSIONS), RENAMED)
         self.assertEqual(self.clone.status(), "")
 
     def test_a_bare_commit_over_a_clean_index_stages_nothing(self) -> None:

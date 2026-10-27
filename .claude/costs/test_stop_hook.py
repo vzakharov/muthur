@@ -16,7 +16,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from hook_clone import EARLIER, OTHER, ROW, SESSION, SESSIONS, Clone
+from hook_clone import EARLIER, OTHER, RENAMED, ROW, SESSION, SESSIONS, Clone
 from test_filing import row as made_row
 
 
@@ -74,13 +74,12 @@ class StopHookTest(unittest.TestCase):
 
     def test_a_staged_move_of_the_row_is_put_back_whole(self) -> None:
         held = self.commit_row_to_branch()
-        moved = f"{SESSIONS}/2026-03/renamed/1/{SESSION}.json"
-        (self.clone.root / moved).parent.mkdir(parents=True)
-        self.clone.git("mv", ROW, moved)
+        (self.clone.root / RENAMED).parent.mkdir(parents=True)
+        self.clone.git("mv", ROW, RENAMED)
         result = self.clone.stop()
         self.assertEqual((result.returncode, result.stderr), (0, ""))
         self.assertEqual((self.clone.root / ROW).read_text(), held)
-        self.assertFalse((self.clone.root / moved).exists())
+        self.assertFalse((self.clone.root / RENAMED).exists())
         self.assertLevelWithOrigin()
 
     def test_a_row_head_lacks_is_removed_from_the_index_and_the_tree(self) -> None:
@@ -237,8 +236,7 @@ class LedgerWriteTest(unittest.TestCase):
         self.stop()
         self.clone.respond(branch="renamed")
         self.stop()
-        moved = f"{SESSIONS}/2026-03/renamed/1/{SESSION}.json"
-        self.assertEqual(self.clone.ledger_files(), [moved])
+        self.assertEqual(self.clone.ledger_files(), [RENAMED])
         self.assertEqual(self.clone.status(), "")
 
     def test_a_stale_branch_s_month_only_rows_are_folded_in(self) -> None:

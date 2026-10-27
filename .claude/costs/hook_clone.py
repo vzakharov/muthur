@@ -23,6 +23,8 @@ STOP_HOOK = ".claude/costs/hooks/stop-session-cost.sh"
 SESSIONS = ".claude/costs/sessions"
 SESSION = "sess"
 ROW = f"{SESSIONS}/2026-03/a-branch/1/{SESSION}.json"
+# Where the row is filed once its session moves to a branch named `renamed`.
+RENAMED = f"{SESSIONS}/2026-03/renamed/1/{SESSION}.json"
 OTHER = f"{SESSIONS}/2026-03/other-branch/1/other.json"
 EARLIER = "2026-03-01T00:00:00.000Z"
 
