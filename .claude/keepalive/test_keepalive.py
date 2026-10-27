@@ -110,7 +110,7 @@ class WhenAnOperatorPromptArrives(HookCase):
         out, _ = self.prompt()
         self.assertIn("As this turn's last action, start the cache keepalive's watcher", out)
         self.assertIn(f"{HOOK} watch sess {self.transcript}", out)
-        self.assertIn("Skip it only when the operator's message asks to stop the keepalive", out)
+        self.assertIn("Skip it when the operator's message asks to stop the keepalive", out)
 
     def test_a_running_watcher_is_left_to_the_agent_to_stop(self) -> None:
         self.session(ago=1)

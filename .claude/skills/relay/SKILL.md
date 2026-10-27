@@ -137,7 +137,10 @@ Its prompt is one line, `/relay take <branch> — <what now>`, `<what now>` bein
 one sentence: the summary's Next step in plain words, in the human-facing
 language (CLAUDE.md § "Language"), a skill in it named bare. The prompt is what
 an operator switching in from other work sees first, and a branch name does not
-say what the session is for.
+say what the session is for. The successor reads it too, as its first message,
+so the sentence addresses nobody: a "you" in it names the successor to itself.
+It says where the work stands and what comes next — `PR готов, дальше finalize`
+— in the third person or impersonally.
 
 - **Web/remote**: `create_session` from the Claude Code Remote tools, with
   `source_url` the `origin` URL, `source_revision` the branch, a `title` per
@@ -195,9 +198,7 @@ A parked summary is a claim about what the absent session would do next, and
 operator comes back to rewrites the summary it wrote at the end of any turn that
 makes its Next step false or answers a question it lists as pending, in that
 turn's last commit: Step 2 again over the whole conversation, the turns since
-the park included, into the same file. It is rewritten even when nothing is left
-pending and the branch alone holds the work, because its last agent turn is
-still what the operator answers next.
+the park included, into the same file.
 
 A turn that leaves the Next step true — a question asked and still open, a side
 remark answered — leaves it as it is, and so does the turn that wrote the

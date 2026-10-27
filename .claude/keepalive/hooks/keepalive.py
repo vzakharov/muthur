@@ -177,7 +177,7 @@ def context(data: Dict[str, Any], alive: bool, renewals: int, session: str, tran
     if not data.get("fired"):
         return (
             f"As this turn's last action, {start_line(session, transcript)}"
-            f" Skip it only when {STOP}."
+            f" Skip it when {STOP}."
         )
     if spent > renewals:
         return (
