@@ -26,6 +26,8 @@ root="$(project_root)"
 out="$root/tmp/telemetry"
 session="$(field session_id)"
 [[ "$session" =~ ^[A-Za-z0-9_-]+$ ]] || session=""
+events="$out/$session.jsonl"
+pending="$out/$session.unconfirmed"
 
 expected=(
   "CLAUDE_CODE_ENABLE_TELEMETRY=1"
@@ -64,9 +66,9 @@ MSG
 # finished only once a later one exists: the current one may still be
 # streaming, and its tool calls run before it ends.
 confirm() {
-  local pending="$out/$session.unconfirmed" transcript
+  local transcript
   [ -n "$session" ] && [ -f "$pending" ] || return 0
-  if [ -s "$out/$session.jsonl" ]; then
+  if [ -s "$events" ]; then
     rm -f "$pending"
     return 0
   fi
@@ -148,8 +150,8 @@ if [ "${#off[@]}" -gt 0 ]; then
 fi
 
 mkdir -p "$out"
-if $trusting && [ -n "$session" ] && [ ! -s "$out/$session.jsonl" ] && [ ! -e "$out/$session.unconfirmed" ]; then
-  date -u +%Y-%m-%dT%H:%M:%SZ >"$out/$session.unconfirmed"
+if $trusting && [ -n "$session" ] && [ ! -s "$events" ] && [ ! -e "$pending" ]; then
+  date -u +%Y-%m-%dT%H:%M:%SZ >"$pending"
 fi
 
 listening && exit 0
