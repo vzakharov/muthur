@@ -62,7 +62,7 @@ subagent cost (from the task notification's token and tool-use counts at
 cost, and record the verdict in the model's entry. A rigorous count, priced like
 the session ledger, comes later.
 
-### 3. `.claude/skills/go/models.md` — the capability notes
+### 3. `.claude/skills/go/delegation-model-capabilities.md` — the capability notes
 
 A compressed per-model summary (`### <model>` → can / can't / brief tips),
 seeded with the two models `Agent` accepts below Opus (`sonnet`, `haiku`) and no
