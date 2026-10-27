@@ -92,3 +92,8 @@ Resume the paused plan through `/go` Step 1. That means running `/go` Step 3
 (`/polish` over the branch, then `git mv` the plan to `*.completed.md`) and Step
 4 (`/pr`). `/pr` refreshes #236's body to the implemented state and re-syncs the
 squash proposal through `/squash-message`.
+
+## Last agent turn
+
+None: `scripts/relay-last-reply.py` found no earlier turn, because the relay ran
+inside this session's only turn.
