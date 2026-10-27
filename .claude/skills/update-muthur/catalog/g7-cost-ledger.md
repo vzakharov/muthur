@@ -9,28 +9,29 @@ session — so the entry is `opt-in: ask`.
 
 - `.claude/costs/` — Price each session at Claude API rates from its transcript
   and commit its row to the repo's `cost-ledger` branch at the end of every
-  turn, with a copy on the working branch until it is finalized; each row also
-  carries the agent's revisable estimate of the work in senior-hours, and
-  `report.py` sums the rows by month, week, day and branch and prices a
-  senior-hour of work, over this repo or, with `--all-my-repos`, every repo the
-  `gh` user can see that carries a ledger; `delegation.py` weighs one of `/go`'s
-  delegations against doing it in-session. **The cost, which is why it is
-  asked:** a `cost-ledger` branch on `origin`, and a commit and a push to it per
-  turn, plus one to the working branch until it is finalized, a line of estimate
-  notice on every prompt and one asking for the orientation mark until the
-  session makes it, extra CI runs where CI runs on push, a hand-kept rate table
-  that must gain a row before a new model's first session can be priced, a
-  `Stop` hook sharing the event with the harness's git check, and a telemetry
-  receiver listening on `127.0.0.1:4318` for the whole session, whose exporter
-  variables go in the environment's settings by hand, since Claude Code ignores
-  them in `.claude/settings.json` — `hooks/start-telemetry-receiver.sh` names
-  them until they are set. Arrives with no rows — the first session's row roots
-  the repo's `cost-ledger` — five `.claude/settings.json` hook entries to merge,
-  and a `scripts/vet.sh` loop running its tests and `check_estimates.py`, which
-  fails a branch carrying a session with no estimate. Estimate roles of the
-  adopter's own go in a `rates.repo.json` on its `cost-ledger`, written by
-  `estimate.py role set`, so a sync of the shared `rates.json` leaves them
-  alone; an adopter carrying one in its tree moves it with `ledger.py backfill`.
+  turn, with a copy riding the agent's own commits on the working branch until
+  it is finalized; each row also carries the agent's revisable estimate of the
+  work in senior-hours, and `report.py` sums the rows by month, week, day and
+  branch and prices a senior-hour of work, over this repo or, with
+  `--all-my-repos`, every repo the `gh` user can see that carries a ledger;
+  `delegation.py` weighs one of `/go`'s delegations against doing it in-session.
+  **The cost, which is why it is asked:** a `cost-ledger` branch on `origin`,
+  and a commit and a push to it per turn, a pricing run before each of the
+  agent's commits, a line of estimate notice on every prompt and one asking for
+  the orientation mark until the session makes it, extra CI runs where CI runs
+  on push, a hand-kept rate table that must gain a row before a new model's
+  first session can be priced, a `Stop` hook sharing the event with the
+  harness's git check, and a telemetry receiver listening on `127.0.0.1:4318`
+  for the whole session, whose exporter variables go in the environment's
+  settings by hand, since Claude Code ignores them in `.claude/settings.json` —
+  `hooks/start-telemetry-receiver.sh` names them until they are set. Arrives
+  with no rows — the first session's row roots the repo's `cost-ledger` — six
+  `.claude/settings.json` hook entries to merge, and a `scripts/vet.sh` loop
+  running its tests and `check_estimates.py`, which fails a branch carrying a
+  session with no estimate. Estimate roles of the adopter's own go in a
+  `rates.repo.json` on its `cost-ledger`, written by `estimate.py role set`, so
+  a sync of the shared `rates.json` leaves them alone; an adopter carrying one
+  in its tree moves it with `ledger.py backfill`.
   - **Requires:** `bash`, `jq`, `git`, `python3` ≥3.9; `gh` for
     `report.py --all-my-repos` and `--repo` alone
   - **Pulls in:** `.claude/hooks/lib.sh` (G4)

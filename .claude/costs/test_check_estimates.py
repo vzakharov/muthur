@@ -21,7 +21,7 @@ from typing import Optional
 from lib.estimate_model import Part
 from lib.rows import json_text, row_text
 from test_estimate import ROW, estimate_of
-from test_stop_hook import Clone
+from hook_clone import Clone
 
 CHECK = ".claude/costs/check_estimates.py"
 ESTIMATED = estimate_of("2026-03-04T07:00:00.000Z")
