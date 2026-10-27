@@ -1,0 +1,100 @@
+{
+  "total": {
+    "inputTokens": 64,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 131796,
+    "cacheReadTokens": 4652505,
+    "outputTokens": 21005,
+    "thinkingTokens": 8663,
+    "responses": 32,
+    "costUsd": 2.4052250000000006
+  },
+  "estimate": {
+    "at": "2026-10-27T09:01:40.753Z",
+    "parts": [
+      {
+        "hours": 6.0,
+        "grade": "senior",
+        "role": "developer",
+        "comment": "deriving wall-clock intervals from transcript turns and background tasks has edge cases (interrupts, resumes, overlaps, keepalive) that need tested, judged handling inside an existing ledger contract"
+      },
+      {
+        "hours": 1.0,
+        "grade": "senior",
+        "role": "editor",
+        "comment": "the ledger's CLAUDE.md is a dense contract document; the new measure needs its limits stated as precisely as the rest"
+      }
+    ],
+    "comment": null
+  },
+  "orientation": {
+    "endedBy": "oriented",
+    "endedOn": null,
+    "endedAt": "2026-10-27T09:00:42.996Z",
+    "contextTokens": 120652,
+    "spend": {
+      "inputTokens": 10,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 58723,
+      "cacheReadTokens": 411731,
+      "outputTokens": 1677,
+      "thinkingTokens": 494,
+      "responses": 5,
+      "costUsd": 0.5857102000000001
+    }
+  },
+  "sessionId": "c14c8467-26e1-5792-9617-2e9981c217f3",
+  "branch": "claude/agent-active-time-9rexw4",
+  "cwd": "/home/user/muthur",
+  "openingPrompt": "давай запоминать время, которое агент реально потратил: 1- при начале работы хук, начать считать 2- при ответе юзеру хук, перестать считать 3- в леджере также п…",
+  "prs": [
+    238
+  ],
+  "url": "https://claude.ai/code/session_01DaohkB4R6fKQiSpfm6BJrN",
+  "operator": "vzakharov",
+  "firstResponseAt": "2026-10-27T09:00:01.552Z",
+  "lastResponseAt": "2026-10-27T09:03:54.505Z",
+  "pricesAsOf": "2026-10-06",
+  "claudeCodeTotalUsd": null,
+  "ownTurns": {
+    "inputTokens": 64,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 131796,
+    "cacheReadTokens": 4652505,
+    "outputTokens": 21005,
+    "thinkingTokens": 8663,
+    "responses": 32,
+    "costUsd": 2.4052250000000006
+  },
+  "subagents": {
+    "inputTokens": 0,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 0,
+    "cacheReadTokens": 0,
+    "outputTokens": 0,
+    "thinkingTokens": 0,
+    "responses": 0,
+    "costUsd": 0.0
+  },
+  "byRate": {
+    "claude-opus-5-5/standard": {
+      "inputTokens": 64,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 131796,
+      "cacheReadTokens": 4652505,
+      "outputTokens": 21005,
+      "thinkingTokens": 8663,
+      "responses": 32,
+      "costUsd": 2.4052250000000006
+    }
+  },
+  "warnings": [],
+  "compactions": [],
+  "telemetry": {
+    "events": 32,
+    "matched": 32,
+    "matchedTableUsd": 2.4052250000000006,
+    "matchedEventUsd": 2.4052250000000006,
+    "unseen": {}
+  }
+}
