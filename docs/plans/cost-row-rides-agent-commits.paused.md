@@ -1,5 +1,31 @@
 # The cost row rides the agent's own commits
 
+## Progress (paused for the context budget)
+
+Done, all pushed:
+
+- §1 `stage-cost-row.sh`, registered in `.claude/settings.json` and `PER_REPO`
+  (104e93b) — live in the session that wrote it: its own commits carried the
+  row.
+- §2 the `Stop` hook's put-back; `ledger.py` `stop-plan` → `display`,
+  `commit-row` gone (104e93b).
+- §3 tests — `hook_clone.py`, `test_stage_cost_row.py`, the reworked
+  `test_stop_hook.py` (6ad6299); every `.claude/costs/test_*.py` green.
+- §4 every doc home listed there.
+
+Left:
+
+- `/go` Step 3 (`/polish`), the `.completed.md` flip and Step 4 (`/pr` refresh,
+  squash proposal resync).
+- Fold the delegation into `.claude/skills/go/delegation-model-capabilities.md`
+  § sonnet: a suite reworked against two changed hooks plus a fixture split,
+  clean, nothing to repair; ~137k subagent tokens.
+- Tell the operator: `.claude/worktrees/` is ignored nowhere, so a `git add -A`
+  in a delegating session commits the delegate's worktree as a gitlink (happened
+  here, reverted in its own commit). Proposing a `.gitignore` entry is theirs to
+  approve — CLAUDE.md prefers `tmp/` over new entries, and this path is Claude
+  Code's choice, not ours.
+
 ## Why
 
 `hooks/stop-session-cost.sh` commits and pushes the session's display copy
