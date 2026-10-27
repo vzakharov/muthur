@@ -48,20 +48,12 @@ trunk without `/finalize` is counted once.
 What each failure costs:
 
 - **A push that loses the ledger's tip** to another session re-reads it and
-<<<<<<< HEAD
   rebuilds, up to three tries, taking the next ordinal where the winner took the
   one it planned on, so a rebuild loses none. After the third, or on a failed
   fetch, the hook blocks the stop once with git's message. The next turn's row
   covers the missed one, so only a session's last turn can be lost, and only
   when nobody acts on the block.
-- **A GitHub query that fails** counts as not finalized: the turn writes its
-=======
-  rebuilds, up to three tries; rows never collide, so a rebuild loses none.
-  After the third, or on a failed fetch, the hook blocks the stop once with
-  git's message. The next turn's row covers the missed one, so only a session's
-  last turn can be lost, and only when nobody acts on the block.
 - **A GitHub query that fails** counts as not finalized: the commit carries its
->>>>>>> origin/main
   display copy and the next asks again. It is the ledger's one silent fallback,
   approved for that call site alone, and its worst case is a copy on a branch
   that merges after it, which the union counts once.
@@ -69,9 +61,11 @@ What each failure costs:
 ## Where a row is filed
 
 The ledger reads as what each branch cost, session by session, and only the
-ledger sees every session on a branch, so it decides the path: `append-row`
-prints it, and the hook files the display copy there. `lib/filing.py` holds the
-rules.
+ledger sees every session on a branch, so it decides the path, and the staging
+hook files the display copy where `path-for` says the local copy of the ledger
+files it. That copy is as fresh as the last `Stop` hook's fetch, so a session's
+first commit before its first `Stop` can take an ordinal the ledger then gives
+another session; its next commit moves it. `lib/filing.py` holds the rules.
 
 - **`<YYYY-MM>` is the month of the branch's first filed session**, fixed once
   the branch has a directory, so a branch never splits across months: the trunk
@@ -276,12 +270,14 @@ run in parallel**, so whatever this hook does to the tree is done while that
 check may be reading it.
 
 **The hook leaves the branch alone and the tree clean.** It prices the row into
-`tmp/` and writes it to the ledger only. A row it finds differing from `HEAD` is
-one no commit took — staged by `hooks/stage-cost-row.sh` for a commit that left
-it out (`git commit -- <path>`, a failed commit, a command that only mentioned
-one), or written by a hand run of `session_cost.py` — and it goes back to
-`HEAD`'s copy, or out of the index and tree where `HEAD` has none. Nothing is
-lost: the ledger holds the turn's row, and the next commit stages a fresh one.
+`tmp/` and writes it to the ledger only. A copy of the session's row it finds
+differing from `HEAD` is one no commit took — staged by
+`hooks/stage-cost-row.sh` for a commit that left it out (`git commit -- <path>`,
+a failed commit, a command that only mentioned one), along with the removal of
+the copy it moved from, or written by a hand run of `session_cost.py` — and each
+goes back to `HEAD`'s copy, or out of the index and tree where `HEAD` has none.
+Nothing is lost: the ledger holds the turn's row, and the next commit stages a
+fresh one.
 
 **It waits the check out before that put-back.** That check leaves nothing on
 disk — it reads the tree and writes to stderr — so its process is the only thing

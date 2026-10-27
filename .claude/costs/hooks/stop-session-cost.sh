@@ -94,30 +94,16 @@ put_back() {
   else
     repo rm -q --cached --ignore-unmatch -- "$1" && rm -f -- "$root/$1"
   fi
-<<<<<<< HEAD
-  subject="$(repo log -1 --format=%s "$commit")"
+}
 
-  local pushed=false
-  repo push -q origin "$commit:refs/heads/$branch" 2>/dev/null && pushed=true
-
-  # `place_row`, split so the directory is made first and the ref move and the
-  # rename run back to back.
-  mkdir -p -- "$(dirname "$row")" &&
-    repo update-ref -m "$subject" "refs/heads/$branch" "$commit" "$head" &&
-    mv -f -- "$staged" "$row" &&
-    git -C "$top" update-index --add -- "$path" ||
-    return 1
-
-  # The session's copies the commit moved away from: an older layout's, or the
-  # branch's before a rename.
-  repo diff --no-renames --name-only --diff-filter=D "$head" "$commit" | while IFS= read -r moved; do
-    git -C "$top" rm -q -f --ignore-unmatch -- "$moved"
-  done
-
-  state=committed
-  [ "$pushed" = false ] || state=pushed
-=======
->>>>>>> origin/main
+# Every path the session's row has in HEAD, the index or the tree: the staging
+# hook moves it when the ledger re-files it, so a commit that did not happen can
+# leave a removal staged as well as a row.
+session_paths() {
+  {
+    repo ls-tree -r --name-only HEAD -- .claude/costs/sessions
+    repo ls-files --cached --others --exclude-standard -- .claude/costs/sessions
+  } 2>/dev/null | grep -E "/$1\.json$" | sort -u
 }
 
 # What the pricing step and the ledger write said when they failed, for the
@@ -132,11 +118,7 @@ last_line() { awk 'NF { line = $0 } END { print line }' "$1" 2>/dev/null; }
 all_lines() { awk 'NF { printf "%s%s", sep, $0; sep = " " }' "$1" 2>/dev/null; }
 
 run_ledger() {
-<<<<<<< HEAD
-  local transcript staged row path='' err display
-=======
-  local transcript staged row path err
->>>>>>> origin/main
+  local transcript staged err session stray=() path
   transcript="$(field transcript_path)"
   [ -n "$transcript" ] && [ -f "$transcript" ] || return 0
 
@@ -155,9 +137,10 @@ run_ledger() {
     fetched=false
   }
 
+  session="$(field session_id)"
   python3 "$root/.claude/costs/session_cost.py" \
     --transcript "$transcript" \
-    --session-id "$(field session_id)" \
+    --session-id "$session" \
     --at-stop --out "$staged" >/dev/null 2>"$err" ||
     {
       unpriced_reason="$(last_line "$err")"
@@ -166,31 +149,26 @@ run_ledger() {
       return 0
     }
 
-  # The ledger decides where the row is filed, and the display copy goes to
-  # the same path; a write that did not reach it files against the local copy.
   if [ "$fetched" = true ]; then
-    path="$(ledger append-row "$staged" 2>"$err")" || ledger_error="$(all_lines "$err")"
+    ledger append-row "$staged" >/dev/null 2>"$err" || ledger_error="$(all_lines "$err")"
   fi
-<<<<<<< HEAD
-  [ -n "$path" ] || path="$(ledger path-for "$staged" 2>"$err")" || {
-    ledger_error="${ledger_error:-$(all_lines "$err")}"
-    rm -f -- "$staged" "$err"
-    return 0
-  }
-  row="$(repo rev-parse --show-toplevel)/$path"
-=======
   rm -f -- "$staged" "$err"
->>>>>>> origin/main
 
-  # A row differing from HEAD is one no commit took, and the ledger holds this
-  # turn's anyway.
-  dirty "$row" || return 0
+  # A copy differing from HEAD is one no commit took, and the ledger holds this
+  # turn's row anyway.
+  while IFS= read -r path; do
+    ! dirty "$path" || stray+=("$path")
+  done < <(session_paths "$session")
+  [ "${#stray[@]}" -gt 0 ] || return 0
 
   # The last moment before anything here touches the tree, and so the latest —
   # which is what gives the look for the check's process time to find it.
   wait_out_harness_check
 
-  if put_back "$path"; then state=put_back; else state=stuck; fi
+  state=put_back
+  for path in "${stray[@]}"; do
+    put_back "$path" || state=stuck
+  done
 }
 
 run_ledger

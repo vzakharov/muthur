@@ -213,19 +213,6 @@ def append(plan: Plan) -> Optional[str]:
     raise LedgerError(f"pushing to {BRANCH} failed {TRIES} times: {error}")
 
 
-def display_change(parent: str, path: str, text: str) -> Tuple[Dict[str, Optional[str]], str]:
-    """What committing `text` at `path` onto `parent` changes — the session's
-    copies elsewhere there go, and nothing changes where `parent` already holds
-    it alone — and the commit's message."""
-    others = [held for held in held_paths(parent, session_of(path)) if held != path]
-    at_path = text_at(parent, path)
-    before = at_path if at_path is not None else next((text_at(parent, held) for held in others), None)
-    rows: Dict[str, Optional[str]] = {held: None for held in others}
-    if at_path != text:
-        rows[path] = text
-    return rows, row_subject(before, text)
-
-
 def filed(rev: Optional[str], incoming: Sequence[str] = ()) -> Filing:
     """`refile` over the ledger at `rev`, reading a row only where it has to."""
 
