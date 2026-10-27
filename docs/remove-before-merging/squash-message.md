@@ -13,7 +13,14 @@ After each run the agent weighs, by eye, what the subagent cost at
 .claude/costs/prices.json rates against doing it in-session, and folds
 that verdict with what the model handled or missed into .claude/skills/
 go/delegation-model-capabilities.md: a per-model summary rewritten in
-place, capped at 100 lines by vet.
+place, capped at 100 lines by vet, plus lessons that hold for every
+model - first, that Sonnet 5.5 reads its cache at Opus 5.5's rate, so
+a sub-task of a few hundred lines saves nothing delegated.
+
+Entries name the kind of work, never the task, so the notes hold in any
+repo: adopters take the file as it stands, and /update-muthur folds the
+source's file into theirs lesson by lesson on each sync rather than
+porting or skipping it, keeping their own lessons and the cap.
 
 The procedure lives in a sidecar, .claude/skills/go/delegation.md, and
 SKILL.md carries one conditional pointer to it. A hook delivers both
