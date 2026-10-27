@@ -1,8 +1,4 @@
-Proposed squash title/body:
-
-```
-feat: /go delegates clear sub-tasks to weaker models in worktrees (#233)
-```
+Proposed squash body:
 
 ```
 An Opus agent running /go spends its own tokens on sub-tasks a cheaper
@@ -13,9 +9,11 @@ subagents, each in its own git worktree, then reviews the result as a
 stranger's PR, fixes what needs fixing and squash-merges it into the
 branch with the model named in the commit.
 
-What each model can and cannot do is kept in .claude/skills/go/
-models.md: read before a session's first delegation, rewritten in place
-as reviews teach something, capped at 100 lines by vet.
+After each run the agent weighs, by eye, what the subagent cost at
+.claude/costs/prices.json rates against doing it in-session, and folds
+that verdict with what the model handled or missed into .claude/skills/
+go/delegation-model-capabilities.md: a per-model summary rewritten in
+place, capped at 100 lines by vet.
 
 The procedure lives in a sidecar, .claude/skills/go/delegation.md, and
 SKILL.md carries one conditional pointer to it. A hook delivers both
