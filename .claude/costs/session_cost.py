@@ -36,11 +36,10 @@ from lib.rows import (
     ROOT,
     SessionCost,
     parse_session_cost,
+    place_tree_copy,
     read_pending_estimate,
     row_text,
-    tree_copies,
     union,
-    write_atomic,
 )
 from lib.shape import ShapeError
 
@@ -109,10 +108,7 @@ def main() -> int:
         out = args.out
     else:
         out = ROOT / path_for(row)
-        write_atomic(out, row)
-        for stale in tree_copies(cost.session_id):
-            if stale != out:
-                stale.unlink()
+        place_tree_copy(out, row, cost.session_id)
     print(f"session-cost: {cost.total.responses} responses, ${cost.total.cost_usd:.4f} → {out}")
     return 0
 

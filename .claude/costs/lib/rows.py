@@ -155,6 +155,14 @@ def tree_copies(session_id: str) -> List[Path]:
     return sorted(SESSIONS.rglob(f"{session_id}.json"))
 
 
+def place_tree_copy(out: Path, text: str, session_id: str) -> None:
+    """Write the session's tree copy at `out`, removing every other."""
+    stale = [path for path in tree_copies(session_id) if path != out]
+    write_atomic(out, text)
+    for path in stale:
+        path.unlink()
+
+
 def recency(row: SessionCost) -> Tuple[str, str]:
     """The later of two copies of a row is the one that saw more of the
     session, or, of two that saw the same, the one whose estimate was set later

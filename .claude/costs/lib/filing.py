@@ -148,14 +148,17 @@ def refile(listing: Sequence[str], read: Read, incoming: Sequence[str] = ()) -> 
             texts[path] = read(path)
         return texts[path]
 
+    def row_of(path: str) -> SessionCost:
+        return parse_session_cost(text_of(path), path)
+
     copies: Dict[str, List[str]] = {}
     for path in listing:
         if is_row(path):
             copies.setdefault(session_of(path), []).append(path)
-    given = {parse_session_cost(text, "incoming row").session_id: text for text in incoming}
+    given = {row.session_id: (text, row) for text in incoming for row in [parse_session_cost(text, "incoming row")]}
     moving = set(given) | {s for s, paths in copies.items() if len(paths) > 1 or parse_path(paths[0]) is None}
     settled = {s: place for s, paths in copies.items() if s not in moving for place in [parse_path(paths[0])] if place}
-    moving |= _contested(settled, lambda s, place: parse_session_cost(text_of(place.path(s)), place.path(s)))
+    moving |= _contested(settled, lambda s, place: row_of(place.path(s)))
 
     index = Index()
     for session, place in settled.items():
@@ -164,8 +167,8 @@ def refile(listing: Sequence[str], read: Read, incoming: Sequence[str] = ()) -> 
 
     def winner(session: str) -> Tuple[str, SessionCost]:
         if session in given:
-            return given[session], parse_session_cost(given[session], "incoming row")
-        held = [(text_of(path), parse_session_cost(text_of(path), path)) for path in copies[session]]
+            return given[session]
+        held = [(text_of(path), row_of(path)) for path in copies[session]]
         return union(held, lambda item: item[1])[0]
 
     rows = {session: winner(session) for session in moving}

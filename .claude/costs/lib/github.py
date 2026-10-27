@@ -22,8 +22,8 @@ import time
 from dataclasses import dataclass, field
 from typing import Any, Callable, Dict, List, Mapping, Optional, Sequence, Tuple, TypeVar
 
+from lib.filing import MONTH, is_row
 from lib.filing import PREFIX as LEDGER
-from lib.filing import is_row
 from lib.ledger_branch import BRANCH, RATES_PATH
 from lib.rows import SessionCost, reshape, union
 from lib.shape import ShapeError, read_object, read_string, required
@@ -38,7 +38,6 @@ PAGE = 40
 BATCH = 50
 RETRIES = 3
 REPO = re.compile(r"[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+")
-MONTH = re.compile(r"\d{4}-\d{2}")
 AFFILIATIONS = "[OWNER, COLLABORATOR, ORGANIZATION_MEMBER]"
 # Where a repository's rows can be, keyed by the alias each is queried under.
 SIDES = {"ledger": f"refs/heads/{BRANCH}", "tree": "HEAD"}

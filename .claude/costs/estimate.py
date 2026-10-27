@@ -49,7 +49,7 @@ from lib.ledger_branch import (
     rows_at,
     shared_rates,
 )
-from lib.rows import ROOT, SESSIONS, SessionCost, read_pending_estimate, reshape, row_text, tree_copies, write_atomic, write_pending_estimate
+from lib.rows import ROOT, SESSIONS, SessionCost, place_tree_copy, read_pending_estimate, reshape, row_text, tree_copies, write_pending_estimate
 from lib.shape import ShapeError, to_json
 
 def describe(estimate: Optional[Estimate], rates: Rates) -> str:
@@ -75,12 +75,8 @@ def edit(row: SessionCost) -> None:
     one, is rewritten to match at the path the ledger filed it at."""
     text = row_text(row)
     filed = ROOT / append_row(text)
-    tree = tree_copies(row.session_id)
-    if tree:
-        write_atomic(filed, text)
-    for stale in tree:
-        if stale != filed:
-            stale.unlink()
+    if tree_copies(row.session_id):
+        place_tree_copy(filed, text, row.session_id)
 
 
 def booking(tip: Optional[str], role: str) -> List[str]:
