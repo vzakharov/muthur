@@ -48,7 +48,7 @@
   on them; silent under `MUTHUR_DELEGATION=off`. Stdlib-only, tested by
   `scripts/test_go_delegation.py`.
   - **Requires:** `python3` ≥3.9, `.claude/settings.json` wiring (G4)
-  - **Pulls in:** `/go`
+  - **Pulls in:** `/go`, `.claude/hooks/session_state.py` (G4)
   - **Disposition:** adopt — **with `/go`'s delegation files**
 - `/implement` — Redirect to `/go`, for handoff blocks written before the
   rename.

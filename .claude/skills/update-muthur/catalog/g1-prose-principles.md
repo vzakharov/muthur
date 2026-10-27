@@ -121,6 +121,7 @@ there is no condition under which it fails to apply.
   deliberate batch of edits. Records what it refused under `tmp/`, and fails
   open.
   - **Requires:** `python3` ≥3.9, `.claude/settings.json` wiring (G4)
+  - **Pulls in:** `.claude/hooks/session_state.py` (G4)
   - **Disposition:** adopt
 
 `CLAUDE.md` is a **donor, not a replacement** — overwriting it is the one way to
