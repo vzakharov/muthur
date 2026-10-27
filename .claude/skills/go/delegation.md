@@ -27,7 +27,7 @@ done in-session without comment.
 
 ## Picking the model
 
-`delegation-model-capabilities.md` beside this file is the record of what each
+`delegation-model-capabilities.md` beside this file is the summary of what each
 model has handled. Read it before the session's first delegation — the hook's
 delivery counts as that read — and pick the cheapest model whose entry covers
 this kind of work. A model with no entry for it gets a small, easily checked

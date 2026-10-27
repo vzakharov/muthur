@@ -35,7 +35,7 @@
   branch to attach to, or a task with no plan behind it. Carries
   `delegation.md`, handing sub-tasks that need no judgement to cheaper models in
   worktrees and reviewing them before they merge, and
-  `delegation-model-capabilities.md`, the ≤100-line record of what each model
+  `delegation-model-capabilities.md`, the ≤100-line summary of what each model
   has handled, which `scripts/vet.sh` caps. `MUTHUR_DELEGATION=off` leaves `/go`
   as if neither were there.
   - **Pulls in:** `/polish` (G1); `/from-branch`, `/plan`, `/pr`, `/task`;
