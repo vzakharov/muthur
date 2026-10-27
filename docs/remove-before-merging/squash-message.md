@@ -13,6 +13,12 @@ CLAUDE_CODE_ENABLE_TELEMETRY and the hook's own environment has it at
 1, the hook now treats /proc as stale and takes its existing fallback:
 start the receiver on that flag alone.
 
+The OTEL_* variables that decide where events go stay invisible to
+hooks, so such a start is now checked against what arrives: the
+session's first event settles it, and a main-thread response that
+finished more than 10 s after the start with still no event raises the
+"capture is off" notice once, as PostToolUse context.
+
 Co-authored-by: Claude <noreply@anthropic.com>
 ```
 
