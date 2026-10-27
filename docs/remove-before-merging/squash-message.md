@@ -1,8 +1,4 @@
-Proposed squash title/body:
-
-```
-feat: the cost row rides the agent's own commits instead of one per turn (#235)
-```
+Proposed squash body:
 
 ```
 The Stop hook committed the session's cost row to the working branch on
