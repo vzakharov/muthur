@@ -301,9 +301,12 @@ yourself.
    `<n>` is the PR number (`gh pr view --json number --jq .number`). The script
    edits the PR's proposal in place, whoever posted it, or posts one when there
    is none, so the anchor next to the merge button stays stable. **Never do this
-   step with inline `gh api` or `gh pr comment`**: only this spelling passes
-   auto mode, and the script's header says why, along with its outputs and exit
-   codes.
+   step with inline `gh api` or `gh pr comment`**: only this spelling is
+   approved for auto mode, and the script's header says by what, along with its
+   outputs and exit codes. Denied on the web, it means the environment setup
+   script lacks that header's `autoMode.allow` entry: hand the operator the
+   phrase that lets this run through, and name the missing entry so the next
+   session does not need it.
 
    **In `update-only` mode pass `--update-only`**, which creates nothing and
    exits `3` on absence — report it and stop. The one exception is a branch that

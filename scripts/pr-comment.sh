@@ -1,15 +1,22 @@
 #!/usr/bin/env bash
 # Post or update one of the loop's sticky PR comments from a file — the
 # find → PATCH-or-create that `@.claude/skills/squash-message/SKILL.md` Step 4
-# and `@.claude/skills/finalize/SKILL.md` step 7 each need, as one command. The
-# interface is fixed and narrow so `.claude/settings.json` can allow exactly
-# this command: an allow rule resolves before auto mode's classifier runs, and
-# the classifier otherwise reads an inline `gh api -X PATCH` as an external
-# write and denies it. The file must lead with its kind's marker, which keeps
-# the rule from approving any other comment.
+# and `@.claude/skills/finalize/SKILL.md` step 7 each need, as one command.
+# Auto mode's classifier reads such a write as External System Writes and
+# denies it, so the interface is fixed and narrow enough to approve as exactly
+# this command, by two approvals because neither reaches every session:
+#   - the `autoMode.allow` entry "Sticky PR Comments", which the classifier
+#     reads from user or managed settings only — on the web, the
+#     `~/.claude/settings.json` the environment setup script writes
+#     (`docs/adopting/web-remote.md` § "A worked example"). Cloud sessions do
+#     not honour the project's `permissions.allow`.
+#   - the `.claude/settings.json` allow rule, which resolves before the
+#     classifier runs in the sessions that honour it.
+# The file must lead with its kind's marker, which keeps either approval from
+# covering any other comment.
 #
 # Usage (from the repository root, spelled exactly so, with no `cd … &&` or
-# anything else chained in front — the allow rule matches the command text):
+# anything else chained in front — both approvals match the command's text):
 #   scripts/pr-comment.sh <kind> [--update-only] <pr-number> <file>
 #
 # Kinds, each keyed on the marker its body leads with:

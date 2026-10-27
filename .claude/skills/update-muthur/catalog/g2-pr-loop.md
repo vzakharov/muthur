@@ -172,9 +172,10 @@
   - **Requires:** `sh`
   - **Disposition:** adopt
 - `scripts/pr-comment.sh` — Post or update the squash proposal or the finalize
-  attestation in one fixed-shape command, which `.claude/settings.json` allows
-  so auto mode's classifier never sees the write. The allow rule travels with
-  it.
+  attestation in one fixed-shape command narrow enough to approve for auto mode:
+  by the `.claude/settings.json` allow rule, which travels with it, and on the
+  web by the setup script's `autoMode.allow` entry, which only the operator can
+  add (`docs/adopting/web-remote.md`).
   - **Requires:** `bash`, `gh`, `git`, `scripts/lib/gh-repo.sh`
   - **Disposition:** adopt
 - `scripts/staged.sh` — Stage an always-loaded file as a byte-identical copy at
