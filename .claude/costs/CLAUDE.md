@@ -13,13 +13,31 @@ branch carries none. The `Stop` hook writes the row there every turn, on every
 branch and the trunk alike, so a session counts whether or not its work merges.
 
 **A branch also carries a display copy until it is finalized**, so its PR's diff
-shows what the work cost. Finalized means the PR's last
-`<!-- finalize-attestation <sha> -->` names a SHA that `HEAD` still contains,
-and nothing after it touches more than rows. GitHub is asked until the answer is
-yes, and the yes is cached in `tmp/costs/finalized/<branch>`; a work commit
-after the SHA sends the question back. `/finalize` carries the copies into the
-ledger and deletes them before the branch lands, and `/finalize revoke`
-withdraws the attestation.
+shows what the work cost. It rides the agent's own commits:
+`hooks/stage-cost-row.sh`, a `PreToolUse` hook on `Bash`, prices the session and
+stages its row before a `git commit` runs, and nothing commits it otherwise. So
+the copy is as of the session's last commit, and a session that never commits
+leaves none — the ledger counts it all the same. The hook stages nothing where
+the row would be wrong in the commit:
+
+- **on the trunk or a finalized branch**, which carry no copy;
+- **for a commit in another work tree**, a delegate's worktree, unless the
+  command names this root by path as a multi-repo session's `cd <repo> &&` does;
+- **while a merge, cherry-pick, revert or rebase is in progress**, whose
+  concluding commit takes exactly what git left — `/sync-branch` relies on it;
+- **for a command naming `.claude/costs/sessions`**, which manages the rows
+  itself: a staged row would make `/finalize`'s `git rm` refuse, or come back in
+  the commit that sweeps it;
+- **for a commit with nothing else to take** — a clean index, and no
+  `git add|rm|mv`, `-a`, `--all` or `--amend` in the command — which would
+  otherwise succeed as a row-only commit where git said "nothing to commit".
+
+Finalized means the PR's last `<!-- finalize-attestation <sha> -->` names a SHA
+that `HEAD` still contains, and nothing after it touches more than rows. GitHub
+is asked until the answer is yes, and the yes is cached in
+`tmp/costs/finalized/<branch>`; a work commit after the SHA sends the question
+back. `/finalize` carries the copies into the ledger and deletes them before the
+branch lands, and `/finalize revoke` withdraws the attestation.
 
 **Readers union the ledger with the default branch's tree**, one row per session
 id, the later by `lib/ledger_branch.py`'s `recency` winning. The tree side is
@@ -33,7 +51,7 @@ What each failure costs:
   After the third, or on a failed fetch, the hook blocks the stop once with
   git's message. The next turn's row covers the missed one, so only a session's
   last turn can be lost, and only when nobody acts on the block.
-- **A GitHub query that fails** counts as not finalized: the turn writes its
+- **A GitHub query that fails** counts as not finalized: the commit carries its
   display copy and the next asks again. It is the ledger's one silent fallback,
   approved for that call site alone, and its worst case is a copy on a branch
   that merges after it, which the union counts once.
@@ -217,33 +235,32 @@ authoritative.
 The harness registers its own `Stop` hook in `~/.claude/launcher-settings.json`
 — `stop-hook-git-check.sh`, which ends a turn with exit 2 on a tree that is
 unclean, holds untracked files, or is ahead of its remote. **Hooks for one event
-run in parallel**, so writing and committing the row is work done while that
-check may be reading the tree.
+run in parallel**, so whatever this hook does to the tree is done while that
+check may be reading it.
 
-**The row never makes the tree look unfinished.** It is priced into `tmp/`,
-committed in a throwaway index, and pushed before the branch moves; only then do
-the branch, the index entry and the file follow. So the tree differs from `HEAD`
-only between the ref move and the rename, and is never ahead of `origin` while a
-push is in flight.
+**The hook leaves the branch alone and the tree clean.** It prices the row into
+`tmp/` and writes it to the ledger only. A row it finds differing from `HEAD` is
+one no commit took — staged by `hooks/stage-cost-row.sh` for a commit that left
+it out (`git commit -- <path>`, a failed commit, a command that only mentioned
+one), or written by a hand run of `session_cost.py` — and it goes back to
+`HEAD`'s copy, or out of the index and tree where `HEAD` has none. Nothing is
+lost: the ledger holds the turn's row, and the next commit stages a fresh one.
 
-**The hook also waits the check out**, which leaves it only those two steps to
-guard. That check leaves nothing on disk — it reads the tree and writes to
-stderr — so its process is the only thing there is to wait on, and the hook
-polls for it by name at the last moment before anything it does can touch the
-tree, which is after the ledger write: that touches no file in it. A match that
-is an **ancestor** of the hook is not the check: the check is a sibling, and an
-ancestor carrying the name is a shell that merely mentions it, so waiting on one
-would outlast the turn.
+**It waits the check out before that put-back.** That check leaves nothing on
+disk — it reads the tree and writes to stderr — so its process is the only thing
+there is to wait on, and the hook polls for it by name at the last moment before
+anything it does can touch the tree, which is after the ledger write: that
+touches no file in it. A match that is an **ancestor** of the hook is not the
+check: the check is a sibling, and an ancestor carrying the name is a shell that
+merely mentions it, so waiting on one would outlast the turn.
 
-**What neither covers is a tree that was unclean before the hook started.** A
-hand run of `session_cost.py` rewrites the row in place, and a failed push
-leaves a commit the check will refuse on the _next_ turn, attributed to nobody.
-So the hook reads the tree after its own work and, where the row was part of
-what the check saw, exits 2 with one line naming it — the only channel a `Stop`
-hook has to the agent, spent solely where the check's own exit 2 is already
-continuing the turn. It bails on a re-fired `Stop` (`stop_hook_active`) exactly
-as the harness's check does: two hooks that can both block and neither bail
-would hold the turn open forever.
+**A row the check read before the put-back is named to the agent**: where it was
+all that kept the tree unclean, the hook exits 2 with one line saying so — the
+only channel a `Stop` hook has to the agent, spent solely where the check's own
+exit 2 is already continuing the turn. A put-back that fails exits 2 too, with
+the commands that do it by hand. It bails on a re-fired `Stop`
+(`stop_hook_active`) exactly as the harness's check does: two hooks that can
+both block and neither bail would hold the turn open forever.
 
 **A turn that cannot be priced blocks the stop once**, with the pricing error's
 last line — the missing `(model, speed)` pair, as a row to add to `prices.json`.

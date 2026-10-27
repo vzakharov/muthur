@@ -12,9 +12,9 @@ the comment bodies that follow it:
 
 "Seen" means carried by the export the branch last committed
 (`gh_export.previous`), which `/handle` commits on every read. A timestamp
-cutoff cannot stand in for it: the branch's head commit is routinely a
-session-cost row pushed after a review it never answered, and the agent's own
-last post may answer something else entirely. A post the agent has seen stays
+cutoff cannot stand in for it: the branch's head commit may be work pushed
+after a review it never answered, and the agent's own last post may answer
+something else entirely. A post the agent has seen stays
 listed while no agent post follows it, so a session that read a review and
 lost its context before answering still meets it. With no committed export,
 that second clause is the whole test.
