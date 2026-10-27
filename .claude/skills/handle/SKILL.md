@@ -22,8 +22,8 @@ Four parts, order-free:
 - **`and merge`** (`@.claude/skills/finalize/SKILL.md`'s flag): read as
   `and finalize`, and **not forwarded** — a lane produces its diff in this same
   turn, so the flag was typed before the thing it would merge existed. Land-prep
-  as asked, then report that the merge was held and that
-  `/finalize <branch> and merge` lands it once the operator has looked.
+  as asked, then report that the merge was held and that `/merge <branch>` lands
+  it once the operator has looked.
 - **Extra guidance** (optional): any remaining prose. Not a lane of its own — it
   directs whichever lane runs, and when no lane is discovered it _is_ the work
   (Step 4).

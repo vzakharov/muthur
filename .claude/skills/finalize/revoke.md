@@ -11,8 +11,8 @@ branch for the cost ledger; this is the operator saying so before one exists.
    `<!-- finalize-attestation revoked -->`, the body with when and why it was
    revoked, the footer kept — and post it with
    `scripts/pr-comment.sh attestation --update-only <n> <file>`, spelled as
-   `/finalize` step 7 spells it. Exit `3` (`absent`) → nothing was attested; say
-   so and stop.
+   `@.claude/skills/finalize/attest.md` § "Posting it" spells it. Exit `3`
+   (`absent`) → nothing was attested; say so and stop.
 2. `gh pr ready --undo`, so the PR reads as work in progress again.
 3. `rm -f tmp/costs/finalized/<branch>`, the ledger's cache of the attested SHA.
 
