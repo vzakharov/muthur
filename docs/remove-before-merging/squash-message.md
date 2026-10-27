@@ -9,13 +9,15 @@ subagents, each in its own git worktree, then reviews the result as a
 stranger's PR, fixes what needs fixing and squash-merges it into the
 branch with the model named in the commit.
 
-After each run the agent weighs, by eye, what the subagent cost at
-.claude/costs/prices.json rates against doing it in-session, and folds
-that verdict with what the model handled or missed into .claude/skills/
-go/delegation-model-capabilities.md: a per-model summary rewritten in
-place, capped at 100 lines by vet, plus lessons that hold for every
-model - first, that Sonnet 5.5 reads its cache at Opus 5.5's rate, so
-a sub-task of a few hundred lines saves nothing delegated.
+After each run .claude/costs/delegation.py prices the subagent's spend
+against replaying its turns at the delegator's rates over its own
+context, the agent supplying only how many turns it would have needed.
+The verdict, with what the model handled or missed, goes into
+.claude/skills/go/delegation-model-capabilities.md: a per-model
+summary rewritten in place, capped at 100 lines by vet, plus lessons
+that hold for every model - first, that Sonnet 5.5 reads its cache at
+Opus 5.5's rate, so a sub-task of a few hundred lines saves nothing
+delegated.
 
 Entries name the kind of work, never the task, so the notes hold in any
 repo: adopters take the file as it stands, and /update-muthur folds the
