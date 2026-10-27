@@ -31,8 +31,7 @@ None stated.
    > никакое не позволило, она как раз протухла
 
    **Agent:** agreed — the watcher was skipped because the branch "knew
-   everything", so the cache expired with no park; that skip is what gets
-   removed.
+   everything", so the cache expired with no park.
 
 4. **Operator** (mid-turn):
 
@@ -40,68 +39,88 @@ None stated.
    > 110 минут -- речь не об этом, а о том, что было на выходе этого протухания
    > (ничего, в отличие от ситуации когда "ветка не знает")
 
-   **Agent:** confirmed the fix targets the output of going cold: with the
-   watcher always running, its last wake parks and leaves the summary plus the
-   `/relay take` line. Then implemented, polished, opened draft PR #232 and
-   posted the squash proposal. (verbatim in Last agent turn)
+   **Agent:** confirmed the fix targets the output of going cold; implemented,
+   polished, opened draft PR #232, posted the squash proposal. Then the
+   keepalive wake parked the session (`relay-1.md`, first version) with the
+   caption "PR ждёт твоего ревью, дальше finalize".
+
+5. **Operator:**
+
+   > я уже отревьюил, плюс "PR ждёт твоего ревью, дальше finalize" в качестве
+   > затравки новой сессии звучит так себе. "Ты" для неё будет именно агент.
+   > Возможно это более общая проблема, не от этого диффа, но поправить её лучше
+   > в этом же пиаре
+
+   **Agent:** ran `/handle #232`. Two review threads: T01 (keepalive
+   `CLAUDE.md`:20, "возможно медведь?", re-check for more bears since the PR's
+   point is removing something, and add that note to tend-prose's bear section)
+   and T02 (squash: "это таки не фикс"). Cut four bears, added the tend-prose
+   paragraph, made the relay caption address nobody, retitled the PR `feat:`,
+   polished, refreshed the PR body and squash proposal, replied on both threads.
+   (verbatim in Last agent turn)
 
 ## Intent
 
 When a session goes idle and its cache is about to expire, it must always leave
 a park (summary with the last reply verbatim + a pasteable `/relay take` line),
 whether or not the branch alone would let a fresh session continue. The point is
-the output of going cold, not keeping the session alive longer.
+the output of going cold, not keeping the session alive longer. The caption on
+that line must read correctly to both the operator and the successor agent.
 
 ## Decisions
 
 - **Drop the "branch suffices" skip from the keepalive hook** rather than
   parking immediately at a boundary turn's end: the watcher's wake parks after
-  ~an hour, so an operator returning sooner keeps the warm session, and one who
-  doesn't still gets the park. Stop word ("стоп"/"stop") remains the only skip.
-- **Parked summary is never deleted on return, only rewritten** (relay § "When
-  the summary goes stale"), for the same reason: the last agent turn is what the
-  operator answers next. `/relay take`'s "file gone" case now only means
-  `/finalize` swept it.
-- Branch renamed from `claude/affectionate-brown-9khkys` before the first
-  commit; the old name never existed on the remote.
+  ~an hour, so an operator returning sooner keeps the warm session.
+- **A parked summary is rewritten, never deleted**, when its operator returns.
+- **The `/relay take` caption addresses nobody** (relay `SKILL.md` Step 3): the
+  successor reads it as its first message, so a "you" names it to itself.
+- **Bears from a removal are judged against the resulting file with the diff
+  closed** (tend-prose lens 4); close calls go to the operator. The agent judged
+  its own T01 call unreliable for exactly that reason.
+- **The PR is `feat:`**, per T02 — nothing was broken. Earlier commit subjects
+  stay `fix:`; the squash replaces them.
+- "Bear" / "медведь" = tend-prose's negation lens (polar bear): prose that
+  denies a removed thing.
 
 ## Errors and dead ends
 
-None.
+- The first park's caption, "PR ждёт твоего ревью", addressed the operator in a
+  line the successor reads — the defect fixed in ff8d35e.
 
 ## State
 
-- Branch `claude/keepalive-always-parks-9khkys`, pushed; head before this
-  summary `d37dfd9`.
-- PR https://github.com/vzakharov/muthur/pull/232 — draft, open, no CI checks
-  reported. Squash proposal posted as a comment and tracked at
-  `docs/remove-before-merging/squash-message.md`.
-- No plan file (planless `/go`). `/polish` ran (commit `ce60997`); vet passed.
-- Estimate: 1.5 h senior prompter (judging which stop conditions to drop, prose
-  kept consistent across four files) + 0.5 h middle developer (small hook change
-  and test). Nothing handed on beyond `/finalize`.
-- No PR subscription, no scheduled check-in, no keepalive watcher.
+- Branch `claude/keepalive-always-parks-9khkys`, pushed; PR
+  https://github.com/vzakharov/muthur/pull/232 — draft, open, title
+  `feat: always park an idle session; relay captions address nobody`.
+- Review replies posted on both threads (left unresolved for the operator).
+- `main` has advanced (`c9ec8c5`, #234, touches the keepalive test and skill
+  prose) — not merged in; `/finalize`'s base merge handles it.
+- No plan file. Polish ran through 83b3a2e; vet passed except prettier on this
+  file, fixed with it.
+- Estimate: 2.5 h senior prompter + 0.5 h middle developer; nothing handed on
+  beyond `/finalize`.
 
 ## Pointers
 
-- `.claude/keepalive/hooks/keepalive.py` — `context()`, the hook text.
-- `.claude/keepalive/test_keepalive.py` — the updated assertion.
-- `.claude/keepalive/CLAUDE.md` — the "It runs after every turn" bullet.
-- `.claude/skills/relay/SKILL.md` — § "When the summary goes stale", Step 2,
-  `/relay take` step 2.
-- `.claude/skills/update-muthur/catalog/g10-cache-keepalive.md`.
+- `.claude/keepalive/hooks/keepalive.py`, `.claude/keepalive/test_keepalive.py`,
+  `.claude/keepalive/CLAUDE.md`.
+- `.claude/skills/relay/SKILL.md` — Step 3 (caption), § "When the summary goes
+  stale".
+- `.claude/skills/tend-prose/SKILL.md` — lens 4's removal paragraph.
+- `docs/pr/232/pr.md` — the last export; re-run
+  `python3 scripts/export-github-item.py 232`.
 - Transcript: https://claude.ai/code/session_01DaohkD2amc2dynSfpzvst3
 
 ## Next step
 
-Wait for the operator — the PR awaits their review; `finalize` when they say so.
+Wait for the operator: their replies on the two threads, or `finalize`.
 
 ## Last agent turn
 
 The agent's last turn before the relay, verbatim, appended by
-`scripts/relay-last-reply.py`. It includes the turn's interim messages,
-usually unneeded but harmless; the reply proper is usually its last
-paragraphs.
+`scripts/relay-last-reply.py`. It includes the turn's interim messages, usually
+unneeded but harmless; the reply proper is usually its last paragraphs.
 
 ```text
 Это просьба изменить сам цикл агента (rung 1), так что иду через `/task`. Сначала гляну, где живёт правило «ветка всё знает».
