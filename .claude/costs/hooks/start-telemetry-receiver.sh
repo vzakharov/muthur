@@ -5,10 +5,10 @@
 # nothing and print what to set instead — the environment's to set, never the
 # repo's.
 #
-# Also a `PostToolUse` keep-alive, silent there: a session that checks out a
-# branch carrying this hook gets it registered with its `SessionStart` already
-# past, and a receiver can die mid-session. A listening port makes that firing
-# a probe, plus `confirm`'s check while one is pending.
+# Also a `PostToolUse` keep-alive: a session that checks out a branch carrying
+# this hook gets it registered with its `SessionStart` already past, and a
+# receiver can die mid-session. A listening port makes that firing a probe,
+# plus `confirm` while the receiver is unconfirmed.
 #
 # The events land under the repo's `tmp/telemetry/`; `.claude/costs/CLAUDE.md`
 # § "Telemetry" says why the repo cannot set the variables, and what reads the
@@ -58,12 +58,11 @@ MSG
 }
 
 # A receiver started on `CLAUDE_CODE_ENABLE_TELEMETRY` alone (below) leaves
-# `<session>.unconfirmed` holding when; this session's first event settles it.
-# Until then, each tool call asks whether a main-thread response finished after
-# that moment and long enough ago for its event to be out — the exporter sends
-# within a second. One that has, with no event, means Claude Code exports
-# elsewhere or not at all, and the notice goes out once. A response counts as
-# finished only once a later one exists: the current one may still be
+# `<session>.unconfirmed` holding when it started; the session's first event
+# clears it. Until then, a main-thread response that finished since, long enough
+# ago for its event to be out (the exporter sends within a second), means Claude
+# Code exports elsewhere or not at all, and the notice goes out once. A response
+# has finished only once a later one exists: the current one may still be
 # streaming, and its tool calls run before it ends.
 confirm() {
   local transcript
