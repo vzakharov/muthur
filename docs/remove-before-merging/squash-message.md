@@ -12,7 +12,9 @@ component.
 The ledger assigns both, since only it sees every session on a branch:
 the month once, when the branch is first filed, and the ordinal one
 past the highest held. A row moves only when its session changes
-branch. The Stop hook files the display copy where the ledger chose.
+branch. The display copy the agent's commits carry is staged where the
+local copy of the ledger files it, and the session's copy at an older
+path leaves in the same commit.
 
 Every ledger write re-files any row that is not at its place: an old
 layout path, a duplicate copy, two sessions in one ordinal. That pass
