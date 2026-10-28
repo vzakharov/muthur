@@ -67,14 +67,6 @@ are read-only and Step 3 is the only one that writes.
 
 ## Step 3: Create the issue
 
-**Never without the operator's yes to this issue.** Their ask to file it is one,
-and so is their go-ahead on a plan that proposed it; "decide whether this needs
-an issue" is not — that asks for a ruling, so give it and ask. An issue is
-public the moment it exists, and closing a wrong one still leaves it in the
-tracker, so the cost of asking is one turn and the cost of not asking is not
-undone. With no yes in hand, end at Step 2: hand the drafted title and body to
-the operator and stop.
-
 Create it with the title and body as provided, plus any labels the caller passed
 in (`gh issue create --title … --body-file … --label …`, or
 `mcp__github__issue_write` with action `create`). Return the new issue number
