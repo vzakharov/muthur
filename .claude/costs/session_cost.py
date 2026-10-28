@@ -39,6 +39,7 @@ from lib.rows import (
     place_tree_copy,
     read_pending_estimate,
     row_text,
+    telemetry_path,
     union,
 )
 from lib.shape import ShapeError
@@ -73,7 +74,7 @@ def main() -> int:
 
     transcript: Path = args.transcript
     session_id: str = args.session_id or transcript.stem
-    events = events_at(args.events or ROOT / "tmp" / "telemetry" / f"{session_id}.jsonl")
+    events = events_at(args.events or telemetry_path(session_id))
     prices = parse_prices((COSTS / "prices.json").read_text(encoding="utf-8"))
     cost = summarise_transcript(
         TranscriptSources(

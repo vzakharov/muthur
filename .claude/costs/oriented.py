@@ -28,15 +28,10 @@ from lib.billed import events_at
 from lib.orientation import marked
 from lib.prices import PriceTable, parse_prices
 from lib.pricing import UnpricedError, summarise_transcript
-from lib.rows import ROOT
-from lib.shape import ShapeError, json_lines
-from lib.transcript import (
-    SYNTHETIC_MODEL,
-    TranscriptSources,
-    is_response_record,
-    parse_response,
-    subagents_of,
-)
+from lib.restart import context_of, read_history
+from lib.rows import telemetry_path
+from lib.shape import ShapeError
+from lib.transcript import TranscriptSources, subagents_of
 
 COSTS = Path(__file__).resolve().parent
 PROJECTS = Path.home() / ".claude" / "projects"
@@ -49,31 +44,21 @@ def transcript_of(session_id: str, projects: Path) -> Optional[Path]:
     return found[-1] if found else None
 
 
-def context_now(jsonl: str, label: str) -> Optional[int]:
-    """What the session's own latest response sent — the call running this
-    script is already in the file, with its usage."""
-    latest: Optional[int] = None
-    for where, _, record in json_lines(jsonl, label):
-        if not is_response_record(record):
-            continue
-        response = parse_response(record, where, [])
-        if not response.is_sidechain and response.model != SYNTHETIC_MODEL:
-            latest = response.tokens.context_tokens()
-    return latest
-
-
 def figures(transcript: Path, prices: PriceTable, events: Optional[Path] = None) -> str:
-    main = transcript.read_text(encoding="utf-8")
     cost = summarise_transcript(
-        TranscriptSources(main=main, subagents=subagents_of(transcript)),
+        TranscriptSources(
+            main=transcript.read_text(encoding="utf-8"),
+            subagents=subagents_of(transcript),
+        ),
         prices,
         transcript.stem,
         events=events_at(events) if events is not None else None,
     )
     parts: List[str] = []
-    context = context_now(main, str(transcript))
-    if context is not None:
-        parts.append(f"context {context:,} tokens")
+    # The response that ran this script is already in the file, usage and all.
+    history = read_history(transcript)
+    if history is not None:
+        parts.append(f"context {context_of(history.last):,} tokens")
     spent = f"${cost.total.cost_usd:.2f} spent"
     phase = cost.compactions[-1].reorientation if cost.compactions else cost.orientation
     if phase is not None and phase.ended_by == "oriented":
@@ -95,7 +80,7 @@ def report() -> int:
         return 0
     try:
         prices = parse_prices((COSTS / "prices.json").read_text(encoding="utf-8"))
-        line = figures(transcript, prices, ROOT / "tmp" / "telemetry" / f"{session_id}.jsonl")
+        line = figures(transcript, prices, telemetry_path(session_id))
     except (OSError, ShapeError, UnpricedError) as error:
         # The mark is the call itself and stands; only the figures failed.
         print(f"oriented.py: the mark stands, but the figures failed: {error}", file=sys.stderr)
