@@ -26,6 +26,9 @@ Verified <short-sha> (`<branch>`) against `<base>` @ <base-short-sha> "<base sub
 <If nothing runs on a PR here: "No workflow runs on a PR; this comment is the verification record.">
 ```
 
+Each list line's values are a contract: `.claude/merge-gate/` merges only on
+these exact alternatives, and its test reads them from this template.
+
 `Verified <short-sha>` is the last head step 1 ran on and the marker is the
 final head. They differ only after `@.claude/skills/finalize/base-advanced.md`
 judged a late advance independent, so anything that trusts the attestation as a

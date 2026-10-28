@@ -1,0 +1,94 @@
+{
+  "total": {
+    "inputTokens": 162,
+    "cacheWrite5mTokens": 130345,
+    "cacheWrite1hTokens": 212698,
+    "cacheReadTokens": 13635542,
+    "outputTokens": 67706,
+    "thinkingTokens": 23529,
+    "responses": 81,
+    "costUsd": 6.4351854
+  },
+  "estimate": {
+    "at": "2026-10-28T10:39:50.030Z",
+    "parts": [
+      {
+        "hours": 6.0,
+        "grade": "senior",
+        "role": "developer",
+        "comment": "seven GitHub-side checks, a merge with a head guard, and boundary-mocked tests for each decline; an auto-merge path tolerates no sloppy reading of API fields"
+      }
+    ],
+    "comment": null
+  },
+  "orientation": {
+    "endedBy": "oriented",
+    "endedOn": null,
+    "endedAt": "2026-10-28T10:39:47.836Z",
+    "contextTokens": 108094,
+    "spend": {
+      "inputTokens": 8,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 54339,
+      "cacheReadTokens": 340795,
+      "outputTokens": 721,
+      "thinkingTokens": 66,
+      "responses": 4,
+      "costUsd": 0.517323
+    }
+  },
+  "sessionId": "700ec6ad-745f-56da-9481-5387a23e9ca0",
+  "branch": "claude/merge-gate-hook-k2tzds",
+  "cwd": "/home/user/muthur",
+  "openingPrompt": "/relay take claude/merge-gate-hook-k2tzds — шаг 0 сделан (#237 влит и закрыт), дальше сам гейт по плану через go",
+  "prs": [
+    246
+  ],
+  "url": "https://claude.ai/code/session_01DaohkCY3YE4xygob4Y3pBW",
+  "operator": "vzakharov",
+  "firstResponseAt": "2026-10-28T10:39:33.414Z",
+  "lastResponseAt": "2026-10-28T11:47:47.913Z",
+  "pricesAsOf": "2026-10-06",
+  "claudeCodeTotalUsd": null,
+  "ownTurns": {
+    "inputTokens": 114,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 212698,
+    "cacheReadTokens": 11254280,
+    "outputTokens": 58014,
+    "thinkingTokens": 19450,
+    "responses": 57,
+    "costUsd": 5.113176
+  },
+  "subagents": {
+    "inputTokens": 48,
+    "cacheWrite5mTokens": 130345,
+    "cacheWrite1hTokens": 0,
+    "cacheReadTokens": 2381262,
+    "outputTokens": 9692,
+    "thinkingTokens": 4079,
+    "responses": 24,
+    "costUsd": 1.3220094000000002
+  },
+  "byRate": {
+    "claude-opus-5-5/standard": {
+      "inputTokens": 162,
+      "cacheWrite5mTokens": 130345,
+      "cacheWrite1hTokens": 212698,
+      "cacheReadTokens": 13635542,
+      "outputTokens": 67706,
+      "thinkingTokens": 23529,
+      "responses": 81,
+      "costUsd": 6.4351854
+    }
+  },
+  "warnings": [],
+  "compactions": [],
+  "telemetry": {
+    "events": 80,
+    "matched": 80,
+    "matchedTableUsd": 6.3576626,
+    "matchedEventUsd": 6.3576626,
+    "unseen": {}
+  }
+}

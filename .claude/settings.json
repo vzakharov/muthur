@@ -95,6 +95,11 @@
           },
           {
             "type": "command",
+            "command": "$CLAUDE_PROJECT_DIR/.claude/merge-gate/hooks/merge_gate.py",
+            "timeout": 120
+          },
+          {
+            "type": "command",
             "command": "$CLAUDE_PROJECT_DIR/.claude/keepalive/hooks/keepalive.py"
           }
         ]

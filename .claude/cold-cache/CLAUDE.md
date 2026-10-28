@@ -54,6 +54,9 @@ model.
   `MUTHUR_COLD_CACHE_MARGIN` (default `0.10`) of the re-cache, where the stop
   has no real choice to offer. An unpriced model is still stopped, with the
   token count and, where a resume carried one, Claude Code's own estimate.
+- **A bare `/merge` is the merge gate's** while `.claude/merge-gate/` exists: it
+  runs this guard itself when it declines to merge,
+  `.claude/merge-gate/CLAUDE.md` says why.
 
 `MUTHUR_COLD_CACHE_GUARD=off` in `.claude/settings.local.json`'s `env` disables
 both halves.

@@ -51,7 +51,31 @@ class HookCase(unittest.TestCase):
         return json.loads((self.state / "sess.json").read_text())
 
     def env(self, extra: Optional[Dict[str, str]]) -> Dict[str, str]:
-        return {"PATH": "/usr/bin:/bin", "CLAUDE_PROJECT_DIR": str(self.root), **(extra or {})}
+        path = f"{self.root / 'bin'}:/usr/bin:/bin"
+        return {"PATH": path, "CLAUDE_PROJECT_DIR": str(self.root), **(extra or {})}
+
+    def git(self, *args: str) -> str:
+        return subprocess.run(
+            ["git", "-c", "user.name=t", "-c", "user.email=t@t", *args],
+            cwd=self.root,
+            capture_output=True,
+            text=True,
+            check=True,
+        ).stdout.strip()
+
+    def commit(self) -> str:
+        if not (self.root / ".git").exists():
+            self.git("init", "-q")
+        self.git("commit", "-q", "--allow-empty", "-m", "c")
+        return self.git("rev-parse", "HEAD")
+
+    def pr(self, state: str, tip: str, code: int = 0) -> None:
+        """A `gh` on PATH answering `gh pr view` with this PR, or failing."""
+        bin = self.root / "bin"
+        bin.mkdir(exist_ok=True)
+        answer = json.dumps({"state": state, "headRefOid": tip})
+        (bin / "gh").write_text(f"#!/bin/sh\necho '{answer}'\nexit {code}\n")
+        (bin / "gh").chmod(0o755)
 
     def start_watcher(self) -> "subprocess.Popen[str]":
         return subprocess.Popen(
@@ -188,6 +212,44 @@ class WhenTheWatcherWakesTheSession(HookCase):
         out, _ = self.prompt(self.notice(), renewals)
         self.assertIn("last wake (2 renewals spent)", out)
         self.assertIn("Do not start the watcher again", out)
+
+
+class WhenTheBranchsPrHasLanded(HookCase):
+    def test_no_watcher_is_asked_for(self) -> None:
+        for state in ("MERGED", "CLOSED"):
+            with self.subTest(state=state):
+                self.pr(state, self.commit())
+                self.assertEqual(self.prompt(), ("", ""))
+
+    def test_a_wake_neither_parks_nor_renews(self) -> None:
+        self.session(ago=1)
+        self.pr("MERGED", self.commit())
+        for renewals in ("0", "5"):
+            with self.subTest(renewals=renewals):
+                self.wake()
+                out, _ = self.prompt(self.notice(), {"MUTHUR_CACHE_KEEPALIVE_RENEWALS": renewals})
+                self.assertIn("neither parks the session nor starts a watcher", out)
+                self.assertNotIn("/relay park", out)
+                self.assertNotIn(str(HOOK), out)
+
+    def test_the_answer_is_remembered_for_that_commit(self) -> None:
+        self.pr("MERGED", self.commit())
+        self.prompt()
+        self.pr("OPEN", "", code=1)
+        self.assertEqual(self.prompt(), ("", ""))
+
+    def test_commits_past_the_pr_keep_the_branch_live(self) -> None:
+        tip = self.commit()
+        self.commit()
+        self.pr("MERGED", tip)
+        self.assertIn("start the cache keepalive's watcher", self.prompt()[0])
+
+    def test_an_open_pr_or_a_failing_gh_keeps_the_branch_live(self) -> None:
+        head = self.commit()
+        for state, code in (("OPEN", 0), ("MERGED", 1)):
+            with self.subTest(state=state, code=code):
+                self.pr(state, head, code)
+                self.assertIn("start the cache keepalive's watcher", self.prompt()[0])
 
 
 class TheDeadline(HookCase):
