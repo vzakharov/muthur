@@ -1,0 +1,113 @@
+{
+  "total": {
+    "inputTokens": 75255,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 133906,
+    "cacheReadTokens": 4735142,
+    "outputTokens": 32422,
+    "thinkingTokens": 15116,
+    "responses": 37,
+    "costUsd": 2.6053484
+  },
+  "estimate": {
+    "at": "2026-10-28T09:25:49.395Z",
+    "parts": [
+      {
+        "hours": 1.0,
+        "grade": "senior",
+        "role": "architect",
+        "comment": "weighing a hook that merges outside the agent against the /merge gate needs someone who knows which of the gate's checks are mechanical and which are judgement"
+      }
+    ],
+    "comment": null
+  },
+  "orientation": {
+    "endedBy": "oriented",
+    "endedOn": null,
+    "endedAt": "2026-10-28T09:25:47.254Z",
+    "contextTokens": 104339,
+    "spend": {
+      "inputTokens": 10,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 52053,
+      "cacheReadTokens": 418522,
+      "outputTokens": 1328,
+      "thinkingTokens": 631,
+      "responses": 5,
+      "costUsd": 0.5267284
+    }
+  },
+  "sessionId": "1aa3bb1f-7382-54c7-b402-76e21340a413",
+  "branch": "claude/merge-gate-hook-k2tzds",
+  "cwd": "/home/user/muthur",
+  "openingPrompt": "о, я придумал как нам сделать так, чтобы после \"можешь мерджить\" человеку не нужно было ни в гитхаб ходить, ни агента будить: user submit-хук, который смотрит: …",
+  "prs": [],
+  "url": "https://claude.ai/code/session_01DaohkFbMZ1baY15PNscdFf",
+  "operator": "vzakharov",
+  "firstResponseAt": "2026-10-28T09:25:10.208Z",
+  "lastResponseAt": "2026-10-28T09:34:06.499Z",
+  "pricesAsOf": "2026-10-06",
+  "claudeCodeTotalUsd": null,
+  "ownTurns": {
+    "inputTokens": 70,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 133906,
+    "cacheReadTokens": 4735142,
+    "outputTokens": 28875,
+    "thinkingTokens": 15116,
+    "responses": 35,
+    "costUsd": 2.5960564
+  },
+  "subagents": {
+    "inputTokens": 0,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 0,
+    "cacheReadTokens": 0,
+    "outputTokens": 0,
+    "thinkingTokens": 0,
+    "responses": 0,
+    "costUsd": 0.0
+  },
+  "byRate": {
+    "claude-opus-5-5/standard": {
+      "inputTokens": 70,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 133906,
+      "cacheReadTokens": 4735142,
+      "outputTokens": 28875,
+      "thinkingTokens": 15116,
+      "responses": 35,
+      "costUsd": 2.5960564
+    },
+    "claude-haiku-5-5/standard": {
+      "inputTokens": 75185,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 0,
+      "cacheReadTokens": 0,
+      "outputTokens": 3547,
+      "thinkingTokens": 0,
+      "responses": 2,
+      "costUsd": 0.009292000000000002
+    }
+  },
+  "warnings": [],
+  "compactions": [],
+  "telemetry": {
+    "events": 36,
+    "matched": 34,
+    "matchedTableUsd": 2.5049040000000002,
+    "matchedEventUsd": 2.5049040000000002,
+    "unseen": {
+      "web_fetch_apply": {
+        "inputTokens": 75185,
+        "cacheWrite5mTokens": 0,
+        "cacheWrite1hTokens": 0,
+        "cacheReadTokens": 0,
+        "outputTokens": 3547,
+        "thinkingTokens": 0,
+        "responses": 2,
+        "costUsd": 0.009292000000000002
+      }
+    }
+  }
+}
