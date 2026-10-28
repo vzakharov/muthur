@@ -1,13 +1,13 @@
 {
   "total": {
-    "inputTokens": 58,
-    "cacheWrite5mTokens": 98055,
-    "cacheWrite1hTokens": 76995,
-    "cacheReadTokens": 2983770,
-    "outputTokens": 14593,
-    "thinkingTokens": 5366,
-    "responses": 29,
-    "costUsd": 1.995081
+    "inputTokens": 80,
+    "cacheWrite5mTokens": 98740,
+    "cacheWrite1hTokens": 96185,
+    "cacheReadTokens": 4555886,
+    "outputTokens": 18862,
+    "thinkingTokens": 5560,
+    "responses": 40,
+    "costUsd": 2.551917200000001
   },
   "estimate": {
     "at": "2026-10-28T03:57:41.763Z",
@@ -47,52 +47,54 @@
   "branch": "claude/task-repo-change-contract",
   "cwd": "/home/user/muthur",
   "openingPrompt": "Добавь в скилл task заготовку `.claude/skills/task/repo-change.md` — контракт «скилл, который меняет репо, — работа /task», на который ссылается любой скилл, ос…",
-  "prs": [],
+  "prs": [
+    245
+  ],
   "url": "https://claude.ai/code/session_01DaohkFAwcx3DWHQR4aLZUt",
   "operator": "vzakharov",
   "firstResponseAt": "2026-10-28T03:56:29.913Z",
-  "lastResponseAt": "2026-10-28T04:02:57.696Z",
+  "lastResponseAt": "2026-10-28T04:04:01.226Z",
   "pricesAsOf": "2026-10-06",
   "claudeCodeTotalUsd": null,
   "ownTurns": {
-    "inputTokens": 42,
+    "inputTokens": 62,
     "cacheWrite5mTokens": 0,
-    "cacheWrite1hTokens": 76995,
-    "cacheReadTokens": 2399451,
-    "outputTokens": 10879,
-    "thinkingTokens": 3290,
-    "responses": 21,
-    "costUsd": 1.3135982000000002
+    "cacheWrite1hTokens": 96185,
+    "cacheReadTokens": 3873512,
+    "outputTokens": 14381,
+    "thinkingTokens": 3484,
+    "responses": 31,
+    "costUsd": 1.8320504000000004
   },
   "subagents": {
-    "inputTokens": 16,
-    "cacheWrite5mTokens": 98055,
+    "inputTokens": 18,
+    "cacheWrite5mTokens": 98740,
     "cacheWrite1hTokens": 0,
-    "cacheReadTokens": 584319,
-    "outputTokens": 3714,
+    "cacheReadTokens": 682374,
+    "outputTokens": 4481,
     "thinkingTokens": 2076,
-    "responses": 8,
-    "costUsd": 0.6814827999999999
+    "responses": 9,
+    "costUsd": 0.7198667999999999
   },
   "byRate": {
     "claude-opus-5-5/standard": {
-      "inputTokens": 58,
-      "cacheWrite5mTokens": 98055,
-      "cacheWrite1hTokens": 76995,
-      "cacheReadTokens": 2983770,
-      "outputTokens": 14593,
-      "thinkingTokens": 5366,
-      "responses": 29,
-      "costUsd": 1.995081
+      "inputTokens": 80,
+      "cacheWrite5mTokens": 98740,
+      "cacheWrite1hTokens": 96185,
+      "cacheReadTokens": 4555886,
+      "outputTokens": 18862,
+      "thinkingTokens": 5560,
+      "responses": 40,
+      "costUsd": 2.551917200000001
     }
   },
   "warnings": [],
   "compactions": [],
   "telemetry": {
-    "events": 28,
-    "matched": 28,
-    "matchedTableUsd": 1.9652172,
-    "matchedEventUsd": 1.9652171999999999,
+    "events": 39,
+    "matched": 39,
+    "matchedTableUsd": 2.5147570000000012,
+    "matchedEventUsd": 2.5147570000000012,
     "unseen": {}
   }
 }
