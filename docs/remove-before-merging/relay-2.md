@@ -43,6 +43,21 @@ The operator did not reply; the session was parked by the keepalive's last wake.
    stack landing gains a fourth site to wire — the language's LSP plugin — in
    CLAUDE.md § "Vetting" and `/detemplate`, so an adopter's stack picks its own
    plugin. Verification in a new session on the branch. Asked for a go.
+3. **Operator:** «> settings.json правлю через staged-копию, раз он загружается
+   на каждом ходу — тогда мы не сможем задогфудить» **Agent:** Corrected itself:
+   `.claude/rules/staging.md`'s set is the prompt prefix (root `CLAUDE.md` and
+   imports, unscoped rules, skill descriptions); `settings.json` is read at
+   startup and is not in it, so it is edited in place and is live on the branch.
+   Only the `CLAUDE.md` § "Vetting" line needs a staged copy. Asked for a go.
+4. **Operator:** «ну давай попробуем» **Agent:** Implemented (commits a11c7f3,
+   b2eb8aa, 8e53134): settings `env`/marketplace/`pyright-lsp`;
+   `install-deps.sh` installs `pyright` via `uv tool` where absent;
+   `.claude/rules/stack.md` (path-scoped, edited in place) lists the LSP plugin
+   as the fourth site; staged `CLAUDE.md` § "Vetting" says four sites; G4
+   catalog entries updated. `/detemplate` left unchanged — its Step 7 defers
+   stack wiring to `stack.md`. Vet passes. Started probe session
+   `session_01DaohkFBTd5PxYWvP9jehqg` on the branch to check whether the `LSP`
+   tool appears and works, reporting back here by `send_message`.
 
 ## Intent
 
@@ -52,10 +67,10 @@ trialled on the repo's Python scripts.
 
 ## Decisions
 
-- **Project-level plugin over a per-session install** (proposed, not yet
-  approved): the tool list is fixed at session start, so a mid-session install
-  cannot be trialled here, and a project setting reaches every session with no
-  environment change.
+- **Project-level plugin over a per-session install** (approved, implemented):
+  the tool list is fixed at session start, so a mid-session install cannot be
+  trialled here, and a project setting reaches every session with no environment
+  change.
 
 ## Errors and dead ends
 
@@ -68,9 +83,11 @@ trialled on the repo's Python scripts.
 
 ## State
 
-- Branch `claude/lsp-tool-trial-dra5wk`, no PR. Commits beyond `main`: only the
-  relay summaries.
-- No plan file. Nothing running; keepalive stopped by the park.
+- Branch `claude/lsp-tool-trial-dra5wk`, no PR. Implementation pushed (head
+  8e53134 before this summary); `CLAUDE.md` staged
+  (`.claude/staged/CLAUDE.md.staged`).
+- No plan file. Probe session `session_01DaohkFBTd5PxYWvP9jehqg` running; its
+  report arrives here as a cross-session message.
 - Environment `env_01Xg9JSSbzPCQgWZzAGCtGhK`: `ENABLE_LSP_TOOL=1`,
   `pyright-langserver` at `/root/.local/bin/`, no LSP plugin.
 - Estimate: this session 0.5 h senior developer — "establishing that the flag
@@ -89,11 +106,11 @@ trialled on the repo's Python scripts.
 
 ## Next step
 
-Wait for the operator: the adopter-shaped design in conversation item 2
-(settings `env` + marketplace + `pyright-lsp`; binary in `install-deps.sh`; LSP
-plugin as a fourth stack-landing site in CLAUDE.md § "Vetting" and
-`/detemplate`) awaits their go. Operator's framing: «мы же хотим сделать не
-только для себя, но и для адоптеров».
+Read the probe session's report (`list_events` on
+`session_01DaohkFBTd5PxYWvP9jehqg` if its message did not arrive). If the `LSP`
+tool works, report to the operator and continue `/go`'s tail (`/polish`, then
+`/pr`); if not, diagnose from the report and fix the wiring. Operator's go: «ну
+давай попробуем».
 
 ## Last agent turn
 
