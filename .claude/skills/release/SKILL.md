@@ -59,6 +59,13 @@ not a gate.
 Whether the agent bumps the version or the operator does. If the agent does, say
 what stops two concurrent releases from claiming the same number.
 
+### Its deviations from the task route
+
+The bump and the notes are work left in the repo, so a release runs the route
+`@.claude/skills/task/repo-change.md` gives such a skill. Name what this one
+does differently — the release branch it cuts, the PR shape it opens, the merge
+that arms or ships — and nothing else.
+
 ## Related
 
 Once hydrated, `/squash-message` already accommodates a release: its Step 3

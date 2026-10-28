@@ -12,7 +12,8 @@ and hydrating what the new project actually needs.
 diff over a tree nobody has reviewed, and reviewing it as a diff is what catches
 a bad call before anything is deleted. So this skill's end state is `/plan`'s: a
 plan file published as a draft PR, and a copyable `/go <branch>` for the session
-that executes it.
+that executes it — `@.claude/skills/task/repo-change.md`'s route, with `/task`'s
+call made in advance: always plan and hand off.
 
 The brief is the argument. It fills `CLAUDE.md` § "About this project"'s stub,
 drives the group decisions — a CLI tool keeps different groups than a deployed

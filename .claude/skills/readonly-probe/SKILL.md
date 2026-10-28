@@ -40,6 +40,10 @@ person with the same question doesn't re-run it. Put it under
 `docs/remove-before-merging/` if it rides a branch, so `/finalize` sweeps it
 before merge.
 
+That commit makes the probe `@.claude/skills/task/repo-change.md`'s case: a
+hydrated version names its deviations from that route — riding the branch whose
+question it answers rather than opening a PR of its own, say — and only those.
+
 ### Sampling honesty
 
 Say how many rows were examined and over what period. "Users often do X" from a
