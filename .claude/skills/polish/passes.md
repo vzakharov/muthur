@@ -128,11 +128,11 @@ git diff "$T" HEAD
 **Not `git diff <floor>..HEAD`.** A branch that merges its base after the floor
 carries everything the base landed in between, which the base's own PRs already
 polished. The virtual merge puts that work below the line too, so what remains
-is the branch's own commits since the floor plus the merge's conflict
-resolutions — text written at merge time that nobody has polished. Where the
-real merge conflicted, `T` holds the conflict markers and the diff shows the
-resolution against them. With no base merge since the floor, `T` is the floor's
-own tree.
+is the branch's own commits since the floor, on either side of the merge, plus
+the merge's conflict resolutions — text written at merge time that nobody has
+polished. Where the real merge conflicted, `T` holds the conflict markers and
+the diff shows the resolution against them. With no base merge since the floor,
+`T` is the floor's own tree.
 
 `merge-tree` exits 1 on a conflict, which is the case the recipe exists for, so
 the pipe keeps that status from aborting the run — and the same 1 is what it
