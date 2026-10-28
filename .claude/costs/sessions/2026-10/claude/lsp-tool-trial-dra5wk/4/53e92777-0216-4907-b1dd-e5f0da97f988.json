@@ -1,0 +1,75 @@
+{
+  "total": {
+    "inputTokens": 12,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 29628,
+    "cacheReadTokens": 287166,
+    "outputTokens": 2050,
+    "thinkingTokens": 122,
+    "responses": 6,
+    "costUsd": 0.33550520000000006
+  },
+  "estimate": null,
+  "orientation": {
+    "endedBy": "oriented",
+    "endedOn": null,
+    "endedAt": "2026-10-28T04:46:48.032Z",
+    "contextTokens": 50750,
+    "spend": {
+      "inputTokens": 0,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 0,
+      "cacheReadTokens": 0,
+      "outputTokens": 0,
+      "thinkingTokens": 0,
+      "responses": 0,
+      "costUsd": 0.0
+    }
+  },
+  "sessionId": "53e92777-0216-4907-b1dd-e5f0da97f988",
+  "branch": "claude/lsp-tool-trial-dra5wk",
+  "cwd": "/home/user/muthur",
+  "openingPrompt": "Use the LSP tool (load it with ToolSearch if deferred) on scripts/relay-last-reply.py: run documentSymbol, then goToDefinition and findReferences on one functio…",
+  "prs": [],
+  "url": null,
+  "operator": "vzakharov",
+  "firstResponseAt": "2026-10-28T04:46:48.032Z",
+  "lastResponseAt": "2026-10-28T04:47:08.553Z",
+  "pricesAsOf": "2026-10-06",
+  "claudeCodeTotalUsd": null,
+  "ownTurns": {
+    "inputTokens": 12,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 29628,
+    "cacheReadTokens": 287166,
+    "outputTokens": 2050,
+    "thinkingTokens": 122,
+    "responses": 6,
+    "costUsd": 0.33550520000000006
+  },
+  "subagents": {
+    "inputTokens": 0,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 0,
+    "cacheReadTokens": 0,
+    "outputTokens": 0,
+    "thinkingTokens": 0,
+    "responses": 0,
+    "costUsd": 0.0
+  },
+  "byRate": {
+    "claude-opus-5-5/standard": {
+      "inputTokens": 12,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 29628,
+      "cacheReadTokens": 287166,
+      "outputTokens": 2050,
+      "thinkingTokens": 122,
+      "responses": 6,
+      "costUsd": 0.33550520000000006
+    }
+  },
+  "warnings": [],
+  "compactions": [],
+  "telemetry": null
+}
