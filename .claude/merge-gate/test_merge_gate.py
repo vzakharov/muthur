@@ -320,6 +320,12 @@ class ColdCache(GateCase):
         self.github.routes[f"compare/main...{HEAD}"] = {"behind_by": 1}
         self.assertEqual(self.prompt(), {"decision": "block", "reason": "🪫 PROMPT CACHE EXPIRED."})
 
+    def test_the_real_guard_reads_the_same_marker_and_command(self) -> None:
+        """Neither hook can import the other, so the shared names are pinned as text."""
+        source = (ROOT / gate.COLD_CACHE).read_text()
+        self.assertIn(f'MERGE_GATE_DECLINED = "{gate.DECLINED}"', source)
+        self.assertIn(f'MERGE = "{gate.COMMAND}"', source)
+
     def test_a_merge_does_not_run_the_guard(self) -> None:
         self.guard(json.dumps({"decision": "block", "reason": "stop"}))
         out = self.prompt()
