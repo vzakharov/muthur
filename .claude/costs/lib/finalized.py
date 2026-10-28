@@ -13,13 +13,12 @@ import re
 from pathlib import Path
 from typing import Optional, Tuple
 
+from lib.attestation import MARKER
 from lib.github import Client, GitHubError
 from lib.ledger_branch import PREFIX, resolve, run
 from lib.rows import ROOT
 from lib.shape import ShapeError, read_object, required
 
-# `revoked` and a marker with no SHA are attestations that no longer hold.
-MARKER = re.compile(r"<!-- finalize-attestation(?: ([0-9a-f]{40}|revoked))? -->")
 ORIGIN = re.compile(r"([^/:]+)/([^/]+?)(?:\.git)?/?$")
 
 QUERY = """
