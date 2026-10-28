@@ -1,13 +1,13 @@
 {
   "total": {
-    "inputTokens": 75355,
+    "inputTokens": 75363,
     "cacheWrite5mTokens": 0,
-    "cacheWrite1hTokens": 209661,
-    "cacheReadTokens": 15917842,
-    "outputTokens": 62026,
-    "thinkingTokens": 20812,
-    "responses": 87,
-    "costUsd": 6.040408399999998
+    "cacheWrite1hTokens": 214183,
+    "cacheReadTokens": 16963254,
+    "outputTokens": 64281,
+    "thinkingTokens": 21348,
+    "responses": 91,
+    "costUsd": 6.330798799999998
   },
   "estimate": {
     "at": "2026-10-28T10:34:24.388Z",
@@ -48,23 +48,24 @@
   "cwd": "/home/user/muthur",
   "openingPrompt": "о, я придумал как нам сделать так, чтобы после \"можешь мерджить\" человеку не нужно было ни в гитхаб ходить, ни агента будить: user submit-хук, который смотрит: …",
   "prs": [
+    237,
     246
   ],
   "url": "https://claude.ai/code/session_01DaohkFbMZ1baY15PNscdFf",
   "operator": "vzakharov",
   "firstResponseAt": "2026-10-28T09:25:10.208Z",
-  "lastResponseAt": "2026-10-28T10:36:39.644Z",
+  "lastResponseAt": "2026-10-28T10:37:33.282Z",
   "pricesAsOf": "2026-10-06",
   "claudeCodeTotalUsd": null,
   "ownTurns": {
-    "inputTokens": 170,
+    "inputTokens": 178,
     "cacheWrite5mTokens": 0,
-    "cacheWrite1hTokens": 209661,
-    "cacheReadTokens": 15917842,
-    "outputTokens": 58479,
-    "thinkingTokens": 20812,
-    "responses": 85,
-    "costUsd": 6.031116399999998
+    "cacheWrite1hTokens": 214183,
+    "cacheReadTokens": 16963254,
+    "outputTokens": 60734,
+    "thinkingTokens": 21348,
+    "responses": 89,
+    "costUsd": 6.321506799999999
   },
   "subagents": {
     "inputTokens": 0,
@@ -78,14 +79,14 @@
   },
   "byRate": {
     "claude-opus-5-5/standard": {
-      "inputTokens": 170,
+      "inputTokens": 178,
       "cacheWrite5mTokens": 0,
-      "cacheWrite1hTokens": 209661,
-      "cacheReadTokens": 15917842,
-      "outputTokens": 58479,
-      "thinkingTokens": 20812,
-      "responses": 85,
-      "costUsd": 6.031116399999998
+      "cacheWrite1hTokens": 214183,
+      "cacheReadTokens": 16963254,
+      "outputTokens": 60734,
+      "thinkingTokens": 21348,
+      "responses": 89,
+      "costUsd": 6.321506799999999
     },
     "claude-haiku-5-5/standard": {
       "inputTokens": 75185,
@@ -101,10 +102,10 @@
   "warnings": [],
   "compactions": [],
   "telemetry": {
-    "events": 87,
-    "matched": 85,
-    "matchedTableUsd": 6.031116399999998,
-    "matchedEventUsd": 6.031116399999998,
+    "events": 90,
+    "matched": 88,
+    "matchedTableUsd": 6.251055199999999,
+    "matchedEventUsd": 6.251055199999999,
     "unseen": {
       "web_fetch_apply": {
         "inputTokens": 75185,

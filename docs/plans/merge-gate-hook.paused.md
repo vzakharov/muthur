@@ -1,5 +1,16 @@
 # Merge gate: a bare `/merge` lands a finalized PR without waking the agent
 
+## Progress
+
+- **Done: Step 0.** fa45843 merges #237's branch in, and 6e1a3c4 resolves its
+  two conflicts: the G10 catalog entry and the squash proposal. The keepalive
+  and cold-cache tests pass on the merged tree. #237 is closed with a comment
+  pointing here.
+- **Left: everything from § "Design" on.** That is the gate itself
+  (`.claude/merge-gate/`), the cold-cache deferral, the `awaiting_rows()`
+  extraction, the wiring and the tests. After that come `/go` Step 3 (`/polish`)
+  and Step 4 (`/pr` refresh).
+
 ## Goal
 
 When the operator types exactly `/merge` and the branch's PR passes every
