@@ -7,7 +7,7 @@ feat: a bare /merge lands a finalized PR without waking the agent (#246)
 ```
 Landing a finalized PR took a model turn: the operator typed /merge,
 and the agent re-read a cold conversation to run checks that were
-already mechanical. A UserPromptExpansion hook now takes a bare /merge
+already mechanical. A UserPromptSubmit hook now takes a bare /merge
 first. When the PR passes every mechanical condition of the /merge
 gate, the hook squash-merges it with the proposed title and body and
 blocks the prompt with the merged SHA. No model request is made.
@@ -17,14 +17,13 @@ all-green attestation; a head past it only by ledger rows; a base that
 has not advanced; a clean merge state with every check passed; no
 feedback awaiting an answer; and a squash record that reads back. The
 merge pins the head commit it checked. Any failure or error passes the
-prompt through to the agent with the reason as context, and /merge
-runs with judgement as before.
+prompt through untouched, and the agent's /merge runs with judgement
+as before.
 
-UserPromptSubmit finishes before UserPromptExpansion starts, so the
-cold-cache guard lets a bare /merge through to the gate, and the gate
-runs the guard's price stop itself when it declines. After a merge,
-the next operator prompt tells the agent the PR landed, and the
-keepalive's wake answers in one line instead of parking the session.
+Hooks of one event run in parallel, so the cold-cache guard lets a
+bare /merge through and the gate runs the guard's price stop itself
+when it declines. After a merge, the next prompt tells the agent the
+PR landed.
 
 Co-authored-by: Claude <noreply@anthropic.com>
 ```

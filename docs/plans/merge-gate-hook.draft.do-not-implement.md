@@ -15,26 +15,18 @@ so the operator does not have to open GitHub, and the cache is never re-written
 for a click. If any condition fails, or anything errors, the hook steps aside:
 the prompt reaches the agent, which runs `/merge` and applies judgement.
 
-Operator's decisions (session, 2026-10-28): the trigger is a bare `/merge` only;
-a decline passes the prompt to the agent without bothering the operator.
+Operator's decisions (session, 2026-10-28):
 
-## What the probe established
+- the trigger is a bare `/merge` only;
+- a decline passes the prompt to the agent silently, with no context added,
+  since to the agent it is an ordinary `/merge` either way;
+- the gate sits on `UserPromptSubmit`, the first event a prompt reaches, so a
+  mergeable PR is merged before anything else gets a say.
 
-These were checked on `claude` 2.1.312 with a throwaway project in the
-scratchpad, logging both events:
-
-- **`UserPromptSubmit` runs first and finishes before `UserPromptExpansion`
-  starts**, even with a 2 s sleep in the submit hook. A submit-side `block`
-  means the expansion never fires.
-- **The expansion event for a bare `/merge` carries `command_name: "merge"` and
-  `command_args: ""`**, plus the common fields (`session_id`, `transcript_path`,
-  `scratchpad_dir`, `prompt`).
-- **A `decision: "block"` there makes no API request** (`total_cost_usd: 0`,
-  `num_turns: 0`). `hookSpecificOutput.suppressOriginalPrompt: true` drops the
-  `Original prompt: /merge` tail from the message.
-- Hooks registered for one event run in parallel, per
-  code.claude.com/docs/en/hooks. The design does not depend on this, because the
-  two hooks it has to order sit on different events.
+A probe on `claude` 2.1.312 confirmed that a hook's `decision: "block"` makes no
+API request (`total_cost_usd: 0`, `num_turns: 0`). It also confirmed that
+`hookSpecificOutput.suppressOriginalPrompt: true` drops the
+`Original prompt: /merge` tail from the block message.
 
 ## Design
 
@@ -42,15 +34,12 @@ scratchpad, logging both events:
 
 The layout copies the cold-cache guard: `.claude/merge-gate/` holding
 `hooks/merge_gate.py` (stdlib only, Python 3.9+), `test_merge_gate.py`, and a
-`CLAUDE.md` that carries the contract. Registration in `.claude/settings.json`:
+`CLAUDE.md` that carries the contract. It is registered in
+`.claude/settings.json` under `UserPromptSubmit` with `timeout: 120`, because a
+merge plus the feedback export takes longer than the 30 s default.
 
-- **`UserPromptExpansion`, matcher `merge`, `timeout: 120`**: the gate. A merge
-  plus the feedback export takes longer than the 30 s default.
-- **`UserPromptSubmit`**: the after-merge note (§ "After a merge"). It only adds
-  context, so running in parallel with the other submit hooks is harmless.
-
-The gate acts only when `command_name == "merge"` and `command_args.strip()` is
-empty. Any argument, such as `/merge #12` or `/merge no vet`, goes to the agent.
+The gate acts only when `prompt.strip() == "/merge"`. Any argument, such as
+`/merge #12` or `/merge no vet`, goes to the agent.
 
 ### The checks
 
@@ -107,55 +96,38 @@ merge, the gate declines like any other failed check.
 
 ### Declining
 
-**A decline passes the prompt through and tells the agent why.** It produces no
-block, and its `additionalContext` reads, for example: "The merge gate declined
-a bare `/merge`: check 4, base advanced 1faba97..0345136". The operator never
-sees it. It gives `/merge` a head start, and it shows which check fires in
-practice.
-
-The same path takes an exception in the gate. This is not a swallowed error: the
-error is handed to the agent as context, and `/merge` then does the work the
-gate could not.
+**A decline prints nothing, so the prompt reaches the agent as typed.** The same
+path takes an exception in the gate, whose traceback goes to stderr. This is not
+a swallowed error, because the gate is an optional fast path in front of
+`/merge`. The agent's `/merge` re-checks everything the gate checked and runs
+into the same failure, which it reports.
 
 ### After a merge
 
 The gate blocks with the merged line and `suppressOriginalPrompt`, and writes
 `tmp/merge-gate/<session>.json` (`pr`, `base`, `sha`). A blocked prompt never
 reaches the model, so the next turn would otherwise start unaware that the PR
-had landed. The next **operator** prompt, meaning one not carrying the
-keepalive's `Cache keepalive` mark, makes the submit half add one line of
-context ("Before this prompt, the merge gate squash-merged #<n> into <base> at
-<sha>; the PR is no longer a place to do work"). It then deletes the record.
+had landed. The next prompt that does not carry the keepalive's
+`Cache keepalive` mark makes the gate add one line of context ("Before this
+prompt, the merge gate squash-merged #<n> into <base> at <sha>; the PR is no
+longer a place to do work"). It then deletes the record.
 
 ### The cold-cache guard
 
-Submit runs before expansion, so without a change the cold-cache guard would
-stop `/merge` before the gate ever ran. That would hit the very prompt most
-often sent after a long gap, the operator back from review. So:
+Hooks of one event run in parallel (code.claude.com/docs/en/hooks), so the
+cold-cache guard cannot know whether the gate merged. If both acted on a bare
+`/merge`, a merged prompt could come back with a price stop beside it. So the
+gate owns both outcomes:
 
-- **`cold_cache.py` lets a bare `/merge` through at submit while
+- **`cold_cache.py` passes a bare `/merge` while
   `.claude/merge-gate/hooks/merge_gate.py` exists.** A repository that removes
   the gate gets the guard back on `/merge` without editing anything.
 - **On a decline, the gate runs the guard itself.** It loads `cold_cache.py` by
-  path, the way the ledger's lib is reached, calls its `on_prompt` with the
-  expansion event, and blocks with the guard's stop when the guard would. A
-  declined `/merge` on a cold cache therefore gets the same price stop as any
-  other prompt, and the guard's `!` resends `/merge` to the agent. A merged one
+  path, the way the ledger's lib is reached, calls its `on_prompt` with the same
+  event, and blocks with the guard's stop when the guard would. A declined
+  `/merge` on a cold cache therefore gets the same price stop as any other
+  prompt, and the guard's `!` resends `/merge` to the agent. A merged one
   re-caches nothing and needs no stop.
-
-### The keepalive
-
-A watcher started before the merge still wakes later and parks a session whose
-PR has landed, spending a full-context summary on nothing. While
-`tmp/merge-gate/<session>.json` exists, `keepalive.py`'s wake context therefore
-asks for one line ("PR merged; nothing to keep warm"), with no watcher and no
-`/relay park`.
-
-### `/merge`'s side
-
-Add one line to the body of `.claude/skills/merge/SKILL.md`: a bare `/merge`
-that reaches the skill is one the gate declined, and the decline reason is in
-context. The description stays as it is, so nothing needs staging.
 
 ## Wiring
 
@@ -172,7 +144,7 @@ context. The description stays as it is, so nothing needs staging.
 The tests mock `gh` and the GitHub client at the boundary: `lib.github.Client`
 takes a transport. They cover:
 
-- each of the seven checks declining on its own, with its reason in the context;
+- each of the seven checks declining on its own, with no output;
 - a full pass that runs `gh pr merge` with the exact subject, body file and
   `--match-head-commit`;
 - a refused merge, which declines;
@@ -180,10 +152,9 @@ takes a transport. They cover:
 - the attestation parser against every alternative in `attest.md`'s fenced
   templates, read from that file, so the template and the parser cannot drift
   apart unnoticed;
-- the cold-cache handoff in both directions: a pass at submit, and a stop on a
-  declined `/merge` with a cold cache;
-- the after-merge note delivered once, and not consumed by a keepalive wake;
-- the keepalive's wake context while a merge record exists.
+- the cold-cache handoff in both directions: the guard passes a bare `/merge`,
+  and the gate returns the guard's stop on a decline with a cold cache;
+- the after-merge note delivered once, and not consumed by a keepalive wake.
 
 ## DRY notes
 
@@ -208,20 +179,28 @@ takes a transport. They cover:
   prose in `merge.md` § "Merging" and as code in the gate. The gate's
   `CLAUDE.md` names `merge.md` as the home, so a change there reaches the gate.
 
+## Out of scope
+
+**The keepalive parks a session whose PR has landed.** This happens today after
+an agent-run `/merge` too: that turn ends by starting a watcher, and the
+watcher's wake an hour later spends a full-context summary on a finished branch.
+It is the keepalive's gap rather than this feature's, so it is tracked on its
+own rather than patched here for gate merges only.
+
 ## Open questions
 
 Each one has a recommendation, and the plan above is written with it in force.
 
-1. **Should the decline reason go to the agent as context?**
-   - (a, recommended) Yes. The operator never sees it either way.
-   - (b) No, a fully silent pass-through.
-2. **Should the keepalive skip the park after a merge?**
-   - (a, recommended) Yes, at the cost of one more file read in `keepalive.py`.
-   - (b) Leave it: the next wake parks a merged session.
-3. **A `no vet` attestation:**
-   - (a, recommended) Decline, and let the agent check the precondition.
-   - (b) Merge on it as on a full one.
-4. **`/test-on-gh is an unhydrated stub` on the buckets line:**
-   - (a, recommended) Passes. Every attestation in this repo carries it, and
-     `/merge` merges on it in practice.
-   - (b) Declines, by the letter of "undispatched for any other reason".
+1. **A PR finalized with `/finalize no vet`**, the mode for changes with no code
+   to check, where the vet run is skipped. `/merge` asks the agent to confirm
+   that skipping was right for this diff, which is a judgement.
+   - (a, recommended) The gate leaves these PRs to the agent.
+   - (b) The gate trusts the mode and merges.
+2. **The attestation line
+   `CI-only buckets — /test-on-gh is an unhydrated stub`.** It means the project
+   has no CI-only tests set up, and every attestation in this repo carries it.
+   Read literally, `/merge` stands down on any bucket left undispatched for a
+   reason other than "the diff doesn't reach it", which would leave the gate
+   never merging here.
+   - (a, recommended) The line counts as green.
+   - (b) The line declines.
