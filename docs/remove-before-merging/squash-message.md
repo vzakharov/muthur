@@ -11,9 +11,14 @@ The watcher now starts as the turn's first action, so the reply is the
 turn's final text with no instruction needed to hold it there. This is
 sound because the watcher re-reads the transcript whenever it changes,
 so its deadline follows the turn's last response wherever in the turn
-it started; a test pins that a response written after the watcher
-starts replaces its deadline. The renewal wake already ran in this
-order.
+it started. The accepted cost: its lifetime counts from its start under
+the two-hour Bash cap, so a turn over about an hour gets one early wake.
+
+Starting first means the start is decided before the turn knows how it
+ends. A park ask is visible up front, so the instruction skips the
+watcher for it as for a stop; a merge or a handoff is not, so
+/finalize's merge and /relay's handoff TaskStop a running watcher, as
+/relay park already did.
 
 Co-authored-by: Claude <noreply@anthropic.com>
 ```
