@@ -181,11 +181,10 @@ takes a transport. They cover:
 
 ## Out of scope
 
-**The keepalive parks a session whose PR has landed.** This happens today after
-an agent-run `/merge` too: that turn ends by starting a watcher, and the
-watcher's wake an hour later spends a full-context summary on a finished branch.
-It is the keepalive's gap rather than this feature's, so it is tracked on its
-own rather than patched here for gate merges only.
+**The keepalive parking a session whose PR has landed** is
+vzakharov/muthur#237's. Its wake finds no live watcher, asks `gh pr view`, and
+skips the park on a merged PR, which covers a gate merge as it covers an
+agent-run `/merge`. The gate needs nothing of its own for it.
 
 ## Open questions
 
