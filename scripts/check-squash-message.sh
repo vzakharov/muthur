@@ -15,7 +15,7 @@
 #   scripts/check-squash-message.sh [<path-to-proposal>]
 #
 # With no argument the proposal is located by the ladder in `resolve_source`,
-# because `/finalize` sweeps `docs/remove-before-merging/` before a re-vet can
+# because `/finalize` sweeps the branch's working directory before a re-vet can
 # run and the file is usually already gone by the time this executes. Finding
 # nothing is normal — every lane that vets before `/squash-message` has run has
 # no proposal — so that case reports the absence and passes.
@@ -40,7 +40,6 @@ TITLE_MAX_CHARS=80
 BODY_MAX_LINES=40
 BODY_MAX_WIDTH=72
 
-TRACKED_PATH="docs/remove-before-merging/squash-message.md"
 TMP_PATH="tmp/squash-message.md"
 
 NL='
@@ -80,6 +79,12 @@ cleanup() {
   [ -z "$TMPFILE" ] || rm -f "$TMPFILE"
 }
 trap cleanup EXIT HUP INT TERM
+
+# The branch's own working directory, so a bite measures its draft rather than
+# the elephant's it inherited; the shared root is the fallback outside a branch.
+WORK_DIR=$([ "$IN_REPO" -eq 0 ] || "$REPO_ROOT/scripts/working-dir.sh" 2>/dev/null) || true
+WORK_DIR=${WORK_DIR:-docs/remove-before-merging}
+TRACKED_PATH="$WORK_DIR/squash-message.md"
 
 # Bounds the history rung to this branch's own commits. `origin/HEAD` is absent
 # from a clone made without it — agent sessions get one of those — hence the

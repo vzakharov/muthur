@@ -1,13 +1,13 @@
 # Picking the working file when neither is on disk
 
 Loaded by `@.claude/skills/squash-message/SKILL.md` Step 2 when
-`docs/remove-before-merging/squash-message.md` is **not** on the branch. Absence
+`$(scripts/working-dir.sh)/squash-message.md` is **not** on the branch. Absence
 has two causes, and the PR's draft state tells them apart.
 
 ## Draft PR — nothing has been created yet
 
 A **draft** PR has not been through a finalize, so absence means
-not-yet-created: make `docs/remove-before-merging/squash-message.md` (create the
+not-yet-created: make `$(scripts/working-dir.sh)/squash-message.md` (create the
 tree; it carries no `.gitkeep`, since `git rm -r` is the sweep). This is the
 first creation, at PR-open. Step 5 commits and pushes it.
 
@@ -18,7 +18,7 @@ history tells them apart. If the branch ever carried the file, a finalize swept
 it — so **restore it** instead of starting over:
 
 ```bash
-P=docs/remove-before-merging/squash-message.md
+P=$(scripts/working-dir.sh)/squash-message.md
 DEL=$(git log --diff-filter=D -1 --format=%H -- "$P")
 mkdir -p "$(dirname "$P")" && git show "$DEL^:$P" > "$P"
 ```

@@ -48,6 +48,20 @@ rename and report what you did. The PR-handling below runs automatically without
 a confirmation gate. (This "never ask" rule governs _how_ to rename — don't
 prompt; the check above governs _whether_ there's anything to rename.)
 
+## The working directory moves with the branch
+
+`scripts/working-dir.sh` names the branch's folder under
+`docs/remove-before-merging/` after the branch, so a renamed branch would look
+for its squash draft and relay summaries where none are. Right after
+`git branch -m`, before the push, move them and commit — a no-op where both
+paths are the shared folder, as under `MUTHUR_ELEPHANT_BITE_PRS=off`:
+
+```bash
+old=$(scripts/working-dir.sh <old>) new=$(scripts/working-dir.sh)
+[ "$old" = "$new" ] || [ ! -d "$old" ] || { mkdir -p "$(dirname "$new")" && git mv "$old" "$new" &&
+  git commit -m "chore: move the working directory to the renamed branch's"; }
+```
+
 ## Caveat: renaming kills an existing PR
 
 If a PR is already open on the branch being renamed, renaming it (whether via

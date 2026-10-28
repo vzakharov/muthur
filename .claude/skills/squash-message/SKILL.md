@@ -98,16 +98,17 @@ already equals the drafted title: the squash box prefills the commit's subject
 there, so the comment opens with a block holding `<title> (#<n>)` to paste over
 it. The count is the PR's as this run sees it, and every reconcile recounts.
 
-**Which file: presence decides.** If
-`docs/remove-before-merging/squash-message.md` is on the branch, that is the
-working file, and it is a **live doc, not a blank sheet**: what's already in it
-— earlier wording, the operator's edits, whatever a previous run settled on — is
-the starting point, and this run edits it in light of what has changed since.
-Step 5 commits and pushes it. The path is a tripwire: the tree's name states its
-whole contract, and `/finalize` sweeps it once CI is green, so the proposal's
-own source never rides the squash onto the base branch. The sweep is the last
-thing that happens to it, after that run's own reconcile — so even the final
-edit, the one that becomes the permanent record, is made with the doc in hand.
+**Which file: presence decides.** The tracked path is
+`$(scripts/working-dir.sh)/squash-message.md`, in the branch's own working
+directory. If it is on the branch, that is the working file, and it is a **live
+doc, not a blank sheet**: what's already in it — earlier wording, the operator's
+edits, whatever a previous run settled on — is the starting point, and this run
+edits it in light of what has changed since. Step 5 commits and pushes it. The
+path is a tripwire: the tree's name states its whole contract, and `/finalize`
+sweeps it once CI is green, so the proposal's own source never rides the squash
+onto the base branch. The sweep is the last thing that happens to it, after that
+run's own reconcile — so even the final edit, the one that becomes the permanent
+record, is made with the doc in hand.
 
 **Absent → load `@.claude/skills/squash-message/working-file.md`**, which picks
 the file and says whether there is prior text to start from. Absence has two
@@ -327,7 +328,7 @@ yourself.
 
 Split by which working file Step 2 selected:
 
-- **Tracked file** → `git add docs/remove-before-merging/squash-message.md`,
+- **Tracked file** → `git add "$(scripts/working-dir.sh)/squash-message.md"`,
   commit with a `docs:` subject (e.g. `docs: refresh squash proposal for pr #N`)
   and push. Commit nothing when the edit left the content unchanged. **Never
   amend or force-push**: the operator follows this file's history to see how the

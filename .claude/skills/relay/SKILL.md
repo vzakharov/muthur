@@ -54,10 +54,10 @@ sessions each claiming the whole job would count it twice.
 
 ### Step 2 — Write the summary
 
-Walk the conversation in order first, then write
-`docs/remove-before-merging/relay-<N>.md`, `<N>` one past the highest the branch
-has ever held, deleted ones included, or else 1 —
-`git log --format= --name-only -- 'docs/remove-before-merging/relay-*.md' | sort -V | tail -1`
+Walk the conversation in order first, then write `relay-<N>.md` in the branch's
+own working directory, `$(scripts/working-dir.sh)`, `<N>` one past the highest
+the branch has ever held there, deleted ones included, or else 1 —
+`git log --format= --name-only -- "$(scripts/working-dir.sh)/relay-*.md" | sort -V | tail -1`
 names it, `-V` because otherwise `relay-10` sorts before `relay-9` — run
 `python3 scripts/relay-last-reply.py <that file>`, and commit and push it. A
 session holds one summary, under one name for good: parking again after its
@@ -234,7 +234,7 @@ the context the relay was run to free.
    this session's estimate, set before anything else. **That file gone from
    disk** means `/finalize` swept it, leaving no current summary: report that,
    with the commit
-   `git log -1 --format=%h --diff-filter=D -- 'docs/remove-before-merging/relay-*.md'`
+   `git log -1 --format=%h --diff-filter=D -- "$(scripts/working-dir.sh)/relay-*.md"`
    names, and the branch's state in a few lines, dispatch any follow-up the
    operator's own words carry, and otherwise stop.
 3. **Dispatch on its Next step:**

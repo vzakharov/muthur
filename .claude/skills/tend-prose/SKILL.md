@@ -360,7 +360,7 @@ The sweep belongs to lens 4 and runs wherever it does. It also runs after a
 
 - **Commit messages and PR bodies** — narrating the branch is their job.
 - **`docs/plans/*.md`** — transient by nature, swept at finalize.
-- **`docs/remove-before-merging/squash-message.md`** — a commit body, and
+- **`docs/remove-before-merging/**/squash-message.md`\*\* — a commit body, and
   transient by nature.
 - **CHANGELOG / release-notes files** — a dated record of changes is the point.
 - **Deliberately thorough reference prose** — length carrying rationale the
