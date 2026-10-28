@@ -7,8 +7,9 @@ the floor, the range carried every commit the base landed in between.
 
 The scope is now HEAD against a virtual merge of the floor with the
 base commit the branch has taken in (`git merge-tree --write-tree`).
-What remains is the branch's own work since the floor plus the merge's
-conflict resolutions, which nobody has polished; the diff shows them
+What remains is the branch's own work since the floor, on either side
+of the merge, plus the merge's conflict resolutions, which nobody has
+polished; the diff shows the resolutions
 against the conflict markers. With no base merge since the floor, the
 virtual merge is the floor's own tree.
 
