@@ -1,13 +1,13 @@
 {
   "total": {
-    "inputTokens": 40,
-    "cacheWrite5mTokens": 91800,
-    "cacheWrite1hTokens": 59393,
-    "cacheReadTokens": 1747753,
-    "outputTokens": 7935,
-    "thinkingTokens": 1982,
-    "responses": 20,
-    "costUsd": 1.4425546
+    "inputTokens": 58,
+    "cacheWrite5mTokens": 92393,
+    "cacheWrite1hTokens": 81197,
+    "cacheReadTokens": 2883615,
+    "outputTokens": 11996,
+    "thinkingTokens": 2304,
+    "responses": 29,
+    "costUsd": 1.9284159999999997
   },
   "estimate": {
     "at": "2026-10-28T02:50:41.540Z",
@@ -47,52 +47,54 @@
   "branch": "fix/pr-comment-approval-by-substance",
   "cwd": "/home/user/muthur",
   "openingPrompt": "/task Fix how muthur tells an adopter to check for the pr-comment.sh auto-mode approval, so an adopter whose operator already approved it under another name is …",
-  "prs": [],
+  "prs": [
+    243
+  ],
   "url": "https://claude.ai/code/session_01DaohkCVgAKQ6vE7JoLSUnW",
   "operator": "vzakharov",
   "firstResponseAt": "2026-10-28T02:50:16.039Z",
-  "lastResponseAt": "2026-10-28T02:51:50.824Z",
+  "lastResponseAt": "2026-10-28T02:52:47.185Z",
   "pricesAsOf": "2026-10-06",
   "claudeCodeTotalUsd": null,
   "ownTurns": {
-    "inputTokens": 24,
+    "inputTokens": 40,
     "cacheWrite5mTokens": 0,
-    "cacheWrite1hTokens": 59393,
-    "cacheReadTokens": 1196584,
-    "outputTokens": 4303,
-    "thinkingTokens": 557,
-    "responses": 12,
-    "costUsd": 0.8006168000000002
+    "cacheWrite1hTokens": 81197,
+    "cacheReadTokens": 2240646,
+    "outputTokens": 7613,
+    "thinkingTokens": 879,
+    "responses": 20,
+    "costUsd": 1.2501252
   },
   "subagents": {
-    "inputTokens": 16,
-    "cacheWrite5mTokens": 91800,
+    "inputTokens": 18,
+    "cacheWrite5mTokens": 92393,
     "cacheWrite1hTokens": 0,
-    "cacheReadTokens": 551169,
-    "outputTokens": 3632,
+    "cacheReadTokens": 642969,
+    "outputTokens": 4383,
     "thinkingTokens": 1425,
-    "responses": 8,
-    "costUsd": 0.6419378
+    "responses": 9,
+    "costUsd": 0.6782908
   },
   "byRate": {
     "claude-opus-5-5/standard": {
-      "inputTokens": 40,
-      "cacheWrite5mTokens": 91800,
-      "cacheWrite1hTokens": 59393,
-      "cacheReadTokens": 1747753,
-      "outputTokens": 7935,
-      "thinkingTokens": 1982,
-      "responses": 20,
-      "costUsd": 1.4425546
+      "inputTokens": 58,
+      "cacheWrite5mTokens": 92393,
+      "cacheWrite1hTokens": 81197,
+      "cacheReadTokens": 2883615,
+      "outputTokens": 11996,
+      "thinkingTokens": 2304,
+      "responses": 29,
+      "costUsd": 1.9284159999999997
     }
   },
   "warnings": [],
   "compactions": [],
   "telemetry": {
-    "events": 19,
-    "matched": 19,
-    "matchedTableUsd": 1.4096994,
-    "matchedEventUsd": 1.4096994,
+    "events": 28,
+    "matched": 28,
+    "matchedTableUsd": 1.8951901999999998,
+    "matchedEventUsd": 1.8951901999999998,
     "unseen": {}
   }
 }
