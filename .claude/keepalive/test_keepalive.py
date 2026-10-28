@@ -208,10 +208,9 @@ class TheDeadline(HookCase):
         self.assertIsNone(keepalive.deadline(self.transcript, 300))
 
     def test_a_response_written_after_the_watcher_starts_replaces_its_deadline(self) -> None:
-        # The watcher starts a turn, before the reply: a lead an hour less two
-        # seconds makes the first response due in two, and a five-minute one
-        # written next leaves nothing due — so a watcher alive past the first
-        # deadline read the second.
+        # A lead of an hour less two seconds makes the first response due in
+        # two; the five-minute one written next leaves nothing due, so a
+        # watcher alive past the first deadline read the second.
         self.session(ago=0)
         due = time.time() + 2
         watcher = self.start_watcher({"MUTHUR_CACHE_KEEPALIVE_LEAD": "3598"})
