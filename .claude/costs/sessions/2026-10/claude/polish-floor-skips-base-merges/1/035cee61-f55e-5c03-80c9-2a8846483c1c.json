@@ -1,22 +1,22 @@
 {
   "total": {
-    "inputTokens": 82,
+    "inputTokens": 1451,
     "cacheWrite5mTokens": 90695,
-    "cacheWrite1hTokens": 89327,
-    "cacheReadTokens": 4251338,
-    "outputTokens": 17358,
-    "thinkingTokens": 4995,
-    "responses": 41,
-    "costUsd": 2.3658466000000007
+    "cacheWrite1hTokens": 105797,
+    "cacheReadTokens": 5740649,
+    "outputTokens": 24193,
+    "thinkingTokens": 7492,
+    "responses": 52,
+    "costUsd": 2.9269432
   },
   "estimate": {
-    "at": "2026-10-28T02:39:58.988Z",
+    "at": "2026-10-28T02:49:24.803Z",
     "parts": [
       {
-        "hours": 1.5,
+        "hours": 2.0,
         "grade": "senior",
         "role": "prompter",
-        "comment": "the scope rule is load-bearing for every polish run, so the wording needs someone who knows how agents misread a git recipe"
+        "comment": "two load-bearing rules — the polish scope and the issue gate — where an agent misreading the wording either re-reads a codebase or publishes without asking"
       },
       {
         "hours": 1.0,
@@ -53,18 +53,18 @@
   "url": "https://claude.ai/code/session_01DaohkDkHXE5awKuUXuiNd3",
   "operator": "vzakharov",
   "firstResponseAt": "2026-10-28T02:39:06.185Z",
-  "lastResponseAt": "2026-10-28T02:42:29.796Z",
+  "lastResponseAt": "2026-10-28T02:49:32.267Z",
   "pricesAsOf": "2026-10-06",
   "claudeCodeTotalUsd": null,
   "ownTurns": {
-    "inputTokens": 62,
+    "inputTokens": 82,
     "cacheWrite5mTokens": 0,
-    "cacheWrite1hTokens": 89327,
-    "cacheReadTokens": 3519359,
-    "outputTokens": 14123,
-    "thinkingTokens": 3768,
-    "responses": 31,
-    "costUsd": 1.7011958000000003
+    "cacheWrite1hTokens": 105797,
+    "cacheReadTokens": 5008670,
+    "outputTokens": 20679,
+    "thinkingTokens": 6265,
+    "responses": 41,
+    "costUsd": 2.262018
   },
   "subagents": {
     "inputTokens": 20,
@@ -78,23 +78,44 @@
   },
   "byRate": {
     "claude-opus-5-5/standard": {
-      "inputTokens": 82,
+      "inputTokens": 102,
       "cacheWrite5mTokens": 90695,
-      "cacheWrite1hTokens": 89327,
-      "cacheReadTokens": 4251338,
-      "outputTokens": 17358,
-      "thinkingTokens": 4995,
-      "responses": 41,
-      "costUsd": 2.3658466000000007
+      "cacheWrite1hTokens": 105797,
+      "cacheReadTokens": 5740649,
+      "outputTokens": 23914,
+      "thinkingTokens": 7492,
+      "responses": 51,
+      "costUsd": 2.9266688000000003
+    },
+    "claude-haiku-5-5/standard": {
+      "inputTokens": 1349,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 0,
+      "cacheReadTokens": 0,
+      "outputTokens": 279,
+      "thinkingTokens": 0,
+      "responses": 1,
+      "costUsd": 0.0002744
     }
   },
   "warnings": [],
   "compactions": [],
   "telemetry": {
-    "events": 41,
-    "matched": 41,
-    "matchedTableUsd": 2.3658466000000007,
-    "matchedEventUsd": 2.3658466000000007,
-    "unseen": {}
+    "events": 52,
+    "matched": 51,
+    "matchedTableUsd": 2.9266688000000003,
+    "matchedEventUsd": 2.9266688000000003,
+    "unseen": {
+      "generate_session_title": {
+        "inputTokens": 1349,
+        "cacheWrite5mTokens": 0,
+        "cacheWrite1hTokens": 0,
+        "cacheReadTokens": 0,
+        "outputTokens": 279,
+        "thinkingTokens": 0,
+        "responses": 1,
+        "costUsd": 0.0002744
+      }
+    }
   }
 }
