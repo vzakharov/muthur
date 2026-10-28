@@ -106,8 +106,8 @@ def awaiting_rows(
     include_resolved: bool,
     previous: PreviousExport | None,
 ) -> list[str]:
-    """One Markdown row per post awaiting an answer, the merge gate counting
-    them where the export renders them."""
+    """One Markdown row per post awaiting an answer; the export renders them
+    and the merge gate counts them."""
     seen = set(_POST_ID.findall(previous.text)) if previous else None
     last_agent_post = _last_agent_post(comments, reviews, review_comments)
 

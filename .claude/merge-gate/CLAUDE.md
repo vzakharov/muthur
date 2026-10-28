@@ -20,14 +20,13 @@ request, so landing a finalized PR costs no model turn and re-caches nothing.
 - **A `no vet` attestation declines**, because whether the skipped vet run had
   anything to check is judgement. The `/test-on-gh is an unhydrated stub` line
   passes only while that skill on the PR head is still a stub.
-- **The cold-cache guard defers a bare `/merge` to this hook** while this file
-  exists, since hooks of one event run in parallel and a merged prompt must not
-  come back with a price stop beside it. On a decline the gate runs the guard
-  itself, as a subprocess with the event marked `merge_gate_declined`.
-- **A subprocess, not an import, because `scripts/lib/` and `.claude/costs/lib/`
-  both carry a `lib.github`.** The gate imports `lib` as one namespace package
-  across both, so `lib.github` is the scripts' one, and no ledger module that
-  imports its own may be imported here.
+- **The cold-cache guard defers a bare `/merge` to this hook** while
+  `hooks/merge_gate.py` exists, since hooks of one event run in parallel and a
+  merged prompt must not come back with a price stop beside it. On a decline the
+  gate runs the guard itself, as a subprocess with the event marked
+  `merge_gate_declined`: `scripts/lib/` and `.claude/costs/lib/` both carry a
+  `lib.github`, and the gate's `lib` spans both, as the comment at its imports
+  says.
 - **After a merge, the model is told**: `tmp/merge-gate/<session_id>.json` holds
   the merge, and every prompt that reaches the model carries it as context until
   a response lands after it.

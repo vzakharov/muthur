@@ -119,8 +119,8 @@ def ledger_rows_only(github: GitHub, attested: str, head: str) -> bool:
 
 
 def checks_pass(github: GitHub, head: str, ci_runs: bool) -> bool:
-    """Every check run and status on the head completed green. None at all
-    passes only where the attestation says nothing runs on a PR."""
+    """No check runs or statuses at all pass only where the attestation says
+    nothing runs on a PR."""
     runs: List[Dict[str, Any]] = []
     while True:
         page = github.get(f"commits/{head}/check-runs?per_page=100&page={len(runs) // 100 + 1}")
