@@ -25,6 +25,11 @@ bare /merge through and the gate runs the guard's price stop itself
 when it declines. After a merge, the next prompt tells the agent the
 PR landed.
 
+The keepalive starts no watcher and parks nothing on a branch whose PR
+has landed, merged or closed, so a session stops costing anything once
+its work is in. It asks GitHub only on turns no live watcher covers,
+and once per commit after a landed answer.
+
 Co-authored-by: Claude <noreply@anthropic.com>
 ```
 

@@ -28,6 +28,31 @@ API request (`total_cost_usd: 0`, `num_turns: 0`). It also confirmed that
 `hookSpecificOutput.suppressOriginalPrompt: true` drops the
 `Original prompt: /merge` tail from the block message.
 
+## Step 0 — fold vzakharov/muthur#237 in, then close it
+
+#237 makes the keepalive start no watcher and park nothing on a branch whose PR
+has landed. A session parked right after a gate merge would otherwise spend a
+full-context summary on finished work. It is still a draft with no attestation,
+and it conflicts with `main`. So this PR takes it and lands it, finalized
+together with the gate. The operator asked for it in the session: «мы можем
+влить работу той ветки сюда а тот пиар закрыть, первым пунктом как начнём
+исполнять?».
+
+1. Merge `origin/claude/keepalive-skips-landed-pr` into this branch with
+   `git merge --no-ff`, so its six commits keep their history. Commit the
+   conflicts as git left them, then resolve them in a commit of their own, as
+   `/sync-branch` does, so the resolution reviews as an ordinary commit.
+2. Its working artifacts need sorting out during the resolution:
+   - `docs/remove-before-merging/squash-message.md` collides with this PR's own.
+     Keep this PR's, and fold #237's essence into it as a paragraph.
+   - `docs/remove-before-merging/relay-1.md` stays, and `/finalize` sweeps it.
+   - Its cost row sits at a month-only path. The next ledger write re-files it,
+     per `.claude/costs/CLAUDE.md` § "Where a row is filed".
+3. Run `python3 .claude/keepalive/test_keepalive.py` and the cold-cache tests,
+   since the resolution may touch both.
+4. Push, then close #237 with a comment linking this PR as the one that lands
+   its work. Close it only after the push, so the work is never on neither.
+
 ## Design
 
 ### Where it lives
@@ -178,13 +203,6 @@ takes a transport. They cover:
   template is what keeps them as one contract. The squash read-back lives as
   prose in `merge.md` § "Merging" and as code in the gate. The gate's
   `CLAUDE.md` names `merge.md` as the home, so a change there reaches the gate.
-
-## Out of scope
-
-**The keepalive parking a session whose PR has landed** is
-vzakharov/muthur#237's. Its wake finds no live watcher, asks `gh pr view`, and
-skips the park on a merged PR, which covers a gate merge as it covers an
-agent-run `/merge`. The gate needs nothing of its own for it.
 
 ## Open questions
 
