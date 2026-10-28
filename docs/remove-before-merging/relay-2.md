@@ -106,11 +106,17 @@ trialled on the repo's Python scripts.
 
 ## Next step
 
-Read the probe session's report (`list_events` on
-`session_01DaohkFBTd5PxYWvP9jehqg` if its message did not arrive). If the `LSP`
-tool works, report to the operator and continue `/go`'s tail (`/polish`, then
-`/pr`); if not, diagnose from the report and fix the wiring. Operator's go: «ну
-давай попробуем».
+Probe result (session `session_01DaohkFBTd5PxYWvP9jehqg`): no `LSP` tool. The
+project marketplace was cloned and `pyright-lsp` fetched into
+`~/.claude/plugins/cache/`, but `installed_plugins.json` stayed empty and
+`claude plugin list` shows nothing — project `enabledPlugins` does not install
+the plugin in a cloud session (guess: the install waits on an interactive trust
+prompt). Asked the operator to add
+`claude plugin marketplace add anthropics/claude-plugins-official && claude plugin install pyright-lsp@claude-plugins-official`
+to the environment setup script, then re-probe in a new session. If it works:
+document the line in the setup script `/detemplate` Step 6 hands over
+(`docs/adopting/web-remote.md`) and in `stack.md` site 4, then `/polish`, `/pr`.
+Operator's go: «ну давай попробуем».
 
 ## Last agent turn
 
