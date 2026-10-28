@@ -24,9 +24,9 @@ import argparse
 import json
 import sys
 from pathlib import Path
-from typing import Dict, Optional
+from typing import Optional
 
-from lib.billed import Event, parse_events
+from lib.billed import events_at
 from lib.prices import parse_prices
 from lib.pricing import is_unwritten_tail, summarise_transcript
 from lib.transcript import TranscriptSources, subagents_of
@@ -60,12 +60,6 @@ def previous(session_id: str) -> Optional[SessionCost]:
             print(f"session-cost: {error}; rewriting the row without that copy", file=sys.stderr)
     kept = union(rows, lambda row: row)
     return kept[0] if kept else None
-
-
-def events_at(path: Path) -> Optional[Dict[str, Event]]:
-    if not path.exists():
-        return None
-    return parse_events(path.read_text(encoding="utf-8"), str(path))
 
 
 def main() -> int:

@@ -1,0 +1,92 @@
+{
+  "total": {
+    "inputTokens": 52,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 100049,
+    "cacheReadTokens": 3182940,
+    "outputTokens": 16797,
+    "thinkingTokens": 7690,
+    "responses": 26,
+    "costUsd": 1.7731279999999998
+  },
+  "estimate": {
+    "at": "2026-10-28T17:30:44.440Z",
+    "parts": [
+      {
+        "hours": 1.5,
+        "grade": "middle",
+        "role": "developer",
+        "comment": "a small script change over an existing pricer, plus tests; needs familiarity with the ledger's transcript reading but no design judgement"
+      }
+    ],
+    "comment": null
+  },
+  "orientation": {
+    "endedBy": "oriented",
+    "endedOn": null,
+    "endedAt": "2026-10-28T17:26:22.329Z",
+    "contextTokens": 99798,
+    "spend": {
+      "inputTokens": 4,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 38939,
+      "cacheReadTokens": 140208,
+      "outputTokens": 416,
+      "thinkingTokens": 117,
+      "responses": 2,
+      "costUsd": 0.34788959999999997
+    }
+  },
+  "sessionId": "4e3892c1-4d08-5ed3-bbdf-bf55904cb906",
+  "branch": "claude/orientation-tokens-cost-output-3a45x5",
+  "cwd": "/home/user/muthur",
+  "openingPrompt": "пусть скрипт завершения orientation в выводе возвращает количество токенов контекста (если есть) и стоимость; это больше не для агента а для меня чтобы прямо в …",
+  "prs": [],
+  "url": "https://claude.ai/code/session_01DaohkBGTeeqmXVu1RXC9RR",
+  "operator": null,
+  "firstResponseAt": "2026-10-28T17:26:15.261Z",
+  "lastResponseAt": "2026-10-28T17:33:14.993Z",
+  "pricesAsOf": "2026-10-06",
+  "claudeCodeTotalUsd": null,
+  "ownTurns": {
+    "inputTokens": 52,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 100049,
+    "cacheReadTokens": 3182940,
+    "outputTokens": 16797,
+    "thinkingTokens": 7690,
+    "responses": 26,
+    "costUsd": 1.7731279999999998
+  },
+  "subagents": {
+    "inputTokens": 0,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 0,
+    "cacheReadTokens": 0,
+    "outputTokens": 0,
+    "thinkingTokens": 0,
+    "responses": 0,
+    "costUsd": 0.0
+  },
+  "byRate": {
+    "claude-opus-5-5/standard": {
+      "inputTokens": 52,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 100049,
+      "cacheReadTokens": 3182940,
+      "outputTokens": 16797,
+      "thinkingTokens": 7690,
+      "responses": 26,
+      "costUsd": 1.7731279999999998
+    }
+  },
+  "warnings": [],
+  "compactions": [],
+  "telemetry": {
+    "events": 25,
+    "matched": 25,
+    "matchedTableUsd": 1.7263807999999998,
+    "matchedEventUsd": 1.7263807999999998,
+    "unseen": {}
+  }
+}
