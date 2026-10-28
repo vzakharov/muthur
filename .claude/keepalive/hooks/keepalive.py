@@ -161,10 +161,9 @@ def start_line(session: str, transcript: str) -> str:
 
 
 STOP = "the operator's message asks to stop the keepalive (\"стоп\", \"stop\", in any words)"
-PARK = (
-    "If the operator's message asks to park the session (\"запаркуй\", \"park it\", in any words),"
-    " run `/relay park` per `.claude/skills/relay/SKILL.md`."
-)
+PARK_ASK = "the operator's message asks to park the session (\"запаркуй\", \"park it\", in any words)"
+RELAY_PARK = "run `/relay park` per `.claude/skills/relay/SKILL.md`"
+PARK = f"If {PARK_ASK}, {RELAY_PARK}."
 
 
 def context(data: Dict[str, Any], alive: bool, renewals: int, session: str, transcript: str) -> Optional[str]:
@@ -178,7 +177,8 @@ def context(data: Dict[str, Any], alive: bool, renewals: int, session: str, tran
         return (
             f"As this turn's first action, {start_line(session, transcript)}"
             " It reads the transcript as the turn writes it, so its deadline follows the turn's last"
-            f" response; carry on with the turn as usual once it has started. Skip it when {STOP}."
+            f" response; carry on with the turn as usual once it has started. Skip it when {STOP},"
+            f" or when {PARK_ASK}: then {RELAY_PARK} instead."
         )
     if spent > renewals:
         return (

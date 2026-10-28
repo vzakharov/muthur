@@ -19,7 +19,11 @@ is below the usual tenth of input (`.claude/costs/prices.json`).
   last response, and the reply stays the turn's last text — a watcher started
   after the reply leaves a tool result the agent answers by writing the reply
   again. `TaskStop` ends a task without a completion notice, so stopping one
-  wakes nothing.
+  wakes nothing: `/relay` and `/relay park` stop it, and so does a merge, since
+  each decides mid-turn that the session has nothing left to keep warm.
+- **A turn over an hour long costs a wake early.** The watcher's lifetime runs
+  from its start, under the Bash cap of two hours, so it exits before a deadline
+  set more than about an hour later, and the hook asks for a new one.
 - **Every wake is one visible line.** The harness rejects a turn with no visible
   output and forces a second request, so the instruction asks for one line
   rather than silence — and spends it on the two answers that end the spell, in

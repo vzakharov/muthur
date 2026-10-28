@@ -162,11 +162,14 @@ and says where the work stands and what comes next: `PR готов, дальше
 
 ### Step 4 — Report and stop
 
-The successor's link — on the web `https://claude.ai/code/<session_id>` from the
-id `create_session` returned, written bare so the operator clicks through to it
-— or the local recipe, and the summary's size in characters with a rough token
-count at four characters a token — the context the successor starts with on top
-of its baseline.
+`TaskStop` a running cache keepalive watcher (`.claude/keepalive/`): the work
+now lives in the successor, so this session's cache is nobody's to keep warm.
+
+The report gives the successor's link — on the web
+`https://claude.ai/code/<session_id>` from the id `create_session` returned,
+written bare so the operator clicks through to it — or the local recipe, and the
+summary's size in characters with a rough token count at four characters a token
+— the context the successor starts with on top of its baseline.
 
 ### After the handoff
 

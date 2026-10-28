@@ -114,6 +114,8 @@ class WhenAnOperatorPromptArrives(HookCase):
         self.assertIn("As this turn's first action, start the cache keepalive's watcher", out)
         self.assertIn(f"{HOOK} watch sess {self.transcript}", out)
         self.assertIn("Skip it when the operator's message asks to stop the keepalive", out)
+        self.assertIn("or when the operator's message asks to park the session", out)
+        self.assertIn("then run `/relay park`", out)
 
     def test_a_running_watcher_is_left_to_the_agent_to_stop(self) -> None:
         self.session(ago=1)
