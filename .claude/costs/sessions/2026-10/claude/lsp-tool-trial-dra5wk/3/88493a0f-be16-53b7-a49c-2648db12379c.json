@@ -1,0 +1,92 @@
+{
+  "total": {
+    "inputTokens": 72,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 133438,
+    "cacheReadTokens": 3956413,
+    "outputTokens": 16261,
+    "thinkingTokens": 3625,
+    "responses": 36,
+    "costUsd": 2.1842946000000008
+  },
+  "estimate": {
+    "at": "2026-10-28T04:48:14.013Z",
+    "parts": [
+      {
+        "hours": 1.0,
+        "grade": "senior",
+        "role": "developer",
+        "comment": "finding why a loaded, configured LSP plugin yields no tool meant reading the minified Claude Code bundle for its gate and proving the plugin works with the gate lifted"
+      }
+    ],
+    "comment": null
+  },
+  "orientation": {
+    "endedBy": "end_turn",
+    "endedOn": null,
+    "endedAt": "2026-10-28T04:46:06.945Z",
+    "contextTokens": 52679,
+    "spend": {
+      "inputTokens": 42,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 111108,
+      "cacheReadTokens": 2043678,
+      "outputTokens": 7487,
+      "thinkingTokens": 1872,
+      "responses": 21,
+      "costUsd": 1.4475076000000007
+    }
+  },
+  "sessionId": "88493a0f-be16-53b7-a49c-2648db12379c",
+  "branch": "claude/lsp-tool-trial-dra5wk",
+  "cwd": "/home/user/muthur",
+  "openingPrompt": "/relay take claude/lsp-tool-trial-dra5wk — плагин pyright-lsp теперь ставит setup-скрипт, дальше проверка, появился ли инструмент LSP, и его испытание на Python…",
+  "prs": [],
+  "url": "https://claude.ai/code/session_01DaohkEzZYH7LdyFMo1iVb8",
+  "operator": "vzakharov",
+  "firstResponseAt": "2026-10-28T04:44:21.260Z",
+  "lastResponseAt": "2026-10-28T05:43:47.799Z",
+  "pricesAsOf": "2026-10-06",
+  "claudeCodeTotalUsd": 0.2341305,
+  "ownTurns": {
+    "inputTokens": 72,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 133438,
+    "cacheReadTokens": 3956413,
+    "outputTokens": 16261,
+    "thinkingTokens": 3625,
+    "responses": 36,
+    "costUsd": 2.1842946000000008
+  },
+  "subagents": {
+    "inputTokens": 0,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 0,
+    "cacheReadTokens": 0,
+    "outputTokens": 0,
+    "thinkingTokens": 0,
+    "responses": 0,
+    "costUsd": 0.0
+  },
+  "byRate": {
+    "claude-opus-5-5/standard": {
+      "inputTokens": 72,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 133438,
+      "cacheReadTokens": 3956413,
+      "outputTokens": 16261,
+      "thinkingTokens": 3625,
+      "responses": 36,
+      "costUsd": 2.1842946000000008
+    }
+  },
+  "warnings": [],
+  "compactions": [],
+  "telemetry": {
+    "events": 32,
+    "matched": 32,
+    "matchedTableUsd": 1.7120819999999999,
+    "matchedEventUsd": 1.7120819999999999,
+    "unseen": {}
+  }
+}
