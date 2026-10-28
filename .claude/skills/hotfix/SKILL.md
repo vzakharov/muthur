@@ -57,7 +57,8 @@ and say so in the report.
 A hotfix is still work left in the repo, so it runs the route
 `@.claude/skills/task/repo-change.md` gives such a skill. Its deviations are the
 ones above — the base it branches from, the checks it skips, the reconcile it
-adds — and hydration names them there rather than writing a second procedure.
+adds — and hydration names them against that route rather than writing a second
+procedure.
 
 ## Related
 
