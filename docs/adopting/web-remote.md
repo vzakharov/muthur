@@ -259,10 +259,10 @@ What carries over to any stack, and what to check before adapting it:
 7. **Check the `autoMode` block landed** from inside a session: read
    `claude auto-mode config` for a rule covering each of the three things —
    deleting container files, deleting the session's own `claude/*` branch on
-   origin, and running `scripts/pr-comment.sh`. The names above are this
-   example's; an operator who wrote an equivalent entry in their own words,
-   common in an environment shared across repositories, already has it. A denial
-   is the definitive sign one is missing.
+   origin, and running `scripts/pr-comment.sh`. The names are this example's: an
+   equivalent entry in the operator's own words, common in an environment shared
+   across repositories, counts the same. A denial is the definitive sign one is
+   missing.
 8. **The multi-repo hook stays as written.** It names no repository, so it
    carries over unchanged, and its 600-second `timeout` covers each attached
    repository's dependency install running in turn.

@@ -271,11 +271,11 @@ verdict.** Its body's `Adopters:` paragraph asks for something no port does
 commit still delivers it. A sweep inside this tree rides the sync like a port
 and is reported with it. **Check the ask against this repo's actual state by
 substance before relaying it**: an operator who solved the same thing earlier,
-in their own words, has nothing left to do, and a name the paragraph quotes
-missing from a config is not the thing missing. What the paragraph still gates
-on the operator goes to them once, in the sync's report and in its terms, and §
-"Offered at session start"'s never-chase rule holds for it as it does for the
-sync.
+in their own words, has nothing left to do, and a config without the name the
+paragraph quotes can still hold the thing it names. What the paragraph still
+gates on the operator goes to them once, in the sync's report and in its terms,
+and § "Offered at session start"'s never-chase rule holds for it as it does for
+the sync.
 
 **The source's fix may not be this repo's fix.** Split a commit's rationale
 before deciding: one commit can carry a change that addresses a defect this repo

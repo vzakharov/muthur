@@ -12,11 +12,11 @@
 #   - the `.claude/settings.json` allow rule, which resolves before the
 #     classifier in a session that honours the project's `permissions.allow`
 #     — a cloud session does not.
-# A denial on the web means the setup script lacks the first — a denial, not a
-# missing name in `claude auto-mode config`: the reply that meets it names that
-# entry beside the phrase CLAUDE.md asks for, so the
-# operator can add it. The file must lead with its kind's marker, which keeps
-# either approval from covering any other comment.
+# A denial on the web, not a name absent from `claude auto-mode config`, means
+# the setup script lacks the first: the reply that meets it names that entry
+# beside the phrase CLAUDE.md asks for, so the operator can add it. The file must
+# lead with its kind's marker, which keeps either approval from covering any
+# other comment.
 #
 # Usage (from the repository root, spelled exactly so, with no `cd … &&` or
 # anything else chained in front — both approvals match the command's text):
