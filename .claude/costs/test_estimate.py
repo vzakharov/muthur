@@ -335,7 +335,8 @@ class TheCommand(unittest.TestCase):
 
     running = "running-session"
     finished = "finished-session"
-    path = ".claude/costs/sessions/2026-01/finished-session.json"
+    path = ".claude/costs/sessions/2026-03/a-branch/1/finished-session.json"
+    month_only = ".claude/costs/sessions/2026-03/finished-session.json"
 
     def setUp(self) -> None:
         self.base = Path(tempfile.mkdtemp())
@@ -378,12 +379,14 @@ class TheCommand(unittest.TestCase):
         assert written is not None
         self.assertEqual(written.parts, [Part(5, "senior", "developer", "why")])
 
-    def test_another_session_s_estimate_lands_on_the_ledger_and_the_tree_copy(self) -> None:
-        tree = self.clone.root / self.path
-        tree.parent.mkdir(parents=True)
-        tree.write_text(row_text(replace(ROW, session_id=self.finished)), encoding="utf-8")
+    def test_another_session_s_estimate_lands_on_the_ledger_and_the_tree_copy_where_it_is_filed(self) -> None:
+        stale = self.clone.root / self.month_only
+        stale.parent.mkdir(parents=True)
+        stale.write_text(row_text(replace(ROW, session_id=self.finished)), encoding="utf-8")
         done = self.estimate("set", "--part", "1", "junior", "developer", "after the fact", "--session", self.finished)
         self.assertEqual(done.returncode, 0, done.stderr)
+        self.assertFalse(stale.exists())
+        tree = self.clone.root / self.path
         for row in (parse_session_cost(tree.read_text(encoding="utf-8")), self.ledger_row()):
             assert row.estimate is not None
             self.assertEqual(row.estimate.parts, [Part(1, "junior", "developer", "after the fact")])
@@ -393,7 +396,7 @@ class TheCommand(unittest.TestCase):
         staged = self.base / "row.json"
         staged.write_text(row_text(replace(ROW, session_id=self.finished)), encoding="utf-8")
         ledger = [sys.executable, str(self.clone.root / ".claude" / "costs" / "ledger.py")]
-        subprocess.run([*ledger, "append-row", self.path, str(staged)], env=self.clone.env(), check=True)
+        subprocess.run([*ledger, "append-row", str(staged)], env=self.clone.env(), check=True)
         done = self.estimate("set", "--part", "2", "senior", "editor", "after the fact", "--session", self.finished)
         self.assertEqual(done.returncode, 0, done.stderr)
         estimate = self.ledger_row().estimate
@@ -453,7 +456,7 @@ class TheCommand(unittest.TestCase):
         booked = replace(ROW, session_id=self.finished, estimate=estimate_of("a", Part(1, "senior", "artist")))
         staged.write_text(row_text(booked), encoding="utf-8")
         ledger = [sys.executable, str(self.clone.root / ".claude" / "costs" / "ledger.py")]
-        subprocess.run([*ledger, "append-row", self.path, str(staged)], env=self.clone.env(), check=True)
+        subprocess.run([*ledger, "append-row", str(staged)], env=self.clone.env(), check=True)
         done = self.estimate("role", "drop", "artist")
         self.assertEqual(done.returncode, 1)
         self.assertIn(f"`artist` is booked by 1 ledger row(s), {self.finished} first", done.stderr)

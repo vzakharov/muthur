@@ -19,7 +19,8 @@ import unittest
 from pathlib import Path
 from typing import List, Optional
 
-from hook_clone import ROW, SESSION, Clone
+from hook_clone import EARLIER, RENAMED, ROW, SESSION, SESSIONS, Clone
+from test_filing import row as made_row
 
 HOOK = ".claude/costs/hooks/stage-cost-row.sh"
 
@@ -110,6 +111,30 @@ class StageCostRowTest(unittest.TestCase):
         self.stage("git commit -m x")
         self.stage("git commit -m x")
         self.assertEqual(sorted(self.staged()), sorted([ROW, "work.txt"]))
+
+    def test_the_row_is_staged_where_the_fetched_ledger_files_it(self) -> None:
+        held = f"{SESSIONS}/2026-03/a-branch/1/other.json"
+        tip = self.clone.other_row(self.clone.seed_ledger(), held, made_row("other", "a-branch", EARLIER))
+        self.clone.git("push", "-q", "origin", f"{tip}:refs/heads/cost-ledger")
+        self.clone.git("fetch", "-q", "origin", "+refs/heads/cost-ledger:refs/remotes/origin/cost-ledger")
+        self.clone.stage_work()
+        self.stage("git commit -m x")
+        self.assertEqual(sorted(self.staged()), sorted([f"{SESSIONS}/2026-03/a-branch/2/{SESSION}.json", "work.txt"]))
+
+    def test_a_row_the_ledger_moves_leaves_its_old_copy_in_the_same_commit(self) -> None:
+        self.clone.stage_work()
+        command = "git commit -q -m x"
+        self.stage(command)
+        self.run_command(command)
+        self.clone.respond(branch="renamed")
+        (self.clone.root / "more.txt").write_text("more\n")
+        self.clone.git("add", "more.txt")
+        self.stage(command)
+        staged = self.clone.git("diff", "--cached", "--no-renames", "--name-only").splitlines()
+        self.assertEqual(sorted(staged), sorted([ROW, RENAMED, "more.txt"]))
+        self.run_command(command)
+        self.assertEqual(self.clone.git("ls-tree", "-r", "--name-only", "HEAD", "--", SESSIONS), RENAMED)
+        self.assertEqual(self.clone.status(), "")
 
     def test_a_bare_commit_over_a_clean_index_stages_nothing(self) -> None:
         self.stage("git commit -m x")

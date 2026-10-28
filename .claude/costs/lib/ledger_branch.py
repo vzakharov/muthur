@@ -1,10 +1,10 @@
 """The `cost-ledger` branch: the rows' source of truth, an orphan branch on
-`origin` holding them at the same paths a working tree does.
+`origin` holding them where `lib/filing.py` places them.
 
 Every write is a commit built in a throwaway index on the ledger's tip and
 pushed without force, so two sessions racing for the tip cannot lose each
-other's row: the push that loses re-reads the tip and builds again. Rows never
-collide, one file being one session.
+other's row: the push that loses re-reads the tip and builds again, taking the
+next ordinal where the winner took the one it planned on.
 """
 
 from __future__ import annotations
@@ -12,15 +12,15 @@ from __future__ import annotations
 import json
 import os
 import subprocess
-from typing import Callable, Dict, Iterable, List, Mapping, Optional, Sequence, Tuple, TypeVar
+from typing import Callable, Collection, Dict, List, Mapping, Optional, Sequence, Tuple
 
 from lib.estimate_model import REPO_RATES, SHARED_RATES, Rates, parse_rates, with_added_roles
-from lib.rows import ROOT, SESSIONS, SessionCost, parse_session_cost
+from lib.filing import PREFIX, Filing, is_row, refile, session_of
+from lib.rows import ROOT, SESSIONS, SessionCost, parse_session_cost, tree_copies, union
 from lib.shape import ShapeError
 
 BRANCH = "cost-ledger"
 REMOTE_REF = f"refs/remotes/origin/{BRANCH}"
-PREFIX = SESSIONS.relative_to(ROOT).as_posix()
 # The repository's own estimate roles, beside the rows they rate and nowhere
 # else: a copy per branch would leave rows only an unmerged branch could rate.
 RATES_PATH = (SESSIONS.parent / REPO_RATES).relative_to(ROOT).as_posix()
@@ -28,8 +28,6 @@ RATES_ON_LEDGER = f"{BRANCH}:{RATES_PATH}"
 # Where `backfill` fetches every PR's head, apart from anything a person reads.
 PR_REFS = "refs/costs-pr"
 TRIES = 3
-
-T = TypeVar("T")
 
 
 class LedgerError(RuntimeError):
@@ -121,40 +119,23 @@ def rows_at(rev: str) -> List[Tuple[str, str]]:
     return rows
 
 
-def recency(row: SessionCost) -> Tuple[str, str]:
-    """The later of two copies of a row is the one that saw more of the
-    session, or, of two that saw the same, the one whose estimate was set later
-    — which is how an estimate edited onto a finished session's row wins."""
-    return row.last_response_at or "", row.estimate.at if row.estimate is not None else ""
+def listing(rev: Optional[str]) -> List[str]:
+    """The paths under `sessions/` at `rev`, names only."""
+    if rev is None or resolve(rev) is None:
+        return []
+    return git("ls-tree", "-r", "--name-only", "--full-tree", rev, "--", PREFIX).splitlines()
 
 
-def union(items: Iterable[T], row_of: Callable[[T], SessionCost]) -> List[T]:
-    """One item per session id, the latest by `recency`; a tie keeps the first."""
-    kept: Dict[str, Tuple[T, SessionCost]] = {}
-    for item in items:
-        row = row_of(item)
-        held = kept.get(row.session_id)
-        if held is None or recency(row) > recency(held[1]):
-            kept[row.session_id] = (item, row)
-    return [item for item, _ in kept.values()]
-
-
-def path_of(session_id: str) -> Optional[str]:
-    """Where the local copy of the ledger files the session's row, if it has
-    one."""
-    if resolve(REMOTE_REF) is None:
-        return None
-    listed = git("ls-tree", "-r", "--name-only", "--full-tree", REMOTE_REF, "--", PREFIX).splitlines()
-    return next((path for path in listed if path.endswith(f"/{session_id}.json")), None)
+def held_paths(rev: Optional[str], session_id: str) -> List[str]:
+    return [path for path in listing(rev) if is_row(path) and session_of(path) == session_id]
 
 
 def copies(session_id: str) -> List[Tuple[str, str]]:
     """`(where, text)` for each copy of the session's row: the tree's and the
     local copy of the ledger's."""
-    found = [(str(path), path.read_text(encoding="utf-8")) for path in sorted(SESSIONS.glob(f"*/{session_id}.json"))]
-    held = path_of(session_id)
-    text = text_at(REMOTE_REF, held) if held is not None else None
-    return found + ([(f"{BRANCH}:{held}", text)] if text is not None else [])
+    found = [(str(path), path.read_text(encoding="utf-8")) for path in tree_copies(session_id)]
+    held = [(path, text_at(REMOTE_REF, path)) for path in held_paths(REMOTE_REF, session_id)]
+    return found + [(f"{BRANCH}:{path}", text) for path, text in held if text is not None]
 
 
 def latest_row(session_id: str) -> Optional[SessionCost]:
@@ -232,15 +213,43 @@ def append(plan: Plan) -> Optional[str]:
     raise LedgerError(f"pushing to {BRANCH} failed {TRIES} times: {error}")
 
 
-def row_change(parent: Optional[str], path: str, text: str) -> Tuple[Dict[str, Optional[str]], str]:
-    """What committing `text` at `path` onto `parent` changes — nothing where
-    `parent` already holds it — and the commit's message."""
-    before = text_at(parent, path) if parent else None
-    return ({} if before == text else {path: text}), row_subject(before, text)
+def filed(rev: Optional[str], incoming: Sequence[str] = ()) -> Filing:
+    """`refile` over the ledger at `rev`, reading a row only where it has to."""
+
+    def read(path: str) -> str:
+        text = text_at(rev or "", path)
+        if text is None:
+            raise LedgerError(f"{rev}:{path} is listed and does not read")
+        return text
+
+    return refile(listing(rev), read, incoming)
 
 
-def append_row(path: str, text: str) -> Optional[str]:
-    return append(lambda tip: row_change(tip, path, text))
+def _with_refiled(subject: str, filing: Filing, own: Collection[str]) -> str:
+    moved = {session_of(path) for path in filing.changes if is_row(path)} - set(own)
+    return subject if not moved else f"{subject}; re-file {_count(len(moved))}"
+
+
+def append_row(text: str) -> str:
+    """File the row on the ledger's tip, with whatever else there is not at
+    its place, and push it; the path the row is filed at."""
+    session = parse_session_cost(text, "row").session_id
+    placed: List[str] = []
+
+    def plan(tip: Optional[str]) -> Tuple[Dict[str, Optional[str]], str]:
+        filing = filed(tip, [text])
+        placed[:] = [filing.placed[session]]
+        held = sorted(held_paths(tip, session), key=lambda path: path != placed[0])
+        before = text_at(tip, held[0]) if tip and held else None
+        return filing.changes, _with_refiled(row_subject(before, text), filing, {session})
+
+    append(plan)
+    return placed[0]
+
+
+def path_for(text: str) -> str:
+    """Where the local copy of the ledger, as last fetched, would file the row."""
+    return filed(REMOTE_REF, [text]).placed[parse_session_cost(text, "row").session_id]
 
 
 def every_ref() -> List[str]:
@@ -299,15 +308,18 @@ def backfill(refs: Sequence[str]) -> Tuple[int, Optional[str]]:
 
     def plan(tip: Optional[str]) -> Tuple[Dict[str, Optional[str]], str]:
         held = dict(rows_at(tip)) if tip else {}
+        # The held copy comes first, so a tie keeps it.
         winners = union([*held.items(), *found], parsed)
         held_ids[:] = [parsed(item).session_id for item in winners]
-        carried: Dict[str, Optional[str]] = {path: text for path, text in winners if held.get(path) != text}
-        message = f"chore: carry {_count(len(carried))} into the ledger"
+        carried = [(path, text) for path, text in winners if held.get(path) != text]
+        filing = refile(list(held), held.__getitem__, [text for _, text in carried])
+        changes = filing.changes
+        message = f"chore: carry {_count(len(carried))}"
         rates = _rates_carry(tree_text, rates_text(tip))
         if rates is not None:
-            carried[RATES_PATH] = rates
-            message = f"chore: carry {_count(len(carried) - 1)} and the estimate roles into the ledger"
-        return carried, message
+            changes[RATES_PATH] = rates
+            message += " and the estimate roles"
+        return changes, _with_refiled(f"{message} into the ledger", filing, {parsed(item).session_id for item in carried})
 
     try:
         built = append(plan)

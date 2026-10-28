@@ -5,17 +5,20 @@ Usage:
   python3 .claude/costs/ledger.py backfill [<ref>...]
   python3 .claude/costs/ledger.py fetch
   python3 .claude/costs/ledger.py display <branch>
-  python3 .claude/costs/ledger.py append-row <path> <file>
+  python3 .claude/costs/ledger.py path-for <file>
+  python3 .claude/costs/ledger.py append-row <file>
 
 `backfill` carries into the ledger every row the named refs hold that it lacks
 or holds older — by default every branch on `origin` and every PR's head — and
 prints how many sessions the ledger holds after. It pushes, and a second run
 commits nothing.
 
-The rest are the hooks'. `display` prints `display=yes|no`: whether the branch
-still gets the row's display copy, which it does until it is finalized —
-`hooks/stage-cost-row.sh` asks it. `append-row` commits and pushes the row to
-the ledger, for `hooks/stop-session-cost.sh`.
+The rest are the hooks'. `hooks/stage-cost-row.sh` asks `display`, which prints
+`display=yes|no` — whether the branch still gets the row's display copy, which
+it does until it is finalized — and `path-for`, which prints where the local
+copy of the ledger files the row, and so where that copy goes.
+`hooks/stop-session-cost.sh` runs `append-row`, which files the row on the
+ledger, commits and pushes it, and prints the path it was filed at.
 
 Stdlib only — Python 3.9+.
 """
@@ -28,7 +31,7 @@ from pathlib import Path
 
 from lib.finalized import finalized
 from lib.github import Client
-from lib.ledger_branch import BRANCH, LedgerError, append_row, backfill, every_ref, fetch
+from lib.ledger_branch import BRANCH, LedgerError, append_row, backfill, every_ref, fetch, path_for
 
 TRUNKS = ("", "main", "master")
 
@@ -39,9 +42,8 @@ def main() -> int:
     commands.add_parser("backfill").add_argument("refs", nargs="*")
     commands.add_parser("fetch")
     commands.add_parser("display").add_argument("branch")
-    appending = commands.add_parser("append-row")
-    appending.add_argument("path")
-    appending.add_argument("file", type=Path)
+    for command in ("path-for", "append-row"):
+        commands.add_parser(command).add_argument("file", type=Path)
     args = parser.parse_args()
 
     try:
@@ -54,8 +56,10 @@ def main() -> int:
             # The trunk has no PR to finalize, and no branch to carry a copy.
             display = args.branch not in TRUNKS and not finalized(args.branch, Client())
             print(f"display={'yes' if display else 'no'}")
+        elif args.command == "path-for":
+            print(path_for(args.file.read_text(encoding="utf-8")))
         else:
-            append_row(args.path, args.file.read_text(encoding="utf-8"))
+            print(append_row(args.file.read_text(encoding="utf-8")))
     except LedgerError as error:
         print(f"ledger: {error}", file=sys.stderr)
         return 1

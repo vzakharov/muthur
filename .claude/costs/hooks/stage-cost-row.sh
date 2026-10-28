@@ -59,15 +59,18 @@ branch="$(git branch --show-current)"
 transcript="$(field transcript_path)"
 [ -n "$transcript" ] && [ -f "$transcript" ] || exit 0
 mkdir -p tmp || exit 0
+session="$(field session_id)"
 staged="tmp/cost-row.$$.json"
-row="$(python3 .claude/costs/session_cost.py \
+# The copy goes where the `Stop` hook's last fetch of the ledger files the row;
+# `.claude/costs/CLAUDE.md` § "Where a row is filed" names what that costs.
+python3 .claude/costs/session_cost.py \
   --transcript "$transcript" \
-  --session-id "$(field session_id)" \
-  --row-path --out "$staged" 2>/dev/null)" || {
+  --session-id "$session" \
+  --out "$staged" >/dev/null 2>&1 &&
+  path="$(python3 .claude/costs/ledger.py path-for "$staged" 2>/dev/null)" || {
   rm -f -- "$staged"
   exit 0
 }
-path="${row#"$top"/}"
 
 # A commit with nothing else to take would otherwise succeed as a row-only
 # commit under the agent's message, where git would have said "nothing to
@@ -80,6 +83,14 @@ if ! [[ $command =~ $stages ]] && ! [[ $commit_args =~ $whole ]] &&
   exit 0
 fi
 
-mkdir -p -- "$(dirname "$path")" && mv -f -- "$staged" "$path" && git add -- "$path" ||
+mkdir -p -- "$(dirname "$path")" && mv -f -- "$staged" "$path" && git add -- "$path" || {
   rm -f -- "$staged"
+  exit 0
+}
+
+# The session's copies elsewhere — an older layout's, or the branch's before a
+# rename — leave in the same commit.
+git ls-files -- .claude/costs/sessions | grep -E "/$session\.json$" | while IFS= read -r moved; do
+  [ "$moved" = "$path" ] || git rm -q -f -- "$moved"
+done
 exit 0

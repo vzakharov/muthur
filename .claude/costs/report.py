@@ -37,8 +37,8 @@ from lib.github import ADDED_ROLES, REPO, Client, GitHubError, remote_ledger
 from lib.hours import HoursTable
 from lib.period import FORMATS, KINDS, Period, PeriodError, month_of, period
 from lib.prices import parse_prices
-from lib.ledger_branch import BRANCH, LedgerError, fetch, ledger_rates, rows_at, shared_rates, union
-from lib.rows import SESSIONS, SessionCost, read_row, reshape
+from lib.ledger_branch import BRANCH, LedgerError, fetch, ledger_rates, rows_at, shared_rates
+from lib.rows import SESSIONS, SessionCost, read_row, reshape, tree_rows, union
 from lib.shape import ShapeError, to_json
 from lib.totals import (
     Bucket,
@@ -63,9 +63,9 @@ COSTS = Path(__file__).resolve().parent
 SHORTFALL = 0.02
 
 
-def rows_in(month: Path) -> List[SessionCost]:
+def tree_side() -> List[SessionCost]:
     rows = []
-    for path in sorted(month.glob("*.json")):
+    for path in tree_rows():
         row, changes = read_row(path)
         rows.append(row)
         # Stderr, so `--json` stays parseable. A rewritten row is a change to
@@ -212,16 +212,12 @@ def today() -> date:
     return datetime.now(timezone.utc).date()
 
 
-def ledger_rows(tip: Optional[str], span: Optional[Period]) -> List[SessionCost]:
+def ledger_rows(tip: Optional[str]) -> List[SessionCost]:
     """The ledger's rows at its fetched `tip`, reshaped in memory only:
     rewriting one would be a commit on another branch."""
     if tip is None:
         return []
-    return [
-        reshape(text, f"{BRANCH}:{path}")[0]
-        for path, text in rows_at(tip)
-        if span is None or path.split("/")[-2] in span.months()
-    ]
+    return [reshape(text, f"{BRANCH}:{path}")[0] for path, text in rows_at(tip)]
 
 
 def notes(lines: List[str]) -> None:
@@ -237,10 +233,7 @@ def this_repo(span: Optional[Period], as_json: bool) -> int:
     tip = fetch()
     rates = ledger_rates(tip)
     notes(shadow_notes(rates, "this repository"))
-    months = sorted(p for p in SESSIONS.iterdir() if p.is_dir()) if SESSIONS.is_dir() else []
-    shown = [m for m in months if span is None or m.name in span.months()]
-    tree = [row for shown_month in shown for row in rows_in(shown_month)]
-    rows = [row for row in union([*ledger_rows(tip, span), *tree], lambda row: row) if span is None or span.holds(row)]
+    rows = [row for row in union([*ledger_rows(tip), *tree_side()], lambda row: row) if span is None or span.holds(row)]
     if not rows:
         print(f"costs: no rows under {SESSIONS} or on {BRANCH}{'' if span is None else f' for {span.label}'}")
         return 0
@@ -278,7 +271,7 @@ def across_repos(only: Optional[List[str]], span: Optional[Period], as_json: boo
     checkout's `rates.json` — plus whatever roles that repository adds."""
     status = Status()
     try:
-        ledger = remote_ledger(Client(progress=status), only, None if span is None else span.months())
+        ledger = remote_ledger(Client(progress=status), only)
     finally:
         status.clear()
     rows = [row for row in ledger.rows if span is None or span.holds(row)]

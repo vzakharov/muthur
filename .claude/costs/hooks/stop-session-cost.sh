@@ -96,6 +96,16 @@ put_back() {
   fi
 }
 
+# Every path the session's row has in HEAD, the index or the tree: the staging
+# hook moves it when the ledger re-files it, so a commit that did not happen can
+# leave a removal staged as well as a row.
+session_paths() {
+  {
+    repo ls-tree -r --name-only HEAD -- .claude/costs/sessions
+    repo ls-files --cached --others --exclude-standard -- .claude/costs/sessions
+  } 2>/dev/null | grep -E "/$1\.json$" | sort -u
+}
+
 # What the pricing step and the ledger write said when they failed, for the
 # agent to be told.
 unpriced_reason=''
@@ -108,7 +118,7 @@ last_line() { awk 'NF { line = $0 } END { print line }' "$1" 2>/dev/null; }
 all_lines() { awk 'NF { printf "%s%s", sep, $0; sep = " " }' "$1" 2>/dev/null; }
 
 run_ledger() {
-  local transcript staged row path err
+  local transcript staged err session stray=() path
   transcript="$(field transcript_path)"
   [ -n "$transcript" ] && [ -f "$transcript" ] || return 0
 
@@ -127,32 +137,38 @@ run_ledger() {
     fetched=false
   }
 
-  row="$(python3 "$root/.claude/costs/session_cost.py" \
+  session="$(field session_id)"
+  python3 "$root/.claude/costs/session_cost.py" \
     --transcript "$transcript" \
-    --session-id "$(field session_id)" \
-    --row-path --at-stop --out "$staged" 2>"$err")" ||
+    --session-id "$session" \
+    --at-stop --out "$staged" >/dev/null 2>"$err" ||
     {
       unpriced_reason="$(last_line "$err")"
       rm -f -- "$staged" "$err"
       state=unpriced
       return 0
     }
-  path="${row#"$(repo rev-parse --show-toplevel)"/}"
 
   if [ "$fetched" = true ]; then
-    ledger append-row "$path" "$staged" 2>"$err" || ledger_error="$(all_lines "$err")"
+    ledger append-row "$staged" >/dev/null 2>"$err" || ledger_error="$(all_lines "$err")"
   fi
   rm -f -- "$staged" "$err"
 
-  # A row differing from HEAD is one no commit took, and the ledger holds this
-  # turn's anyway.
-  dirty "$row" || return 0
+  # A copy differing from HEAD is one no commit took, and the ledger holds this
+  # turn's row anyway.
+  while IFS= read -r path; do
+    ! dirty "$path" || stray+=("$path")
+  done < <(session_paths "$session")
+  [ "${#stray[@]}" -gt 0 ] || return 0
 
   # The last moment before anything here touches the tree, and so the latest —
   # which is what gives the look for the check's process time to find it.
   wait_out_harness_check
 
-  if put_back "$path"; then state=put_back; else state=stuck; fi
+  state=put_back
+  for path in "${stray[@]}"; do
+    put_back "$path" || state=stuck
+  done
 }
 
 run_ledger

@@ -9,10 +9,12 @@ session — so the entry is `opt-in: ask`.
 
 - `.claude/costs/` — Price each session at Claude API rates from its transcript
   and commit its row to the repo's `cost-ledger` branch at the end of every
-  turn, with a copy riding the agent's own commits on the working branch until
-  it is finalized; each row also carries the agent's revisable estimate of the
-  work in senior-hours, and `report.py` sums the rows by month, week, day and
-  branch and prices a senior-hour of work, over this repo or, with
+  turn, filed under its branch with the session's number on it, with a copy
+  riding the agent's own commits on the working branch until it is finalized; an
+  adopter's rows in the month-only layout are re-filed in one commit by its
+  first `Stop` on this code. Each row also carries the agent's revisable
+  estimate of the work in senior-hours, and `report.py` sums the rows by month,
+  week, day and branch and prices a senior-hour of work, over this repo or, with
   `--all-my-repos`, every repo the `gh` user can see that carries a ledger;
   `delegation.py` weighs one of `/go`'s delegations against doing it in-session.
   **The cost, which is why it is asked:** a `cost-ledger` branch on `origin`,

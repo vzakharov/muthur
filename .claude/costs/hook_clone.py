@@ -14,6 +14,7 @@ import subprocess
 from pathlib import Path
 from typing import Dict, List, Optional
 
+from test_filing import row as made_row
 from test_pricing import PRICE_TABLE, response
 
 COSTS = Path(__file__).resolve().parent
@@ -21,7 +22,11 @@ LIB = COSTS.parent / "hooks" / "lib.sh"
 STOP_HOOK = ".claude/costs/hooks/stop-session-cost.sh"
 SESSIONS = ".claude/costs/sessions"
 SESSION = "sess"
-ROW = f"{SESSIONS}/2026-03/{SESSION}.json"
+ROW = f"{SESSIONS}/2026-03/a-branch/1/{SESSION}.json"
+# Where the row is filed once its session moves to a branch named `renamed`.
+RENAMED = f"{SESSIONS}/2026-03/renamed/1/{SESSION}.json"
+OTHER = f"{SESSIONS}/2026-03/other-branch/1/other.json"
+EARLIER = "2026-03-01T00:00:00.000Z"
 
 
 class Clone:
@@ -125,9 +130,9 @@ class Clone:
         )
         return built.stdout.strip()
 
-    def other_row(self, parent: str) -> str:
+    def other_row(self, parent: str, path: str = OTHER, text: str = made_row("other", "other-branch", EARLIER)) -> str:
         """Another session's row committed on `parent`, and not pushed."""
-        return self.ledger_commit(parent, {f"{SESSIONS}/2026-03/other.json": json.dumps({"sessionId": "other"})})
+        return self.ledger_commit(parent, {path: text})
 
     def answer(self, *comments: str) -> None:
         """GitHub's answer to the attestation query: one PR carrying `comments`."""
@@ -197,7 +202,7 @@ class Clone:
         )
 
     def row(self) -> Path:
-        [row] = (self.root / ".claude" / "costs" / "sessions").glob(f"*/{SESSION}.json")
+        [row] = (self.root / ".claude" / "costs" / "sessions").rglob(f"{SESSION}.json")
         return row
 
     def status(self) -> str:

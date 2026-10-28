@@ -45,12 +45,11 @@ from lib.ledger_branch import (
     fetch,
     latest_row,
     ledger_rates,
-    path_of,
     rates_text,
     rows_at,
     shared_rates,
 )
-from lib.rows import ROOT, SESSIONS, SessionCost, read_pending_estimate, reshape, row_path, row_text, write_atomic, write_pending_estimate
+from lib.rows import ROOT, SESSIONS, SessionCost, place_tree_copy, read_pending_estimate, reshape, row_text, tree_copies, write_pending_estimate
 from lib.shape import ShapeError, to_json
 
 def describe(estimate: Optional[Estimate], rates: Rates) -> str:
@@ -73,16 +72,11 @@ def parts_of(raw: List[List[str]]) -> List[Part]:
 
 def edit(row: SessionCost) -> None:
     """The ledger takes the edited row, and the tree's copy, where there is
-    one, is rewritten to match."""
+    one, is rewritten to match at the path the ledger filed it at."""
     text = row_text(row)
-    path = row_path(row.session_id)
-    if path is not None:
-        write_atomic(path, text)
-    held = path_of(row.session_id)
-    if held is None:
-        assert path is not None, "the row came from the tree or the ledger"
-        held = path.relative_to(ROOT).as_posix()
-    append_row(held, text)
+    filed = ROOT / append_row(text)
+    if tree_copies(row.session_id):
+        place_tree_copy(filed, text, row.session_id)
 
 
 def booking(tip: Optional[str], role: str) -> List[str]:

@@ -2,15 +2,15 @@
 """Price one session's transcript and write its row under `sessions/`.
 
 Usage:
-  python3 .claude/costs/session_cost.py --transcript <path> [--session-id <id>] [--events <path>] [--row-path] [--at-stop] [--out <path>]
+  python3 .claude/costs/session_cost.py --transcript <path> [--session-id <id>] [--events <path>] [--at-stop] [--out <path>]
 
 The row is rewritten from the whole file each run rather than appended to, which
 is what lets a run pick up anything the previous one was too early to see.
 `--at-stop` is the Stop hook's: the turn is over, so the transcript should end on
 its `end_turn`. `--out` is the hook's too: it writes the row there instead of into
-place, since committing it is the hook's job. Stdout is the interface: the row's
-path under `--row-path`, for `hooks/stop-session-cost.sh`; a one-line summary
-otherwise, for a person running it by hand. `--events` names the session's
+place, since filing and committing it is the hook's job. Without it, the row goes
+where the local copy of the ledger would file it, and the session's other copies
+in the tree go. `--events` names the session's
 telemetry file where it is not the receiver's `tmp/telemetry/<session-id>.jsonl`;
 a session with none is priced from its transcript alone.
 
@@ -23,7 +23,6 @@ from __future__ import annotations
 import argparse
 import json
 import sys
-from datetime import datetime, timezone
 from pathlib import Path
 from typing import Dict, Optional
 
@@ -32,14 +31,15 @@ from lib.prices import parse_prices
 from lib.pricing import is_unwritten_tail, summarise_transcript
 from lib.transcript import TranscriptSources, subagents_of
 from lib.estimate_model import latest
-from lib.ledger_branch import copies, union
+from lib.ledger_branch import copies, path_for
 from lib.rows import (
     ROOT,
     SessionCost,
     parse_session_cost,
+    place_tree_copy,
     read_pending_estimate,
     row_text,
-    write_atomic,
+    union,
 )
 from lib.shape import ShapeError
 
@@ -68,19 +68,11 @@ def events_at(path: Path) -> Optional[Dict[str, Event]]:
     return parse_events(path.read_text(encoding="utf-8"), str(path))
 
 
-def month_of(cost: SessionCost) -> str:
-    """The month a session is filed under is the month it started, so a session
-    running across midnight on the last of the month stays in one file."""
-    started = cost.first_response_at or datetime.now(timezone.utc).isoformat()
-    return started[:7]
-
-
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
     parser.add_argument("--transcript", required=True, type=Path)
     parser.add_argument("--session-id")
     parser.add_argument("--events", type=Path)
-    parser.add_argument("--row-path", action="store_true")
     parser.add_argument("--at-stop", action="store_true")
     parser.add_argument("--out", type=Path)
     args = parser.parse_args()
@@ -100,7 +92,6 @@ def main() -> int:
         events=events,
     )
 
-    out = COSTS / "sessions" / month_of(cost) / f"{cost.session_id}.json"
     before = previous(cost.session_id)
     if before is not None:
         carried = [w for w in before.warnings if is_unwritten_tail(w) and w not in cost.warnings]
@@ -114,13 +105,11 @@ def main() -> int:
     row = row_text(cost)
     if args.out is not None:
         args.out.write_text(row, encoding="utf-8")
+        out = args.out
     else:
-        write_atomic(out, row)
-
-    if args.row_path:
-        print(out)
-    else:
-        print(f"session-cost: {cost.total.responses} responses, ${cost.total.cost_usd:.4f} → {out}")
+        out = ROOT / path_for(row)
+        place_tree_copy(out, row, cost.session_id)
+    print(f"session-cost: {cost.total.responses} responses, ${cost.total.cost_usd:.4f} → {out}")
     return 0
 
 

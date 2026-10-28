@@ -7,7 +7,7 @@ import json
 import os
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Dict, List, Mapping, Optional, Tuple
+from typing import Any, Callable, Dict, Iterable, List, Mapping, Optional, Tuple, TypeVar
 
 from lib.billed import Telemetry, parse_telemetry
 from lib.estimate_model import Estimate, parse_estimate, split_comment
@@ -17,6 +17,8 @@ from lib.tally import Tally, parse_tally
 
 ROOT = Path(__file__).resolve().parents[3]
 SESSIONS = ROOT / ".claude" / "costs" / "sessions"
+
+T = TypeVar("T")
 
 
 @dataclass
@@ -143,9 +145,40 @@ def write_atomic(out: Path, contents: str) -> None:
     os.replace(staged, out)
 
 
-def row_path(session_id: str) -> Optional[Path]:
-    found = sorted(SESSIONS.glob(f"*/{session_id}.json"))
-    return found[0] if found else None
+def tree_rows(sessions: Path = SESSIONS) -> List[Path]:
+    """Every row under `sessions`, at any depth: `lib/filing.py`'s layout and
+    the month-only one alike."""
+    return sorted(sessions.rglob("*.json"))
+
+
+def tree_copies(session_id: str) -> List[Path]:
+    return sorted(SESSIONS.rglob(f"{session_id}.json"))
+
+
+def place_tree_copy(out: Path, text: str, session_id: str) -> None:
+    """Write the session's tree copy at `out`, removing every other."""
+    stale = [path for path in tree_copies(session_id) if path != out]
+    write_atomic(out, text)
+    for path in stale:
+        path.unlink()
+
+
+def recency(row: SessionCost) -> Tuple[str, str]:
+    """The later of two copies of a row is the one that saw more of the
+    session, or, of two that saw the same, the one whose estimate was set later
+    — which is how an estimate edited onto a finished session's row wins."""
+    return row.last_response_at or "", row.estimate.at if row.estimate is not None else ""
+
+
+def union(items: Iterable[T], row_of: Callable[[T], SessionCost]) -> List[T]:
+    """One item per session id, the latest by `recency`; a tie keeps the first."""
+    kept: Dict[str, Tuple[T, SessionCost]] = {}
+    for item in items:
+        row = row_of(item)
+        held = kept.get(row.session_id)
+        if held is None or recency(row) > recency(held[1]):
+            kept[row.session_id] = (item, row)
+    return [item for item, _ in kept.values()]
 
 
 def pending_estimate_path(session_id: str) -> Path:

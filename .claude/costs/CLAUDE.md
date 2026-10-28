@@ -1,16 +1,17 @@
 # The API-rate cost ledger
 
-`sessions/<YYYY-MM>/<session-id>.json` records what a session would have cost at
-Claude API rates. The subscription price hides that number, and the point of
-having it is to know the size of the bill before subscription pricing stops
-being a bargain.
+`sessions/<YYYY-MM>/<branch>/<N>/<session-id>.json` records what a session would
+have cost at Claude API rates. The subscription price hides that number, and the
+point of having it is to know the size of the bill before subscription pricing
+stops being a bargain.
 
 ## Where rows live
 
 **`cost-ledger` is the source of truth**: an orphan branch on `origin` holding
-every row at its usual path, named once in `lib/ledger_branch.py`. The default
-branch carries none. The `Stop` hook writes the row there every turn, on every
-branch and the trunk alike, so a session counts whether or not its work merges.
+every row where § "Where a row is filed" places it, named once in
+`lib/ledger_branch.py`. The default branch carries none. The `Stop` hook writes
+the row there every turn, on every branch and the trunk alike, so a session
+counts whether or not its work merges.
 
 **A branch also carries a display copy until it is finalized**, so its PR's diff
 shows what the work cost. It rides the agent's own commits:
@@ -40,21 +41,51 @@ back. `/finalize` carries the copies into the ledger and deletes them before the
 branch lands, and `/finalize revoke` withdraws the attestation.
 
 **Readers union the ledger with the default branch's tree**, one row per session
-id, the later by `lib/ledger_branch.py`'s `recency` winning. The tree side is
-how a repository that has not migrated still counts, and how a copy that reached
-the trunk without `/finalize` is counted once.
+id, the later by `lib/rows.py`'s `recency` winning. The tree side is how a
+repository that has not migrated still counts, and how a copy that reached the
+trunk without `/finalize` is counted once.
 
 What each failure costs:
 
 - **A push that loses the ledger's tip** to another session re-reads it and
-  rebuilds, up to three tries; rows never collide, so a rebuild loses none.
-  After the third, or on a failed fetch, the hook blocks the stop once with
-  git's message. The next turn's row covers the missed one, so only a session's
-  last turn can be lost, and only when nobody acts on the block.
+  rebuilds, up to three tries, taking the next ordinal where the winner took the
+  one it planned on, so a rebuild loses none. After the third, or on a failed
+  fetch, the hook blocks the stop once with git's message. The next turn's row
+  covers the missed one, so only a session's last turn can be lost, and only
+  when nobody acts on the block.
 - **A GitHub query that fails** counts as not finalized: the commit carries its
   display copy and the next asks again. It is the ledger's one silent fallback,
   approved for that call site alone, and its worst case is a copy on a branch
   that merges after it, which the union counts once.
+
+## Where a row is filed
+
+The ledger reads as what each branch cost, session by session, and only the
+ledger sees every session on a branch, so it decides the path. The display copy
+goes where the local copy of the ledger files it (`ledger.py path-for`), which
+is as fresh as the last `Stop` hook's fetch, so a session's first commit before
+its first `Stop` can take an ordinal the ledger then gives another session; its
+next commit moves it. `lib/filing.py` holds the rules.
+
+- **`<YYYY-MM>` is the month of the branch's first filed session**, fixed once
+  the branch has a directory, so a branch never splits across months: the trunk
+  stays in its first month for good. A branchless row goes under its own month's
+  `.no-branch/`, a name git forbids as a ref component.
+- **`<N>` is one past the highest ordinal the branch holds**, so a gap is never
+  reused, and a branch name reused after deletion continues the old numbering.
+- **A row moves only when its session changes branch** — an auto-branch rename,
+  an attach — taking the new branch's next ordinal; its old path goes in the
+  same commit, on the ledger and on the branch.
+- **Every ledger write re-files whatever is not at its place**: a month-only
+  path, a duplicate copy, two sessions in one ordinal, one branch under two
+  months. That pass is the migration, run by a repository's first write on this
+  code, and what folds in the month-only rows a branch without it keeps writing.
+  Its steady state lists names and reads no row. A collision keeps the
+  earlier-started session in place; a backfill numbers by start time.
+- **A month directory does not bound when its rows started**, so readers take
+  rows at any depth and filter a period by each row's start. A `report.py` older
+  than this layout reads only the files directly under a month and undercounts a
+  migrated repository until its checkout updates.
 
 ## Reading a transcript
 
@@ -239,12 +270,14 @@ run in parallel**, so whatever this hook does to the tree is done while that
 check may be reading it.
 
 **The hook leaves the branch alone and the tree clean.** It prices the row into
-`tmp/` and writes it to the ledger only. A row it finds differing from `HEAD` is
-one no commit took — staged by `hooks/stage-cost-row.sh` for a commit that left
-it out (`git commit -- <path>`, a failed commit, a command that only mentioned
-one), or written by a hand run of `session_cost.py` — and it goes back to
-`HEAD`'s copy, or out of the index and tree where `HEAD` has none. Nothing is
-lost: the ledger holds the turn's row, and the next commit stages a fresh one.
+`tmp/` and writes it to the ledger only. A copy of the session's row it finds
+differing from `HEAD` is one no commit took — staged by
+`hooks/stage-cost-row.sh` for a commit that left it out (`git commit -- <path>`,
+a failed commit, a command that only mentioned one), along with the removal of
+the copy it moved from, or written by a hand run of `session_cost.py` — and each
+goes back to `HEAD`'s copy, or out of the index and tree where `HEAD` has none.
+Nothing is lost: the ledger holds the turn's row, and the next commit stages a
+fresh one.
 
 **It waits the check out before that put-back.** That check leaves nothing on
 disk — it reads the tree and writes to stderr — so its process is the only thing
