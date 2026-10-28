@@ -1,0 +1,121 @@
+{
+  "total": {
+    "inputTokens": 75277,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 153000,
+    "cacheReadTokens": 6859178,
+    "outputTokens": 36608,
+    "thinkingTokens": 15423,
+    "responses": 48,
+    "costUsd": 3.2667156000000004
+  },
+  "estimate": {
+    "at": "2026-10-28T09:34:12.079Z",
+    "parts": [
+      {
+        "hours": 1.5,
+        "grade": "senior",
+        "role": "architect",
+        "comment": "the hook merges outside the agent, so which /merge checks are mechanical, and how it orders against the cold-cache guard and keepalive, needs someone who knows the loop's gates"
+      },
+      {
+        "hours": 6.0,
+        "grade": "senior",
+        "role": "developer",
+        "comment": "seven GitHub-side checks, a merge with a head guard, and boundary-mocked tests for each decline; an auto-merge path tolerates no sloppy reading of API fields"
+      }
+    ],
+    "comment": null
+  },
+  "orientation": {
+    "endedBy": "oriented",
+    "endedOn": null,
+    "endedAt": "2026-10-28T09:25:47.254Z",
+    "contextTokens": 104339,
+    "spend": {
+      "inputTokens": 10,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 52053,
+      "cacheReadTokens": 418522,
+      "outputTokens": 1328,
+      "thinkingTokens": 631,
+      "responses": 5,
+      "costUsd": 0.5267284
+    }
+  },
+  "sessionId": "1aa3bb1f-7382-54c7-b402-76e21340a413",
+  "branch": "claude/merge-gate-hook-k2tzds",
+  "cwd": "/home/user/muthur",
+  "openingPrompt": "о, я придумал как нам сделать так, чтобы после \"можешь мерджить\" человеку не нужно было ни в гитхаб ходить, ни агента будить: user submit-хук, который смотрит: …",
+  "prs": [
+    246
+  ],
+  "url": "https://claude.ai/code/session_01DaohkFbMZ1baY15PNscdFf",
+  "operator": "vzakharov",
+  "firstResponseAt": "2026-10-28T09:25:10.208Z",
+  "lastResponseAt": "2026-10-28T09:35:13.283Z",
+  "pricesAsOf": "2026-10-06",
+  "claudeCodeTotalUsd": null,
+  "ownTurns": {
+    "inputTokens": 92,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 153000,
+    "cacheReadTokens": 6859178,
+    "outputTokens": 33061,
+    "thinkingTokens": 15423,
+    "responses": 46,
+    "costUsd": 3.2574236000000005
+  },
+  "subagents": {
+    "inputTokens": 0,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 0,
+    "cacheReadTokens": 0,
+    "outputTokens": 0,
+    "thinkingTokens": 0,
+    "responses": 0,
+    "costUsd": 0.0
+  },
+  "byRate": {
+    "claude-opus-5-5/standard": {
+      "inputTokens": 92,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 153000,
+      "cacheReadTokens": 6859178,
+      "outputTokens": 33061,
+      "thinkingTokens": 15423,
+      "responses": 46,
+      "costUsd": 3.2574236000000005
+    },
+    "claude-haiku-5-5/standard": {
+      "inputTokens": 75185,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 0,
+      "cacheReadTokens": 0,
+      "outputTokens": 3547,
+      "thinkingTokens": 0,
+      "responses": 2,
+      "costUsd": 0.009292000000000002
+    }
+  },
+  "warnings": [],
+  "compactions": [],
+  "telemetry": {
+    "events": 48,
+    "matched": 46,
+    "matchedTableUsd": 3.2574236000000005,
+    "matchedEventUsd": 3.2574236000000005,
+    "unseen": {
+      "web_fetch_apply": {
+        "inputTokens": 75185,
+        "cacheWrite5mTokens": 0,
+        "cacheWrite1hTokens": 0,
+        "cacheReadTokens": 0,
+        "outputTokens": 3547,
+        "thinkingTokens": 0,
+        "responses": 2,
+        "costUsd": 0.009292000000000002
+      }
+    }
+  }
+}
