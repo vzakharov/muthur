@@ -18,6 +18,10 @@ the prompt reaches the agent, which runs `/merge` and applies judgement.
 Operator's decisions (session, 2026-10-28):
 
 - the trigger is a bare `/merge` only;
+- a PR finalized with `no vet` goes to the agent, since `/merge` has it judge
+  whether the skipped vet run had anything to check;
+- the `/test-on-gh` stub line counts as green only while the skill really is a
+  stub, so the rule holds in an adopter that hydrated it;
 - a decline passes the prompt to the agent silently, with no context added,
   since to the agent it is an ordinary `/merge` either way;
 - the gate sits on `UserPromptSubmit`, the first event a prompt reaches, so a
@@ -84,7 +88,11 @@ failure declines:
      `**nothing runs on a PR in this repo**`;
    - CI-only buckets: `**dispatched and passed`,
      `**not dispatched: the diff doesn't reach them**`, or
-     `**/test-on-gh is an unhydrated stub**`.
+     `**/test-on-gh is an unhydrated stub**`, which passes only while
+     `.claude/skills/test-on-gh/SKILL.md` on the PR head is still a stub (`STUB`
+     in its description). In that state the project has no CI-only tests, here
+     or in an adopter, so the vet run was the whole check. In a project that
+     hydrated the skill the line is stale, and the gate declines.
 
    Any other value declines, which covers a red line and a recorded two-shot
    stop. Prose below the list, such as the "Verified ≠ marker" explanation, is
@@ -177,6 +185,8 @@ takes a transport. They cover:
 - the attestation parser against every alternative in `attest.md`'s fenced
   templates, read from that file, so the template and the parser cannot drift
   apart unnoticed;
+- the stub line passing over a stub `test-on-gh` and declining over a hydrated
+  one;
 - the cold-cache handoff in both directions: the guard passes a bare `/merge`,
   and the gate returns the guard's stop on a decline with a cold cache;
 - the after-merge note delivered once, and not consumed by a keepalive wake.
@@ -203,21 +213,3 @@ takes a transport. They cover:
   template is what keeps them as one contract. The squash read-back lives as
   prose in `merge.md` § "Merging" and as code in the gate. The gate's
   `CLAUDE.md` names `merge.md` as the home, so a change there reaches the gate.
-
-## Open questions
-
-Each one has a recommendation, and the plan above is written with it in force.
-
-1. **A PR finalized with `/finalize no vet`**, the mode for changes with no code
-   to check, where the vet run is skipped. `/merge` asks the agent to confirm
-   that skipping was right for this diff, which is a judgement.
-   - (a, recommended) The gate leaves these PRs to the agent.
-   - (b) The gate trusts the mode and merges.
-2. **The attestation line
-   `CI-only buckets — /test-on-gh is an unhydrated stub`.** It means the project
-   has no CI-only tests set up, and every attestation in this repo carries it.
-   Read literally, `/merge` stands down on any bucket left undispatched for a
-   reason other than "the diff doesn't reach it", which would leave the gate
-   never merging here.
-   - (a, recommended) The line counts as green.
-   - (b) The line declines.
