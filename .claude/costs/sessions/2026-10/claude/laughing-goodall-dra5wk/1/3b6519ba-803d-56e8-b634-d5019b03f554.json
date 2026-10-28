@@ -1,0 +1,113 @@
+{
+  "total": {
+    "inputTokens": 28279,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 47115,
+    "cacheReadTokens": 320367,
+    "outputTokens": 6661,
+    "thinkingTokens": 2134,
+    "responses": 6,
+    "costUsd": 0.560198
+  },
+  "estimate": {
+    "at": "2026-10-28T02:26:31.408Z",
+    "parts": [
+      {
+        "hours": 1.5,
+        "grade": "senior",
+        "role": "architect",
+        "comment": "choosing a retrieval tool for an agent loop needs a judgement of trade-offs (locality, index lifecycle in ephemeral containers, integration surface) that only someone who has run such tools can make quickly"
+      }
+    ],
+    "comment": null
+  },
+  "orientation": {
+    "endedBy": "oriented",
+    "endedOn": null,
+    "endedAt": "2026-10-28T02:26:28.967Z",
+    "contextTokens": 87866,
+    "spend": {
+      "inputTokens": 0,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 0,
+      "cacheReadTokens": 0,
+      "outputTokens": 0,
+      "thinkingTokens": 0,
+      "responses": 0,
+      "costUsd": 0.0
+    }
+  },
+  "sessionId": "3b6519ba-803d-56e8-b634-d5019b03f554",
+  "branch": "claude/laughing-goodall-dra5wk",
+  "cwd": "/home/user/muthur",
+  "openingPrompt": "какие есть минималистичные, с наименьшим бласт-радиусом решения для векторизации кодбазы, чтобы агенты могли пользоваться векторным поиском вместо/помимо грепа?",
+  "prs": [],
+  "url": "https://claude.ai/code/session_01DaohkCEmE8BrUSL3Fo7HUA",
+  "operator": "vzakharov",
+  "firstResponseAt": "2026-10-28T02:26:28.967Z",
+  "lastResponseAt": "2026-10-28T02:27:10.657Z",
+  "pricesAsOf": "2026-10-06",
+  "claudeCodeTotalUsd": null,
+  "ownTurns": {
+    "inputTokens": 8,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 47115,
+    "cacheReadTokens": 320367,
+    "outputTokens": 4770,
+    "thinkingTokens": 2134,
+    "responses": 4,
+    "costUsd": 0.5364253999999999
+  },
+  "subagents": {
+    "inputTokens": 0,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 0,
+    "cacheReadTokens": 0,
+    "outputTokens": 0,
+    "thinkingTokens": 0,
+    "responses": 0,
+    "costUsd": 0.0
+  },
+  "byRate": {
+    "claude-opus-5-5/standard": {
+      "inputTokens": 8,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 47115,
+      "cacheReadTokens": 320367,
+      "outputTokens": 4770,
+      "thinkingTokens": 2134,
+      "responses": 4,
+      "costUsd": 0.5364253999999999
+    },
+    "claude-haiku-5-5/standard": {
+      "inputTokens": 28271,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 0,
+      "cacheReadTokens": 0,
+      "outputTokens": 1891,
+      "thinkingTokens": 0,
+      "responses": 2,
+      "costUsd": 0.0237726
+    }
+  },
+  "warnings": [],
+  "compactions": [],
+  "telemetry": {
+    "events": 6,
+    "matched": 4,
+    "matchedTableUsd": 0.5364253999999999,
+    "matchedEventUsd": 0.5364253999999999,
+    "unseen": {
+      "web_search_tool": {
+        "inputTokens": 28271,
+        "cacheWrite5mTokens": 0,
+        "cacheWrite1hTokens": 0,
+        "cacheReadTokens": 0,
+        "outputTokens": 1891,
+        "thinkingTokens": 0,
+        "responses": 2,
+        "costUsd": 0.0237726
+      }
+    }
+  }
+}
