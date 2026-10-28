@@ -26,6 +26,24 @@ None stated.
 
 The operator did not reply; the session was parked by the keepalive's last wake.
 
+2. **Operator (after the park):** «> План был такой: подключить официальный
+   маркетплейс плагинов anthropics/claude-plugins-official и установить из него
+   pyright-lsp. — ну мы же хотим сделать не только для себя, но и для адоптеров.
+   однократная установка плагина вопроса не решит» **Agent:** Agreed: the
+   one-off install was only a probe. Verified the official marketplace manifest
+   (`gh api repos/anthropics/claude-plugins-official/contents/.claude-plugin/marketplace.json`)
+   lists per-language LSP plugins (`pyright-lsp` → `pyright-langserver --stdio`,
+   `typescript-lsp` → `typescript-language-server`, `rust-analyzer-lsp`,
+   `gopls-lsp`, …); each plugin only declares a command, the binary must be on
+   PATH. Proposed the adopter-shaped design: (1) muthur's
+   `.claude/settings.json` carries `env.ENABLE_LSP_TOOL=1`, the marketplace in
+   `extraKnownMarketplaces` and `pyright-lsp` in `enabledPlugins` (muthur's own
+   scripts are Python) — whether settings `env` reaches the tool's gate is
+   unverified; (2) the binary goes in `.claude/hooks/install-deps.sh`; (3) a
+   stack landing gains a fourth site to wire — the language's LSP plugin — in
+   CLAUDE.md § "Vetting" and `/detemplate`, so an adopter's stack picks its own
+   plugin. Verification in a new session on the branch. Asked for a go.
+
 ## Intent
 
 Vova wants agents to have a retrieval option beyond grep with the smallest blast
@@ -71,10 +89,11 @@ trialled on the repo's Python scripts.
 
 ## Next step
 
-Wait for the operator: the proposal (project-level `pyright-lsp` plugin in
-`.claude/settings.json` via a staged copy, then trial in a new session) awaits
-their agreement — «Если согласен, внесу правку в `.claude/settings.json` и
-передам работу дальше.»
+Wait for the operator: the adopter-shaped design in conversation item 2
+(settings `env` + marketplace + `pyright-lsp`; binary in `install-deps.sh`; LSP
+plugin as a fourth stack-landing site in CLAUDE.md § "Vetting" and
+`/detemplate`) awaits their go. Operator's framing: «мы же хотим сделать не
+только для себя, но и для адоптеров».
 
 ## Last agent turn
 
