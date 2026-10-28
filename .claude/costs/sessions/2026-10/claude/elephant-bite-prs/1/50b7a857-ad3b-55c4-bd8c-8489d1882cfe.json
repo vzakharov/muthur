@@ -1,13 +1,13 @@
 {
   "total": {
-    "inputTokens": 118,
+    "inputTokens": 136,
     "cacheWrite5mTokens": 110150,
-    "cacheWrite1hTokens": 133884,
-    "cacheReadTokens": 8072132,
-    "outputTokens": 39441,
-    "thinkingTokens": 13892,
-    "responses": 59,
-    "costUsd": 4.025540400000001
+    "cacheWrite1hTokens": 153628,
+    "cacheReadTokens": 9911443,
+    "outputTokens": 43217,
+    "thinkingTokens": 14550,
+    "responses": 68,
+    "costUsd": 4.626946600000001
   },
   "estimate": {
     "at": "2026-10-28T02:52:52.500Z",
@@ -53,22 +53,24 @@
   "branch": "claude/elephant-bite-prs",
   "cwd": "/home/user/muthur",
   "openingPrompt": "Перенеси в muthur переделку «слона» (elephant), сделанную в адоптере vzakharov/vovazakharov.com, в PR https://github.com/vzakharov/vovazakharov.com/pull/169 (ве…",
-  "prs": [],
+  "prs": [
+    244
+  ],
   "url": "https://claude.ai/code/session_01DaohkDV4jUxEY1kwvC2knd",
   "operator": "vzakharov",
   "firstResponseAt": "2026-10-28T02:49:46.040Z",
-  "lastResponseAt": "2026-10-28T02:59:51.253Z",
+  "lastResponseAt": "2026-10-28T03:00:46.149Z",
   "pricesAsOf": "2026-10-06",
   "claudeCodeTotalUsd": null,
   "ownTurns": {
-    "inputTokens": 98,
+    "inputTokens": 116,
     "cacheWrite5mTokens": 0,
-    "cacheWrite1hTokens": 133884,
-    "cacheReadTokens": 7236792,
-    "outputTokens": 33719,
-    "thinkingTokens": 11466,
-    "responses": 49,
-    "costUsd": 3.1932024000000006
+    "cacheWrite1hTokens": 153628,
+    "cacheReadTokens": 9076103,
+    "outputTokens": 37495,
+    "thinkingTokens": 12124,
+    "responses": 58,
+    "costUsd": 3.794608600000001
   },
   "subagents": {
     "inputTokens": 20,
@@ -82,23 +84,23 @@
   },
   "byRate": {
     "claude-opus-5-5/standard": {
-      "inputTokens": 118,
+      "inputTokens": 136,
       "cacheWrite5mTokens": 110150,
-      "cacheWrite1hTokens": 133884,
-      "cacheReadTokens": 8072132,
-      "outputTokens": 39441,
-      "thinkingTokens": 13892,
-      "responses": 59,
-      "costUsd": 4.025540400000001
+      "cacheWrite1hTokens": 153628,
+      "cacheReadTokens": 9911443,
+      "outputTokens": 43217,
+      "thinkingTokens": 14550,
+      "responses": 68,
+      "costUsd": 4.626946600000001
     }
   },
   "warnings": [],
   "compactions": [],
   "telemetry": {
-    "events": 59,
-    "matched": 59,
-    "matchedTableUsd": 4.025540400000001,
-    "matchedEventUsd": 4.025540400000001,
+    "events": 68,
+    "matched": 68,
+    "matchedTableUsd": 4.626946600000001,
+    "matchedEventUsd": 4.626946600000001,
     "unseen": {}
   }
 }

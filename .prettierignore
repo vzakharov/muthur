@@ -2,5 +2,5 @@
 # newline there as a line break, so hard-wrapped prose posts as ragged lines.
 docs/pr/
 docs/issue/
-docs/remove-before-merging/squash-message.md
+docs/remove-before-merging/**/squash-message.md
 tmp/
