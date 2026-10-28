@@ -120,7 +120,9 @@ No `--admin`, no `--auto`, no `--delete-branch`, and nothing disabled to get the
 merge through. A refusal — branch protection, a required check still pending, an
 un-mergeable head — is GitHub's answer and gets reported as a stand-down, not
 routed around. Report the commit the squash landed on `<base>`, then end the
-turn: the PR is no longer a place to do work.
+turn: the PR is no longer a place to do work. Before ending it, `TaskStop` a
+running cache keepalive watcher (`.claude/keepalive/`) — a landed PR's session
+has no cache worth keeping warm.
 
 ## Standing down
 
