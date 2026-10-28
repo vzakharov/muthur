@@ -18,8 +18,7 @@ Adopters: sweep your own skills whose run leaves work in your repo and
 that are not part of the loop itself. In each, cite
 .claude/skills/task/repo-change.md and name that skill's deviations
 from the route (landing on a PR that already exists, say), and only
-those. No operator approval needed; the file:
-https://github.com/vzakharov/muthur/blob/main/.claude/skills/task/repo-change.md
+those.
 
 Co-authored-by: Claude <noreply@anthropic.com>
 ```
