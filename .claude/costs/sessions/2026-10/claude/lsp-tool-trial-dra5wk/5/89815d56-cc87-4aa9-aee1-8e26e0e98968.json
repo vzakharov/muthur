@@ -1,0 +1,75 @@
+{
+  "total": {
+    "inputTokens": 12,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 28294,
+    "cacheReadTokens": 289221,
+    "outputTokens": 1913,
+    "thinkingTokens": 453,
+    "responses": 6,
+    "costUsd": 0.32250419999999996
+  },
+  "estimate": null,
+  "orientation": {
+    "endedBy": "end_turn",
+    "endedOn": null,
+    "endedAt": "2026-10-28T04:48:00.230Z",
+    "contextTokens": 54448,
+    "spend": {
+      "inputTokens": 10,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 27746,
+      "cacheReadTokens": 235323,
+      "outputTokens": 1131,
+      "thinkingTokens": 369,
+      "responses": 5,
+      "costUsd": 0.29169259999999997
+    }
+  },
+  "sessionId": "89815d56-cc87-4aa9-aee1-8e26e0e98968",
+  "branch": "claude/lsp-tool-trial-dra5wk",
+  "cwd": "/home/user/muthur",
+  "openingPrompt": "Only use the LSP tool (ToolSearch select:LSP) and Grep; no Bash. In scripts/export-github-item.py find a name imported from scripts/lib/github.py. Run goToDefin…",
+  "prs": [],
+  "url": null,
+  "operator": "vzakharov",
+  "firstResponseAt": "2026-10-28T04:47:37.791Z",
+  "lastResponseAt": "2026-10-28T04:48:00.230Z",
+  "pricesAsOf": "2026-10-06",
+  "claudeCodeTotalUsd": null,
+  "ownTurns": {
+    "inputTokens": 12,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 28294,
+    "cacheReadTokens": 289221,
+    "outputTokens": 1913,
+    "thinkingTokens": 453,
+    "responses": 6,
+    "costUsd": 0.32250419999999996
+  },
+  "subagents": {
+    "inputTokens": 0,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 0,
+    "cacheReadTokens": 0,
+    "outputTokens": 0,
+    "thinkingTokens": 0,
+    "responses": 0,
+    "costUsd": 0.0
+  },
+  "byRate": {
+    "claude-opus-5-5/standard": {
+      "inputTokens": 12,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 28294,
+      "cacheReadTokens": 289221,
+      "outputTokens": 1913,
+      "thinkingTokens": 453,
+      "responses": 6,
+      "costUsd": 0.32250419999999996
+    }
+  },
+  "warnings": [],
+  "compactions": [],
+  "telemetry": null
+}
