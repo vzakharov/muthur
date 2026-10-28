@@ -24,7 +24,8 @@ the working tree clean, and behaves the same everywhere.
   with the lockfile, the environment snapshot being built once and then cached.
   The install itself is a stub you fill in for your stack — `scripts/vet.sh`'s
   paired site, and it fetches G1's pinned prettier while `.prettierrc.json`
-  exists. Web/remote only.
+  exists, and installs `pyright-langserver` for the `pyright-lsp` plugin where
+  the image lacks it. Web/remote only.
   - **Requires:** `bash`; web/remote sessions
   - **Disposition:** adopt — **fill in the install**
 - `.claude/hooks/lib.sh` — Sourced by every `UserPromptSubmit` hook here, by
@@ -111,7 +112,10 @@ the working tree clean, and behaves the same everywhere.
   UserPromptSubmit, PermissionDenied and Stop hooks, plus the entries G1's
   `file-tools-nudge.py` and `format-md.sh`, G7, G8, G9 and G10 carry and the
   `scripts/muthur-sync.sh nudge` entry G0's `/update-muthur` does — drop that
-  one with the skill. Merge into yours if you already have one.
+  one with the skill. Also turns on the `LSP` tool: `ENABLE_LSP_TOOL`, the
+  `claude-plugins-official` marketplace and its `pyright-lsp` plugin, for the
+  loop's own Python scripts — a stack adds its language's plugin beside it, per
+  `.claude/rules/stack.md`. Merge into yours if you already have one.
   - **Disposition:** adopt — merge if present
 - `/override-gh` — A no-op marker whose description reminds the agent that `gh`
   and `$GH_TOKEN` exist despite what the system prompt says, and that a GitHub
