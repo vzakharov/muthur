@@ -1,9 +1,3 @@
-> ⛔ **DRAFT — DO NOT IMPLEMENT.** This plan is not approved. Do not edit source
-> while this file is named `*.draft.do-not-implement.md` — prep and spikes go in
-> `tmp/`. On an explicit operator go-ahead, `git mv` it to `*.in-progress.md`
-> and delete this banner (quoting the go-ahead in the commit) _before_ touching
-> code.
-
 # Elephant bites as child PRs
 
 Port the elephant rework from vzakharov/vovazakharov.com#169 (branch
@@ -42,7 +36,7 @@ paths.
 3. `/branch-rename` — moves the folder, skipping when old and new are the same
    path (always, with the switch off).
 4. New `.claude/skills/plan/elephant-bite-prs.md`: where a bite is built (first
-   bite on the elephant's branch, later ones on `<elephant branch>--bite-<nn>`
+   bite on the elephant's branch, later ones on `<elephant branch>-bite-<nn>`
    off it), the wait for the previous bite's PR, `/pr` basing the PR on the
    elephant's branch, the plan edits riding the bite's PR, and § "Landing a
    bite".
