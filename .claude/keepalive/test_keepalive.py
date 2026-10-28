@@ -61,15 +61,18 @@ class HookCase(unittest.TestCase):
             env=self.env(env),
         )
 
+    def await_lock(self, by: float) -> None:
+        """Returns once a started watcher holds its lock — the state file is
+        written under it — failing at `by`."""
+        while not (self.state / "sess.json").exists():
+            self.assertLess(time.time(), by)
+            time.sleep(0.05)
+
     def running_watcher(self) -> "subprocess.Popen[str]":
-        """A watcher a minute from its wake, past taking its lock — the state
-        file is written under it."""
+        """A watcher a minute from its wake, past taking its lock."""
         self.knob(60)
         watcher = self.start_watcher()
-        deadline = time.time() + 10
-        while not (self.state / "sess.json").exists():
-            self.assertLess(time.time(), deadline)
-            time.sleep(0.05)
+        self.await_lock(time.time() + 10)
         return watcher
 
     def wake(self) -> None:
@@ -213,9 +216,7 @@ class TheDeadline(HookCase):
         due = time.time() + 2
         watcher = self.start_watcher({"MUTHUR_CACHE_KEEPALIVE_LEAD": "3598"})
         try:
-            while not (self.state / "sess.json").exists():
-                self.assertLess(time.time(), due)
-                time.sleep(0.05)
+            self.await_lock(due)
             self.session(ago=0, ttl="5m")
             time.sleep(max(0.0, due - time.time()) + 1.5)
             self.assertIsNone(watcher.poll())
