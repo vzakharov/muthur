@@ -40,6 +40,8 @@ BODY = "Why the thing.\n\nCo-authored-by: Claude <noreply@anthropic.com>"
 ROW = ".claude/costs/sessions/2026-10/feat-thing/1/s.json"
 STUB_SKILL = "---\ndescription: STUB — not yet hydrated.\n---\n\nBody.\n"
 HYDRATED_SKILL = "---\ndescription: Dispatch the CI-only buckets.\n---\n\nBody.\n"
+PULLS = f"pulls?state=open&head=owner:{BRANCH}"
+CHECK_RUNS = f"commits/{HEAD}/check-runs?per_page=100&page=1"
 
 
 def attestation_body(
@@ -71,7 +73,7 @@ class FakeGitHub(gate.GitHub):
     def __init__(self) -> None:
         super().__init__("owner/repo", "token")
         self.routes: Dict[str, Any] = {
-            f"pulls?state=open&head=owner:{BRANCH}": [{"number": NUMBER, "draft": False}],
+            PULLS: [{"number": NUMBER, "draft": False}],
             f"pulls/{NUMBER}": {
                 "head": {"sha": HEAD},
                 "base": {"ref": "main"},
@@ -83,7 +85,7 @@ class FakeGitHub(gate.GitHub):
             },
             f"compare/{ATTESTED}...{HEAD}": {"status": "ahead", "files": [{"filename": ROW}]},
             f"compare/main...{HEAD}": {"behind_by": 0},
-            f"commits/{HEAD}/check-runs?per_page=100&page=1": {
+            CHECK_RUNS: {
                 "total_count": 1,
                 "check_runs": [{"status": "completed", "conclusion": "success"}],
             },
@@ -165,7 +167,7 @@ class Merges(GateCase):
         self.assertIsNotNone(self.prompt())
 
     def test_no_check_runs_pass_where_nothing_runs_on_a_pr(self) -> None:
-        self.github.routes[f"commits/{HEAD}/check-runs?per_page=100&page=1"] = {"total_count": 0, "check_runs": []}
+        self.github.routes[CHECK_RUNS] = {"total_count": 0, "check_runs": []}
         self.github.set_comments(attestation_body(ci=record.NOTHING_RUNS), squash_body())
         self.assertIsNotNone(self.prompt())
 
@@ -181,12 +183,12 @@ class Merges(GateCase):
 
 class Declines(GateCase):
     def test_a_draft(self) -> None:
-        self.github.routes[f"pulls?state=open&head=owner:{BRANCH}"][0]["draft"] = True
+        self.github.routes[PULLS][0]["draft"] = True
         self.assert_declines()
 
     def test_no_pr_or_two(self) -> None:
         for pulls in ([], [{"number": 7, "draft": False}, {"number": 8, "draft": False}]):
-            self.github.routes[f"pulls?state=open&head=owner:{BRANCH}"] = pulls
+            self.github.routes[PULLS] = pulls
             self.assert_declines()
 
     def test_no_attestation_a_revoked_one_or_a_no_vet_one(self) -> None:
@@ -226,14 +228,14 @@ class Declines(GateCase):
 
     def test_a_check_short_of_green(self) -> None:
         for run in ({"status": "completed", "conclusion": "failure"}, {"status": "in_progress", "conclusion": None}):
-            self.github.routes[f"commits/{HEAD}/check-runs?per_page=100&page=1"]["check_runs"] = [run]
+            self.github.routes[CHECK_RUNS]["check_runs"] = [run]
             self.assert_declines()
-        self.github.routes[f"commits/{HEAD}/check-runs?per_page=100&page=1"] = {"total_count": 0, "check_runs": []}
+        self.github.routes[CHECK_RUNS] = {"total_count": 0, "check_runs": []}
         self.github.routes[f"commits/{HEAD}/status"] = {"statuses": [{"state": "pending"}]}
         self.assert_declines()
 
     def test_no_checks_where_the_attestation_says_ci_ran(self) -> None:
-        self.github.routes[f"commits/{HEAD}/check-runs?per_page=100&page=1"] = {"total_count": 0, "check_runs": []}
+        self.github.routes[CHECK_RUNS] = {"total_count": 0, "check_runs": []}
         self.assert_declines()
 
     def test_feedback_awaiting_an_answer(self) -> None:
