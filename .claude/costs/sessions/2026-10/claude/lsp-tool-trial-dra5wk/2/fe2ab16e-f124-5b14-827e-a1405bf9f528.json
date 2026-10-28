@@ -1,22 +1,22 @@
 {
   "total": {
-    "inputTokens": 32,
+    "inputTokens": 60,
     "cacheWrite5mTokens": 0,
-    "cacheWrite1hTokens": 78688,
-    "cacheReadTokens": 1807625,
-    "outputTokens": 8242,
-    "thinkingTokens": 1772,
-    "responses": 16,
-    "costUsd": 1.155997
+    "cacheWrite1hTokens": 98137,
+    "cacheReadTokens": 3875081,
+    "outputTokens": 14670,
+    "thinkingTokens": 3661,
+    "responses": 30,
+    "costUsd": 1.8537522000000002
   },
   "estimate": {
-    "at": "2026-10-28T03:37:02.365Z",
+    "at": "2026-10-28T04:14:22.392Z",
     "parts": [
       {
-        "hours": 0.5,
+        "hours": 2.5,
         "grade": "senior",
         "role": "developer",
-        "comment": "establishing that the flag alone does not surface the LSP tool, and which plugin wiring it needs, takes reading an undocumented gate and the plugin model, not a routine lookup"
+        "comment": "wiring an LSP plugin so it travels to adopters touches settings, dependency install, the stack-landing contract and /detemplate, and needs a live trial in a fresh session to prove the flag and plugin actually surface the tool"
       }
     ],
     "comment": null
@@ -45,18 +45,18 @@
   "url": "https://claude.ai/code/session_01DaohkDdJpVqGT8LWBLudag",
   "operator": "vzakharov",
   "firstResponseAt": "2026-10-28T02:41:18.615Z",
-  "lastResponseAt": "2026-10-28T03:49:17.305Z",
+  "lastResponseAt": "2026-10-28T04:15:04.587Z",
   "pricesAsOf": "2026-10-06",
   "claudeCodeTotalUsd": 0.9805568,
   "ownTurns": {
-    "inputTokens": 32,
+    "inputTokens": 60,
     "cacheWrite5mTokens": 0,
-    "cacheWrite1hTokens": 78688,
-    "cacheReadTokens": 1807625,
-    "outputTokens": 8242,
-    "thinkingTokens": 1772,
-    "responses": 16,
-    "costUsd": 1.155997
+    "cacheWrite1hTokens": 98137,
+    "cacheReadTokens": 3875081,
+    "outputTokens": 14670,
+    "thinkingTokens": 3661,
+    "responses": 30,
+    "costUsd": 1.8537522000000002
   },
   "subagents": {
     "inputTokens": 0,
@@ -70,23 +70,23 @@
   },
   "byRate": {
     "claude-opus-5-5/standard": {
-      "inputTokens": 32,
+      "inputTokens": 60,
       "cacheWrite5mTokens": 0,
-      "cacheWrite1hTokens": 78688,
-      "cacheReadTokens": 1807625,
-      "outputTokens": 8242,
-      "thinkingTokens": 1772,
-      "responses": 16,
-      "costUsd": 1.155997
+      "cacheWrite1hTokens": 98137,
+      "cacheReadTokens": 3875081,
+      "outputTokens": 14670,
+      "thinkingTokens": 3661,
+      "responses": 30,
+      "costUsd": 1.8537522000000002
     }
   },
   "warnings": [],
   "compactions": [],
   "telemetry": {
-    "events": 16,
-    "matched": 16,
-    "matchedTableUsd": 1.155997,
-    "matchedEventUsd": 1.155997,
+    "events": 30,
+    "matched": 30,
+    "matchedTableUsd": 1.8537522000000002,
+    "matchedEventUsd": 1.8537522,
     "unseen": {}
   }
 }

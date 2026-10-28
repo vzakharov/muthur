@@ -32,4 +32,10 @@ cd "${CLAUDE_PROJECT_DIR:-$(pwd)}"
 # install below is filled in. Keyed on `.prettierrc.json`, as in `vet.sh`.
 [ ! -f .prettierrc.json ] || scripts/prettier.sh --version >/dev/null
 
+# The language server `.claude/settings.json`'s `pyright-lsp` plugin launches
+# for the LSP tool; the plugin ships only the command name. The cloud image
+# carries it as a uv tool, so this installs only where an image does not. A
+# stack that enables another LSP plugin installs that plugin's server here too.
+command -v pyright-langserver >/dev/null || uv tool install --quiet pyright
+
 # TODO: install dependencies for your stack

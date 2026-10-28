@@ -1,5 +1,5 @@
 ---
-description: What scripts/vet.sh must exit, and the three sites a stack landing or a toolchain change has to wire
+description: What scripts/vet.sh must exit, and the four sites a stack landing or a toolchain change has to wire
 paths:
   - scripts/vet.sh
   - .claude/hooks/install-deps.sh
@@ -36,7 +36,7 @@ which the script itself cannot see:
   no script at all: `/finalize` passes its vet step and attests to a run that
   verified nothing.
 
-**A stack landing, or a toolchain change, is unfinished until three sites
+**A stack landing, or a toolchain change, is unfinished until four sites
 agree:**
 
 1. `scripts/vet.sh` runs the project's real checks; its header carries per-stack
@@ -50,3 +50,9 @@ agree:**
    runtime, a bumped pin, a new system dependency, a package-manager swap — or
    the next session runs under a version nobody chose. The one case that detects
    itself is `gh` missing from `PATH`, which `.claude/hooks/gh-shim.sh` reports.
+4. **`.claude/settings.json`'s `enabledPlugins`** names the stack's language
+   server plugin from `claude-plugins-official` (`typescript-lsp`,
+   `rust-analyzer-lsp`, `gopls-lsp`, …), which is what gives agents the `LSP`
+   tool for that language; `install-deps.sh` installs the server binary the
+   plugin launches, which the plugin itself does not ship. `pyright-lsp` is
+   already there for the loop's own Python scripts.
