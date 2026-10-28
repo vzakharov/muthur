@@ -1,0 +1,81 @@
+{
+  "total": {
+    "inputTokens": 18,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 39282,
+    "cacheReadTokens": 807393,
+    "outputTokens": 4599,
+    "thinkingTokens": 620,
+    "responses": 9,
+    "costUsd": 0.5677866000000001
+  },
+  "estimate": null,
+  "orientation": {
+    "endedBy": "end_turn",
+    "endedOn": null,
+    "endedAt": "2026-10-28T04:22:53.802Z",
+    "contextTokens": 98809,
+    "spend": {
+      "inputTokens": 16,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 38869,
+      "cacheReadTokens": 708999,
+      "outputTokens": 3985,
+      "thinkingTokens": 620,
+      "responses": 8,
+      "costUsd": 0.5325158000000001
+    }
+  },
+  "sessionId": "a1130d81-cd73-5a5f-b212-b7c2a6f7fe5b",
+  "branch": "HEAD",
+  "cwd": "/home/user/muthur",
+  "openingPrompt": "This is a probe session; change nothing in the repo, commit nothing. The branch's .claude/settings.json sets env ENABLE_LSP_TOOL=1 and enables the pyright-lsp@c…",
+  "prs": [],
+  "url": "https://claude.ai/code/session_01DaohkFBTd5PxYWvP9jehqg",
+  "operator": "vzakharov",
+  "firstResponseAt": "2026-10-28T04:21:58.116Z",
+  "lastResponseAt": "2026-10-28T04:22:53.802Z",
+  "pricesAsOf": "2026-10-06",
+  "claudeCodeTotalUsd": null,
+  "ownTurns": {
+    "inputTokens": 18,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 39282,
+    "cacheReadTokens": 807393,
+    "outputTokens": 4599,
+    "thinkingTokens": 620,
+    "responses": 9,
+    "costUsd": 0.5677866000000001
+  },
+  "subagents": {
+    "inputTokens": 0,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 0,
+    "cacheReadTokens": 0,
+    "outputTokens": 0,
+    "thinkingTokens": 0,
+    "responses": 0,
+    "costUsd": 0.0
+  },
+  "byRate": {
+    "claude-opus-5-5/standard": {
+      "inputTokens": 18,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 39282,
+      "cacheReadTokens": 807393,
+      "outputTokens": 4599,
+      "thinkingTokens": 620,
+      "responses": 9,
+      "costUsd": 0.5677866000000001
+    }
+  },
+  "warnings": [],
+  "compactions": [],
+  "telemetry": {
+    "events": 9,
+    "matched": 9,
+    "matchedTableUsd": 0.5677866000000001,
+    "matchedEventUsd": 0.5677866,
+    "unseen": {}
+  }
+}
