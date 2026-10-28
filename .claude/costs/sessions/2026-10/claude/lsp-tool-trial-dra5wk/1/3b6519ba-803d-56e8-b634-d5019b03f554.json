@@ -1,0 +1,113 @@
+{
+  "total": {
+    "inputTokens": 71784,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 81148,
+    "cacheReadTokens": 2840530,
+    "outputTokens": 23841,
+    "thinkingTokens": 6281,
+    "responses": 31,
+    "costUsd": 1.6572477
+  },
+  "estimate": {
+    "at": "2026-10-28T02:40:04.969Z",
+    "parts": [
+      {
+        "hours": 1.0,
+        "grade": "senior",
+        "role": "architect",
+        "comment": "picking a retrieval tool for an agent loop (vectors vs graphs vs LSP) takes judgement of locality, index lifecycle in ephemeral containers and integration surface; trialling the LSP tool is a separate job"
+      }
+    ],
+    "comment": null
+  },
+  "orientation": {
+    "endedBy": "oriented",
+    "endedOn": null,
+    "endedAt": "2026-10-28T02:26:28.967Z",
+    "contextTokens": 87866,
+    "spend": {
+      "inputTokens": 0,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 0,
+      "cacheReadTokens": 0,
+      "outputTokens": 0,
+      "thinkingTokens": 0,
+      "responses": 0,
+      "costUsd": 0.0
+    }
+  },
+  "sessionId": "3b6519ba-803d-56e8-b634-d5019b03f554",
+  "branch": "claude/lsp-tool-trial-dra5wk",
+  "cwd": "/home/user/muthur",
+  "openingPrompt": "какие есть минималистичные, с наименьшим бласт-радиусом решения для векторизации кодбазы, чтобы агенты могли пользоваться векторным поиском вместо/помимо грепа?",
+  "prs": [],
+  "url": "https://claude.ai/code/session_01DaohkCEmE8BrUSL3Fo7HUA",
+  "operator": "vzakharov",
+  "firstResponseAt": "2026-10-28T02:26:28.967Z",
+  "lastResponseAt": "2026-10-28T02:40:35.281Z",
+  "pricesAsOf": "2026-10-06",
+  "claudeCodeTotalUsd": null,
+  "ownTurns": {
+    "inputTokens": 52,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 81148,
+    "cacheReadTokens": 2840530,
+    "outputTokens": 19008,
+    "thinkingTokens": 6281,
+    "responses": 26,
+    "costUsd": 1.597658
+  },
+  "subagents": {
+    "inputTokens": 0,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 0,
+    "cacheReadTokens": 0,
+    "outputTokens": 0,
+    "thinkingTokens": 0,
+    "responses": 0,
+    "costUsd": 0.0
+  },
+  "byRate": {
+    "claude-opus-5-5/standard": {
+      "inputTokens": 52,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 81148,
+      "cacheReadTokens": 2840530,
+      "outputTokens": 19008,
+      "thinkingTokens": 6281,
+      "responses": 26,
+      "costUsd": 1.597658
+    },
+    "claude-haiku-5-5/standard": {
+      "inputTokens": 71732,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 0,
+      "cacheReadTokens": 0,
+      "outputTokens": 4833,
+      "thinkingTokens": 0,
+      "responses": 5,
+      "costUsd": 0.05958970000000001
+    }
+  },
+  "warnings": [],
+  "compactions": [],
+  "telemetry": {
+    "events": 30,
+    "matched": 25,
+    "matchedTableUsd": 1.56086,
+    "matchedEventUsd": 1.56086,
+    "unseen": {
+      "web_search_tool": {
+        "inputTokens": 71732,
+        "cacheWrite5mTokens": 0,
+        "cacheWrite1hTokens": 0,
+        "cacheReadTokens": 0,
+        "outputTokens": 4833,
+        "thinkingTokens": 0,
+        "responses": 5,
+        "costUsd": 0.05958970000000001
+      }
+    }
+  }
+}
