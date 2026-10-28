@@ -5,14 +5,16 @@
 # Auto mode's classifier reads such a write as External System Writes and
 # denies it, so the interface is fixed and narrow enough to approve as exactly
 # this command — twice, since neither approval reaches every session:
-#   - the `autoMode.allow` entry "Sticky PR Comments", read from user or managed
+#   - an `autoMode.allow` entry covering this script, read from user or managed
 #     settings only: on the web, the `~/.claude/settings.json` the environment
-#     setup script writes (`docs/adopting/web-remote.md` § "A worked example").
+#     setup script writes. `docs/adopting/web-remote.md` § "A worked example"
+#     calls it "Sticky PR Comments"; an operator's own wording counts the same.
 #   - the `.claude/settings.json` allow rule, which resolves before the
 #     classifier in a session that honours the project's `permissions.allow`
 #     — a cloud session does not.
-# A denial on the web means the setup script lacks the first: the reply that
-# meets it names that entry beside the phrase CLAUDE.md asks for, so the
+# A denial on the web means the setup script lacks the first — a denial, not a
+# missing name in `claude auto-mode config`: the reply that meets it names that
+# entry beside the phrase CLAUDE.md asks for, so the
 # operator can add it. The file must lead with its kind's marker, which keeps
 # either approval from covering any other comment.
 #

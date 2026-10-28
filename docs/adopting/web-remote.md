@@ -256,9 +256,13 @@ What carries over to any stack, and what to check before adapting it:
    and an unguarded `apt-get install` fails on the empty apt lists.
 6. **Prime the dependency cache last**, guarded, since the repo dir may be
    absent.
-7. **Check the `autoMode` block landed** from inside a session:
-   `claude auto-mode config | grep -E "Ephemeral Container Files|Session Branch Cleanup|Sticky PR Comments"`
-   prints all three rules only if the classifier has them.
+7. **Check the `autoMode` block landed** from inside a session: read
+   `claude auto-mode config` for a rule covering each of the three things —
+   deleting container files, deleting the session's own `claude/*` branch on
+   origin, and running `scripts/pr-comment.sh`. The names above are this
+   example's; an operator who wrote an equivalent entry in their own words,
+   common in an environment shared across repositories, already has it. A denial
+   is the definitive sign one is missing.
 8. **The multi-repo hook stays as written.** It names no repository, so it
    carries over unchanged, and its 600-second `timeout` covers each attached
    repository's dependency install running in turn.

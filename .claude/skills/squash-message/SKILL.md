@@ -168,8 +168,9 @@ Format rules:
     paragraph of its own, opening `Adopters:` and addressed to their agent: what
     to do, whether it waits on their operator's yes — anything reaching outside
     their tree does — and a URL into this repo for anything their tree may not
-    carry yet. `@.claude/skills/update-muthur/SKILL.md` Step 4 is the reading
-    side.
+    carry yet. An ask to check for something their operator may already have
+    done names it by what it does, never by this repo's title for it.
+    `@.claude/skills/update-muthur/SKILL.md` Step 4 is the reading side.
 - **Body** — the why, then what changed, at the altitude Step 3 sets. When the
   PR or diff references an issue, end the prose with a `Closes #N` (for
   `feat`/`refactor`/…) or `Fixes #N` (for `fix`) trailer. **Never carry `#<tbd>`
