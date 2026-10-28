@@ -13,9 +13,11 @@ against the conflict markers. With no base merge since the floor, the
 virtual merge is the floor's own tree.
 
 merge-tree exits 1 on a conflict and on an unreadable ref alike, so the
-recipe pipes past the status and checks that it got a tree. Bites
-squash-merged into an elephant branch are a hole of the same kind that
-this does not close, tracked in #241.
+recipe pipes past the status and checks that it got a tree.
+
+/propose-issue no longer files an issue without the operator's yes:
+asked only whether something needs an issue, it rules and asks, since
+an issue is public the moment it exists.
 
 Co-authored-by: Claude <noreply@anthropic.com>
 ```
