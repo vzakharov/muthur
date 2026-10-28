@@ -110,15 +110,38 @@ git log origin/<base>..HEAD --format='%H %s' | awk '$2 == "polish:" { print $1; 
 ```
 
 The commit's subject line is matched rather than `--grep`, which would also hit
-a body line that happens to open the same way. Found →
-`git diff <that sha>..HEAD`. Nothing found means the branch has no floor yet, so
-**its first run is a `full` run whether or not the word was typed** — the scope
-stays the whole `origin/<base>...HEAD` above, and nobody has to remember to ask
-for that.
+a body line that happens to open the same way. Nothing found means the branch
+has no floor yet, so **its first run is a `full` run whether or not the word was
+typed** — the scope stays the whole `origin/<base>...HEAD` above, and nobody has
+to remember to ask for that.
 
-Everything else falls out of the range being two-dot: only the commits this
-branch added are candidates. A `polish:` commit the base carries is never the
-floor, so the lookup does not rest on the convention above holding — and a
+Found, the scope is HEAD against the floor merged with the base commit the
+branch has taken in:
+
+```bash
+mb=$(git merge-base HEAD origin/<base>)
+T=$(git merge-tree --write-tree --name-only <floor> "$mb" | head -1)
+git cat-file -e "$T^{tree}"
+git diff "$T" HEAD
+```
+
+**Not `git diff <floor>..HEAD`.** A branch that merges its base after the floor
+carries everything the base landed in between, which the base's own PRs already
+polished. The virtual merge puts that work below the line too, so what remains
+is the branch's own commits since the floor plus the merge's conflict
+resolutions — text written at merge time that nobody has polished. Where the
+real merge conflicted, `T` holds the conflict markers and the diff shows the
+resolution against them. With no base merge since the floor, `T` is the floor's
+own tree.
+
+`merge-tree` exits 1 on a conflict, which is the case the recipe exists for, so
+the pipe keeps that status from aborting the run — and the same 1 is what it
+returns for a ref it cannot read, which is why the `cat-file` check stands
+between it and the diff.
+
+Everything else falls out of the lookup's range being two-dot: only the commits
+this branch added are candidates. A `polish:` commit the base carries is never
+the floor, so the lookup does not rest on the convention above holding — and a
 commit a rebase, amend or reset rewrote away cannot come back as one, so there
 is nothing to invalidate. Both need `origin/<base>` to be the fetched one, which
 is the second thing the fetch above buys.
