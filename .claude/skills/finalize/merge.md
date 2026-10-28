@@ -26,6 +26,9 @@ through `/merge`.
 
 ## Step 8 — the gate
 
+**`.claude/merge-gate/` mirrors this section and § "Merging" in code**, merging
+a bare `/merge` before it reaches an agent, so a change here is a change there.
+
 One predicate governs, and the list below only spells out how it fails: **merge
 only when the run's whole effect on the branch was step 3's sweep, the staged
 swap, the quality passes' own edits, and whatever a tool's own fixer rewrote,

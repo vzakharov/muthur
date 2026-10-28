@@ -6,10 +6,20 @@
   two conflicts: the G10 catalog entry and the squash proposal. The keepalive
   and cold-cache tests pass on the merged tree. #237 is closed with a comment
   pointing here.
-- **Left: everything from § "Design" on.** That is the gate itself
-  (`.claude/merge-gate/`), the cold-cache deferral, the `awaiting_rows()`
-  extraction, the wiring and the tests. After that come `/go` Step 3 (`/polish`)
-  and Step 4 (`/pr` refresh).
+- **Done: § "Design" through § "Tests".** Three deviations, each forced by what
+  the code turned out to be:
+  - `scripts/lib/` and `.claude/costs/lib/` both carry a `lib.github`, so the
+    gate runs the cold-cache guard as a subprocess, the event marked
+    `merge_gate_declined`, rather than calling its `on_prompt`; and the
+    attestation marker moves to `.claude/costs/lib/attestation.py` so the gate
+    reads it without the ledger's `lib.github`.
+  - The after-merge note is told on every prompt until a response lands after
+    it, rather than skipping keepalive wakes: any prompt the model answers puts
+    it in the conversation, and a prompt the cold-cache guard blocks must not
+    use it up.
+  - GitHub's REST names stand in for the GraphQL ones: `mergeable` true and
+    `mergeable_state` `clean`.
+- **Left:** `/go` Step 3 (`/polish`) and Step 4 (`/pr` refresh).
 
 ## Goal
 
