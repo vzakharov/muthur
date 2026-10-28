@@ -11,6 +11,7 @@ worth keeping warm is the operator's call — so the entry is `opt-in: ask`.
   cache expires, so the next prompt does not re-cache the whole conversation at
   20–40 times a cache read. A `UserPromptSubmit` hook has the agent start a
   background watcher as each turn's last action, and the watcher's exit is the
+<<<<<<< HEAD
   wake. **The cost, which is why it is asked:** a background watcher on every
   idle turn; `MUTHUR_CACHE_KEEPALIVE_RENEWALS` (default 0, at most 5
   recommended) renewals per idle spell, each a visible line in chat; and the
@@ -19,6 +20,19 @@ worth keeping warm is the operator's call — so the entry is `opt-in: ask`.
   writes. Arrives with one `.claude/settings.json` `UserPromptSubmit` entry to
   merge and a `scripts/vet.sh` loop entry running `test_keepalive.py`; a no
   deletes the directory and both.
+=======
+  wake. A branch whose PR is merged or closed gets neither watcher nor park.
+  **The cost, which is why it is asked:** a background watcher on every idle
+  turn, which is **the one exception to CLAUDE.md's ban on
+  `run_in_background`**, so that line changes in your `CLAUDE.md` too;
+  `MUTHUR_CACHE_KEEPALIVE_RENEWALS` (default 0, at most 5 recommended) renewals
+  per idle spell, each a visible line in chat; and the wake after them runs
+  `/relay park`, which commits a summary file to the branch. Only a one-hour
+  cache is kept, read off the session's own cache writes. Arrives with one
+  `.claude/settings.json` `UserPromptSubmit` entry to merge and a
+  `scripts/vet.sh` loop entry running `test_keepalive.py`; a no deletes the
+  directory and both.
+>>>>>>> origin/claude/keepalive-skips-landed-pr
   - **Requires:** `python3` ≥3.9; a Bash tool with `run_in_background`
   - **Pulls in:** **`.claude/costs/lib/` and `prices.json` (G7)** — it imports
     `lib/restart.py`, which reads the ledger's pricing, so the dependency is

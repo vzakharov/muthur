@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 Proposed squash title/body:
 
 ```
@@ -29,6 +30,24 @@ The keepalive starts no watcher and parks nothing on a branch whose PR
 has landed, merged or closed, so a session stops costing anything once
 its work is in. It asks GitHub only on turns no live watcher covers,
 and once per commit after a landed answer.
+=======
+Proposed squash body:
+
+```
+A session whose branch's PR had already been merged or closed was still
+asked by the cache keepalive to park, which commits a summary nobody
+will read onto landed history. A downstream session refused by hand;
+the hook now refuses for it.
+
+On a turn with no live watcher, the UserPromptSubmit hook asks
+`gh pr view` about the checked-out branch. With the PR merged or closed
+and HEAD at or behind its head, it asks for no watcher, and a wake,
+whether a renewal or the last one, answers with one line instead of
+renewing or running `/relay park`. A branch with commits past its PR
+stays live. A landed answer is remembered against HEAD, so GitHub is
+asked once per commit, and any failure of git or gh reads as live,
+keeping the old behaviour.
+>>>>>>> origin/claude/keepalive-skips-landed-pr
 
 Co-authored-by: Claude <noreply@anthropic.com>
 ```
