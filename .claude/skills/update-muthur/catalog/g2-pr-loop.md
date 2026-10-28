@@ -87,11 +87,12 @@
   - **Pulls in:** `/finalize`, `/go`
   - **Disposition:** adopt
 - `/relay` — Hand the session to a fresh one instead of compacting it: write a
-  summary to a committed `docs/remove-before-merging/relay-<N>.md`, numbered one
-  past the branch's previous relay, with the agent's last reply appended
-  verbatim from the transcript by `scripts/relay-last-reply.py`, start a
-  successor on the branch with `/relay take <branch>`, and stop. The successor
-  attaches, reads the highest-numbered summary, and dispatches on its Next step.
+  summary to a committed `relay-<N>.md` in the branch's working directory
+  (`scripts/working-dir.sh`), numbered one past the branch's previous relay,
+  with the agent's last reply appended verbatim from the transcript by
+  `scripts/relay-last-reply.py`, start a successor on the branch with
+  `/relay take <branch>`, and stop. The successor attaches, reads the
+  highest-numbered summary, and dispatches on its Next step.
   - **Requires:** `python3`; `create_session` for the spawn on the web; a typed
     line locally
   - **Pulls in:** `/from-branch`, `/go`, `/finalize`,

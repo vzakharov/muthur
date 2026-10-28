@@ -1,9 +1,7 @@
 #!/bin/sh
 # Prints the branch's own working directory under `docs/remove-before-merging/`:
 # the branch's full name, less the `claude/` prefix the harness gives every
-# session branch (`claude/masd-bite-02` → `docs/remove-before-merging/
-# masd-bite-02`). Git gives no two branches one name, so no two branches share a
-# folder.
+# session branch (`claude/masd-bite-02` → `…/masd-bite-02`).
 #
 # A bite branches off an elephant's branch and inherits its working files, so a
 # fixed path would make the bite overwrite the elephant's squash draft and take
