@@ -1,0 +1,81 @@
+{
+  "total": {
+    "inputTokens": 44,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 111716,
+    "cacheReadTokens": 2095747,
+    "outputTokens": 7866,
+    "thinkingTokens": 1918,
+    "responses": 22,
+    "costUsd": 1.4703734000000006
+  },
+  "estimate": null,
+  "orientation": {
+    "endedBy": "end_turn",
+    "endedOn": null,
+    "endedAt": "2026-10-28T04:46:06.945Z",
+    "contextTokens": 52679,
+    "spend": {
+      "inputTokens": 42,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 111108,
+      "cacheReadTokens": 2043678,
+      "outputTokens": 7487,
+      "thinkingTokens": 1872,
+      "responses": 21,
+      "costUsd": 1.4475076000000007
+    }
+  },
+  "sessionId": "88493a0f-be16-53b7-a49c-2648db12379c",
+  "branch": "claude/lsp-tool-trial-dra5wk",
+  "cwd": "/home/user/muthur",
+  "openingPrompt": "/relay take claude/lsp-tool-trial-dra5wk — плагин pyright-lsp теперь ставит setup-скрипт, дальше проверка, появился ли инструмент LSP, и его испытание на Python…",
+  "prs": [],
+  "url": "https://claude.ai/code/session_01DaohkEzZYH7LdyFMo1iVb8",
+  "operator": "vzakharov",
+  "firstResponseAt": "2026-10-28T04:44:21.260Z",
+  "lastResponseAt": "2026-10-28T04:46:06.945Z",
+  "pricesAsOf": "2026-10-06",
+  "claudeCodeTotalUsd": 0.019713,
+  "ownTurns": {
+    "inputTokens": 44,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 111716,
+    "cacheReadTokens": 2095747,
+    "outputTokens": 7866,
+    "thinkingTokens": 1918,
+    "responses": 22,
+    "costUsd": 1.4703734000000006
+  },
+  "subagents": {
+    "inputTokens": 0,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 0,
+    "cacheReadTokens": 0,
+    "outputTokens": 0,
+    "thinkingTokens": 0,
+    "responses": 0,
+    "costUsd": 0.0
+  },
+  "byRate": {
+    "claude-opus-5-5/standard": {
+      "inputTokens": 44,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 111716,
+      "cacheReadTokens": 2095747,
+      "outputTokens": 7866,
+      "thinkingTokens": 1918,
+      "responses": 22,
+      "costUsd": 1.4703734000000006
+    }
+  },
+  "warnings": [],
+  "compactions": [],
+  "telemetry": {
+    "events": 18,
+    "matched": 18,
+    "matchedTableUsd": 0.9981608000000002,
+    "matchedEventUsd": 0.9981608000000002,
+    "unseen": {}
+  }
+}
