@@ -6,13 +6,12 @@ Usage:
   python3 .claude/costs/oriented.py check <transcript>
 
 Run bare, it records nothing itself: the Bash call that ran it, in the
-transcript, is the mark, and the ledger reads it there. What it prints is for
-the operator, who sees the call's output in the chat: the context the session
-has built and what it has spent, priced from the session's own transcript as
-the ledger prices it. `check` prints `marked` or `unmarked` for the stretch
-since the transcript's latest compaction, so that `hooks/estimate-notice.sh`
-asks for a mark only where there is none. `.claude/costs/CLAUDE.md`
-§ "Orientation" carries what the mark ends.
+transcript, is the mark, and the ledger reads it there. What it prints — the
+session's context and its spend so far — is for the operator, who sees the
+call's output in the chat. `check` prints `marked` or `unmarked` for the
+stretch since the transcript's latest compaction, so that
+`hooks/estimate-notice.sh` asks for a mark only where there is none.
+`.claude/costs/CLAUDE.md` § "Orientation" carries what the mark ends.
 
 Stdlib only — Python 3.9+.
 """
@@ -82,7 +81,6 @@ def report() -> int:
         prices = parse_prices((COSTS / "prices.json").read_text(encoding="utf-8"))
         line = figures(transcript, prices, telemetry_path(session_id))
     except (OSError, ShapeError, UnpricedError) as error:
-        # The mark is the call itself and stands; only the figures failed.
         print(f"oriented.py: the mark stands, but the figures failed: {error}", file=sys.stderr)
         return 1
     print(line[0].upper() + line[1:])

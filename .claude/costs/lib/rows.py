@@ -189,8 +189,8 @@ def pending_estimate_path(session_id: str) -> Path:
 
 
 def telemetry_path(session_id: str) -> Path:
-    """Where `hooks/start-telemetry-receiver.sh` has the receiver write the
-    session's events."""
+    """Where `hooks/start-telemetry-receiver.sh`'s receiver writes the session's
+    events."""
     return ROOT / "tmp" / "telemetry" / f"{session_id}.jsonl"
 
 

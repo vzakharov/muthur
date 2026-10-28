@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
-"""What `oriented.py` run bare tells the operator, against transcripts written
-out in the cases at `test_pricing.py`'s rate table, where each `step` costs $10.
+"""What `oriented.py` run bare tells the operator, against transcripts built
+from `test_pricing.py`'s records and rate table, where each `step` costs $10.
 
 Run by path (`python3 .claude/costs/test_oriented.py`), as `scripts/vet.sh`
 does, which puts this directory on `sys.path` for `lib`.
