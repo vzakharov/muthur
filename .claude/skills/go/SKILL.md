@@ -183,8 +183,10 @@ writing any code**:
 
 **A plan with a `## Rest of the elephant` section is an elephant**
 (`@.claude/skills/plan/elephant.md`), and this session eats one bite of it.
-Right after the flip, write and commit `## This bite` per
-`@.claude/skills/plan/elephant.md` § "Taking a bite", then build that and
+Unless `MUTHUR_ELEPHANT_BITE_PRS` is `off`, load
+`@.claude/skills/plan/elephant-bite-prs.md` before the flip: it says which
+branch the flip lands on. Right after the flip, write and commit `## This bite`
+per `@.claude/skills/plan/elephant.md` § "Taking a bite", then build that and
 nothing past it. Writing it asks the bite `@.claude/skills/task/SKILL.md`'s two
 questions: the section's detail answers whether it needs a plan, and the pause
 already gave the operator their look, so the one answer that stops you is a fork

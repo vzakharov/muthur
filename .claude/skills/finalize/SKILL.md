@@ -10,6 +10,12 @@ and follow it to attach to `<target>`, then run the finalize steps below. If the
 argument has no target token, skip this and finalize the current branch as
 usual.
 
+**A bite does not finalize.** Unless `MUTHUR_ELEPHANT_BITE_PRS` is `off`, a PR
+whose base is an elephant's branch rather than the repo's default — `and merge`
+and an operator's ask to merge included — runs
+`@.claude/skills/plan/elephant-bite-prs.md` § "Landing a bite" instead, and
+nothing below.
+
 **`no vet` is the docs-only mode.** Pass it when the diff has nothing to verify
 — markdown, top-level docs, read-only reference data. It skips the vet run
 (there is nothing for it to check) and skips any bucket dispatch. It does
