@@ -61,8 +61,9 @@ path reads as if they weren't there.
 
 - **`<base>`** — the branch the PR merges into, and the left side of every diff
   range below (`origin/<base>..HEAD`). Defaults to the repo default branch
-  (`main` in most projects). When a PR already exists, its `baseRefName` wins
-  over what the caller said.
+  (`main` in most projects); a bite on a branch of its own takes the elephant's
+  branch (`@.claude/skills/plan/elephant-bite-prs.md`). When a PR already
+  exists, its `baseRefName` wins over what the caller said.
 - **`<issue>`** — the issue number this PR closes, where the caller has one in
   hand. Absent, Step 4's ladder stands: `docs/issue/<n>/` on the branch, then
   `#<tbd>` on a carve, then nothing. Where a carve is involved the number is

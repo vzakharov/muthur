@@ -116,6 +116,10 @@ a body line that happens to open the same way. Found →
 stays the whole `origin/<base>...HEAD` above, and nobody has to remember to ask
 for that.
 
+**One `polish:` commit is made by no run**: the empty mark that lands an
+elephant's bite (`@.claude/skills/plan/elephant-bite-prs.md` § "Landing a
+bite"), which says the squash under it was polished on the bite's own branch.
+
 Everything else falls out of the range being two-dot: only the commits this
 branch added are candidates. A `polish:` commit the base carries is never the
 floor, so the lookup does not rest on the convention above holding — and a

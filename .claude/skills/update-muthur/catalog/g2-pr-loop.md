@@ -22,7 +22,9 @@
   as numbered prose. Also owns the call on whether work is beyond one session,
   and which shape splits it: an elephant, a bite per session in one PR, or a
   pizza, slices carved into issues. Carries `elephant.md`, the megaplan's shape
-  and how a bite is taken; `carving.md`, what a pizza's plan names as its
+  and how a bite is taken; `elephant-bite-prs.md`, each bite after the first as
+  a PR based on the elephant's branch and squashed into it, off under
+  `MUTHUR_ELEPHANT_BITE_PRS=off`; `carving.md`, what a pizza's plan names as its
   proposed parent and children and what `/go` files from it; and
   `native-plan-mode.md`, the recovery for a session that reached native plan
   mode anyway, which is plan mode's own exit rather than an override of it.
@@ -85,11 +87,12 @@
   - **Pulls in:** `/finalize`, `/go`
   - **Disposition:** adopt
 - `/relay` — Hand the session to a fresh one instead of compacting it: write a
-  summary to a committed `docs/remove-before-merging/relay-<N>.md`, numbered one
-  past the branch's previous relay, with the agent's last reply appended
-  verbatim from the transcript by `scripts/relay-last-reply.py`, start a
-  successor on the branch with `/relay take <branch>`, and stop. The successor
-  attaches, reads the highest-numbered summary, and dispatches on its Next step.
+  summary to a committed `relay-<N>.md` in the branch's working directory
+  (`scripts/working-dir.sh`), numbered one past the branch's previous relay,
+  with the agent's last reply appended verbatim from the transcript by
+  `scripts/relay-last-reply.py`, start a successor on the branch with
+  `/relay take <branch>`, and stop. The successor attaches, reads the
+  highest-numbered summary, and dispatches on its Next step.
   - **Requires:** `python3`; `create_session` for the spawn on the web; a typed
     line locally
   - **Pulls in:** `/from-branch`, `/go`, `/finalize`,
@@ -170,7 +173,14 @@
 - `scripts/check-squash-message.sh` — Measure the squash proposal against the
   size caps `/squash-message` states, locating it in the worktree or in history
   once `/finalize` has swept it. POSIX `sh`.
-  - **Requires:** `sh`, `scripts/lib/chars.sh`; `git` for the history rungs
+  - **Requires:** `sh`, `scripts/lib/chars.sh`, `scripts/working-dir.sh`; `git`
+    for the history rungs
+  - **Disposition:** adopt
+- `scripts/working-dir.sh` — Print the branch's own folder under
+  `docs/remove-before-merging/`, where `/squash-message` and `/relay` keep their
+  working files, or the shared folder under `MUTHUR_ELEPHANT_BITE_PRS=off`.
+  Tested by `scripts/test_working_dir.py`.
+  - **Requires:** `sh`, `git`
   - **Disposition:** adopt
 - `scripts/lib/chars.sh` — Filter text to one byte per UTF-8 character, so the
   checks that cap text in terminal columns count characters whatever the locale.

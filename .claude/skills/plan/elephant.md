@@ -4,6 +4,9 @@ What to do once `@.claude/skills/plan/SKILL.md` § "Splitting work across
 sessions" has picked the elephant — that section holds the choice and the
 principle both shapes share. The plan is written here and kept by
 `@.claude/skills/go/SKILL.md`, which eats one bite per session and pauses.
+Unless `MUTHUR_ELEPHANT_BITE_PRS` is `off`, every bite after the first is a PR
+of its own, and `@.claude/skills/plan/elephant-bite-prs.md` is loaded with this
+file.
 
 ## The plan's shape
 
