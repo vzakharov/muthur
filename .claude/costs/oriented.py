@@ -34,6 +34,8 @@ from lib.transcript import TranscriptSources, subagents_of
 
 COSTS = Path(__file__).resolve().parent
 PROJECTS = Path.home() / ".claude" / "projects"
+# `Phase.ended_by` in the operator's words; a tool's name stands as it is.
+ENDINGS = {"oriented": "a mark", "end_turn": "a reply"}
 
 
 def transcript_of(session_id: str, projects: Path) -> Optional[Path]:
@@ -58,12 +60,26 @@ def figures(transcript: Path, prices: PriceTable, events: Optional[Path] = None)
     history = read_history(transcript)
     if history is not None:
         parts.append(f"context {context_of(history.last):,} tokens")
-    spent = f"${cost.total.cost_usd:.2f} spent"
     phase = cost.compactions[-1].reorientation if cost.compactions else cost.orientation
-    if phase is not None and phase.ended_by == "oriented":
-        what = "re-orientation since the last compaction" if cost.compactions else "orientation"
-        spent += f", ${phase.spend.cost_usd:.2f} of it on {what}"
-    parts.append(spent)
+    what = "re-orientation since the last compaction" if cost.compactions else "orientation"
+    ended_here = (
+        phase is not None
+        and phase.ended_by == "oriented"
+        and history is not None
+        and phase.ended_at == history.last.timestamp
+    )
+    if ended_here:
+        # Short of the mark's own response, the session's spend is the phase's.
+        parts.append(f"{what} ${phase.spend.cost_usd:.2f}")
+    elif phase is not None and phase.ended_by is not None:
+        # A repeat mark, or one made after the work began: the phase is over,
+        # and the session total is no longer what finding its bearings cost.
+        parts.append(
+            f"${cost.total.cost_usd:.2f} spent, {what} having ended earlier"
+            f" at ${phase.spend.cost_usd:.2f} by {ENDINGS.get(phase.ended_by, phase.ended_by)}"
+        )
+    else:
+        parts.append(f"${cost.total.cost_usd:.2f} spent")
     return "; ".join(parts) + "."
 
 

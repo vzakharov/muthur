@@ -31,25 +31,28 @@ def written(lines: Sequence[str], subagents: Sequence[str] = ()) -> str:
 
 
 class WhatTheMarkReports(unittest.TestCase):
-    def test_the_context_now_the_session_spend_and_orientation_s_share(self) -> None:
+    def test_the_context_now_and_what_orientation_cost(self) -> None:
         line = written([step(1), step(2), step(3, MARK, input=5, read=120_000, write_1h=2_000)])
-        # The mark's own context adds 120k read at 0.5 and 2k written at 4.
-        self.assertEqual(line, "context 122,005 tokens; $30.07 spent, $20.00 of it on orientation.")
+        self.assertEqual(line, "context 122,005 tokens; orientation $20.00.")
 
     def test_takes_the_context_from_the_session_s_own_response_not_a_subagent_s(self) -> None:
         line = written(
             [step(1, read=50_000), step(3, MARK, read=60_000)],
             [response(id="msg_sub", sidechain=True, at=t(2), cwd=ROOT, read=900_000, output=1_000_000)],
         )
-        self.assertTrue(line.startswith("context 60,000 tokens; $30."), line)
+        self.assertTrue(line.startswith("context 60,000 tokens; "), line)
 
     def test_names_re_orientation_after_a_compaction(self) -> None:
         line = written([step(1), step(2, EDIT), boundary(3), step(4), step(5, MARK)])
-        self.assertTrue(line.endswith("$10.00 of it on re-orientation since the last compaction."), line)
+        self.assertTrue(line.endswith("; re-orientation since the last compaction $10.00."), line)
 
-    def test_leaves_orientation_out_where_an_action_ended_it_before_the_mark(self) -> None:
+    def test_gives_the_session_total_where_an_action_ended_orientation_first(self) -> None:
         line = written([step(1), step(2, EDIT), step(3, MARK)])
-        self.assertTrue(line.endswith("$30.00 spent."), line)
+        self.assertTrue(line.endswith("; $30.00 spent, orientation having ended earlier at $10.00 by Edit."), line)
+
+    def test_gives_the_session_total_on_a_repeat_mark(self) -> None:
+        line = written([step(1), step(2, MARK), step(3), step(4, MARK)])
+        self.assertTrue(line.endswith("; $40.00 spent, orientation having ended earlier at $10.00 by a mark."), line)
 
 
 class WhereTheTranscriptIs(unittest.TestCase):
