@@ -239,12 +239,11 @@ raises the third.
 
 Hand the candidate set to `@.claude/skills/task/SKILL.md` as the task: the
 commits from `lastSyncedSha` to the recorded HEAD, with their titles — the route
-`@.claude/skills/task/repo-change.md` gives any skill that changes the repo, its
-one deviation being Step 8's landing in a repo without the PR loop. Steps 4–7
-are how the work gets done in whichever outcome `/task` picks — including a
-split across sessions, an elephant or a pizza, when the lag is too long for one.
-A split cuts the candidates in source order, each slice or bite ending on a
-commit of the source's first-parent line — Step 7's boundary.
+`@.claude/skills/task/repo-change.md` gives any skill that changes the repo.
+Steps 4–7 are how the work gets done in whichever outcome `/task` picks —
+including a split across sessions, an elephant or a pizza, when the lag is too
+long for one. A split cuts the candidates in source order, each slice or bite
+ending on a commit of the source's first-parent line — Step 7's boundary.
 
 ### Step 4 — Triage each candidate, from its commit message first
 
