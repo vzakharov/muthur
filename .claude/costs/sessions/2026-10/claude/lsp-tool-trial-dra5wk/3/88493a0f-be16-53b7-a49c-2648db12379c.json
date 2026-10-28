@@ -1,15 +1,26 @@
 {
   "total": {
-    "inputTokens": 44,
+    "inputTokens": 68,
     "cacheWrite5mTokens": 0,
-    "cacheWrite1hTokens": 111716,
-    "cacheReadTokens": 2095747,
-    "outputTokens": 7866,
-    "thinkingTokens": 1918,
-    "responses": 22,
-    "costUsd": 1.4703734000000006
+    "cacheWrite1hTokens": 130958,
+    "cacheReadTokens": 3674199,
+    "outputTokens": 13781,
+    "thinkingTokens": 3453,
+    "responses": 34,
+    "costUsd": 2.0583958000000004
   },
-  "estimate": null,
+  "estimate": {
+    "at": "2026-10-28T04:48:14.013Z",
+    "parts": [
+      {
+        "hours": 1.0,
+        "grade": "senior",
+        "role": "developer",
+        "comment": "finding why a loaded, configured LSP plugin yields no tool meant reading the minified Claude Code bundle for its gate and proving the plugin works with the gate lifted"
+      }
+    ],
+    "comment": null
+  },
   "orientation": {
     "endedBy": "end_turn",
     "endedOn": null,
@@ -34,18 +45,18 @@
   "url": "https://claude.ai/code/session_01DaohkEzZYH7LdyFMo1iVb8",
   "operator": "vzakharov",
   "firstResponseAt": "2026-10-28T04:44:21.260Z",
-  "lastResponseAt": "2026-10-28T04:46:06.945Z",
+  "lastResponseAt": "2026-10-28T04:48:23.957Z",
   "pricesAsOf": "2026-10-06",
-  "claudeCodeTotalUsd": 0.019713,
+  "claudeCodeTotalUsd": 0.2341305,
   "ownTurns": {
-    "inputTokens": 44,
+    "inputTokens": 68,
     "cacheWrite5mTokens": 0,
-    "cacheWrite1hTokens": 111716,
-    "cacheReadTokens": 2095747,
-    "outputTokens": 7866,
-    "thinkingTokens": 1918,
-    "responses": 22,
-    "costUsd": 1.4703734000000006
+    "cacheWrite1hTokens": 130958,
+    "cacheReadTokens": 3674199,
+    "outputTokens": 13781,
+    "thinkingTokens": 3453,
+    "responses": 34,
+    "costUsd": 2.0583958000000004
   },
   "subagents": {
     "inputTokens": 0,
@@ -59,23 +70,23 @@
   },
   "byRate": {
     "claude-opus-5-5/standard": {
-      "inputTokens": 44,
+      "inputTokens": 68,
       "cacheWrite5mTokens": 0,
-      "cacheWrite1hTokens": 111716,
-      "cacheReadTokens": 2095747,
-      "outputTokens": 7866,
-      "thinkingTokens": 1918,
-      "responses": 22,
-      "costUsd": 1.4703734000000006
+      "cacheWrite1hTokens": 130958,
+      "cacheReadTokens": 3674199,
+      "outputTokens": 13781,
+      "thinkingTokens": 3453,
+      "responses": 34,
+      "costUsd": 2.0583958000000004
     }
   },
   "warnings": [],
   "compactions": [],
   "telemetry": {
-    "events": 18,
-    "matched": 18,
-    "matchedTableUsd": 0.9981608000000002,
-    "matchedEventUsd": 0.9981608000000002,
+    "events": 30,
+    "matched": 30,
+    "matchedTableUsd": 1.5861831999999998,
+    "matchedEventUsd": 1.5861831999999998,
     "unseen": {}
   }
 }
