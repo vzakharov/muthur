@@ -1,8 +1,4 @@
-Proposed squash title/body:
-
-```
-feat: edit relay — an opt-in /go mode where Haiku applies edits (#254)
-```
+Proposed squash body:
 
 ```
 Haiku applies an exactly named edit exactly as given and misreads
