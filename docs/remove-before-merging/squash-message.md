@@ -1,29 +1,27 @@
 Proposed squash body:
 
 ```
+The context budget's warning line sat where a relay saves $0, so it
+fired on savings of cents over a slice that costs $2-4. It now sits
+where a relay saves `MUTHUR_CONTEXT_BUDGET_WARN_SAVING_USD` (default
+0.20), and the pause where it saves
+`MUTHUR_CONTEXT_BUDGET_PAUSE_SAVING_USD` (default 0.80), replacing the
+pause's percentage knob. A handoff costs the same friction whatever the
+model charges, while a share of what carrying on costs shrinks with its
+price, so on a cheap model it passed for worth it at a fraction of a
+cent. The defaults are what 5% and 20% came to on Opus and Sonnet: a
+relay costs $0.4-1.8 up front, and the warning lands ~20k tokens past
+break-even with ~75k of room before the pause.
+
 A Haiku session that is asked to mark its orientation does so on its
 first response, before reading anything. The ledger then records an
 orientation of $0, a `/relay take` session prices its own
-reorientation from that row, and the context budget's warning line
-falls to break-even with the handoff itself, so a relay was offered
-right after the session started.
-
-The orientation notice now leaves the mark out for a model named in
-`UNMARKED_MODELS` (Haiku), read from the transcript's latest `model`
-attachment or main-chain response, so compactions and mid-session
-switches are read alike. `oriented.py exempt` is the check the hook
-runs.
-
-The warning line, which sat where a relay saves $0, now sits where it
-saves `MUTHUR_CONTEXT_BUDGET_WARN_SAVING_USD` (default 0.20), and the
-pause where it saves `MUTHUR_CONTEXT_BUDGET_PAUSE_SAVING_USD` (default
-0.80), replacing the pause's percentage knob. A handoff costs the same
-friction whatever the model charges, while a share of what carrying on
-costs shrinks with its price, so on a cheap model it passed for worth
-it at a fraction of a cent. The defaults are what 5% and 20% came to on
-Opus and Sonnet: a relay costs $0.4-1.8 up front over a slice that
-costs $2-4, and the warning lands ~20k tokens past break-even with
-~75k of room before the pause.
+reorientation from that row, and the warning line falls to break-even
+with the handoff itself, so a relay was offered right after the session
+started. The orientation notice now leaves the mark out for a model
+named in `UNMARKED_MODELS` (Haiku), read from the transcript's latest
+`model` attachment or main-chain response, so compactions and
+mid-session switches are read alike.
 
 Co-authored-by: Claude <noreply@anthropic.com>
 ```
