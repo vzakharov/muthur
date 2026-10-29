@@ -335,8 +335,8 @@ class WhetherThePauseRelaysOnItsOwn(BudgetTestCase):
 
 class ThePricedLines(BudgetTestCase):
     # Opening at 43k, acting at 90k, then growing 2k a request: a successor
-    # reoriented at 90k for ~$0.04, and a relay that saves $0 over the next 100k
-    # from ~125k and 20% from ~190k, both drifting in as the rate settles.
+    # reoriented at 90k for ~$0.04, and a relay that saves 5% over the next 100k
+    # from ~140k and 20% from ~190k, both drifting in as the rate settles.
     def setUp(self) -> None:
         super().setUp()
         self.session.append(priced("open", 43_000, 0), priced("edit", 90_000, 1, edits="/repo/a.py"))
@@ -353,17 +353,32 @@ class ThePricedLines(BudgetTestCase):
         assert found is not None, notice
         return int(found.group(1)) * 1_000
 
-    def test_warns_where_a_relay_starts_saving(self) -> None:
+    def test_warns_where_a_relay_saves_a_twentieth(self) -> None:
         self.reach(110_000)
         self.assertIsNone(self.session.notice())
         self.reach(150_000)
         notice = self.session.notice()
         assert notice is not None
         self.assertLess(self.line(notice, "warning"), 150_000)
-        self.assertIn("where relaying starts to cost less than carrying on", notice)
+        self.assertIn("where relaying saves 5% of what carrying on costs", notice)
         self.assertIn("Relaying now costs ~$", notice)
         self.assertIn("over the next 100k tokens of work", notice)
         self.assertIn("reorientation priced from this session's own orientation", notice)
+
+    def test_a_larger_warn_saving_moves_the_warning_out(self) -> None:
+        later = {"MUTHUR_CONTEXT_BUDGET_WARN_SAVING": "15", "MUTHUR_CONTEXT_BUDGET_PAUSE_SAVING": "40"}
+        self.reach(150_000)
+        self.assertIsNone(self.session.notice(later))
+        self.reach(190_000)
+        notice = self.session.notice(later)
+        assert notice is not None
+        self.assertIn("where relaying saves 15% of what carrying on costs", notice)
+
+    def test_a_warn_saving_not_under_the_pause_saving_is_refused(self) -> None:
+        self.reach(WARN + 1)
+        result = self.session.tool_call({"MUTHUR_CONTEXT_BUDGET_WARN_SAVING": "20"})
+        self.assertEqual(result.stdout, "")
+        self.assertIn("MUTHUR_CONTEXT_BUDGET_WARN_SAVING", result.stderr)
 
     def test_pauses_where_a_relay_saves_a_fifth(self) -> None:
         self.reach(200_000)

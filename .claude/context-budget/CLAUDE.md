@@ -19,10 +19,18 @@ where it stands, a last step aside. What the agent does on each notice is
   reading counts it then.
 - **Both lines are priced by what `/relay` saves over the next 100k tokens of
   work** (the model's `SLICE`, shared with the cold-cache stop): the warning
-  where that saving reaches $0, the pause where it reaches
-  `MUTHUR_CONTEXT_BUDGET_PAUSE_SAVING` percent (default 20) of what carrying on
-  costs. The model is `.claude/costs/lib/restart.py`, via
-  `hooks/priced_line.py`, and the notice carries the dollars.
+  where that saving reaches `MUTHUR_CONTEXT_BUDGET_WARN_SAVING` percent
+  (default 5) of what carrying on costs, the pause where it reaches
+  `MUTHUR_CONTEXT_BUDGET_PAUSE_SAVING` percent (default 20). The model is
+  `.claude/costs/lib/restart.py`, via `hooks/priced_line.py`, and the notice
+  carries the dollars.
+  - **The warning waits for a saving worth a handoff.** At $0 it fired on
+    savings of cents, a few percent of a slice that costs $2–4, which does not
+    repay the summary's loss of detail or the operator's reading of one more
+    handoff. Over the ledger's `/relay take` sessions, a relay's up-front cost
+    is $0.4–1.8 and 5% puts the warning ~20k tokens past break-even on a median
+    session, leaving ~70k tokens of room before the pause — enough to finish a
+    step and reach a stopping point. 10% leaves ~50k.
   - **Each is capped at its fixed line, 300k and 400k**, so pricing only ever
     moves a line earlier: context quality and the hard window are not cost
     questions. The notice says which set the line it reports, since dollars
@@ -58,9 +66,10 @@ where it stands, a last step aside. What the agent does on each notice is
   warning, a hook failing on every tool call costs the session.
 
 `MUTHUR_CONTEXT_BUDGET_WARN` and `MUTHUR_CONTEXT_BUDGET_PAUSE` each fix their
-line, in tokens, `MUTHUR_CONTEXT_BUDGET_PAUSE_SAVING` moves the priced pause,
-and `MUTHUR_CONTEXT_BUDGET_LINES=fixed` turns the pricing off — set them in
-`.claude/settings.local.json`'s `env`, or on the web among the cloud
+line, in tokens, `MUTHUR_CONTEXT_BUDGET_WARN_SAVING` and
+`MUTHUR_CONTEXT_BUDGET_PAUSE_SAVING` move the priced ones (the warning's under
+the pause's), and `MUTHUR_CONTEXT_BUDGET_LINES=fixed` turns the pricing off —
+set them in `.claude/settings.local.json`'s `env`, or on the web among the cloud
 environment's variables, to tune without editing a tracked file.
 
 ## Manual relay

@@ -14,10 +14,12 @@ need_command jq "no context-budget reading this tool call."
 
 warn="${MUTHUR_CONTEXT_BUDGET_WARN:-300000}"
 pause="${MUTHUR_CONTEXT_BUDGET_PAUSE:-400000}"
+warn_saving="${MUTHUR_CONTEXT_BUDGET_WARN_SAVING:-5}"
 pause_saving="${MUTHUR_CONTEXT_BUDGET_PAUSE_SAVING:-20}"
 lines="${MUTHUR_CONTEXT_BUDGET_LINES:-priced}"
-[[ "$warn" =~ ^[0-9]+$ && "$pause" =~ ^[0-9]+$ && "$pause_saving" =~ ^[0-9]+$ && "$pause_saving" -lt 100 ]] || {
-  say "MUTHUR_CONTEXT_BUDGET_WARN / MUTHUR_CONTEXT_BUDGET_PAUSE must be whole counts, MUTHUR_CONTEXT_BUDGET_PAUSE_SAVING a percentage under 100; no reading taken."
+[[ "$warn" =~ ^[0-9]+$ && "$pause" =~ ^[0-9]+$ && "$warn_saving" =~ ^[0-9]+$ && "$pause_saving" =~ ^[0-9]+$ \
+  && "$warn_saving" -lt "$pause_saving" && "$pause_saving" -lt 100 ]] || {
+  say "MUTHUR_CONTEXT_BUDGET_WARN / MUTHUR_CONTEXT_BUDGET_PAUSE must be whole counts, MUTHUR_CONTEXT_BUDGET_WARN_SAVING and MUTHUR_CONTEXT_BUDGET_PAUSE_SAVING percentages with the warning's under the pause's and the pause's under 100; no reading taken."
   exit 0
 }
 [[ "$lines" == priced || "$lines" == fixed ]] || {
@@ -61,14 +63,14 @@ if [ "$lines" = priced ] && [ -z "${MUTHUR_CONTEXT_BUDGET_WARN:-}" -o -z "${MUTH
   priced_warn= priced_pause= at=
   [ ! -f "$line_file" ] || read -r priced_warn priced_pause at <"$line_file"
   if ! [[ "$at" =~ ^[0-9]+$ && "$reading" -ge "$at" && "$reading" -lt $((at + 10000)) ]]; then
-    read -r priced_warn priced_pause < <(python3 "$hooks/priced_line.py" lines "$transcript" "$pause_saving")
+    read -r priced_warn priced_pause < <(python3 "$hooks/priced_line.py" lines "$transcript" "$warn_saving" "$pause_saving")
     mkdir -p "$state_dir" && printf '%s %s %s\n' "${priced_warn:--}" "${priced_pause:--}" "$reading" >"$line_file"
   fi
   if [ -z "${MUTHUR_CONTEXT_BUDGET_WARN:-}" ] && [[ "$priced_warn" =~ ^[0-9]+$ ]]; then
     priced=1
     [ "$priced_warn" -ge "$warn" ] || {
       warn="$priced_warn"
-      warn_why='where relaying starts to cost less than carrying on'
+      warn_why="where relaying saves ${warn_saving}% of what carrying on costs"
     }
   fi
   if [ -z "${MUTHUR_CONTEXT_BUDGET_PAUSE:-}" ] && [[ "$priced_pause" =~ ^[0-9]+$ ]]; then
