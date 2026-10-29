@@ -1,11 +1,10 @@
 Proposed squash body:
 
 ```
-A session's context size and spend are otherwise read off the ledger's
-report, after the fact. Every session already marks the end of
-orientation with a bare `python3 .claude/costs/oriented.py`, whose
-output shows in the chat under the call, so that output now carries
-both figures as of the mark.
+A session's context size and spend were read in the ledger's report,
+after the fact. Every session marks the end of orientation with a bare
+`python3 .claude/costs/oriented.py`, whose output shows in the chat
+under the call, so that output now carries both figures as of the mark.
 
 The mark prices the session's own transcript as the ledger does, with
 its subagents and telemetry, and prints the context of the session's
