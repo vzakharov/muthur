@@ -13,13 +13,12 @@ a delegate and as a session's own driver whose work an Opus review judged.
   staying small, so a sub-task of a few hundred lines costs more delegated than
   done in-session. Recheck when the rates change; Haiku 5.5 reads at a twentieth
   of Opus 5.5's rate, a quarter once its prompt passes 100k tokens.
-- **A reviewer judges what its brief puts in front of it.** Briefed with the
-  weaker model's plan and not the operator's ask, an Opus review checked the
-  work against the plan and passed a misreading the plan had carried in; the
-  brief's framing — the verdict options, what the reviewer may touch — reached
-  it as given. Briefed with the ask verbatim, the same review checked fidelity
-  to the ask directly. Hand a reviewer the ask itself, and facts rather than the
-  author's view of its own work.
+- **A reviewer judges what its brief puts in front of it.** Briefed from the
+  weaker model's plan, an Opus review checked the work against the plan, took
+  the brief's verdict options and remit as given, and passed a misreading the
+  plan carried in; one briefed with the operator's ask verbatim checked fidelity
+  to the ask. Hand a reviewer the ask itself, and facts rather than the author's
+  view of its own work.
 
 ## sonnet
 
