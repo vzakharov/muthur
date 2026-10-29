@@ -3,16 +3,21 @@ Proposed squash body:
 ```
 Haiku applies an exactly named edit exactly as given and misreads
 anything it has to restate, so it is a reliable pair of hands where
-nothing is left to interpret. The edit relay puts that to work in /go's
-Step 2: the delegating model writes out every edit a stretch of work
-needs -- file, exact anchor, exact replacement -- as one list, a Haiku
-subagent applies it in the session's own tree and reports what did not
-apply, and the delegator reviews the diff and commits. One turn writing
-the list and one reviewing replace a turn per edit, and the reads that
-anchor each edit land in Haiku's context at Haiku's rate.
+nothing is left to interpret. Steno puts that to work in /go's Step 2:
+the delegating model dictates every edit a stretch of work needs --
+file, exact anchor, exact replacement -- as one list, a Haiku subagent
+applies it in the session's own tree and reports what did not apply and
+what it noticed nearby, and the delegator reviews the diff and commits.
 
-The mode is experimental and off unless MUTHUR_EDIT_RELAY=on.
-go-delegation.py delivers .claude/skills/go/edit-relay.md alongside the
+The mode is costed in waves, not edits: a wave (dictate, apply, review)
+re-reads the delegator's context twice and pays Haiku's run, while
+editing directly re-reads it once a turn and absorbs discoveries
+inline. delegation.py --forecast prices both from the running session,
+and weighing a wave files its forecast beside its measured cost on
+cost-ledger under delegations/, which later forecasts calibrate from.
+
+The mode is experimental and off unless MUTHUR_STENO=on.
+go-delegation.py delivers .claude/skills/go/steno.md alongside the
 delegation files when the switch is on, and with the capabilities file
 even under MUTHUR_DELEGATION=off; /go Step 2 and the G2 catalog entry
 name the switch.

@@ -1,13 +1,16 @@
 # Edit relay: Opus lists the edits, Haiku applies them
 
-## Status (paused for the context budget)
+## Status
 
-**Done:** everything under "What changes" below — `edit-relay.md` (3cdde0d), the
-hook switch, tests, `/go` Step 2 and catalog (bd7d30c, applied by Haiku through
-the relay itself: 16/16 items exact), polish (32f2aa2, 08f5664). PR #254 body
-carries a dogfood section.
+**Done:** everything under "What changes" below (3cdde0d, bd7d30c, 32f2aa2,
+08f5664); items 1–3 of the follow-ups (the rename to steno, the waves section,
+the brief) and 4–5 (the forecast and the wave rows on `cost-ledger`), the squash
+proposal (item 6's half); the second dogfood ran through steno: 29/30 items
+exact, one skipped because the formatter re-wrapped its paragraph.
 
-**Left — Vova's follow-ups in the session, all agreed:**
+**Left:** item 6's PR body, and item 7, which waits on #253.
+
+**Vova's follow-ups, as agreed:**
 
 1. **Rename.** "Relay" collides with `/relay` (hand the session to a fresh one).
    Vova: build the name on «стенографировать». Recommended: mode **steno** —
