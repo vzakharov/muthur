@@ -165,7 +165,7 @@ is the cheaper way to shed context. `lib/orientation.py` holds the definitions.
   - **A Haiku session is never asked** (`UNMARKED_MODELS`). Asked, it marks on
     its first response, before anything is read, so the phase measures nothing:
     a `/relay take` session then prices its own reorientation at $0 and the
-    context budget's warning line falls to break-even with the handoff itself.
+    context budget's warning line comes too early, as if a handoff were free.
     The model is the session's latest `model` attachment or main-chain response,
     so a compaction and a mid-session switch are read alike; a transcript with
     neither is asked.

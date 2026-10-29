@@ -24,13 +24,13 @@ where it stands, a last step aside. What the agent does on each notice is
   `MUTHUR_CONTEXT_BUDGET_PAUSE_SAVING` percent (default 20). The model is
   `.claude/costs/lib/restart.py`, via `hooks/priced_line.py`, and the notice
   carries the dollars.
-  - **The warning waits for a saving worth a handoff.** At $0 it fired on
-    savings of cents, a few percent of a slice that costs $2–4, which does not
-    repay the summary's loss of detail or the operator's reading of one more
-    handoff. Over the ledger's `/relay take` sessions, a relay's up-front cost
-    is $0.4–1.8 and 5% puts the warning ~20k tokens past break-even on a median
-    session, leaving ~70k tokens of room before the pause — enough to finish a
-    step and reach a stopping point. 10% leaves ~50k.
+  - **The warning waits for a saving worth a handoff.** Cents, a few percent of
+    a slice that costs $2–4, do not repay the summary's loss of detail or the
+    operator's reading of one more handoff. Over the ledger's `/relay take`
+    sessions a relay's up-front cost is $0.4–1.8, and 5% puts the warning ~20k
+    tokens past break-even on a median session, leaving ~70k tokens of room
+    before the pause — enough to finish a step and reach a stopping point. 10%
+    leaves ~50k.
   - **Each is capped at its fixed line, 300k and 400k**, so pricing only ever
     moves a line earlier: context quality and the hard window are not cost
     questions. The notice says which set the line it reports, since dollars

@@ -222,9 +222,8 @@ REPEATABLE = {"Grep", "Glob", "Bash"}
 MARK = re.compile(r"(?:^|[;&|(\n])\s*python3\s+(?:\S*/)?\.claude/costs/oriented\.py\s*(?:$|[;&|)])")
 
 
-# Models not asked for the mark. Asked, they mark on their first response, before
-# anything is read, so the phase measures nothing — and a `/relay take` session
-# is priced as one whose reorientation is free.
+# Models not asked for the mark: asked, they mark before reading anything, so
+# the phase measures nothing.
 UNMARKED_MODELS = ("haiku",)
 
 
