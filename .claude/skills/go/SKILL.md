@@ -292,6 +292,11 @@ only the last one completes it. (`/finalize` sweeps the whole `docs/plans/` tree
 at squash regardless, so this flip is just the honest end-state marker for an
 operator watching the branch.)
 
+**On a model below Opus, the checkpoint review runs next**, before Step 4, so
+the PR body describes the reviewed diff:
+`@.claude/skills/go/checkpoint-review.md`. A `/handle` lane reaches it here, so
+its run gets one review, not two.
+
 ## Step 4 — Fill in the PR
 
 Load `@.claude/skills/pr/SKILL.md` and follow it with no args. Which of its

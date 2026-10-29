@@ -90,6 +90,12 @@ a docs-only diff is squarely what both passes are for: `/tend-prose` by
 construction, and `/dry` because a constraint stated in two places is a
 duplication like any other.
 
+**On a model below Opus, the checkpoint review runs right after them**, before
+step 1: `@.claude/skills/go/checkpoint-review.md`. Every step from 1 on is a
+statement about a diff that has stopped moving, so a reviewer's fix after any of
+them would void it, and the vet run covers the reviewer's commits too. `no vet`
+does not skip it.
+
 Steps (stop on first unresolved failure):
 
 1. **Vet**: `./scripts/vet.sh`. Fix and rerun until green.

@@ -91,10 +91,12 @@ which turn count you assumed wherever you report it.
 After a review that taught something — a kind of work the model handled cleanly,
 a mistake it made, a brief wording that prevented one, what it cost against
 doing it in-session — rewrite that model's entry in place and commit it with the
-work it came from. It is a compressed summary, not a log: fold the new
-observation into what the entry already says, replace what it contradicts, and
-drop detail that no longer changes which model you pick or how you brief it.
-Stay under 100 lines; `scripts/vet.sh` fails it past that.
+work it came from. An Opus reviewer keeps the same file the same way after a
+checkpoint review (`checkpoint-review.md` beside this file). It is a compressed
+summary, not a log: fold the new observation into what the entry already says,
+replace what it contradicts, and drop detail that no longer changes which model
+you pick or how you brief it. Stay under 100 lines; `scripts/vet.sh` fails it
+past that.
 
 **An entry names the kind of work, never the task.** "A unittest suite against a
 hook" holds in any repo; a branch, file, PR or case count does not, and every

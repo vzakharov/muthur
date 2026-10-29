@@ -165,6 +165,11 @@ questions in web sessions" routes a new session's change-asking prompt through
 `/task`, which reaches this skill without anyone typing `/pr`, and hanging
 PR-creation off `/pr` would leave exactly that entry on a PR-less branch.
 
+**On a model below Opus, the checkpoint review runs once the plan is
+published**, before the handoff, over the plan and its PR:
+`@.claude/skills/go/checkpoint-review.md`. Its fixes are plan revisions, so a
+review that changed the plan refreshes the PR through `/pr`.
+
 ### Handing off — end the plan turn with a copyable `/go` block
 
 Get the branch with `git branch --show-current` and substitute the real name.
