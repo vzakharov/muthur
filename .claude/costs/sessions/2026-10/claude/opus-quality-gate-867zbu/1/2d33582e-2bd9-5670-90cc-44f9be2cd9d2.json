@@ -1,0 +1,81 @@
+{
+  "total": {
+    "inputTokens": 18,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 80433,
+    "cacheReadTokens": 933188,
+    "outputTokens": 13539,
+    "thinkingTokens": 9119,
+    "responses": 9,
+    "costUsd": 0.10278105999999998
+  },
+  "estimate": null,
+  "orientation": {
+    "endedBy": "oriented",
+    "endedOn": null,
+    "endedAt": "2026-10-29T03:07:22.610Z",
+    "contextTokens": 95689,
+    "spend": {
+      "inputTokens": 2,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 39576,
+      "cacheReadTokens": 51539,
+      "outputTokens": 1834,
+      "thinkingTokens": 1321,
+      "responses": 1,
+      "costUsd": 0.00934779
+    }
+  },
+  "sessionId": "2d33582e-2bd9-5670-90cc-44f9be2cd9d2",
+  "branch": "claude/opus-quality-gate-867zbu",
+  "cwd": "/home/user/muthur",
+  "openingPrompt": "давай если сессия запущена на слабой модели (не Опусе), она после каждой отсечки лупа (/plan, если есть; /go; любые последующие /go и /handle; /finalize) создаё…",
+  "prs": [],
+  "url": "https://claude.ai/code/session_01DaohkE1kSi2cgf98P77S8p",
+  "operator": "vzakharov",
+  "firstResponseAt": "2026-10-29T03:07:17.682Z",
+  "lastResponseAt": "2026-10-29T03:08:25.651Z",
+  "pricesAsOf": "2026-10-06",
+  "claudeCodeTotalUsd": null,
+  "ownTurns": {
+    "inputTokens": 18,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 80433,
+    "cacheReadTokens": 933188,
+    "outputTokens": 13539,
+    "thinkingTokens": 9119,
+    "responses": 9,
+    "costUsd": 0.10278105999999998
+  },
+  "subagents": {
+    "inputTokens": 0,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 0,
+    "cacheReadTokens": 0,
+    "outputTokens": 0,
+    "thinkingTokens": 0,
+    "responses": 0,
+    "costUsd": 0.0
+  },
+  "byRate": {
+    "claude-haiku-5-5/standard": {
+      "inputTokens": 18,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 80433,
+      "cacheReadTokens": 933188,
+      "outputTokens": 13539,
+      "thinkingTokens": 9119,
+      "responses": 9,
+      "costUsd": 0.10278105999999998
+    }
+  },
+  "warnings": [],
+  "compactions": [],
+  "telemetry": {
+    "events": 8,
+    "matched": 8,
+    "matchedTableUsd": 0.08958280999999998,
+    "matchedEventUsd": 0.08958281000000001,
+    "unseen": {}
+  }
+}
