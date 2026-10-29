@@ -13,7 +13,13 @@ session's transcript tags every assistant entry with `message.model`
 
 ## Done
 
-Nothing of the six yet; the estimate is revised for the hook.
+All six, in the relayed session. Deviations from the list below: the `verdict`
+command takes the skill (`verdict <session> <skill> <verdict>`) and clears only
+that skill, since `/go`'s entry by `Read` lands before `/plan`'s pending review
+clears; an entry is marked whatever the model and the gate checks the model,
+since a typed first prompt arrives before any reply records one; `fixed, relay`
+is renamed `fixed-relay` to be one token; entry detection moved to
+`.claude/hooks/skill_entry.py`, shared with `go-delegation.py`.
 
 ## Left — in this order
 
