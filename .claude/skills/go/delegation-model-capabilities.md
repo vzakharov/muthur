@@ -34,6 +34,7 @@ Seen so far driving a session under an Opus reviewer, not yet as a subagent.
   given, in one round.
 - **Misses:** an instruction that needs interpreting: restating a nuanced spec
   in its own words, it lost who acts in two of five options.
-- **Brief:** the operator's words verbatim rather than a paraphrase, leaving
-  nothing to interpret; for a correction, the defect and its fix named exactly —
-  it fixes what is named and does not look for the same defect elsewhere.
+- **Brief:** quote the spec it works from — the operator's words, where the task
+  is theirs — rather than paraphrasing it, and leave nothing to interpret; for a
+  correction, the defect and its fix named exactly — it fixes what is named and
+  does not look for the same defect elsewhere.
