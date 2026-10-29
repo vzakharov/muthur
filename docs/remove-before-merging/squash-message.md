@@ -9,13 +9,15 @@ verdicts. The checkpoints are /plan, /go and /finalize, and /handle
 on plan review only, since its other lanes already reach /go's gate.
 
 The shared procedure lives in go/quality-gate.md. It covers detection
-through get_session, where a session that cannot tell its model counts
-as weak, the judge brief, and the verdicts, where a second B naming the
-same defect is an E. A B that asks for fixes goes back to the same
-judge through SendMessage. Relay to an Opus session goes through
-/relay park, and the gate carries out the relay skill's Step 3 itself
-because park skips it. A judge that cannot be launched stops the turn
-rather than passing.
+through get_session, which trusts the model that served the last turn
+and gates a session that cannot tell its model, the judge brief, and
+the verdicts. On B the session applies the judge's corrections and
+shows the result to the same judge through SendMessage; on C and D the
+judge fixes the work itself in the session's tree, and a defect a B
+already named never comes back as a B. D and E relay to an Opus
+session through /relay park, the gate carrying out the relay skill's
+Step 3 because park skips it. A judge that cannot be launched stops
+the turn rather than passing.
 
 Each checkpoint carries one pointer line in its skill, so the procedure
 is stated once. The judge may correct delegation-model-capabilities.md
