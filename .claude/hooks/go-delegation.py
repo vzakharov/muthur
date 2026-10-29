@@ -14,6 +14,9 @@ in `.claude/settings.json`:
 - `UserPromptSubmit` opening with `/go` or `/implement`, since a typed slash
   command expands without any tool call.
 
+`MUTHUR_STENO=on` adds `steno.md`, and with it the model notes even under
+`MUTHUR_DELEGATION=off`, since steno's verdict goes into their `haiku` entry.
+
 Once per session: a marker under `tmp/go-delegation/` keeps a later entry
 silent, the files being in context already. Fails open — an unreadable payload
 or a missing file is stderr and exit 0, never a failed turn.
@@ -31,14 +34,30 @@ from typing import Optional
 from session_state import project_root, state_file
 
 SWITCH = "MUTHUR_DELEGATION"
+STENO_SWITCH = "MUTHUR_STENO"
 SKILLS = {"go", "implement"}
 TYPED = re.compile(r"^\s*/(go|implement)(\s|$)")
 SKILL_DIR = Path(".claude") / "skills" / "go"
-FILES = ("delegation.md", "delegation-model-capabilities.md")
+DELEGATION_FILE = "delegation.md"
+MODELS_FILE = "delegation-model-capabilities.md"
+STENO_FILE = "steno.md"
 
 
 def say(message: str) -> None:
     print(f"go-delegation: {message}", file=sys.stderr)
+
+
+def files() -> tuple[str, ...]:
+    delegation = os.environ.get(SWITCH) != "off"
+    steno = os.environ.get(STENO_SWITCH) == "on"
+    names = []
+    if delegation:
+        names.append(DELEGATION_FILE)
+    if delegation or steno:
+        names.append(MODELS_FILE)
+    if steno:
+        names.append(STENO_FILE)
+    return tuple(names)
 
 
 def enters_go(payload: dict, root: Path) -> bool:
@@ -63,9 +82,9 @@ def enters_go(payload: dict, root: Path) -> bool:
     return False
 
 
-def brief(root: Path) -> Optional[str]:
+def brief(root: Path, names: tuple[str, ...]) -> Optional[str]:
     parts = []
-    for name in FILES:
+    for name in names:
         path = root / SKILL_DIR / name
         try:
             parts.append(f"===== {SKILL_DIR / name} =====\n{path.read_text()}")
@@ -73,14 +92,14 @@ def brief(root: Path) -> Optional[str]:
             say(f"cannot read {path} ({error}); no delegation brief delivered.")
             return None
     return (
-        "/go's delegation is on in this session, so its procedure and the model "
-        "notes are below — this is their read, and Step 2 follows them.\n\n"
-        + "\n".join(parts)
+        "/go's Step 2 procedures switched on in this session are below — this "
+        "is their read, and Step 2 follows them.\n\n" + "\n".join(parts)
     )
 
 
 def main() -> int:
-    if os.environ.get(SWITCH) == "off":
+    names = files()
+    if not names:
         return 0
     try:
         payload = json.loads(sys.stdin.read())
@@ -97,7 +116,7 @@ def main() -> int:
         return 0
     if marker.exists():
         return 0
-    text = brief(root)
+    text = brief(root, names)
     if text is None:
         return 0
     try:

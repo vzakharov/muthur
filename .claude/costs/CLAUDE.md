@@ -58,6 +58,13 @@ What each failure costs:
   approved for that call site alone, and its worst case is a copy on a branch
   that merges after it, which the union counts once.
 
+**Steno waves have rows of their own**, `delegations/<YYYY-MM>/<agent-id>.json`
+on the ledger beside `sessions/`, each a wave's forecast beside its measured
+cost, which `delegation.py --forecast` calibrates its Haiku run from. They sit
+outside `sessions/` because the wave's spend is already in its session's row,
+and every reader of `sessions/` takes a file there for a session.
+`lib/delegations.py` holds the shape.
+
 ## Where a row is filed
 
 The ledger reads as what each branch cost, session by session, and only the

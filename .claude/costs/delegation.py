@@ -3,13 +3,21 @@
 the delegating session would have cost, both at `prices.json` rates.
 
 Usage:
-  python3 .claude/costs/delegation.py <agent-id> [--turns <n>] [--projects <dir>]
+  python3 .claude/costs/delegation.py <agent-id> [--turns <n> [--waves <w>]] [--projects <dir>]
+  python3 .claude/costs/delegation.py --forecast --turns <n> --waves <w> [--projects <dir>]
 
 `<agent-id>` is the id the `Agent` result names. `--turns` is how many turns the
 delegating model would have taken itself — the one input no transcript holds, a
 stronger model often needing fewer; it defaults to the subagent's own count,
 which makes the in-session figure an upper bound. `--projects` is where Claude
 Code keeps transcripts, `~/.claude/projects` by default.
+
+`--forecast` prices a steno stretch before it starts, from the running
+session's context: `<n>` turns editing directly against `<w>` waves through
+Haiku, each wave's Haiku run the mean of those the ledger branch has measured.
+Weighing a steno wave with `--waves` files its forecast — the same `<n>` and
+`<w>`, priced at the context it launched from — beside its measured cost there,
+per `lib/delegations.py`.
 
 The subagent's side is measured. The in-session side replays the subagent's
 turns at the delegator's rates over the delegator's context — each turn a cache
@@ -25,16 +33,23 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import sys
 from dataclasses import dataclass
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Dict, List, Optional
 
+from lib.delegations import PREFIX as DELEGATIONS_PREFIX
+from lib.delegations import Measured, Wave, describe, forecast, path_of, reread_usd, runs_of, text_of
+from lib.ledger_branch import BRANCH, REMOTE_REF, LedgerError, append_file, fetch, git, rows_at
 from lib.prices import PriceTable, parse_prices, rate_key
 from lib.pricing import UnpricedError, summarise_transcript
 from lib.shape import ShapeError, json_lines, read_string, required
 from lib.tally import Rates
+from lib.restart import read_history
 from lib.transcript import SYNTHETIC_MODEL, Response, TranscriptSources, is_response_record, merged, parse_response
+from oriented import transcript_of
 
 COSTS = Path(__file__).resolve().parent
 
@@ -52,6 +67,13 @@ class Weighing:
     carried_in_session_usd: float
     later_turns: int
     warnings: List[str]
+    subagent_model: str
+    # The delegator's context and rates at launch, and its re-read of that
+    # context on the launching turn and on the first turn after the subagent.
+    launch_context: int
+    launch_rates: Rates
+    launch_read_usd: float
+    review_read_usd: Optional[float]
 
     @property
     def delegated_usd(self) -> float:
@@ -105,7 +127,7 @@ def weigh(main: str, subagent: str, tool_use_id: str, prices: PriceTable, turns:
 
     finished = max(r.timestamp for r in worked if r.timestamp is not None)
     after = [r for r in own if r.timestamp is not None and r.timestamp > finished]
-    carried = None if not after else max(0, after[0].tokens.context_tokens() - base) * rates.cache_read / 1e6
+    carried = None if not after else reread_usd(max(0, after[0].tokens.context_tokens() - base), rates)
 
     return Weighing(
         subagent_usd=measured.total.cost_usd,
@@ -114,9 +136,14 @@ def weigh(main: str, subagent: str, tool_use_id: str, prices: PriceTable, turns:
         in_session_usd=in_session,
         in_session_turns=taken,
         carried_delegated_usd=carried,
-        carried_in_session_usd=growth * rates.cache_read / 1e6,
+        carried_in_session_usd=reread_usd(growth, rates),
         later_turns=len(after),
         warnings=warnings,
+        subagent_model=worked[0].model,
+        launch_context=base,
+        launch_rates=rates,
+        launch_read_usd=reread_usd(base, rates),
+        review_read_usd=None if not after else reread_usd(after[0].tokens.context_tokens(), rates),
     )
 
 
@@ -140,30 +167,98 @@ def report(w: Weighing) -> str:
     return "\n".join(lines)
 
 
+def measured_runs(leaving_out: Optional[str] = None) -> List[float]:
+    fetch()
+    return runs_of(rows_at(REMOTE_REF, DELEGATIONS_PREFIX), leaving_out)
+
+
+def forecast_now(projects: Path, prices: PriceTable, turns: int, waves: int) -> str:
+    session_id = os.environ.get("CLAUDE_CODE_SESSION_ID")
+    if not session_id:
+        raise ValueError("CLAUDE_CODE_SESSION_ID is not set, so the session's transcript is unknown")
+    transcript = transcript_of(session_id, projects)
+    history = None if transcript is None else read_history(transcript)
+    if history is None:
+        raise ValueError(f"no response of session {session_id} under {projects}")
+    last = history.last
+    context = last.tokens.context_tokens()
+    return describe(forecast(turns, waves, context, rates_or_raise(prices, last), measured_runs()))
+
+
+def file_wave(agent_id: str, session_id: str, w: Weighing, turns: int, waves: int) -> str:
+    now = datetime.now(timezone.utc)
+    predicted = forecast(turns, waves, w.launch_context, w.launch_rates, measured_runs(leaving_out=agent_id))
+    branch = git("branch", "--show-current").strip() or None
+    wave = Wave(
+        agent_id=agent_id,
+        session_id=session_id,
+        branch=branch,
+        model=w.subagent_model,
+        recorded_at=now.isoformat(timespec="seconds"),
+        forecast=predicted,
+        measured=Measured(
+            run_usd=w.subagent_usd,
+            run_turns=w.subagent_turns,
+            dictate_usd=w.launch_read_usd,
+            review_usd=w.review_read_usd,
+            brief_usd=w.brief_usd,
+            in_session_usd=w.in_session_usd,
+        ),
+    )
+    path = path_of(wave, now)
+    append_file(path, text_of(wave), f"chore: steno wave {agent_id}, forecast {predicted.wave_usd:.2f} USD")
+    review = "not yet measured" if w.review_read_usd is None else f"${w.review_read_usd:.3f}"
+    return "\n".join(
+        [
+            f"forecast a wave at ${predicted.wave_usd:.3f}; measured run ${w.subagent_usd:.3f},"
+            f" dictating ${w.launch_read_usd:.3f}, reviewing {review}",
+            f"filed on {BRANCH}: {path}",
+        ]
+    )
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
-    parser.add_argument("agent_id")
+    parser.add_argument("agent_id", nargs="?")
+    parser.add_argument("--forecast", action="store_true")
     parser.add_argument("--turns", type=int)
+    parser.add_argument("--waves", type=int)
     parser.add_argument("--projects", type=Path, default=Path.home() / ".claude" / "projects")
     args = parser.parse_args()
-
-    found = sorted(args.projects.glob(f"*/*/subagents/agent-{args.agent_id}.jsonl"))
-    if len(found) != 1:
-        print(f"delegation: {len(found)} transcripts for agent {args.agent_id} under {args.projects}", file=sys.stderr)
-        return 1
-    subagent = found[0]
-    session = subagent.parent.parent
-    meta = subagent.with_name(f"agent-{args.agent_id}.meta.json")
-    tool_use_id = parse_tool_use_id(meta)
+    if args.forecast == (args.agent_id is not None):
+        parser.error("give an agent id to weigh, or --forecast, not both")
+    if args.forecast and (args.turns is None or args.waves is None):
+        parser.error("--forecast needs --turns and --waves")
+    if args.waves is not None and args.turns is None:
+        parser.error("--waves needs --turns: a wave's forecast prices both")
     prices = parse_prices((COSTS / "prices.json").read_text(encoding="utf-8"))
-    weighing = weigh(
-        session.with_suffix(".jsonl").read_text(encoding="utf-8"),
-        subagent.read_text(encoding="utf-8"),
-        tool_use_id,
-        prices,
-        args.turns,
-    )
-    print(report(weighing))
+
+    try:
+        if args.forecast:
+            print(forecast_now(args.projects, prices, args.turns, args.waves))
+            return 0
+
+        found = sorted(args.projects.glob(f"*/*/subagents/agent-{args.agent_id}.jsonl"))
+        if len(found) != 1:
+            print(f"delegation: {len(found)} transcripts for agent {args.agent_id} under {args.projects}", file=sys.stderr)
+            return 1
+        subagent = found[0]
+        session = subagent.parent.parent
+        meta = subagent.with_name(f"agent-{args.agent_id}.meta.json")
+        tool_use_id = parse_tool_use_id(meta)
+        weighing = weigh(
+            session.with_suffix(".jsonl").read_text(encoding="utf-8"),
+            subagent.read_text(encoding="utf-8"),
+            tool_use_id,
+            prices,
+            args.turns,
+        )
+        print(report(weighing))
+        if args.waves is not None:
+            print(file_wave(args.agent_id, session.name, weighing, args.turns, args.waves))
+    except (ValueError, LedgerError) as error:
+        print(f"delegation: {error}", file=sys.stderr)
+        return 1
     return 0
 
 

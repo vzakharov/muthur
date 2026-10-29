@@ -20,8 +20,10 @@ from typing import Optional
 
 HOOK = Path(__file__).resolve().parent.parent / ".claude" / "hooks" / "go-delegation.py"
 SWITCH = "MUTHUR_DELEGATION"
+STENO_SWITCH = "MUTHUR_STENO"
 DELEGATION = "DELEGATION-PROCEDURE-BODY"
 MODELS = "MODEL-NOTES-BODY"
+STENO = "STENO-BODY"
 
 
 class DelegationTestCase(unittest.TestCase):
@@ -34,17 +36,20 @@ class DelegationTestCase(unittest.TestCase):
         (self.skill_dir / "SKILL.md").write_text("SKILL-BODY")
         (self.skill_dir / "delegation.md").write_text(DELEGATION)
         (self.skill_dir / "delegation-model-capabilities.md").write_text(MODELS)
+        (self.skill_dir / "steno.md").write_text(STENO)
 
     def marker(self, session: str) -> Path:
         return self.root / "tmp" / "go-delegation" / session
 
     def run_hook(
-        self, stdin: str, switch: Optional[str] = None
+        self, stdin: str, switch: Optional[str] = None, steno: Optional[str] = None
     ) -> subprocess.CompletedProcess[str]:
-        env = {k: v for k, v in os.environ.items() if k != SWITCH}
+        env = {k: v for k, v in os.environ.items() if k not in (SWITCH, STENO_SWITCH)}
         env["CLAUDE_PROJECT_DIR"] = str(self.root)
         if switch is not None:
             env[SWITCH] = switch
+        if steno is not None:
+            env[STENO_SWITCH] = steno
         result = subprocess.run(
             [str(HOOK)], input=stdin, capture_output=True, text=True, env=env, check=False
         )
@@ -52,9 +57,12 @@ class DelegationTestCase(unittest.TestCase):
         return result
 
     def send(
-        self, payload: dict, switch: Optional[str] = None
+        self, payload: dict, switch: Optional[str] = None, steno: Optional[str] = None
     ) -> subprocess.CompletedProcess[str]:
-        return self.run_hook(json.dumps(payload), switch)
+        return self.run_hook(json.dumps(payload), switch, steno)
+
+    def context(self, result: subprocess.CompletedProcess[str]) -> str:
+        return json.loads(result.stdout)["hookSpecificOutput"]["additionalContext"]
 
     def skill_payload(self, skill: str, session: str = "sess") -> dict:
         return {
@@ -106,8 +114,7 @@ class WhereTheBriefIsDelivered(DelegationTestCase):
                 self.assert_delivered(self.prompt_payload(prompt, session=f"typed-{number}"))
 
     def test_the_brief_leads_with_the_names_of_both_files(self) -> None:
-        result = self.send(self.skill_payload("go"))
-        context = json.loads(result.stdout)["hookSpecificOutput"]["additionalContext"]
+        context = self.context(self.send(self.skill_payload("go")))
         self.assertLess(context.index("delegation.md"), context.index("delegation-model-capabilities.md"))
         self.assertLess(context.index(DELEGATION), context.index(MODELS))
 
@@ -228,6 +235,33 @@ class AMissingFile(DelegationTestCase):
         self.assertEqual(result.stdout, "")
         self.assertIn("delegation.md", result.stderr)
         self.assertFalse(self.marker("sess").exists())
+
+
+class TheStenoSwitch(DelegationTestCase):
+    def test_off_unless_set_to_on(self) -> None:
+        for number, value in enumerate((None, "", "1", "off", "ON")):
+            with self.subTest(value=value):
+                result = self.send(self.skill_payload("go", session=f"r{number}"), steno=value)
+                self.assertNotIn(STENO, self.context(result))
+
+    def test_on_adds_steno_after_both_delegation_files(self) -> None:
+        context = self.context(self.send(self.skill_payload("go"), steno="on"))
+        self.assertLess(context.index(DELEGATION), context.index(MODELS))
+        self.assertLess(context.index(MODELS), context.index(STENO))
+
+    def test_on_with_delegation_off_brings_steno_and_the_model_notes(self) -> None:
+        context = self.context(self.send(self.skill_payload("go"), switch="off", steno="on"))
+        self.assertNotIn(DELEGATION, context)
+        self.assertIn(MODELS, context)
+        self.assertIn(STENO, context)
+
+    def test_a_missing_steno_file_fails_open_only_when_on(self) -> None:
+        (self.skill_dir / "steno.md").unlink()
+        result = self.send(self.skill_payload("go"), steno="on")
+        self.assertEqual(result.stdout, "")
+        self.assertIn("steno.md", result.stderr)
+        self.assertFalse(self.marker("sess").exists())
+        self.assert_delivered(self.skill_payload("go"))
 
 
 if __name__ == "__main__":
