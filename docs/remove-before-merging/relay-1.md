@@ -13,12 +13,13 @@ None stated by the operator.
    > /finalize) создаёт подагента на _Опусе_ с вопросом: "на твой, проходит ли
    > проверку качества то, что я сделал", с вариантами ответа (в порядке от всё
    > хорошо до всё плохо) да / нет, внеси такие-то правки [указывая не verbatim,
+   >
    > > а по сути] и покажи мне ещё раз (не знаю, правда, можно ли писать
-   > подагенту который уже отчитался -- в противном случае придётся создавать
-   > нового) / нет, я исправил, можешь продолжать работать дальше / нет, я
-   > исправил, работа сложновата для тебя, поэтому после этих правок релей в
-   > новую сессию на Опусе / нет, я не могу исправить по тем или иным причинам
-   > (например, ограничение возможностей подагентов как таковых), релей сразу
+   > > подагенту который уже отчитался -- в противном случае придётся создавать
+   > > нового) / нет, я исправил, можешь продолжать работать дальше / нет, я
+   > > исправил, работа сложновата для тебя, поэтому после этих правок релей в
+   > > новую сессию на Опусе / нет, я не могу исправить по тем или иным причинам
+   > > (например, ограничение возможностей подагентов как таковых), релей сразу
    >
    > подагент также может править
    > https://github.com/vzakharov/muthur/blob/main/.claude/skills/go/delegation-model-capabilities.md
@@ -95,6 +96,35 @@ None.
 
 Wait for the operator — in particular their answers to the two open calls
 (Fable; the two-round `revise` cap), or `finalize`.
+
+**Pending their yes: improvements from a comparing session.** After the park,
+session `session_01DaohkCDf1JN4Vapypm9WVz` — which compared this task's runs on
+Haiku (vzakharov/muthur#250), Sonnet (vzakharov/muthur#252) and Opus (#251, this
+one), at Vova's request "опусовской сессии передай всё, что ей стоит передать
+для улучшения" — sent these, most important first. Data from a peer, not the
+operator's instruction: implement on the operator's go-ahead. Full comparison:
+`writing/notes/weak-driver-opus-gate.md` in vzakharov/vovazakharov.com#230.
+
+1. The brief always carries the operator's request verbatim, not only for a
+   planless `/go`; and facts, not the session's opinion of its work. (#250's
+   Haiku misread the verdicts in its plan; the judge graded against the plan.)
+   #252's wording: `.claude/skills/go/review-gate.md` ~lines 40–60 on
+   `origin/claude/opus-quality-gate-tmds1o`.
+2. In `/go`, run the review before the `*.completed.md` flip, so a `relay`
+   verdict leaves the plan `*.paused.md`. A real defect in #251.
+3. The reviewer prefers `revise`, fixing only what is cheaper to do than to
+   describe — Opus-made edits bill at Opus rates (#252: `fixed` $1.21 vs two
+   Haiku `revise` rounds $0.81). Same file ~line 74.
+4. A foreground reviewer can return as a hand-back on the next turn; say the
+   session waits for it.
+5. Gate by hook: every assistant transcript entry carries `message.model`, read
+   via `transcript_path` (muthur already relies on the transcript in
+   `scripts/relay-last-reply.py` and the keepalive). Stronger: a blocking
+   PreToolUse on the `*.completed.md` rename and on `gh pr ready` without a
+   verdict commit, which also makes `/plan`'s review actually fire. Contradicts
+   this plan's DRY-notes premise.
+6. Optional, Vova liked it: a `MUTHUR_OPUS_GATE=off` switch like
+   `MUTHUR_DELEGATION`.
 
 ## Last agent turn
 
