@@ -90,6 +90,12 @@ a docs-only diff is squarely what both passes are for: `/tend-prose` by
 construction, and `/dry` because a constraint stated in two places is a
 duplication like any other.
 
+**When `.claude/hooks/checkpoint-review.py` delivered
+`@.claude/skills/go/checkpoint-review.md` this session, the checkpoint review
+runs right after them**, before step 1 for the same reason, and so the vet run
+covers the reviewer's commits; under a harness that runs no hooks, that file's §
+"Who runs it" says whether it runs. `no vet` does not skip it.
+
 Steps (stop on first unresolved failure):
 
 1. **Vet**: `./scripts/vet.sh`. Fix and rerun until green.

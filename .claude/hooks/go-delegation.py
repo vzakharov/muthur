@@ -5,14 +5,8 @@
 that `MUTHUR_DELEGATION=off` leaves `/go` reading as if delegation had never
 been written. This hook saves the agent the round trip: it prints
 `delegation.md` and `delegation-model-capabilities.md` as additional context
-when `/go`'s body arrives, which happens three ways, each its own registration
-in `.claude/settings.json`:
-
-- `PostToolUse` on `Skill`, naming `go` or its redirect `implement`;
-- `PostToolUse` on `Read` of `.claude/skills/go/SKILL.md` — how `/task`,
-  `/handle` and `/from-branch` reach it;
-- `UserPromptSubmit` opening with `/go` or `/implement`, since a typed slash
-  command expands without any tool call.
+when `/go`'s body arrives, or that of its redirect `implement`, by any of the
+routes `skill_entry.py` names.
 
 Once per session: a marker under `tmp/go-delegation/` keeps a later entry
 silent, the files being in context already. Fails open — an unreadable payload
@@ -23,44 +17,21 @@ from __future__ import annotations
 
 import json
 import os
-import re
 import sys
 from pathlib import Path
 from typing import Optional
 
 from session_state import project_root, state_file
+from skill_entry import entered_skill
 
 SWITCH = "MUTHUR_DELEGATION"
 SKILLS = {"go", "implement"}
-TYPED = re.compile(r"^\s*/(go|implement)(\s|$)")
 SKILL_DIR = Path(".claude") / "skills" / "go"
 FILES = ("delegation.md", "delegation-model-capabilities.md")
 
 
 def say(message: str) -> None:
     print(f"go-delegation: {message}", file=sys.stderr)
-
-
-def enters_go(payload: dict, root: Path) -> bool:
-    event = payload.get("hook_event_name")
-    if event == "UserPromptSubmit":
-        prompt = payload.get("prompt")
-        return isinstance(prompt, str) and bool(TYPED.match(prompt))
-    if event != "PostToolUse":
-        return False
-    tool = payload.get("tool_name")
-    tool_input = payload.get("tool_input")
-    if not isinstance(tool_input, dict):
-        return False
-    if tool == "Skill":
-        skill = tool_input.get("skill")
-        return isinstance(skill, str) and skill.lstrip("/") in SKILLS
-    if tool == "Read":
-        path = tool_input.get("file_path")
-        if not isinstance(path, str):
-            return False
-        return Path(path).resolve() == (root / SKILL_DIR / "SKILL.md").resolve()
-    return False
 
 
 def brief(root: Path) -> Optional[str]:
@@ -93,7 +64,7 @@ def main() -> int:
     if root is None:
         return 0
     marker = state_file(root, "go-delegation", payload)
-    if marker is None or not enters_go(payload, root):
+    if marker is None or entered_skill(payload, root) not in SKILLS:
         return 0
     if marker.exists():
         return 0

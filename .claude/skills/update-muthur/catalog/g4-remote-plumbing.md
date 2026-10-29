@@ -37,9 +37,14 @@ the working tree clean, and behaves the same everywhere.
   - **Requires:** `bash`, `jq`
   - **Disposition:** adopt — **with any hook that sources it**
 - `.claude/hooks/session_state.py` — Imported by G1's `file-tools-nudge.py` and
-  G2's `go-delegation.py`: the project root, and the per-session state file
-  `tmp/<hook>/<session_id>`, refused for a session id that could name a path
-  elsewhere.
+  G2's `go-delegation.py` and `checkpoint-review.py`: the project root, and the
+  per-session state file `tmp/<hook>/<session_id>`, refused for a session id
+  that could name a path elsewhere.
+  - **Requires:** `python3` ≥3.9
+  - **Disposition:** adopt — **with any hook that imports it**
+- `.claude/hooks/skill_entry.py` — Imported by G2's `go-delegation.py` and
+  `checkpoint-review.py`: which skill a hook payload enters, by a `Skill` call,
+  a `Read` of its `SKILL.md`, or a typed slash command.
   - **Requires:** `python3` ≥3.9
   - **Disposition:** adopt — **with any hook that imports it**
 - `.claude/hooks/operator-voice.sh` — On session start, name the operator —

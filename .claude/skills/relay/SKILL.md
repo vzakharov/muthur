@@ -145,6 +145,12 @@ and says where the work stands and what comes next: `PR готов, дальше
   `source_url` the `origin` URL, `source_revision` the branch, a `title` per
   below, and model and permission mode inherited by omitting them. Confirm with
   `get_session` that it did not fail at start.
+- **An escalation starts on Opus**: a relay that
+  `@.claude/skills/go/checkpoint-review.md` called for passes `model` as the
+  Opus id from the system prompt's list of current model ids, since the
+  successor exists to run on a stronger model than this one. Locally that rules
+  out `/clear`, which keeps this model: the recipe is
+  `claude --model opus "<the line>"`.
 - **The title is this session's own, renumbered**: from `get_session` with no
   id, its leading `(<M>) ` replaced by `(<N>) ` with the summary's `<N>`, or
   `(<N>) ` prepended where it has none — and not one other character changed, no
