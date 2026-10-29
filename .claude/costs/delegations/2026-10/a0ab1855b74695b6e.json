@@ -1,0 +1,25 @@
+{
+  "agentId": "a0ab1855b74695b6e",
+  "sessionId": "edb0db81-3ae1-57c0-8d92-fb2fa66adc6d",
+  "branch": "claude/haiku-edit-relay",
+  "model": "claude-haiku-5-5",
+  "recordedAt": "2026-10-29T05:23:50+00:00",
+  "forecast": {
+    "turns": 5,
+    "waves": 1,
+    "contextTokens": 167019,
+    "turnUsd": 0.033403800000000004,
+    "runUsd": 0.06,
+    "runsMeasured": 0,
+    "directUsd": 0.16701900000000003,
+    "stenoUsd": 0.12680760000000002
+  },
+  "measured": {
+    "runUsd": 0.049390205000000006,
+    "runTurns": 5,
+    "dictateUsd": 0.033403800000000004,
+    "reviewUsd": 0.03477,
+    "briefUsd": 0.09918,
+    "inSessionUsd": 0.7543108000000001
+  }
+}
