@@ -1,26 +1,17 @@
 Proposed squash body:
 
 ```
-The Opus quality gate for weaker-model sessions was built three times
-over, once driven by each of Haiku, Sonnet and Opus, with Haiku and
-Sonnet each gated by an Opus review of their own /go. Those runs are
-the first record of Haiku as a session's driver and the first of either
-model next to Opus on the same work. This change folds them into
-delegation-model-capabilities.md.
+The haiku entry in delegation-model-capabilities.md was empty, so a
+delegator had nothing to go on when picking or briefing Haiku. Haiku
+has since driven a session under an Opus reviewer, and what that showed
+about the model carries over to it as a subagent.
 
-The haiku entry, untried until now, records what Haiku handles (a
-shared procedure with pointers, named corrections applied exactly) and
-what it misses: reading a nuanced ask, how new pointers interact with
-the flows they sit in, commit messages that match their commits. The
-sonnet entry gains its misses as a driver of procedure prose, the
-checkpoint placement it got right where Opus did not, and its habit of
-dropping loop steps under a context-budget warning. Both record cost
-and wall time against an Opus-only session.
-
-Across models gains the lesson the Haiku run taught: a reviewer judges
-what its brief puts in front of it. Briefed with the driver's plan
-rather than the operator's ask, an Opus review passed a misreading the
-plan had carried in, so a reviewer's brief carries the ask verbatim.
+The entry records that Haiku applies a list of named corrections
+exactly, and only those, and that it misreads a spec it has to restate
+in its own words. A brief therefore quotes the spec it works from, the
+operator's words where the task is theirs, and names each correction
+exactly. The entry says the evidence comes from Haiku driving a
+session, not yet from a subagent run.
 
 Co-authored-by: Claude <noreply@anthropic.com>
 ```
