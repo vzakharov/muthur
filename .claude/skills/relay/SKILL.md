@@ -143,8 +143,10 @@ and says where the work stands and what comes next: `PR готов, дальше
 
 - **Web/remote**: `create_session` from the Claude Code Remote tools, with
   `source_url` the `origin` URL, `source_revision` the branch, a `title` per
-  below, and model and permission mode inherited by omitting them. Confirm with
-  `get_session` that it did not fail at start.
+  below, and model and permission mode inherited by omitting them — except a
+  relay the quality gate asked for (`@.claude/skills/go/review-gate.md`), which
+  passes the current Opus model id as `model`. Confirm with `get_session` that
+  it did not fail at start.
 - **The title is this session's own, renumbered**: from `get_session` with no
   id, its leading `(<M>) ` replaced by `(<N>) ` with the summary's `<N>`, or
   `(<N>) ` prepended where it has none — and not one other character changed, no
@@ -158,7 +160,7 @@ and says where the work stands and what comes next: `PR готов, дальше
   nobody remembers what `pr #104` was.
 - **Local CLI**, where no such tool exists: the report gives the line to type
   after `/clear`, or `claude "<the line>"` in a new terminal on the same
-  checkout.
+  checkout — with `--model opus` for a relay the quality gate asked for.
 
 ### Step 4 — Report and stop
 

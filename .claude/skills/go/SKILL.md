@@ -285,6 +285,10 @@ Implementation is where they earn the most: a plan is written before the code
 exists, so the duplication it didn't foresee and the prose that narrates the
 work rather than the result both surface only now.
 
+**A session served by a model below Opus then runs the quality gate**
+(`@.claude/skills/go/review-gate.md`) before the plan flips: a relay it asks for
+leaves the plan `*.paused.md`. An Opus session skips this without loading it.
+
 Then **`git mv` the plan to `docs/plans/<slug>.completed.md`** and commit —
 implementation and its quality passes are done. An elephant with any of it left
 goes to `*.paused.md` instead: this step runs at each of its bites' ends, and

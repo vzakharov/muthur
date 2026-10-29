@@ -165,6 +165,10 @@ questions in web sessions" routes a new session's change-asking prompt through
 `/task`, which reaches this skill without anyone typing `/pr`, and hanging
 PR-creation off `/pr` would leave exactly that entry on a PR-less branch.
 
+**A session served by a model below Opus runs the quality gate on the plan**
+(`@.claude/skills/go/review-gate.md`) once it is published, before the handoff
+block; an Opus session skips it without loading the file.
+
 ### Handing off — end the plan turn with a copyable `/go` block
 
 Get the branch with `git branch --show-current` and substitute the real name.

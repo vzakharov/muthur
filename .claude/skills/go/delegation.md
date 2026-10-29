@@ -101,3 +101,7 @@ hook" holds in any repo; a branch, file, PR or case count does not, and every
 repo that adopted this loop folds the file into its own on each sync
 (`@.claude/skills/update-muthur/SKILL.md` § "Step 5 — Apply by intent, not by
 patch").
+
+The quality gate's reviewer (`review-gate.md`) keeps the file too, writing the
+same kind of observation about the session's own model: what it passed and
+failed as the one driving the work, beside what it did as a delegate.

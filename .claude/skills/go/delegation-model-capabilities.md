@@ -2,7 +2,9 @@
 
 One entry per `model:` value `Agent` takes below the delegating agent's own,
 kept per `delegation.md` § "Keeping `delegation-model-capabilities.md`", with
-the lessons that hold for every model first.
+the lessons that hold for every model first. An entry records the model as a
+delegate and as the session's own driver, the latter from the verdicts of
+`review-gate.md`'s reviewer.
 
 ## Across models
 
