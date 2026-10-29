@@ -43,13 +43,19 @@ class Forecast:
         return self.steno_usd / self.waves
 
 
+def reread_usd(context_tokens: int, rates: Rates) -> float:
+    """One turn's cache read of `context_tokens`: the unit both the forecast and
+    the measured wave price a delegating turn in, so the two compare."""
+    return context_tokens * rates.cache_read / 1e6
+
+
 def forecast(turns: int, waves: int, context_tokens: int, rates: Rates, runs: Sequence[float]) -> Forecast:
     """Direct editing re-reads the context once a turn; each steno wave re-reads
     it twice — dictating and reviewing — and pays the subagent's run. Output is
     left out of both: the edits' text is written once either way."""
     if turns < 1 or waves < 1:
         raise ValueError("turns and waves are each at least 1")
-    turn_usd = context_tokens * rates.cache_read / 1e6
+    turn_usd = reread_usd(context_tokens, rates)
     run_usd = sum(runs) / len(runs) if runs else SEED_RUN_USD
     return Forecast(
         turns=turns,

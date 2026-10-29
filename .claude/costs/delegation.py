@@ -41,7 +41,7 @@ from pathlib import Path
 from typing import Dict, List, Optional
 
 from lib.delegations import PREFIX as DELEGATIONS_PREFIX
-from lib.delegations import Measured, Wave, describe, forecast, path_of, runs_of, text_of
+from lib.delegations import Measured, Wave, describe, forecast, path_of, reread_usd, runs_of, text_of
 from lib.ledger_branch import BRANCH, REMOTE_REF, LedgerError, append_file, fetch, git, rows_at
 from lib.prices import PriceTable, parse_prices, rate_key
 from lib.pricing import UnpricedError, summarise_transcript
@@ -127,7 +127,7 @@ def weigh(main: str, subagent: str, tool_use_id: str, prices: PriceTable, turns:
 
     finished = max(r.timestamp for r in worked if r.timestamp is not None)
     after = [r for r in own if r.timestamp is not None and r.timestamp > finished]
-    carried = None if not after else max(0, after[0].tokens.context_tokens() - base) * rates.cache_read / 1e6
+    carried = None if not after else reread_usd(max(0, after[0].tokens.context_tokens() - base), rates)
 
     return Weighing(
         subagent_usd=measured.total.cost_usd,
@@ -136,14 +136,14 @@ def weigh(main: str, subagent: str, tool_use_id: str, prices: PriceTable, turns:
         in_session_usd=in_session,
         in_session_turns=taken,
         carried_delegated_usd=carried,
-        carried_in_session_usd=growth * rates.cache_read / 1e6,
+        carried_in_session_usd=reread_usd(growth, rates),
         later_turns=len(after),
         warnings=warnings,
         subagent_model=worked[0].model,
         launch_context=base,
         launch_rates=rates,
-        launch_read_usd=base * rates.cache_read / 1e6,
-        review_read_usd=None if not after else after[0].tokens.context_tokens() * rates.cache_read / 1e6,
+        launch_read_usd=reread_usd(base, rates),
+        review_read_usd=None if not after else reread_usd(after[0].tokens.context_tokens(), rates),
     )
 
 
