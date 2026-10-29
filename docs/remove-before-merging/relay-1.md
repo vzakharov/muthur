@@ -17,7 +17,7 @@ Operator (verbatim, the only operator message of the session):
 > /finalize) создаёт подагента на Опусе с вопросом: "на твой, проходит ли
 > проверку качества то, что я сделал", с вариантами ответа (в порядке от всё
 > хорошо до всё плохо) да / нет, внеси такие-то правки [указывая не > verbatim,
-> а по сути] и покажи мне ещё раз (не знаю, правда, можно ли писать подагенту
+> > а по сути] и покажи мне ещё раз (не знаю, правда, можно ли писать подагенту
 > который уже отчитался -- в противном случае придётся создавать нового) / нет,
 > я исправил, можешь продолжать работать дальше / нет, я исправил, работа
 > сложновата для тебя, поэтому после этих правок релей в новую сессию на Опусе /
@@ -137,4 +137,7 @@ Concretely, in the successor:
 
 ## 9. Last agent turn
 
-(appended verbatim by `scripts/relay-last-reply.py`)
+Not appended. `scripts/relay-last-reply.py` failed at the handoff with "no turn
+before this one wrote any text" in the session transcript, so this section is
+empty rather than retold. The successor should not treat it as a missing reply:
+section 2 holds the agent's account of this session.
