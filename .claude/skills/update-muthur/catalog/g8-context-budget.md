@@ -16,8 +16,8 @@ entry is `opt-in: ask`.
   unasked, or only offers it where `MUTHUR_MANUAL_CONTEXT_BUDGET_RELAY` in the
   environment or the operator's `manual-relay/<handle>` says `true` — which the
   relay's report offers each operator once, writing their answer. With G7's lib
-  and price table, the lines sit where a relay starts saving over the next 100k
-  tokens of work and where it saves 20% of it, capped at 300k and 400k, and the
+  and price table, the lines sit where a relay saves $0.20 over the next 100k
+  tokens of work and where it saves $0.80, capped at 300k and 400k, and the
   notice gives the dollars; without them, or under
   `MUTHUR_CONTEXT_BUDGET_LINES=fixed`, they are those caps. **The cost, which is
   why it is asked:** a `PostToolUse` hook on every tool call, and a session that
