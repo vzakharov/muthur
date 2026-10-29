@@ -24,9 +24,9 @@ import argparse
 import json
 import sys
 from pathlib import Path
-from typing import Dict, Optional
+from typing import Optional
 
-from lib.billed import Event, parse_events
+from lib.billed import events_at
 from lib.prices import parse_prices
 from lib.pricing import is_unwritten_tail, summarise_transcript
 from lib.transcript import TranscriptSources, subagents_of
@@ -39,6 +39,7 @@ from lib.rows import (
     place_tree_copy,
     read_pending_estimate,
     row_text,
+    telemetry_path,
     union,
 )
 from lib.shape import ShapeError
@@ -62,12 +63,6 @@ def previous(session_id: str) -> Optional[SessionCost]:
     return kept[0] if kept else None
 
 
-def events_at(path: Path) -> Optional[Dict[str, Event]]:
-    if not path.exists():
-        return None
-    return parse_events(path.read_text(encoding="utf-8"), str(path))
-
-
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
     parser.add_argument("--transcript", required=True, type=Path)
@@ -79,7 +74,7 @@ def main() -> int:
 
     transcript: Path = args.transcript
     session_id: str = args.session_id or transcript.stem
-    events = events_at(args.events or ROOT / "tmp" / "telemetry" / f"{session_id}.jsonl")
+    events = events_at(args.events or telemetry_path(session_id))
     prices = parse_prices((COSTS / "prices.json").read_text(encoding="utf-8"))
     cost = summarise_transcript(
         TranscriptSources(
