@@ -28,6 +28,11 @@ the lessons that hold for every model first.
 
 ## haiku
 
-- **Handles:** — (untried)
-- **Misses:** —
-- **Brief:** —
+- **Handles:** writing a shared skill procedure plus one-line pointers into the
+  skills that run it, against an approved plan; applied four named corrections
+  in one round, each as given.
+- **Misses:** how the new pointers interact with the flows they sit in: a
+  checkpoint that one skill reaches through another ran twice, and another
+  skill's step was half-restated instead of pointed to, losing its edge cases.
+- **Brief:** name the defect and its correction exactly; it fixes what is named
+  and does not go looking for the same defect elsewhere.
