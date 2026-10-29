@@ -22,20 +22,34 @@ run `/pr`.
    left open: should `oriented.py`'s own output be in Russian? (verbatim in Last
    agent turn)
 
+   A keepalive wake then parked the session into this file.
+
+2. **Operator:** «нет, ничего переводить на русский не надо» — then, quoting the
+   squash body's opening «The operator wants to see, in the chat of every
+   session, how large the context is and what orientation cost.»: «как-то
+   странно звучит -- речь не про то что конкретный оператор (я) хочет что-то
+   видеть; не забывай что это темплейтная репа»
+
+   **Agent:** Kept the output in English. Rewrote the squash body's opening to
+   state why the figures belong in the mark's output (otherwise they are read
+   off the ledger's report after the fact; the mark runs every session and shows
+   in the chat), reposted the comment, and aligned the PR body's matching
+   Summary bullet.
+
 ## Intent
 
-The operator wants the context size and orientation's cost printed by the
-orientation mark, visible in the chat every session; the output is for them, not
-the agent. They expected the `/task` to have run to completion, PR included.
+Whoever runs a session sees the context size and orientation's cost in the chat,
+as the orientation mark's output, every session. This is a template repository:
+prose must describe the mechanism for any adopter, never one operator's wish.
 
 ## Decisions
 
 - **Relay-1's decisions stand** (planless; figures shown; absence vs failure;
   branch kept under its harness-assigned semantic name) — see relay-1.md §
   "Decisions".
-- **The PR was not held for question 1** — the operator's message read as
-  frustration at the stall, and the output language is a one-line change
-  whichever way they answer.
+- **Output stays in English** — the operator said so in message 2.
+- **The PR was not held for the language question** — the operator's message 1
+  read as frustration at the stall.
 - **No operator-file edit** — `.claude/voice/operators/vzakharov.md` already
   exists and the house rule (reply in the language asked) already covers
   Russian.
@@ -45,22 +59,23 @@ the agent. They expected the `/task` to have run to completion, PR included.
 - The predecessor parked with questions pending and no PR, so the work looked
   unfinished to the operator. Don't hold the `/go` tail on non-blocking
   questions.
+- The first squash body opened with "The operator wants…", framing a template
+  feature as one person's preference (message 2). Describe what the change does
+  for any session.
 
 ## State
 
-- Branch `claude/orientation-tokens-cost-output-3a45x5`, pushed, head 41cbafe
-  (`docs: post squash proposal for pr #248`) plus this summary's commit. Tree
-  clean.
+- Branch `claude/orientation-tokens-cost-output-3a45x5`, pushed; this summary
+  rides the commit that also refreshes
+  `docs/remove-before-merging/squash-message.md`.
 - PR https://github.com/vzakharov/muthur/pull/248 — draft, open, `MERGEABLE`, no
   checks reported. Title:
   `feat: the orientation mark prints the context and orientation's cost`. Squash
-  proposal posted as a comment, tracked in
-  `docs/remove-before-merging/squash-message.md`.
+  proposal posted as a comment and current with the tracked file; PR body
+  current.
 - No plan file. Nothing running: no PR subscription, no scheduled check-in.
 - Estimate: this session 0.25 h middle developer — "opening the draft PR on
-  finished, vetted work is routine; no design judgement left". No remainder is
-  pending; if the operator asks for Russian output, that is ~0.25 h middle
-  developer (one string set plus its tests).
+  finished, vetted work is routine; no design judgement left". No remainder.
 - `./scripts/vet.sh` last passed at df17b95 (relay-1); not re-run since.
   `/finalize` runs it.
 - Two optional DRY calls from relay-1's polish (`load_prices()`,
@@ -78,10 +93,8 @@ the agent. They expected the `/task` to have run to completion, PR included.
 
 ## Next step
 
-Wait for the operator. Pending from them: whether `oriented.py`'s output should
-be in Russian — if yes, translate the output strings and update the tests and
-the squash proposal. After that the PR is ready for `/finalize`, which only the
-operator calls.
+Wait for the operator. Nothing is pending from them; the PR is ready for
+`/finalize` whenever they call it.
 
 ## Last agent turn
 
