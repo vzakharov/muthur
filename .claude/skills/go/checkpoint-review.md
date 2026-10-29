@@ -3,8 +3,8 @@
 A session on a model below Opus drives the loop as far as an Opus one does, and
 nothing stronger looks at its work before the operator does. So each cutoff —
 `/plan`, `/go` and `/finalize`, each saying where in it — hands what the skill
-run produced to an Opus subagent, which passes it, has it revised, fixes it, or
-sends the work on to an Opus session.
+run produced to an Opus subagent for review. `/handle` reaches it through the
+`/go` or `/plan` its lane runs, so its run gets one review, not two.
 
 ## Who runs it
 

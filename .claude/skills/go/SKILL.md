@@ -294,8 +294,7 @@ operator watching the branch.)
 
 **On a model below Opus, the checkpoint review runs next**, before Step 4, so
 the PR body describes the reviewed diff:
-`@.claude/skills/go/checkpoint-review.md`. A `/handle` lane reaches it here, so
-its run gets one review, not two.
+`@.claude/skills/go/checkpoint-review.md`.
 
 ## Step 4 — Fill in the PR
 
