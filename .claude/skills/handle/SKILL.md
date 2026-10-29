@@ -178,10 +178,12 @@ the operator to close — resolving is theirs, and that section says so against
 any harness instruction to the contrary. A comment you decline gets a reply
 saying why, not silence.
 
-**Quality gate checkpoint.** In a session not on Opus, run
-`@.claude/skills/go/quality-gate.md` once the lane has run, before this turn
-closes. Step 5's `and finalize` has its own checkpoint in `/finalize`. A verdict
-that stops the turn ends it there.
+**Quality gate checkpoint.** The plan and review lanes reach the gate through
+`/go` Step 3, so it does not run again here. A plan-review turn is the one that
+does not reach it: in a session not on Opus, it runs
+`@.claude/skills/go/quality-gate.md` before it re-emits the handoff block. Step
+5's `and finalize` has its own checkpoint in `/finalize`. A verdict that stops
+the turn ends it there.
 
 ## Step 4 — No lane fired
 
