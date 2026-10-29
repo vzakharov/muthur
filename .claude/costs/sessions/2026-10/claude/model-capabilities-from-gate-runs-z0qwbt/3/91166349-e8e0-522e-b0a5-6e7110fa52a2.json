@@ -1,0 +1,92 @@
+{
+  "total": {
+    "inputTokens": 26,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 62352,
+    "cacheReadTokens": 1332973,
+    "outputTokens": 4687,
+    "thinkingTokens": 966,
+    "responses": 13,
+    "costUsd": 0.8592546000000002
+  },
+  "estimate": {
+    "at": "2026-10-29T08:33:31.183Z",
+    "parts": [
+      {
+        "hours": 0.25,
+        "grade": "middle",
+        "role": "developer",
+        "comment": "picking up a parked branch and carrying out the operator's merge and comment-restore calls is routine GitHub housekeeping"
+      }
+    ],
+    "comment": null
+  },
+  "orientation": {
+    "endedBy": "end_turn",
+    "endedOn": null,
+    "endedAt": "2026-10-29T08:33:46.849Z",
+    "contextTokens": 113768,
+    "spend": {
+      "inputTokens": 24,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 62111,
+      "cacheReadTokens": 1219448,
+      "outputTokens": 3573,
+      "thinkingTokens": 877,
+      "responses": 12,
+      "costUsd": 0.8123336000000002
+    }
+  },
+  "sessionId": "91166349-e8e0-522e-b0a5-6e7110fa52a2",
+  "branch": "claude/model-capabilities-from-gate-runs-z0qwbt",
+  "cwd": "/home/user/muthur",
+  "openingPrompt": "/relay take claude/model-capabilities-from-gate-runs-z0qwbt — всё финализировано, ждёт решения о мердже vz#230 и muthur#253 и о восстановлении комментария на mu…",
+  "prs": [],
+  "url": "https://claude.ai/code/session_01DaohkEWDiePxsbN8L9jdbh",
+  "operator": "vzakharov",
+  "firstResponseAt": "2026-10-29T08:32:40.685Z",
+  "lastResponseAt": "2026-10-29T08:33:46.849Z",
+  "pricesAsOf": "2026-10-06",
+  "claudeCodeTotalUsd": null,
+  "ownTurns": {
+    "inputTokens": 26,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 62352,
+    "cacheReadTokens": 1332973,
+    "outputTokens": 4687,
+    "thinkingTokens": 966,
+    "responses": 13,
+    "costUsd": 0.8592546000000002
+  },
+  "subagents": {
+    "inputTokens": 0,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 0,
+    "cacheReadTokens": 0,
+    "outputTokens": 0,
+    "thinkingTokens": 0,
+    "responses": 0,
+    "costUsd": 0.0
+  },
+  "byRate": {
+    "claude-opus-5-5/standard": {
+      "inputTokens": 26,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 62352,
+      "cacheReadTokens": 1332973,
+      "outputTokens": 4687,
+      "thinkingTokens": 966,
+      "responses": 13,
+      "costUsd": 0.8592546000000002
+    }
+  },
+  "warnings": [],
+  "compactions": [],
+  "telemetry": {
+    "events": 13,
+    "matched": 13,
+    "matchedTableUsd": 0.8592546000000002,
+    "matchedEventUsd": 0.8592546000000002,
+    "unseen": {}
+  }
+}
