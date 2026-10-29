@@ -114,8 +114,7 @@ class WhereTheBriefIsDelivered(DelegationTestCase):
                 self.assert_delivered(self.prompt_payload(prompt, session=f"typed-{number}"))
 
     def test_the_brief_leads_with_the_names_of_both_files(self) -> None:
-        result = self.send(self.skill_payload("go"))
-        context = json.loads(result.stdout)["hookSpecificOutput"]["additionalContext"]
+        context = self.context(self.send(self.skill_payload("go")))
         self.assertLess(context.index("delegation.md"), context.index("delegation-model-capabilities.md"))
         self.assertLess(context.index(DELEGATION), context.index(MODELS))
 
