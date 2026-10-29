@@ -1,8 +1,4 @@
-Proposed squash title/body:
-
-```
-feat: Opus checkpoint review for sessions on a weaker model (#251)
-```
+Proposed squash body:
 
 ```
 A session running on Sonnet or Haiku drives the loop as far as an Opus
