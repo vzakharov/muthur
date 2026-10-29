@@ -1,0 +1,98 @@
+{
+  "total": {
+    "inputTokens": 10,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 47582,
+    "cacheReadTokens": 465149,
+    "outputTokens": 1114,
+    "thinkingTokens": 119,
+    "responses": 5,
+    "costUsd": 0.4960058
+  },
+  "estimate": {
+    "at": "2026-10-29T04:27:44.387Z",
+    "parts": [
+      {
+        "hours": 3.0,
+        "grade": "middle",
+        "role": "developer",
+        "comment": "a stdlib hook reading the serving model from an undocumented transcript format, holding per-session state, and denying tool calls, with a unittest suite in the house style"
+      },
+      {
+        "hours": 1.0,
+        "grade": "senior",
+        "role": "prompter",
+        "comment": "the procedure's brief, verdict and placement wording a weaker model follows unaided, rewritten around a hook that now decides who runs it"
+      }
+    ],
+    "comment": null
+  },
+  "orientation": {
+    "endedBy": null,
+    "endedOn": null,
+    "endedAt": null,
+    "contextTokens": null,
+    "spend": {
+      "inputTokens": 10,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 47582,
+      "cacheReadTokens": 465149,
+      "outputTokens": 1114,
+      "thinkingTokens": 119,
+      "responses": 5,
+      "costUsd": 0.4960058
+    }
+  },
+  "sessionId": "69c7c813-3b77-5610-a602-8fe268f09b5c",
+  "branch": "claude/opus-checkpoint-review-p4nmuv",
+  "cwd": "/home/user/muthur",
+  "openingPrompt": "/relay take claude/opus-checkpoint-review-p4nmuv — шесть доработок проверки Опусом одобрены и расписаны в плане на паузе, дальше хук и правки процедуры",
+  "prs": [],
+  "url": "https://claude.ai/code/session_01DaohkErDzQLANWgn2tnDGB",
+  "operator": "vzakharov",
+  "firstResponseAt": "2026-10-29T04:27:31.648Z",
+  "lastResponseAt": "2026-10-29T04:27:42.218Z",
+  "pricesAsOf": "2026-10-06",
+  "claudeCodeTotalUsd": null,
+  "ownTurns": {
+    "inputTokens": 10,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 47582,
+    "cacheReadTokens": 465149,
+    "outputTokens": 1114,
+    "thinkingTokens": 119,
+    "responses": 5,
+    "costUsd": 0.4960058
+  },
+  "subagents": {
+    "inputTokens": 0,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 0,
+    "cacheReadTokens": 0,
+    "outputTokens": 0,
+    "thinkingTokens": 0,
+    "responses": 0,
+    "costUsd": 0.0
+  },
+  "byRate": {
+    "claude-opus-5-5/standard": {
+      "inputTokens": 10,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 47582,
+      "cacheReadTokens": 465149,
+      "outputTokens": 1114,
+      "thinkingTokens": 119,
+      "responses": 5,
+      "costUsd": 0.4960058
+    }
+  },
+  "warnings": [],
+  "compactions": [],
+  "telemetry": {
+    "events": 5,
+    "matched": 5,
+    "matchedTableUsd": 0.4960058,
+    "matchedEventUsd": 0.4960058,
+    "unseen": {}
+  }
+}
