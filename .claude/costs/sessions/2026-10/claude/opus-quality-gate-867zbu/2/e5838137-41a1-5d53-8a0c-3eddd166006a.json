@@ -1,0 +1,110 @@
+{
+  "total": {
+    "inputTokens": 90,
+    "cacheWrite5mTokens": 189299,
+    "cacheWrite1hTokens": 123335,
+    "cacheReadTokens": 5063425,
+    "outputTokens": 34957,
+    "thinkingTokens": 17027,
+    "responses": 44,
+    "costUsd": 1.0956244450000001
+  },
+  "estimate": {
+    "at": "2026-10-29T03:13:31.644Z",
+    "parts": [
+      {
+        "hours": 3.0,
+        "grade": "middle",
+        "role": "developer",
+        "comment": "the gate is routine skill prose with one pointer per checkpoint, and the verdict loop has to be written so a weak session can follow it"
+      },
+      {
+        "hours": 1.0,
+        "grade": "senior",
+        "role": "architect",
+        "comment": "the verdict set and the relay path needed a call on what a re-show does after a second B"
+      }
+    ],
+    "comment": null
+  },
+  "orientation": {
+    "endedBy": "oriented",
+    "endedOn": null,
+    "endedAt": "2026-10-29T03:11:30.188Z",
+    "contextTokens": 118747,
+    "spend": {
+      "inputTokens": 4,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 54708,
+      "cacheReadTokens": 147568,
+      "outputTokens": 1140,
+      "thinkingTokens": 374,
+      "responses": 2,
+      "costUsd": 0.02608296
+    }
+  },
+  "sessionId": "e5838137-41a1-5d53-8a0c-3eddd166006a",
+  "branch": "claude/opus-quality-gate-867zbu",
+  "cwd": "/home/user/muthur",
+  "openingPrompt": "/relay take claude/opus-quality-gate-867zbu — план готов в PR #250, дальше /go: реализовать шлюз качества на Опусе для слабых моделей",
+  "prs": [
+    250
+  ],
+  "url": "https://claude.ai/code/session_01DaohkFFsYGnqzYXF4juG6D",
+  "operator": "vzakharov",
+  "firstResponseAt": "2026-10-29T03:11:20.799Z",
+  "lastResponseAt": "2026-10-29T03:15:22.066Z",
+  "pricesAsOf": "2026-10-06",
+  "claudeCodeTotalUsd": null,
+  "ownTurns": {
+    "inputTokens": 52,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 123335,
+    "cacheReadTokens": 3744404,
+    "outputTokens": 21633,
+    "thinkingTokens": 9869,
+    "responses": 26,
+    "costUsd": 0.32580826000000007
+  },
+  "subagents": {
+    "inputTokens": 38,
+    "cacheWrite5mTokens": 189299,
+    "cacheWrite1hTokens": 0,
+    "cacheReadTokens": 1319021,
+    "outputTokens": 13324,
+    "thinkingTokens": 7158,
+    "responses": 18,
+    "costUsd": 0.7698161849999998
+  },
+  "byRate": {
+    "claude-haiku-5-5/standard": {
+      "inputTokens": 70,
+      "cacheWrite5mTokens": 90759,
+      "cacheWrite1hTokens": 123335,
+      "cacheReadTokens": 4395905,
+      "outputTokens": 28854,
+      "thinkingTokens": 14137,
+      "responses": 35,
+      "costUsd": 0.3472804450000001
+    },
+    "claude-opus-5-5/standard": {
+      "inputTokens": 20,
+      "cacheWrite5mTokens": 98540,
+      "cacheWrite1hTokens": 0,
+      "cacheReadTokens": 667520,
+      "outputTokens": 6103,
+      "thinkingTokens": 2890,
+      "responses": 9,
+      "costUsd": 0.7483439999999999
+    }
+  },
+  "warnings": [],
+  "compactions": [],
+  "telemetry": {
+    "events": 44,
+    "matched": 44,
+    "matchedTableUsd": 1.0956244450000001,
+    "matchedEventUsd": 1.095624445,
+    "unseen": {}
+  }
+}
