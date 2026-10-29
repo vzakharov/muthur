@@ -1,13 +1,13 @@
 {
   "total": {
-    "inputTokens": 128,
+    "inputTokens": 148,
     "cacheWrite5mTokens": 61499,
-    "cacheWrite1hTokens": 180287,
-    "cacheReadTokens": 10055194,
-    "outputTokens": 51033,
-    "thinkingTokens": 25241,
-    "responses": 64,
-    "costUsd": 4.782001799999999
+    "cacheWrite1hTokens": 206998,
+    "cacheReadTokens": 12454033,
+    "outputTokens": 58207,
+    "thinkingTokens": 27358,
+    "responses": 74,
+    "costUsd": 5.6190175999999985
   },
   "estimate": {
     "at": "2026-10-29T03:35:09.984Z",
@@ -48,23 +48,24 @@
   "cwd": "/home/user/muthur",
   "openingPrompt": "Сравни реализацию одной и той же задачи тремя моделями (haiku/sonnet/opus соответственно): https://claude.ai/code/session_01DaohkE1kSi2cgf98P77S8p (+продолживша…",
   "prs": [
+    230,
     253
   ],
   "url": "https://claude.ai/code/session_01DaohkDXkx4zjTwnmDQ5HeC",
   "operator": "vzakharov",
   "firstResponseAt": "2026-10-29T03:30:18.801Z",
-  "lastResponseAt": "2026-10-29T03:46:18.016Z",
+  "lastResponseAt": "2026-10-29T04:01:58.612Z",
   "pricesAsOf": "2026-10-06",
   "claudeCodeTotalUsd": null,
   "ownTurns": {
-    "inputTokens": 106,
+    "inputTokens": 126,
     "cacheWrite5mTokens": 0,
-    "cacheWrite1hTokens": 180287,
-    "cacheReadTokens": 9098721,
-    "outputTokens": 44116,
-    "thinkingTokens": 22015,
-    "responses": 53,
-    "costUsd": 4.1447842
+    "cacheWrite1hTokens": 206998,
+    "cacheReadTokens": 11497560,
+    "outputTokens": 51290,
+    "thinkingTokens": 24132,
+    "responses": 63,
+    "costUsd": 4.9818
   },
   "subagents": {
     "inputTokens": 22,
@@ -78,23 +79,23 @@
   },
   "byRate": {
     "claude-opus-5-5/standard": {
-      "inputTokens": 128,
+      "inputTokens": 148,
       "cacheWrite5mTokens": 61499,
-      "cacheWrite1hTokens": 180287,
-      "cacheReadTokens": 10055194,
-      "outputTokens": 51033,
-      "thinkingTokens": 25241,
-      "responses": 64,
-      "costUsd": 4.782001799999999
+      "cacheWrite1hTokens": 206998,
+      "cacheReadTokens": 12454033,
+      "outputTokens": 58207,
+      "thinkingTokens": 27358,
+      "responses": 74,
+      "costUsd": 5.6190175999999985
     }
   },
   "warnings": [],
   "compactions": [],
   "telemetry": {
-    "events": 64,
-    "matched": 64,
-    "matchedTableUsd": 4.782001799999999,
-    "matchedEventUsd": 4.782001799999999,
+    "events": 74,
+    "matched": 74,
+    "matchedTableUsd": 5.6190175999999985,
+    "matchedEventUsd": 5.6190175999999985,
     "unseen": {}
   }
 }
