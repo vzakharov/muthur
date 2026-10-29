@@ -19,8 +19,7 @@ run `/pr`.
    hook resolved `vzakharov`, whose operator file already governs language, so
    the English replies were the predecessor's own mistake and nothing needed
    recording. Opened draft PR #248 and posted the squash proposal. Question 1
-   left open: should `oriented.py`'s own output be in Russian? (verbatim in Last
-   agent turn)
+   left open: should `oriented.py`'s own output be in Russian?
 
    A keepalive wake then parked the session into this file.
 
@@ -34,7 +33,9 @@ run `/pr`.
    state why the figures belong in the mark's output (otherwise they are read
    off the ledger's report after the fact; the mark runs every session and shows
    in the chat), reposted the comment, and aligned the PR body's matching
-   Summary bullet.
+   Summary bullet. (verbatim in Last agent turn)
+
+   A keepalive wake then parked the session again.
 
 ## Intent
 
@@ -96,22 +97,27 @@ prose must describe the mechanism for any adopter, never one operator's wish.
 Wait for the operator. Nothing is pending from them; the PR is ready for
 `/finalize` whenever they call it.
 
+
 ## Last agent turn
 
 The agent's last turn before the relay, verbatim, appended by
 `scripts/relay-last-reply.py`. It includes the turn's interim messages, usually
 unneeded but harmless; the reply proper is usually its last paragraphs.
 
-```text
-PR открыт, осталось выложить к нему предложенный текст squash-коммита.
+````text
+Переписал начало squash-текста и обновил сводку. Проверяю её и коммичу.
 
-Вова, задача не завершилась потому, что прошлая сессия встала на паузу перед последним шагом, открытием PR. Она ждала ответов на два своих вопроса, а ты их так и не увидел: сессию запарковали прямо после того, как она их задала. Теперь PR открыт, задача доделана.
+Ты прав, Вова. Фраза описывала возможность шаблона как пожелание одного человека, а в шаблонной репе это пойдёт в историю у всех, кто его подключит. Я переписал начало squash-текста:
 
-https://github.com/vzakharov/muthur/pull/248
-
-- **PR:** черновик в `main` под заголовком «feat: the orientation mark prints the context and orientation's cost». Предложенный текст squash-коммита лежит в PR комментарием.
-- **Второй вопрос, про твой GitHub-хэндл, отпал.** Хук этой сессии сам нашёл тебя и твой файл настроек, а там уже сказано, как с тобой говорить. Прошлая сессия отвечала по-английски по собственной ошибке, файл настроек тут ни при чём, так что дописывать в него нечего.
-- **Первый вопрос ещё открыт:** переводить ли на русский вывод самого скрипта, например `Context 122,005 tokens; orientation $0.35.`? Пока он английский, как весь код в репозитории. Скажи, если хочешь по-русски, переведу.
-
-Задача ждала ответа на вопрос, которого никто не видел. Вполне себе кафкианский сюжет, только дверь в Закон тут называлась `/pr`.
 ```
+A session's context size and spend are otherwise read off the ledger's
+report, after the fact. Every session already marks the end of
+orientation with a bare `python3 .claude/costs/oriented.py`, whose
+output shows in the chat under the call, so that output now carries
+both figures as of the mark.
+```
+
+Теперь там сказано, зачем цифры нужны в выводе отметки любой сессии: иначе их видно только задним числом, в отчёте по расходам. Комментарий в PR обновлён. Такую же фразу о тебе я нашёл и поправил в описании PR. Вывод скрипта остаётся английским.
+
+Изменения запушены коммитом 909fc35, в нём же обновлена сводка сессии. От тебя больше ничего не ждём: https://github.com/vzakharov/muthur/pull/248 готов к `finalize`, когда решишь его запустить.
+````
