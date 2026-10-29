@@ -11,12 +11,10 @@ A session whose serving model is below Opus — Sonnet, Haiku. Opus and anything
 above it are exempt and never load this file: each cutoff's pointer carries the
 model condition, so reading the pointer is the whole cost to them.
 
-The serving model is not always the configured one, because the runtime falls
-back and operators switch mid-session. On the web, `get_session` with no id
-gives `external_metadata.last_served_model`, which wins over
-`session_context.model`; elsewhere the system prompt names the model. A model
-that cannot be determined is exempt, and the cutoff's report says the gate was
-skipped for that reason. `MUTHUR_OPUS_GATE=off` skips it silently.
+The model is the one the system prompt names, since that is all the pointers can
+read before this file loads. A system prompt that names none leaves the session
+exempt, and the cutoff's report says the gate was skipped for that reason.
+`MUTHUR_OPUS_GATE=off` skips it silently.
 
 ## Where it runs
 
@@ -33,10 +31,10 @@ skipped for that reason. `MUTHUR_OPUS_GATE=off` skips it silently.
 - **`/handle`** has no cutoff of its own: its plan and review lanes end in `/go`
   or `/plan`, and `and finalize` ends in `/finalize`.
 
-**The range is what this cutoff produced**: the commits since the last gate that
-passed in this conversation, else since `git merge-base origin/<base> HEAD`.
-Everything is committed first. The reviewer may read beyond the range for
-context.
+**The range is what this cutoff produced**: the commits since the head the last
+`pass` or `fixed` in this conversation left, else since
+`git merge-base origin/<base> HEAD`. Everything is committed first, and an empty
+range has nothing to gate. The reviewer may read beyond the range for context.
 
 ## The reviewer
 
@@ -46,14 +44,16 @@ edit this branch. Its brief is all it knows:
 
 - the operator's request verbatim, and the plan path if one exists;
 - the range, and the cutoff it ends;
-- to read `CLAUDE.md` and judge the work against it and against the plan: the
-  ask met in full, nothing silently dropped, no defect a polish pass or a vet
-  run would not catch, prose that states the contract rather than narrates the
-  change;
-- the five verdicts below, and that its reply opens with
-  `VERDICT: <pass|revise|fixed|fixed-relay|relay>` on its own line;
-- that it commits what it fixes under CLAUDE.md § "Git conventions", never
-  pushes, and names no model in a commit or a file.
+- to read this file first, for its role and the verdicts, then `CLAUDE.md`, and
+  judge the work against it and against the plan: the ask met in full, nothing
+  silently dropped, no defect a polish pass or a vet run would miss, prose that
+  states the contract rather than narrates the change;
+- that its reply opens with `VERDICT: <pass|revise|fixed|fixed-relay|relay>` on
+  its own line, and that a `fixed-relay` or `relay` names its own model id,
+  which the successor is started on — the session's system prompt names only its
+  own;
+- that it commits what it fixes under CLAUDE.md § "Git conventions" and never
+  pushes.
 
 The brief carries facts and not the session's own opinion of its work: a
 reviewer handed a conclusion tends to return it confirmed.
@@ -81,9 +81,9 @@ Best to worst.
    once.
 
 **A relay is `/relay`'s** (`@.claude/skills/relay/SKILL.md`), with the successor
-started on Opus, and the reviewer's findings copied into the summary whole — the
-successor never sees the subagent's transcript. The Next step is the work the
-cutoff would have ended, resumed from those findings.
+started on the reviewer's model, and the reviewer's findings copied into the
+summary whole — the successor never sees the subagent's transcript. The Next
+step is the work the cutoff would have ended, resumed from those findings.
 
 **A gate that cannot run** — `Agent` refuses `model: "opus"`, say — is reported
 at the cutoff with its reason, and the cutoff's report goes on without a

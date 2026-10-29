@@ -21,8 +21,14 @@ delegate and as the session's own driver, the latter from the verdicts of
   named reference's style — needed one rename the brief could not have known;
   went past the brief with sound extra cases. Reworking an existing suite
   against two changed hooks, with its fixture split into a shared module, came
-  back clean with nothing to repair.
-- **Misses:** —
+  back clean with nothing to repair. As the session's driver, a new loop
+  procedure across several skills came out structurally sound and faithful to
+  the operator's ask.
+- **Misses:** as the driver of procedure prose, the cross-check of a clause
+  against what it depends on: a rule contradicting another in the same file, a
+  check placed behind the condition it was meant to decide, a step needing a
+  fact the acting session does not have. Its own polish pass did not catch
+  these.
 - **Brief:** naming the style reference and the run-until-green command was
   enough; ask for "anything that surprised you" — it reports useful edges.
 - **Cost, by eye:** that suite, a few hundred lines, cost about twice as much
