@@ -19,18 +19,23 @@ where it stands, a last step aside. What the agent does on each notice is
   reading counts it then.
 - **Both lines are priced by what `/relay` saves over the next 100k tokens of
   work** (the model's `SLICE`, shared with the cold-cache stop): the warning
-  where that saving reaches `MUTHUR_CONTEXT_BUDGET_WARN_SAVING` percent
-  (default 5) of what carrying on costs, the pause where it reaches
-  `MUTHUR_CONTEXT_BUDGET_PAUSE_SAVING` percent (default 20). The model is
+  where that saving reaches `MUTHUR_CONTEXT_BUDGET_WARN_SAVING_USD` dollars
+  (default 0.20), the pause where it reaches
+  `MUTHUR_CONTEXT_BUDGET_PAUSE_SAVING_USD` (default 0.80). The model is
   `.claude/costs/lib/restart.py`, via `hooks/priced_line.py`, and the notice
   carries the dollars.
-  - **The warning waits for a saving worth a handoff.** Cents, a few percent of
-    a slice that costs $2–4, do not repay the summary's loss of detail or the
-    operator's reading of one more handoff. Over the ledger's `/relay take`
-    sessions a relay's up-front cost is $0.4–1.8, and 5% puts the warning ~20k
-    tokens past break-even on a median session, leaving ~70k tokens of room
-    before the pause — enough to finish a step and reach a stopping point. 10%
-    leaves ~50k.
+  - **The thresholds are dollars, not shares of what carrying on costs.** A
+    handoff costs the same friction whatever the model charges — the summary's
+    loss of detail, the operator's reading of one more — so what repays it is an
+    absolute saving. A share would shrink with the model's price: on Haiku,
+    whose cache reads cost a twentieth of Opus's, a handoff would pass for worth
+    it at a fraction of a cent. The pricing says what a relay saves; whether it
+    is worth a handoff is the threshold's call, which no measurement settles.
+  - **The defaults are what 5% and 20% came to on Opus and Sonnet.** Over the
+    ledger's `/relay take` sessions a relay costs $0.4–1.8 up front and a slice
+    $2–4. On a median session $0.20 puts the warning ~20k tokens past
+    break-even, leaving ~75k of room before the pause at $0.80 — enough to
+    finish a step and reach a stopping point.
   - **Each is capped at its fixed line, 300k and 400k**, so pricing only ever
     moves a line earlier: context quality and the hard window are not cost
     questions. The notice says which set the line it reports, since dollars
@@ -66,11 +71,11 @@ where it stands, a last step aside. What the agent does on each notice is
   warning, a hook failing on every tool call costs the session.
 
 `MUTHUR_CONTEXT_BUDGET_WARN` and `MUTHUR_CONTEXT_BUDGET_PAUSE` each fix their
-line, in tokens, `MUTHUR_CONTEXT_BUDGET_WARN_SAVING` and
-`MUTHUR_CONTEXT_BUDGET_PAUSE_SAVING` move the priced ones (the warning's under
-the pause's), and `MUTHUR_CONTEXT_BUDGET_LINES=fixed` turns the pricing off —
-set them in `.claude/settings.local.json`'s `env`, or on the web among the cloud
-environment's variables, to tune without editing a tracked file.
+line, in tokens, `MUTHUR_CONTEXT_BUDGET_WARN_SAVING_USD` and
+`MUTHUR_CONTEXT_BUDGET_PAUSE_SAVING_USD` move the priced ones (the warning's
+under the pause's), and `MUTHUR_CONTEXT_BUDGET_LINES=fixed` turns the pricing
+off — set them in `.claude/settings.local.json`'s `env`, or on the web among the
+cloud environment's variables, to tune without editing a tracked file.
 
 ## Manual relay
 

@@ -14,14 +14,19 @@ need_command jq "no context-budget reading this tool call."
 
 warn="${MUTHUR_CONTEXT_BUDGET_WARN:-300000}"
 pause="${MUTHUR_CONTEXT_BUDGET_PAUSE:-400000}"
-warn_saving="${MUTHUR_CONTEXT_BUDGET_WARN_SAVING:-5}"
-pause_saving="${MUTHUR_CONTEXT_BUDGET_PAUSE_SAVING:-20}"
+warn_saving="${MUTHUR_CONTEXT_BUDGET_WARN_SAVING_USD:-0.20}"
+pause_saving="${MUTHUR_CONTEXT_BUDGET_PAUSE_SAVING_USD:-0.80}"
 lines="${MUTHUR_CONTEXT_BUDGET_LINES:-priced}"
-[[ "$warn" =~ ^[0-9]+$ && "$pause" =~ ^[0-9]+$ && "$warn_saving" =~ ^[0-9]+$ && "$pause_saving" =~ ^[0-9]+$ \
-  && "$warn_saving" -lt "$pause_saving" && "$pause_saving" -lt 100 ]] || {
-  say "MUTHUR_CONTEXT_BUDGET_WARN / MUTHUR_CONTEXT_BUDGET_PAUSE must be whole counts, MUTHUR_CONTEXT_BUDGET_WARN_SAVING and MUTHUR_CONTEXT_BUDGET_PAUSE_SAVING percentages with the warning's under the pause's and the pause's under 100; no reading taken."
+dollars='^[0-9]+(\.[0-9]+)?$'
+[[ "$warn" =~ ^[0-9]+$ && "$pause" =~ ^[0-9]+$ && "$warn_saving" =~ $dollars && "$pause_saving" =~ $dollars ]] \
+  && awk -v warn="$warn_saving" -v pause="$pause_saving" 'BEGIN { exit !(warn < pause) }' || {
+  say "MUTHUR_CONTEXT_BUDGET_WARN / MUTHUR_CONTEXT_BUDGET_PAUSE must be whole counts, MUTHUR_CONTEXT_BUDGET_WARN_SAVING_USD and MUTHUR_CONTEXT_BUDGET_PAUSE_SAVING_USD dollar amounts with the warning's under the pause's; no reading taken."
   exit 0
 }
+# The percentage knobs these replace would otherwise be ignored without a word.
+for gone in MUTHUR_CONTEXT_BUDGET_WARN_SAVING MUTHUR_CONTEXT_BUDGET_PAUSE_SAVING; do
+  [ -z "${!gone:-}" ] || say "$gone is no longer read; use ${gone}_USD, in dollars."
+done
 [[ "$lines" == priced || "$lines" == fixed ]] || {
   say "MUTHUR_CONTEXT_BUDGET_LINES must be \`priced\` or \`fixed\`; no reading taken."
   exit 0
@@ -70,14 +75,14 @@ if [ "$lines" = priced ] && [ -z "${MUTHUR_CONTEXT_BUDGET_WARN:-}" -o -z "${MUTH
     priced=1
     [ "$priced_warn" -ge "$warn" ] || {
       warn="$priced_warn"
-      warn_why="where relaying saves ${warn_saving}% of what carrying on costs"
+      warn_why="where relaying saves \$${warn_saving}"
     }
   fi
   if [ -z "${MUTHUR_CONTEXT_BUDGET_PAUSE:-}" ] && [[ "$priced_pause" =~ ^[0-9]+$ ]]; then
     priced=1
     [ "$priced_pause" -ge "$pause" ] || {
       pause="$priced_pause"
-      pause_why="where relaying saves ${pause_saving}% of what carrying on costs"
+      pause_why="where relaying saves \$${pause_saving}"
     }
   fi
 fi

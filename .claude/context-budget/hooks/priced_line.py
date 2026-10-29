@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """The context budget's priced figures, for `post-tool-context-budget.sh`:
 
-- `lines <transcript> <warn-percent> <pause-percent>` prints `<warn> <pause>` —
-  the contexts at which relaying saves those shares of what carrying on costs
-  over the next `SLICE` tokens of work; `-` for a line no context reaches;
+- `lines <transcript> <warn-usd> <pause-usd>` prints `<warn> <pause>` — the
+  contexts at which relaying saves those dollars over the next `SLICE` tokens
+  of work; `-` for a line no context reaches;
 - `notice <transcript> <reading>` prints the saving sentence for the notice.
 
 Prints nothing when the session cannot be priced, which leaves the caller on
@@ -37,10 +37,10 @@ def priced(transcript: Path, context: Optional[int]) -> Optional[Session]:
 def main() -> None:
     command, transcript = sys.argv[1], Path(sys.argv[2])
     if command == "lines":
-        shares = (int(sys.argv[3]) / 100, int(sys.argv[4]) / 100)
+        savings = (float(sys.argv[3]), float(sys.argv[4]))
         s = priced(transcript, None)
         if s is not None:
-            lines = tuple(line_for(s, SLICE, share) for share in shares)
+            lines = tuple(line_for(s, SLICE, saving) for saving in savings)
             print(*("-" if line is None else line for line in lines))
     elif command == "notice":
         s = priced(transcript, int(sys.argv[3]))
