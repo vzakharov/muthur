@@ -31,11 +31,11 @@ where it stands, a last step aside. What the agent does on each notice is
     whose cache reads cost a twentieth of Opus's, a handoff would pass for worth
     it at a fraction of a cent. The pricing says what a relay saves; whether it
     is worth a handoff is the threshold's call, which no measurement settles.
-  - **The defaults are what 5% and 20% came to on Opus and Sonnet.** Over the
-    ledger's `/relay take` sessions a relay costs $0.4–1.8 up front and a slice
-    $2–4. On a median session $0.20 puts the warning ~20k tokens past
-    break-even, leaving ~75k of room before the pause at $0.80 — enough to
-    finish a step and reach a stopping point.
+  - **The defaults are set on Opus and Sonnet.** Over the ledger's `/relay take`
+    sessions a relay costs $0.4–1.8 up front and a slice $2–4. On a median
+    session $0.20 puts the warning ~20k tokens past break-even, leaving ~75k of
+    room before the pause at $0.80 — enough to finish a step and reach a
+    stopping point.
   - **Each is capped at its fixed line, 300k and 400k**, so pricing only ever
     moves a line earlier: context quality and the hard window are not cost
     questions. The notice says which set the line it reports, since dollars
