@@ -285,16 +285,19 @@ Implementation is where they earn the most: a plan is written before the code
 exists, so the duplication it didn't foresee and the prose that narrates the
 work rather than the result both surface only now.
 
+**When `.claude/hooks/checkpoint-review.py` delivered
+`@.claude/skills/go/checkpoint-review.md` this session, the checkpoint review
+runs next**, before the flip below and Step 4, so the plan is marked done and
+the PR body written only over a reviewed diff. Under a harness that runs no
+hooks, that file's § "Who runs it" says whether it runs. A `relay` verdict
+leaves the plan to § "Stopping partway releases the plan" instead of the flip.
+
 Then **`git mv` the plan to `docs/plans/<slug>.completed.md`** and commit —
 implementation and its quality passes are done. An elephant with any of it left
 goes to `*.paused.md` instead: this step runs at each of its bites' ends, and
 only the last one completes it. (`/finalize` sweeps the whole `docs/plans/` tree
 at squash regardless, so this flip is just the honest end-state marker for an
 operator watching the branch.)
-
-**On a model below Opus, the checkpoint review runs next**, before Step 4, so
-the PR body describes the reviewed diff:
-`@.claude/skills/go/checkpoint-review.md`.
 
 ## Step 4 — Fill in the PR
 
