@@ -23,10 +23,10 @@ dollars='^[0-9]+(\.[0-9]+)?$'
   say "MUTHUR_CONTEXT_BUDGET_WARN / MUTHUR_CONTEXT_BUDGET_PAUSE must be whole counts, MUTHUR_CONTEXT_BUDGET_WARN_SAVING_USD and MUTHUR_CONTEXT_BUDGET_PAUSE_SAVING_USD dollar amounts with the warning's under the pause's; no reading taken."
   exit 0
 }
-# A leftover percentage setting is named, not silently ignored.
-for gone in MUTHUR_CONTEXT_BUDGET_WARN_SAVING MUTHUR_CONTEXT_BUDGET_PAUSE_SAVING; do
-  [ -z "${!gone:-}" ] || say "$gone is no longer read; use ${gone}_USD, in dollars."
-done
+# The pause's percentage knob is named while an environment still sets it,
+# rather than ignored.
+[ -z "${MUTHUR_CONTEXT_BUDGET_PAUSE_SAVING:-}" ] ||
+  say "MUTHUR_CONTEXT_BUDGET_PAUSE_SAVING is no longer read; use MUTHUR_CONTEXT_BUDGET_PAUSE_SAVING_USD, in dollars."
 [[ "$lines" == priced || "$lines" == fixed ]] || {
   say "MUTHUR_CONTEXT_BUDGET_LINES must be \`priced\` or \`fixed\`; no reading taken."
   exit 0
