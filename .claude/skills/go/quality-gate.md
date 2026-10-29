@@ -11,8 +11,7 @@ Load `get_session` with `ToolSearch`
 (`select:mcp__claude-code-remote__get_session`) and call it with no id. The
 session is strong when `session_context.model` or
 `external_metadata.last_served_model` names an Opus model. Otherwise it is weak.
-If the tool cannot be reached, the session is weak: a failure to tell lands on
-the side of checking.
+If the tool cannot be reached, the session counts as weak and the gate runs.
 
 A strong session has nothing to check here. It carries on past the checkpoint.
 
@@ -58,7 +57,7 @@ For D and E: run `/relay park`, which writes the summary and starts no session.
 Then call `create_session` from the claude-code-remote tools with:
 
 - `model` set to the current Opus model's ID, which the `claude-api` skill
-  lists. The ID is not written into the repository.
+  lists, looked up at launch.
 - `source_url` the `origin` URL, and `source_revision` the branch.
 - the prompt `/relay take <branch> — <what now>`, the line the relay skill's
   Step 3 gives, with `<what now>` in plain words.
