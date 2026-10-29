@@ -15,11 +15,15 @@ switches are read alike. `oriented.py exempt` is the check the hook
 runs.
 
 The warning line, which sat where a relay saves $0, now sits where it
-saves `MUTHUR_CONTEXT_BUDGET_WARN_SAVING` percent of what carrying on
-costs (default 5, under the pause's 20). On the ledger's relayed
-sessions a relay costs $0.4-1.8 up front and a 100k slice $2-4, so a
-saving of cents was noise; 5% lands ~20k tokens past break-even and
-keeps ~75k of room before the pause.
+saves `MUTHUR_CONTEXT_BUDGET_WARN_SAVING_USD` (default 0.20), and the
+pause where it saves `MUTHUR_CONTEXT_BUDGET_PAUSE_SAVING_USD` (default
+0.80), replacing the pause's percentage knob. A handoff costs the same
+friction whatever the model charges, while a share of what carrying on
+costs shrinks with its price, so on a cheap model it passed for worth
+it at a fraction of a cent. The defaults are what 5% and 20% came to on
+Opus and Sonnet: a relay costs $0.4-1.8 up front over a slice that
+costs $2-4, and the warning lands ~20k tokens past break-even with
+~75k of room before the pause.
 
 Co-authored-by: Claude <noreply@anthropic.com>
 ```
