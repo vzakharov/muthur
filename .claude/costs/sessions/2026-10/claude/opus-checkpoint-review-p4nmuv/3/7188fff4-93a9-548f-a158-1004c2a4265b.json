@@ -1,0 +1,106 @@
+{
+  "total": {
+    "inputTokens": 122,
+    "cacheWrite5mTokens": 251331,
+    "cacheWrite1hTokens": 95983,
+    "cacheReadTokens": 5770294,
+    "outputTokens": 27179,
+    "thinkingTokens": 12339,
+    "responses": 61,
+    "costUsd": 2.9802433
+  },
+  "estimate": {
+    "at": "2026-10-29T14:53:27.861Z",
+    "parts": [
+      {
+        "hours": 0.25,
+        "grade": "middle",
+        "role": "developer",
+        "comment": "one docstring clause answering a reviewer's question, checked against skill_entry.py and the skill text"
+      }
+    ],
+    "comment": null
+  },
+  "orientation": {
+    "endedBy": "Edit",
+    "endedOn": ".claude/hooks/checkpoint-review.py",
+    "endedAt": "2026-10-29T14:52:14.009Z",
+    "contextTokens": 120652,
+    "spend": {
+      "inputTokens": 24,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 59977,
+      "cacheReadTokens": 1165141,
+      "outputTokens": 3321,
+      "thinkingTokens": 945,
+      "responses": 12,
+      "costUsd": 0.5061941999999999
+    }
+  },
+  "sessionId": "7188fff4-93a9-548f-a158-1004c2a4265b",
+  "branch": "claude/opus-checkpoint-review-p4nmuv",
+  "cwd": "/home/user/muthur",
+  "openingPrompt": "/handle & finalize claude/opus-checkpoint-review-p4nmuv",
+  "prs": [
+    251
+  ],
+  "url": "https://claude.ai/code/session_01RAikutT8XoprJ6AqciJCDp",
+  "operator": "vzakharov",
+  "firstResponseAt": "2026-10-29T14:50:36.318Z",
+  "lastResponseAt": "2026-10-29T14:57:59.292Z",
+  "pricesAsOf": "2026-10-06",
+  "claudeCodeTotalUsd": null,
+  "ownTurns": {
+    "inputTokens": 48,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 95983,
+    "cacheReadTokens": 2712765,
+    "outputTokens": 9210,
+    "thinkingTokens": 2528,
+    "responses": 24,
+    "costUsd": 1.018681
+  },
+  "subagents": {
+    "inputTokens": 74,
+    "cacheWrite5mTokens": 251331,
+    "cacheWrite1hTokens": 0,
+    "cacheReadTokens": 3057529,
+    "outputTokens": 17969,
+    "thinkingTokens": 9811,
+    "responses": 37,
+    "costUsd": 1.9615622999999993
+  },
+  "byRate": {
+    "claude-sonnet-5-5/standard": {
+      "inputTokens": 64,
+      "cacheWrite5mTokens": 94829,
+      "cacheWrite1hTokens": 95983,
+      "cacheReadTokens": 3301581,
+      "outputTokens": 12127,
+      "thinkingTokens": 3210,
+      "responses": 32,
+      "costUsd": 1.4027186999999997
+    },
+    "claude-opus-5-5/standard": {
+      "inputTokens": 58,
+      "cacheWrite5mTokens": 156502,
+      "cacheWrite1hTokens": 0,
+      "cacheReadTokens": 2468713,
+      "outputTokens": 15052,
+      "thinkingTokens": 9129,
+      "responses": 29,
+      "costUsd": 1.5775245999999996
+    }
+  },
+  "warnings": [
+    "prices.json priced the 61 responses the events also priced at $2.9802, against the events' $2.6501: a rate in the table is likely out of date"
+  ],
+  "compactions": [],
+  "telemetry": {
+    "events": 61,
+    "matched": 61,
+    "matchedTableUsd": 2.9802433,
+    "matchedEventUsd": 2.6500852000000004,
+    "unseen": {}
+  }
+}
