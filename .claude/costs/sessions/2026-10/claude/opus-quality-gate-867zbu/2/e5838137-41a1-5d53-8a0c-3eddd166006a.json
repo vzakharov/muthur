@@ -1,0 +1,81 @@
+{
+  "total": {
+    "inputTokens": 14,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 73991,
+    "cacheReadTokens": 745924,
+    "outputTokens": 4178,
+    "thinkingTokens": 2075,
+    "responses": 7,
+    "costUsd": 0.08288376
+  },
+  "estimate": null,
+  "orientation": {
+    "endedBy": "oriented",
+    "endedOn": null,
+    "endedAt": "2026-10-29T03:11:30.188Z",
+    "contextTokens": 118747,
+    "spend": {
+      "inputTokens": 4,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 54708,
+      "cacheReadTokens": 147568,
+      "outputTokens": 1140,
+      "thinkingTokens": 374,
+      "responses": 2,
+      "costUsd": 0.02608296
+    }
+  },
+  "sessionId": "e5838137-41a1-5d53-8a0c-3eddd166006a",
+  "branch": "claude/opus-quality-gate-867zbu",
+  "cwd": "/home/user/muthur",
+  "openingPrompt": "/relay take claude/opus-quality-gate-867zbu — план готов в PR #250, дальше /go: реализовать шлюз качества на Опусе для слабых моделей",
+  "prs": [],
+  "url": "https://claude.ai/code/session_01DaohkFFsYGnqzYXF4juG6D",
+  "operator": "vzakharov",
+  "firstResponseAt": "2026-10-29T03:11:20.799Z",
+  "lastResponseAt": "2026-10-29T03:11:44.071Z",
+  "pricesAsOf": "2026-10-06",
+  "claudeCodeTotalUsd": null,
+  "ownTurns": {
+    "inputTokens": 14,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 73991,
+    "cacheReadTokens": 745924,
+    "outputTokens": 4178,
+    "thinkingTokens": 2075,
+    "responses": 7,
+    "costUsd": 0.08288376
+  },
+  "subagents": {
+    "inputTokens": 0,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 0,
+    "cacheReadTokens": 0,
+    "outputTokens": 0,
+    "thinkingTokens": 0,
+    "responses": 0,
+    "costUsd": 0.0
+  },
+  "byRate": {
+    "claude-haiku-5-5/standard": {
+      "inputTokens": 14,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 73991,
+      "cacheReadTokens": 745924,
+      "outputTokens": 4178,
+      "thinkingTokens": 2075,
+      "responses": 7,
+      "costUsd": 0.08288376
+    }
+  },
+  "warnings": [],
+  "compactions": [],
+  "telemetry": {
+    "events": 6,
+    "matched": 6,
+    "matchedTableUsd": 0.07556306,
+    "matchedEventUsd": 0.07556306,
+    "unseen": {}
+  }
+}
