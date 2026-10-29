@@ -97,7 +97,6 @@ prose must describe the mechanism for any adopter, never one operator's wish.
 Wait for the operator. Nothing is pending from them; the PR is ready for
 `/finalize` whenever they call it.
 
-
 ## Last agent turn
 
 The agent's last turn before the relay, verbatim, appended by
