@@ -31,10 +31,9 @@ the operator has to choose.
 
 1. **Detect the model with `get_session`.** The claude-code-remote MCP tool,
    loaded through `ToolSearch`, reports `session_context.model` and
-   `external_metadata.last_served_model`. A session is weak when neither names a
-   `claude-opus-*` model. If `get_session` cannot be reached, the session counts
-   as weak and the gate runs, because the failure should land on the side of
-   checking.
+   `external_metadata.last_served_model`. A session is weak when neither names
+   an Opus model. If `get_session` cannot be reached, the session counts as weak
+   and the gate runs, because the failure should land on the side of checking.
 
 2. **The judge is an `Agent` with `model: "opus"`.** It runs without a worktree,
    because it reads the session's own tree and edits nothing there except the
@@ -58,10 +57,10 @@ the operator has to choose.
    brief carrying the first verdict and its reasons.
 
 5. **Relay goes through `/relay park`.** It writes the summary and starts no
-   session. The session then calls `create_session` with
-   `model: "claude-opus-5-5"` and the prompt `/relay take <branch>`. That keeps
-   `/relay` unchanged, at the cost of a model argument that `/relay` itself does
-   not take.
+   session. The session then calls `create_session` with `model` set to the Opus
+   model's ID and the prompt `/relay take <branch>`. That keeps `/relay`
+   unchanged, at the cost of a model argument that `/relay` itself does not
+   take.
 
 6. **A judge that cannot be launched is a stop, not a pass.** The session
    reports that the gate did not run and ends the turn. Passing silently would
