@@ -14,12 +14,17 @@ need_command jq "no context-budget reading this tool call."
 
 warn="${MUTHUR_CONTEXT_BUDGET_WARN:-300000}"
 pause="${MUTHUR_CONTEXT_BUDGET_PAUSE:-400000}"
-pause_saving="${MUTHUR_CONTEXT_BUDGET_PAUSE_SAVING:-20}"
+warn_saving="${MUTHUR_CONTEXT_BUDGET_WARN_SAVING_USD:-0.20}"
+pause_saving="${MUTHUR_CONTEXT_BUDGET_PAUSE_SAVING_USD:-0.80}"
 lines="${MUTHUR_CONTEXT_BUDGET_LINES:-priced}"
-[[ "$warn" =~ ^[0-9]+$ && "$pause" =~ ^[0-9]+$ && "$pause_saving" =~ ^[0-9]+$ && "$pause_saving" -lt 100 ]] || {
-  say "MUTHUR_CONTEXT_BUDGET_WARN / MUTHUR_CONTEXT_BUDGET_PAUSE must be whole counts, MUTHUR_CONTEXT_BUDGET_PAUSE_SAVING a percentage under 100; no reading taken."
+dollars='^[0-9]+(\.[0-9]+)?$'
+[[ "$warn" =~ ^[0-9]+$ && "$pause" =~ ^[0-9]+$ && "$warn_saving" =~ $dollars && "$pause_saving" =~ $dollars ]] \
+  && awk -v warn="$warn_saving" -v pause="$pause_saving" 'BEGIN { exit !(warn < pause) }' || {
+  say "MUTHUR_CONTEXT_BUDGET_WARN / MUTHUR_CONTEXT_BUDGET_PAUSE must be whole counts, MUTHUR_CONTEXT_BUDGET_WARN_SAVING_USD and MUTHUR_CONTEXT_BUDGET_PAUSE_SAVING_USD dollar amounts with the warning's under the pause's; no reading taken."
   exit 0
 }
+[ -z "${MUTHUR_CONTEXT_BUDGET_PAUSE_SAVING:-}" ] ||
+  say "MUTHUR_CONTEXT_BUDGET_PAUSE_SAVING is no longer read; use MUTHUR_CONTEXT_BUDGET_PAUSE_SAVING_USD, in dollars."
 [[ "$lines" == priced || "$lines" == fixed ]] || {
   say "MUTHUR_CONTEXT_BUDGET_LINES must be \`priced\` or \`fixed\`; no reading taken."
   exit 0
@@ -61,21 +66,21 @@ if [ "$lines" = priced ] && [ -z "${MUTHUR_CONTEXT_BUDGET_WARN:-}" -o -z "${MUTH
   priced_warn= priced_pause= at=
   [ ! -f "$line_file" ] || read -r priced_warn priced_pause at <"$line_file"
   if ! [[ "$at" =~ ^[0-9]+$ && "$reading" -ge "$at" && "$reading" -lt $((at + 10000)) ]]; then
-    read -r priced_warn priced_pause < <(python3 "$hooks/priced_line.py" lines "$transcript" "$pause_saving")
+    read -r priced_warn priced_pause < <(python3 "$hooks/priced_line.py" lines "$transcript" "$warn_saving" "$pause_saving")
     mkdir -p "$state_dir" && printf '%s %s %s\n' "${priced_warn:--}" "${priced_pause:--}" "$reading" >"$line_file"
   fi
   if [ -z "${MUTHUR_CONTEXT_BUDGET_WARN:-}" ] && [[ "$priced_warn" =~ ^[0-9]+$ ]]; then
     priced=1
     [ "$priced_warn" -ge "$warn" ] || {
       warn="$priced_warn"
-      warn_why='where relaying starts to cost less than carrying on'
+      warn_why="where relaying saves \$${warn_saving}"
     }
   fi
   if [ -z "${MUTHUR_CONTEXT_BUDGET_PAUSE:-}" ] && [[ "$priced_pause" =~ ^[0-9]+$ ]]; then
     priced=1
     [ "$priced_pause" -ge "$pause" ] || {
       pause="$priced_pause"
-      pause_why="where relaying saves ${pause_saving}% of what carrying on costs"
+      pause_why="where relaying saves \$${pause_saving}"
     }
   fi
 fi
