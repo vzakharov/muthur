@@ -1,10 +1,6 @@
 """Steno waves on the ledger branch: each wave's forecast beside what it
-measured, so later forecasts calibrate from the ones before.
-
-A row is `delegations/<YYYY-MM>/<agent-id>.json` beside `sessions/` on
-`cost-ledger`, never under it: the wave's spend is already in its session's row,
-and `report.py` reads everything under `sessions/` as a session. One file per
-agent id, so two sessions never write the same path.
+measured, so later forecasts calibrate from the ones before. One file per agent
+id, so two sessions never write the same path.
 """
 
 from __future__ import annotations
@@ -20,8 +16,7 @@ from lib.tally import Rates
 
 DELEGATIONS = SESSIONS.parent / "delegations"
 PREFIX = DELEGATIONS.relative_to(ROOT).as_posix()
-# Haiku's run in the first wave measured, before the ledger held any; replaced
-# by the ledger's mean as soon as it holds one.
+# The first measured wave's Haiku run, standing in while the ledger holds none.
 SEED_RUN_USD = 0.06
 
 
