@@ -1,13 +1,13 @@
 {
   "total": {
-    "inputTokens": 32,
+    "inputTokens": 56,
     "cacheWrite5mTokens": 0,
-    "cacheWrite1hTokens": 65026,
-    "cacheReadTokens": 1678547,
-    "outputTokens": 5519,
-    "thinkingTokens": 1058,
-    "responses": 16,
-    "costUsd": 0.9664254000000002
+    "cacheWrite1hTokens": 75487,
+    "cacheReadTokens": 3143624,
+    "outputTokens": 11723,
+    "thinkingTokens": 2765,
+    "responses": 28,
+    "costUsd": 1.4673047999999997
   },
   "estimate": {
     "at": "2026-10-29T08:33:31.183Z",
@@ -45,18 +45,18 @@
   "url": "https://claude.ai/code/session_01DaohkEWDiePxsbN8L9jdbh",
   "operator": "vzakharov",
   "firstResponseAt": "2026-10-29T08:32:40.685Z",
-  "lastResponseAt": "2026-10-29T08:44:32.010Z",
+  "lastResponseAt": "2026-10-29T09:40:58.767Z",
   "pricesAsOf": "2026-10-06",
   "claudeCodeTotalUsd": null,
   "ownTurns": {
-    "inputTokens": 32,
+    "inputTokens": 56,
     "cacheWrite5mTokens": 0,
-    "cacheWrite1hTokens": 65026,
-    "cacheReadTokens": 1678547,
-    "outputTokens": 5519,
-    "thinkingTokens": 1058,
-    "responses": 16,
-    "costUsd": 0.9664254000000002
+    "cacheWrite1hTokens": 75487,
+    "cacheReadTokens": 3143624,
+    "outputTokens": 11723,
+    "thinkingTokens": 2765,
+    "responses": 28,
+    "costUsd": 1.4673047999999997
   },
   "subagents": {
     "inputTokens": 0,
@@ -70,23 +70,23 @@
   },
   "byRate": {
     "claude-opus-5-5/standard": {
-      "inputTokens": 32,
+      "inputTokens": 56,
       "cacheWrite5mTokens": 0,
-      "cacheWrite1hTokens": 65026,
-      "cacheReadTokens": 1678547,
-      "outputTokens": 5519,
-      "thinkingTokens": 1058,
-      "responses": 16,
-      "costUsd": 0.9664254000000002
+      "cacheWrite1hTokens": 75487,
+      "cacheReadTokens": 3143624,
+      "outputTokens": 11723,
+      "thinkingTokens": 2765,
+      "responses": 28,
+      "costUsd": 1.4673047999999997
     }
   },
   "warnings": [],
   "compactions": [],
   "telemetry": {
-    "events": 16,
-    "matched": 16,
-    "matchedTableUsd": 0.9664254000000002,
-    "matchedEventUsd": 0.9664254000000002,
+    "events": 28,
+    "matched": 28,
+    "matchedTableUsd": 1.4673047999999997,
+    "matchedEventUsd": 1.4673047999999997,
     "unseen": {}
   }
 }
