@@ -93,13 +93,13 @@ def fetch() -> Optional[str]:
     return resolve(REMOTE_REF)
 
 
-def rows_at(rev: str) -> List[Tuple[str, str]]:
-    """`(path, text)` for every row `rev` holds, in one `ls-tree` and one
-    `cat-file --batch` however many there are."""
+def rows_at(rev: str, prefix: str = PREFIX) -> List[Tuple[str, str]]:
+    """`(path, text)` for every row `rev` holds under `prefix`, in one `ls-tree`
+    and one `cat-file --batch` however many there are."""
     if resolve(rev) is None:
         return []
     listed = []
-    for line in git("ls-tree", "-r", "--full-tree", rev, "--", PREFIX).splitlines():
+    for line in git("ls-tree", "-r", "--full-tree", rev, "--", prefix).splitlines():
         meta, path = line.split("\t", 1)
         _, kind, blob = meta.split()
         if kind == "blob" and path.endswith(".json"):
@@ -245,6 +245,12 @@ def append_row(text: str) -> str:
 
     append(plan)
     return placed[0]
+
+
+def append_file(path: str, text: str, message: str) -> Optional[str]:
+    """Put one file outside `sessions/` on the ledger's tip; None where the tip
+    already holds it as `text`."""
+    return append(lambda tip: ({} if tip and text_at(tip, path) == text else {path: text}, message))
 
 
 def path_for(text: str) -> str:
