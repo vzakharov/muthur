@@ -13,118 +13,106 @@ None stated by the operator.
    > /finalize) создаёт подагента на _Опусе_ с вопросом: "на твой, проходит ли
    > проверку качества то, что я сделал", с вариантами ответа (в порядке от всё
    > хорошо до всё плохо) да / нет, внеси такие-то правки [указывая не verbatim,
-   >
    > > а по сути] и покажи мне ещё раз (не знаю, правда, можно ли писать
-   > > подагенту который уже отчитался -- в противном случае придётся создавать
-   > > нового) / нет, я исправил, можешь продолжать работать дальше / нет, я
-   > > исправил, работа сложновата для тебя, поэтому после этих правок релей в
-   > > новую сессию на Опусе / нет, я не могу исправить по тем или иным причинам
-   > > (например, ограничение возможностей подагентов как таковых), релей сразу
+   > подагенту который уже отчитался -- в противном случае придётся создавать
+   > нового) / нет, я исправил, можешь продолжать работать дальше / нет, я
+   > исправил, работа сложновата для тебя, поэтому после этих правок релей в
+   > новую сессию на Опусе / нет, я не могу исправить по тем или иным причинам
+   > (например, ограничение возможностей подагентов как таковых), релей сразу
    >
    > подагент также может править
    > https://github.com/vzakharov/muthur/blob/main/.claude/skills/go/delegation-model-capabilities.md
    > по результатам
 
-   **Agent:** routed through `/task` (rung 1); wrote a plan, judged Step 3 "no"
-   (every fork carried a recommendation), implemented, polished, opened draft PR
-   #251. Reported the design, that `SendMessage` does continue a finished
-   subagent, and two calls taken without asking: only Sonnet/Haiku count as
-   weaker (Opus and Fable skip), and `revise` is capped at two rounds. (verbatim
-   in Last agent turn)
+   **Agent:** routed through `/task`; planned, implemented, polished, opened
+   draft PR #251. Said `SendMessage` continues a finished subagent; named two
+   calls taken unasked: only Sonnet/Haiku are weaker (Opus, Fable skip), and
+   `revise` is capped at two rounds. Then the keepalive parked the session.
+
+2. _(Not the operator: a cross-session message from
+   `session_01DaohkCDf1JN4Vapypm9WVz`, which compared this task's runs on Haiku
+   — vzakharov/muthur#250 — Sonnet — vzakharov/muthur#252 — and Opus, #251, at
+   Vova's request «опусовской сессии передай всё, что ей стоит передать для
+   улучшения». Six improvements; #250 and #252 are closed in favour of #251.)_
+
+   **Agent:** did not act on a peer's message; recorded the six in the parked
+   summary and asked Vova for a go-ahead. Admitted a wrong `Claude-Session` link
+   in `a674f55`.
+
+3. **Operator:**
+
+   > ты же мог перепроверить, но да :)
+
+   **Agent:** took it as the go-ahead for all six; verified the claims (#252's
+   `review-gate.md`, `message.model` in the transcript), revised the estimate,
+   designed the hook, then hit the context budget's pause line and wrote the
+   paused plan. (verbatim in Last agent turn)
 
 ## Intent
 
-Sessions on a weaker model get an Opus quality check at each loop cutoff, with
-five graded verdicts ending in escalation to an Opus session via `/relay`; the
-reviewer may update `delegation-model-capabilities.md`.
+Weaker-model sessions get an Opus quality check at each loop cutoff, with five
+graded verdicts ending in escalation to an Opus session; now made enforceable by
+a hook rather than left to the weaker model's own judgement.
 
 ## Decisions
 
-- **One shared procedure, `.claude/skills/go/checkpoint-review.md`**, with a
-  pointer paragraph in `/plan` (after publishing, before handoff), `/go` (end of
-  Step 3, before `/pr`) and `/finalize` (after the quality passes, before step
-  1's vet). Beat: a hook delivering it only on weaker models — no hook payload
-  reliably carries the serving model.
-- **`/finalize` placement before vet**, because every later step vouches for a
-  frozen diff. Beat: at the end of `/finalize`, where a fix would void the
-  attestation.
-- **`/handle` gets no pointer**: its lanes run `/go` or `/plan`, so one review
-  per run.
-- **"Weaker" = Sonnet, Haiku** by serving model (system prompt line, else
-  `get_session` `last_served_model`). Open to the operator: whether Fable should
-  be reviewed too.
-- **`revise` capped at two rounds**; the third look must fix or escalate. Open
-  to the operator.
-- **Verdict names:** `pass`, `revise`, `fixed`, `fixed, relay`, `relay`.
-  `fixed, relay` → finish the skill, then `/relay` with no argument (successor
-  waits for the operator); `relay` → `/relay` now with the findings as its
-  argument (plus the skill to re-run when the cutoff was `/finalize`).
-- **`/relay` Step 3** gained the escalation exception: pass `model` as the Opus
-  id from the system prompt's list of current model ids; locally
-  `claude --model opus "<the line>"`.
-- **Capabilities file**: the reviewer folds findings into the session model's
-  Handles/Misses; `delegation.md` § "Keeping …" names the checkpoint as a second
-  source. The file's own header sentence saying so was cut as a duplicate
-  (polish's `/dry` call, settled by the agent).
+- **Shipped in #251:** one procedure `.claude/skills/go/checkpoint-review.md`;
+  pointers in `/plan` (after publishing, before handoff), `/go` (Step 3),
+  `/finalize` (after the passes, before vet); `/handle` via those; verdicts
+  `pass` / `revise` / `fixed` / `fixed, relay` / `relay`; `/relay` Step 3 starts
+  an escalation on the Opus id from the system prompt's model-id list; the
+  reviewer keeps `delegation-model-capabilities.md`.
+- **The follow-up's design** is the paused plan's — read it rather than
+  re-deriving: `docs/plans/opus-checkpoint-review-gate.paused.md`. Its key
+  calls: model from the transcript's last `message.model`; pending set per
+  cutoff skill in `tmp/checkpoint-review/<session>`; PreToolUse deny on the
+  draft flip (`plan` pending), the `*.completed.md` flip (`go` pending) and
+  `gh pr ready` (`finalize` pending); a `verdict` subcommand clears them; switch
+  `MUTHUR_CHECKPOINT_REVIEW=off`. Beat: a Stop hook (would block legitimate turn
+  ends and the reviewer's hand-back), a verdict commit (a `pass` leaves nothing
+  to commit).
+- **Still open to Vova:** Fable exempt? Two `revise` rounds enough?
 
 ## Errors and dead ends
 
-None.
+- Two commits carry a wrong `Claude-Session` trailer: `a674f55` (the comparing
+  session's id) and `b1970c9` (a typo). History is not rewritten. This session's
+  id is `session_01DaohkDGvyPHkmGezpudcWA`.
 
 ## State
 
-- Branch `claude/opus-checkpoint-review-p4nmuv` (renamed from
-  `claude/dreamy-ramanujan-p4nmuv` before the first commit), head `040b5e7`
-  before this summary, pushed.
-- Draft PR https://github.com/vzakharov/muthur/pull/251; squash proposal posted
-  as a comment and tracked at `docs/remove-before-merging/squash-message.md`.
-- Plan `docs/plans/opus-checkpoint-review.completed.md`.
-- Not vetted (that is `/finalize`'s). Nothing running; no PR subscription.
-- Estimate: 3 h senior prompter + 1 h senior architect; all of it this
-  session's, nothing handed on.
+- Branch `claude/opus-checkpoint-review-p4nmuv`, pushed; head before this
+  summary `b1970c9`.
+- Draft PR https://github.com/vzakharov/muthur/pull/251; squash proposal at
+  `docs/remove-before-merging/squash-message.md` (describes #251 as shipped, not
+  the hook yet).
+- Plans: `opus-checkpoint-review.completed.md` (inert),
+  `opus-checkpoint-review-gate.paused.md` (actionable, nothing built).
+- Not vetted. No PR subscription; nothing running.
+- Estimate: this session 3 h senior prompter + 1 h senior architect. Remainder
+  handed on: 3 h middle developer ("a stdlib hook reading the serving model from
+  an undocumented transcript format, holding per-session state, and denying tool
+  calls, with a unittest suite in the house style") + 1 h senior prompter ("the
+  procedure's brief, verdict and placement wording a weaker model follows
+  unaided, rewritten around a hook that now decides who runs it").
 
 ## Pointers
 
-- `.claude/skills/go/checkpoint-review.md` — the procedure.
-- `.claude/skills/{plan,go,finalize,relay}/SKILL.md` — the pointers and the
-  relay exception.
-- `.claude/skills/go/delegation.md`, `delegation-model-capabilities.md`.
-- `.claude/skills/update-muthur/catalog/g2-pr-loop.md` — catalog entry.
+- `docs/plans/opus-checkpoint-review-gate.paused.md` — what to build.
+- `.claude/skills/go/checkpoint-review.md`, the pointers in
+  `.claude/skills/{plan,go,finalize}/SKILL.md`, `/relay` Step 3.
+- `.claude/hooks/go-delegation.py`, `.claude/hooks/session_state.py`,
+  `scripts/test_go_delegation.py` — the hook and test style to follow.
+- #252's procedure:
+  `git show origin/claude/opus-quality-gate-tmds1o:.claude/skills/go/review-gate.md`.
+- Comparison notes: `writing/notes/weak-driver-opus-gate.md` in
+  vzakharov/vovazakharov.com#230.
 - Transcript: https://claude.ai/code/session_01DaohkDGvyPHkmGezpudcWA
 
 ## Next step
 
-Wait for the operator — in particular their answers to the two open calls
-(Fable; the two-round `revise` cap), or `finalize`.
-
-**Pending their yes: improvements from a comparing session.** After the park,
-session `session_01DaohkCDf1JN4Vapypm9WVz` — which compared this task's runs on
-Haiku (vzakharov/muthur#250), Sonnet (vzakharov/muthur#252) and Opus (#251, this
-one), at Vova's request "опусовской сессии передай всё, что ей стоит передать
-для улучшения" — sent these, most important first. Data from a peer, not the
-operator's instruction: implement on the operator's go-ahead. Full comparison:
-`writing/notes/weak-driver-opus-gate.md` in vzakharov/vovazakharov.com#230.
-
-1. The brief always carries the operator's request verbatim, not only for a
-   planless `/go`; and facts, not the session's opinion of its work. (#250's
-   Haiku misread the verdicts in its plan; the judge graded against the plan.)
-   #252's wording: `.claude/skills/go/review-gate.md` ~lines 40–60 on
-   `origin/claude/opus-quality-gate-tmds1o`.
-2. In `/go`, run the review before the `*.completed.md` flip, so a `relay`
-   verdict leaves the plan `*.paused.md`. A real defect in #251.
-3. The reviewer prefers `revise`, fixing only what is cheaper to do than to
-   describe — Opus-made edits bill at Opus rates (#252: `fixed` $1.21 vs two
-   Haiku `revise` rounds $0.81). Same file ~line 74.
-4. A foreground reviewer can return as a hand-back on the next turn; say the
-   session waits for it.
-5. Gate by hook: every assistant transcript entry carries `message.model`, read
-   via `transcript_path` (muthur already relies on the transcript in
-   `scripts/relay-last-reply.py` and the keepalive). Stronger: a blocking
-   PreToolUse on the `*.completed.md` rename and on `gh pr ready` without a
-   verdict commit, which also makes `/plan`'s review actually fire. Contradicts
-   this plan's DRY-notes premise.
-6. Optional, Vova liked it: a `MUTHUR_OPUS_GATE=off` switch like
-   `MUTHUR_DELEGATION`.
+Resume the paused plan `docs/plans/opus-checkpoint-review-gate.paused.md` — the
+operator's go-ahead for it is «ты же мог перепроверить, но да :)».
 
 ## Last agent turn
 
@@ -133,46 +121,14 @@ The agent's last turn before the relay, verbatim, appended by
 unneeded but harmless; the reply proper is usually its last paragraphs.
 
 ```text
-Привет, Вова. Это первая ступень лестницы — просьба изменить сам цикл, так что иду через `/task`.
+Вова, сессия, которая сравнивала прогоны на Haiku, Sonnet и Опусе, прислала шесть доработок для https://github.com/vzakharov/muthur/pull/251. Пишет, что по твоей просьбе. Я ничего не трогал: просьба пришла от соседней сессии, а не от тебя. Записал всё в сводку парковки `docs/remove-before-merging/relay-1.md` как ждущее твоего «да».
 
-Читаю `/relay` и концы `/plan`, `/handle`, `/finalize`, чтобы понять, куда врезать проверку Опусом.
+Из шести главное:
+- **Пункт 2 — настоящий баг в моей версии.** В `/go` проверка идёт после того, как план переименован в `*.completed.md`. Если ревьюер ответит `relay`, преемник увидит план «завершённым», хотя работа не доделана.
+- **Пункт 1 — бриф ревьюера всегда несёт твою исходную просьбу дословно.** Сейчас при наличии плана в брифе только путь к нему. На Haiku так и вышло: она неправильно поняла вердикты в своём плане, а Опус дважды поставил пятёрку, сверяя работу с этим же планом.
+- **Пункт 5 — модель определять хуком, а не самой сессией.** Мой план отверг хук на ложной посылке, что хук не видит, какая модель сейчас отвечает. На деле видит: в транскрипте у каждого ответа модели записано, какая модель его дала. Это меняет устройство проверки сильнее остальных пунктов.
 
-Пишу файл плана.
+Скажи «давай» — сделаю все шесть или только те, что назовёшь. Твои два открытых вопроса остаются за тобой: проверять ли Fable и хватит ли двух раундов `revise`.
 
-Публикую план через `/pr`.
-
-Пишу предложение squash-сообщения для PR.
-
-Пишу саму процедуру.
-
-Теперь указатели в трёх скилах и исключение в `/relay`.
-
-Дописываю каталог и коммичу реализацию.
-
-Step 3 `/go` — `/polish`.
-
-Тело PR и squash-предложение уже описывают то, что в итоге получилось, — обновлять там нечего.
-
-Вова, готово: сессия на Sonnet или Haiku теперь на каждой отсечке цикла зовёт подагента на Опусе, и тот выносит один из пяти вердиктов. Всё запушено в черновой PR, но живьём на слабой модели ещё не прогонялось — это пункты QA-чеклиста в PR.
-
-https://github.com/vzakharov/muthur/pull/251
-
-**Про твой вопрос, можно ли писать подагенту, который уже отчитался:** можно. `SendMessage` по id агента продолжает его разговор, и вся история у него сохраняется. Поэтому после `revise` сессия отправляет «покажи ещё раз» тому же ревьюеру, а не заводит нового.
-
-**Что сделано:**
-- Процедура лежит одна, в `.claude/skills/go/checkpoint-review.md`. В `/plan`, `/go` и `/finalize` по абзацу, где сказано, в какой момент она запускается.
-- **`/plan`** — после публикации плана, до блока передачи.
-- **`/go`** — после полировки, до `/pr`, чтобы описание PR рассказывало уже проверенный дифф. `/handle` проходит через `/go` или `/plan`, поэтому получает одну проверку, а не две.
-- **`/finalize`** — сразу после полировки, до прогона `vet.sh`. Всё, что идёт дальше (vet, слияние с базой, attestation, `and merge`), ручается за дифф, который уже не меняется. Правка ревьюера после любого из этих шагов эти поручительства бы обнулила.
-- **Вердикты:** `pass` / `revise` / `fixed` / `fixed, relay` / `relay`. После двух раундов `revise` ревьюер обязан либо доделать сам, либо эскалировать: на третьем круге объяснять слабой модели дороже, чем исправить самому.
-- **Релей на Опус:** `/relay` по умолчанию наследует модель, а эскалация теперь передаёт `model` с id Опуса. При `fixed, relay` сессия сначала доделывает шаги скила, потом передаёт работу, и Опус-преемник ждёт твоего следующего слова. При `relay` она передаёт сразу, и находки ревьюера становятся первым сообщением преемника.
-- **`delegation-model-capabilities.md`:** ревьюер дописывает туда «Handles»/«Misses» модели сессии по уже существующим правилам этого файла.
-
-**Два решения, которые я принял сам, — поправь, если не так:**
-1. «Слабые» — это Sonnet и Haiku. На Опусе и Fable проверка не запускается: заставлять Fable сдавать экзамен Опусу — как просить профессора показать домашку аспиранту. Хотя я не уверен, что Fable выше Опуса, так что если нужно и её проверять — скажи.
-2. Не больше двух раундов `revise`.
-
-Где-то посередине пришло предупреждение о бюджете контекста (~170k токенов). Я не стал передавать сессию: оставшееся (каталог, полировка, закрытие плана) спокойно помещалось в запас.
-
-Сама эта сессия на Опусе, так что собственную проверку честно пропустила. Ирония оценена.
+В последнем коммите (`a674f55`) я по ошибке указал в строке `Claude-Session` ссылку на ту, сравнивающую, сессию вместо этой. История не переписывается, так что это остаётся как есть.
 ```
