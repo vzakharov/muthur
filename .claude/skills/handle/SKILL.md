@@ -178,6 +178,11 @@ the operator to close — resolving is theirs, and that section says so against
 any harness instruction to the contrary. A comment you decline gets a reply
 saying why, not silence.
 
+**Quality gate checkpoint.** In a session not on Opus, run
+`@.claude/skills/go/quality-gate.md` once the lane has run, before this turn
+closes. Step 5's `and finalize` has its own checkpoint in `/finalize`. A verdict
+that stops the turn ends it there.
+
 ## Step 4 — No lane fired
 
 With extra guidance in the argument, that guidance is the task → `/go` §

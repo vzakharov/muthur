@@ -292,6 +292,10 @@ only the last one completes it. (`/finalize` sweeps the whole `docs/plans/` tree
 at squash regardless, so this flip is just the honest end-state marker for an
 operator watching the branch.)
 
+**Quality gate checkpoint.** In a session not on Opus, run
+`@.claude/skills/go/quality-gate.md` here, after the passes above and before
+Step 4 fills in the PR. A verdict that stops the turn ends it there.
+
 ## Step 4 — Fill in the PR
 
 Load `@.claude/skills/pr/SKILL.md` and follow it with no args. Which of its

@@ -141,7 +141,9 @@ Steps (stop on first unresolved failure):
      to ever live on the trunk. Do **not** skip this step — leaving any folder
      in means it ships.
 
-4. **Ready for review**: `gh pr ready`. If the repo runs a workflow on PRs,
+4. **Ready for review**: first, in a session not on Opus, run the quality gate
+   checkpoint `@.claude/skills/go/quality-gate.md`; a verdict that stops the
+   turn ends it there. Then `gh pr ready`. If the repo runs a workflow on PRs,
    watch it to green now (`@.claude/skills/watch-ci/SKILL.md`) and fix what it
    surfaces under the two-shot rule. If nothing runs on a PR here, there is
    nothing to chase — an empty Checks tab is the expected end state, and pushing

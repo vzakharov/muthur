@@ -165,6 +165,10 @@ questions in web sessions" routes a new session's change-asking prompt through
 `/task`, which reaches this skill without anyone typing `/pr`, and hanging
 PR-creation off `/pr` would leave exactly that entry on a PR-less branch.
 
+**Quality gate checkpoint.** In a session not on Opus, run
+`@.claude/skills/go/quality-gate.md` here, once the draft is published and
+before the handoff block below. A verdict that stops the turn ends it there.
+
 ### Handing off — end the plan turn with a copyable `/go` block
 
 Get the branch with `git branch --show-current` and substitute the real name.
