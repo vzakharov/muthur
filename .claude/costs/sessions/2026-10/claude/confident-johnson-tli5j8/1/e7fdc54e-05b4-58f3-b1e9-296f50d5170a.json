@@ -1,0 +1,94 @@
+{
+  "total": {
+    "inputTokens": 6,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 40112,
+    "cacheReadTokens": 232314,
+    "outputTokens": 1535,
+    "thinkingTokens": 1032,
+    "responses": 3,
+    "costUsd": 0.2222728
+  },
+  "estimate": {
+    "at": "2026-10-29T02:52:26.137Z",
+    "parts": [
+      {
+        "hours": 0.25,
+        "grade": "senior",
+        "role": "developer",
+        "comment": "a question about the agent's own tooling, answered from the tool definitions with no change to the repo"
+      }
+    ],
+    "comment": null
+  },
+  "orientation": {
+    "endedBy": "end_turn",
+    "endedOn": null,
+    "endedAt": "2026-10-29T02:52:33.400Z",
+    "contextTokens": 91653,
+    "spend": {
+      "inputTokens": 4,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 39334,
+      "cacheReadTokens": 141441,
+      "outputTokens": 1493,
+      "thinkingTokens": 1032,
+      "responses": 2,
+      "costUsd": 0.2005622
+    }
+  },
+  "sessionId": "e7fdc54e-05b4-58f3-b1e9-296f50d5170a",
+  "branch": "claude/confident-johnson-tli5j8",
+  "cwd": "/home/user/muthur",
+  "openingPrompt": "а ты можешь сам менять свою модель?",
+  "prs": [],
+  "url": "https://claude.ai/code/session_01DaohkFGvHx9Nd6o1s6GiDB",
+  "operator": "vzakharov",
+  "firstResponseAt": "2026-10-29T02:52:24.116Z",
+  "lastResponseAt": "2026-10-29T02:52:33.400Z",
+  "pricesAsOf": "2026-10-06",
+  "claudeCodeTotalUsd": null,
+  "ownTurns": {
+    "inputTokens": 6,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 40112,
+    "cacheReadTokens": 232314,
+    "outputTokens": 1535,
+    "thinkingTokens": 1032,
+    "responses": 3,
+    "costUsd": 0.2222728
+  },
+  "subagents": {
+    "inputTokens": 0,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 0,
+    "cacheReadTokens": 0,
+    "outputTokens": 0,
+    "thinkingTokens": 0,
+    "responses": 0,
+    "costUsd": 0.0
+  },
+  "byRate": {
+    "claude-sonnet-5-5/standard": {
+      "inputTokens": 6,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 40112,
+      "cacheReadTokens": 232314,
+      "outputTokens": 1535,
+      "thinkingTokens": 1032,
+      "responses": 3,
+      "costUsd": 0.2222728
+    }
+  },
+  "warnings": [
+    "prices.json priced the 3 responses the events also priced at $0.2223, against the events' $0.1990: a rate in the table is likely out of date"
+  ],
+  "compactions": [],
+  "telemetry": {
+    "events": 3,
+    "matched": 3,
+    "matchedTableUsd": 0.2222728,
+    "matchedEventUsd": 0.19904140000000003,
+    "unseen": {}
+  }
+}
