@@ -21,6 +21,11 @@ the model the session's transcript records on its latest reply:
   review stops the session there rather than passing unseen;
 - recording the verdict (§ "Recording the verdict") clears it.
 
+The gate is per session and needs that closing step: a `/go` with no plan file
+never flips one, and a `/plan` whose `/go` runs in another session never sees
+its own flip. There the skill's pointer alone holds the session to the review,
+and nothing stops a skipped one short of `/finalize`'s gate.
+
 `MUTHUR_CHECKPOINT_REVIEW=off` turns all of it off. Under a harness that runs no
 hooks, the session runs this file itself when the model its system prompt names
 is Sonnet or Haiku, unless that switch is `off`.
