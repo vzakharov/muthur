@@ -56,16 +56,14 @@ a delegate and as a session's own driver whose work an Opus review judged.
   and implementation without stalling.
 - **Misses:** reading a nuanced ask: it moved an action to the wrong actor — who
   makes a fix — and carried the misreading through its plan into its reviewer's
-  brief, where it framed the options and the reviewer's remit, so the review
-  passed it. How new pointers interact with the flows they sit in: a checkpoint
-  one skill reaches through another ran twice, another skill's step was
-  half-restated instead of pointed to, and a checkpoint landed after the steps
-  that vouch for a frozen diff. Commit messages that do not match what the
-  commit holds.
+  brief, so the review passed it. How new pointers interact with the flows they
+  sit in: a checkpoint one skill reaches through another ran twice, another
+  skill's step was half-restated instead of pointed to, and a checkpoint landed
+  after the steps that vouch for a frozen diff. Commit messages that do not
+  match what the commit holds.
 - **Brief:** name the defect and its correction exactly; it fixes what is named
   and does not go looking for the same defect elsewhere. Leave it no ask to
-  interpret: interpretation is where it fails, and a review briefed from its
-  plan does not catch it.
+  interpret: interpretation is where it fails.
 - **Cost, by eye:** driving a session with an Opus review at the end came to
   under half an Opus-only session's cost, nearly half of it the review, and a
   third more wall time counting a relay — and the result still needed the rework
