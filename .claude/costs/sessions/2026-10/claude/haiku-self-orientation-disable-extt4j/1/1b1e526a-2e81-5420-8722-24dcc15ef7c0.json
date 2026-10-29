@@ -1,0 +1,102 @@
+{
+  "total": {
+    "inputTokens": 140,
+    "cacheWrite5mTokens": 128355,
+    "cacheWrite1hTokens": 171588,
+    "cacheReadTokens": 10658278,
+    "outputTokens": 46272,
+    "thinkingTokens": 17429,
+    "responses": 70,
+    "costUsd": 3.601895100000001
+  },
+  "estimate": {
+    "at": "2026-10-29T02:42:26.682Z",
+    "parts": [
+      {
+        "hours": 1.5,
+        "grade": "middle",
+        "role": "developer",
+        "comment": "two small hook changes with tests: skip the mark notice for a model, and a warn-saving knob threaded through a bash hook and its python helper"
+      },
+      {
+        "hours": 0.75,
+        "grade": "middle",
+        "role": "analyst",
+        "comment": "choosing the threshold meant reading the ledger's relayed-session orientations and pricing the warn line across the model rates"
+      }
+    ],
+    "comment": null
+  },
+  "orientation": {
+    "endedBy": "Edit",
+    "endedOn": ".claude/costs/lib/transcript.py",
+    "endedAt": "2026-10-29T02:42:59.483Z",
+    "contextTokens": 175398,
+    "spend": {
+      "inputTokens": 48,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 122050,
+      "cacheReadTokens": 3175302,
+      "outputTokens": 18673,
+      "thinkingTokens": 11582,
+      "responses": 24,
+      "costUsd": 1.3100864
+    }
+  },
+  "sessionId": "1b1e526a-2e81-5420-8722-24dcc15ef7c0",
+  "branch": "claude/haiku-self-orientation-disable-extt4j",
+  "cwd": "/home/user/muthur",
+  "openingPrompt": "давай отключать самоориентацию для хайку (не показывать этот запрос если модель haiku), а то кажется ему не хватает шестерёнок понять что от него хотят: первым …",
+  "prs": [
+    249
+  ],
+  "url": "https://claude.ai/code/session_01DaohkEar2FEzE8ociMZkbf",
+  "operator": "vzakharov",
+  "firstResponseAt": "2026-10-29T02:40:14.756Z",
+  "lastResponseAt": "2026-10-29T02:49:36.641Z",
+  "pricesAsOf": "2026-10-06",
+  "claudeCodeTotalUsd": null,
+  "ownTurns": {
+    "inputTokens": 108,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 171588,
+    "cacheReadTokens": 9086847,
+    "outputTokens": 37086,
+    "thinkingTokens": 14342,
+    "responses": 54,
+    "costUsd": 2.8747974000000007
+  },
+  "subagents": {
+    "inputTokens": 32,
+    "cacheWrite5mTokens": 128355,
+    "cacheWrite1hTokens": 0,
+    "cacheReadTokens": 1571431,
+    "outputTokens": 9186,
+    "thinkingTokens": 3087,
+    "responses": 16,
+    "costUsd": 0.7270977
+  },
+  "byRate": {
+    "claude-sonnet-5-5/standard": {
+      "inputTokens": 140,
+      "cacheWrite5mTokens": 128355,
+      "cacheWrite1hTokens": 171588,
+      "cacheReadTokens": 10658278,
+      "outputTokens": 46272,
+      "thinkingTokens": 17429,
+      "responses": 70,
+      "costUsd": 3.601895100000001
+    }
+  },
+  "warnings": [
+    "prices.json priced the 70 responses the events also priced at $3.6019, against the events' $2.5361: a rate in the table is likely out of date"
+  ],
+  "compactions": [],
+  "telemetry": {
+    "events": 70,
+    "matched": 70,
+    "matchedTableUsd": 3.601895100000001,
+    "matchedEventUsd": 2.5360672999999996,
+    "unseen": {}
+  }
+}
