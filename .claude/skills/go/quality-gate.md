@@ -7,18 +7,20 @@ each skill's pointer says where the checkpoint sits.
 
 ## Detect the model
 
-Load `get_session` with `ToolSearch`
-(`select:mcp__claude-code-remote__get_session`) and call it with no id. The
-session is strong when `session_context.model` or
-`external_metadata.last_served_model` names an Opus model. Otherwise it is weak.
-If the tool cannot be reached, the session counts as weak and the gate runs.
+Call `get_session` (`mcp__claude-code-remote__get_session`, loaded with
+`ToolSearch` where it is deferred) with no id. The session is strong when
+`external_metadata.last_served_model` names an Opus model, since that is the
+model that did the work, fallbacks included; only where that field is absent
+does `session_context.model` decide. Otherwise it is weak. Where the tool does
+not exist, as in a local CLI, the model the system prompt names decides; with
+neither, the session counts as weak and the gate runs.
 
 A strong session has nothing to check here. It carries on past the checkpoint.
 
 ## The judge
 
-Launch `Agent` with `model: "opus"` and no worktree. The judge reads the
-session's own tree and edits nothing there except the capabilities file. The
+Launch `Agent` with `model: "opus"`, `run_in_background: false` and no worktree:
+the judge works in the session's own tree, where its fixes for C and D land. The
 session blocks on its verdict, so the two never write at once.
 
 The brief names the checkpoint and the branch, gives the base the work merges
@@ -30,35 +32,36 @@ their meanings. It asks for one verdict and the reason for it, with each defect
 and its correction named. It tells the judge that it may correct
 `.claude/skills/go/delegation-model-capabilities.md` where the review taught
 something, following `.claude/skills/go/delegation.md` § "Keeping". The judge
-reads the diff with `git`, against the base, and does not edit source.
+reads the diff with `git`, against the base, and commits whatever it edits, its
+fixes and the capabilities entry alike, under the repo's commit conventions.
 
 ## The verdicts
 
 - **A. Passes.** Continue past the checkpoint.
-- **B. Fails with fixable corrections.** Apply the corrections the judge named,
-  then send the result back to the same judge with `SendMessage`. Its answer is
-  the next verdict.
-- **C. Fails, and the session has fixed it already.** Continue without another
-  round.
-- **D. Fails, and the work is too hard for this model.** Apply the fixes the
-  judge named, then relay the rest to an Opus session (§ "Relaying").
-- **E. Fails, and the session cannot fix it.** Relay at once (§ "Relaying").
+- **B. Fails with corrections the session can make.** Apply the corrections the
+  judge named, then send the result back to the same judge with `SendMessage`.
+  Its answer is the next verdict.
+- **C. Fails, and the judge has fixed it.** Continue without another round.
+- **D. Fails, the judge has fixed what it found, and the work is too hard for
+  this model.** Relay the rest to an Opus session (§ "Relaying").
+- **E. Fails, and the judge cannot fix it.** Relay at once (§ "Relaying").
 
-A B that names again a defect the previous B already named is an E: the
-session's fix did not reach it. A B that names new defects is another round.
+A defect a previous B already named and the session's fix did not reach is never
+a B again: the judge fixes it itself, as C or D, or returns E.
 
 **Re-showing reuses the judge.** `SendMessage` continues the spawned agent with
 its context intact. Only when that agent is gone, launch a fresh Opus judge with
-a brief that carries the first verdict, its reasons, and the corrections applied
-since.
+a brief that carries every earlier verdict, its reasons, and the corrections
+applied since.
 
 ## Relaying
 
-For D and E: run `/relay park`, which writes the summary and starts no session.
-`/relay park` skips the relay skill's Step 3, so this file carries it out:
-`@.claude/skills/relay/SKILL.md` Step 3 (its title rule and its local-CLI
-branch), with `model` set to the current Opus model's ID, which the `claude-api`
-skill lists, looked up at launch. Then Step 4's report, and end the turn.
+For D and E: run `/relay park`, its argument the work the judge left open, so
+the summary's Next step carries it. Park skips the relay skill's Step 3, so this
+file carries it out: `@.claude/skills/relay/SKILL.md` Step 3 (its title rule and
+its local-CLI branch), with `model` set to the current Opus model's ID, which
+the `claude-api` skill lists, looked up at launch. Step 4's report then stands
+in for park's own, and the turn ends.
 
 ## When the judge cannot be launched
 

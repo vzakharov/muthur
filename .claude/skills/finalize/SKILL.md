@@ -143,11 +143,12 @@ Steps (stop on first unresolved failure):
 
 4. **Ready for review**: first, in a session not on Opus, run the quality gate
    checkpoint `@.claude/skills/go/quality-gate.md`; a verdict that stops the
-   turn ends it there. Then `gh pr ready`. If the repo runs a workflow on PRs,
-   watch it to green now (`@.claude/skills/watch-ci/SKILL.md`) and fix what it
-   surfaces under the two-shot rule. If nothing runs on a PR here, there is
-   nothing to chase — an empty Checks tab is the expected end state, and pushing
-   an empty commit to "relaunch CI" relaunches nothing.
+   turn ends it there, and fixes the gate committed re-run step 1 on the new
+   head. Then `gh pr ready`. If the repo runs a workflow on PRs, watch it to
+   green now (`@.claude/skills/watch-ci/SKILL.md`) and fix what it surfaces
+   under the two-shot rule. If nothing runs on a PR here, there is nothing to
+   chase — an empty Checks tab is the expected end state, and pushing an empty
+   commit to "relaunch CI" relaunches nothing.
 5. **Reconcile the squash message**: invoke
    `@.claude/skills/squash-message/SKILL.md` — load and follow it, passing
    `<base>` as the diff base. A proposal normally already exists, posted when

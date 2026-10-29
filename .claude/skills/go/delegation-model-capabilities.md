@@ -34,5 +34,8 @@ the lessons that hold for every model first.
 - **Misses:** how the new pointers interact with the flows they sit in: a
   checkpoint that one skill reaches through another ran twice, and another
   skill's step was half-restated instead of pointed to, losing its edge cases.
+  Paraphrasing an operator's spec into a plan, it lost who acts in two of five
+  options, and the slip survived into the implementation and two reviews.
 - **Brief:** name the defect and its correction exactly; it fixes what is named
-  and does not go looking for the same defect elsewhere.
+  and does not go looking for the same defect elsewhere. Hand it the operator's
+  words verbatim, not a paraphrase of them.
