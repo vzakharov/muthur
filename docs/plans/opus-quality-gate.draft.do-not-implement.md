@@ -11,7 +11,7 @@
 When a session runs on a model other than Opus, it asks an Opus subagent at each
 loop checkpoint whether the work so far passes the quality bar. The subagent
 answers with one of five verdicts, and the session acts on the verdict. The gate
-is dogfooded on this very session, which runs on Haiku 5.5.
+is dogfooded on the session that writes it, which runs on a weak model.
 
 The checkpoints, one per skill that closes a loop turn:
 
