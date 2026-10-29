@@ -22,10 +22,10 @@ session. The relay pays when it saves those:
 
 It does not pay for edits you could send as parallel `Edit` calls in one turn
 from text already in your context: that is one turn either way, and the relay
-adds Haiku's run and your review. Nor for anything `delegation.md` § "What
-qualifies" keeps with you — the relay moves your hands, never your judgement, so
-prose the loop executes may go through it once you have written every word of it
-into the list.
+adds Haiku's run and your review. What `delegation.md` § "What qualifies" keeps
+with you stays yours to decide: the relay moves your hands, never your
+judgement, so prose the loop executes may go through it once you have written
+every word of it into the list.
 
 ## The list
 

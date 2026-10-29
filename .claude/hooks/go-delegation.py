@@ -14,9 +14,9 @@ in `.claude/settings.json`:
 - `UserPromptSubmit` opening with `/go` or `/implement`, since a typed slash
   command expands without any tool call.
 
-`MUTHUR_EDIT_RELAY=on` adds `edit-relay.md`, an experimental mode off by
-default; with it on, the model notes arrive even under
-`MUTHUR_DELEGATION=off`, since the relay picks its model from them.
+`MUTHUR_EDIT_RELAY=on` adds `edit-relay.md`, and with it the model notes even
+under `MUTHUR_DELEGATION=off`, since the relay's verdict goes into their
+`haiku` entry.
 
 Once per session: a marker under `tmp/go-delegation/` keeps a later entry
 silent, the files being in context already. Fails open — an unreadable payload

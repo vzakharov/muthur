@@ -50,7 +50,7 @@
   `edit-relay.md` under `MUTHUR_EDIT_RELAY=on`, as context the first time `/go`
   enters a session — through the `Skill` tool, a `Read` of its `SKILL.md`, or a
   typed `/go` — so the agent spends no round trip on them; silent under
-  `MUTHUR_DELEGATION=off`. Stdlib-only, tested by
+  `MUTHUR_DELEGATION=off` unless the relay is on. Stdlib-only, tested by
   `scripts/test_go_delegation.py`.
   - **Requires:** `python3` ≥3.9, `.claude/settings.json` wiring (G4)
   - **Pulls in:** `/go`, `.claude/hooks/session_state.py` (G4)
