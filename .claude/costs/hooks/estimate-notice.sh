@@ -3,8 +3,9 @@
 # fields of the session's row the agent sets in front of it. The human-hour
 # estimate: with none yet, say how to set one; with one, restate it, since a
 # prompt is where scope grows and nothing else would bring the figure back up
-# then. The orientation mark: ask for it until the stretch since the session
-# started or last compacted has one.
+# then. The orientation mark: ask for it, of every model but those
+# `lib/orientation.py`'s `UNMARKED_MODELS` names, until the stretch since the
+# session started or last compacted has one.
 #
 # This text is the agent-facing home of when and how to estimate and to mark;
 # `.claude/costs/CLAUDE.md` § "Human-hour estimates" and § "Orientation" carry
@@ -59,8 +60,12 @@ fi
 oriented=".claude/costs/oriented.py"
 mark="Once you know what the repository is and what the request is about, mark the end of your orientation with \`python3 $oriented\`, bare — even with details of the ask still open, and before the next step that carries it out, even a read such as tracing callers. Skip it when that step is an edit to the repository or a reply to the operator: either ends orientation by itself."
 transcript="$(field transcript_path)"
+# An exempt model is never asked, a compaction's fresh stretch included; an
+# unreadable transcript leaves it asked.
+if [ -f "$transcript" ] && [ "$(python3 "$root/$oriented" exempt "$transcript" 2>/dev/null)" = "exempt" ]; then
+  mark=""
 # A compaction has just opened a fresh stretch, so there is nothing to check.
-if [ "$(field source)" != "compact" ] && [ -f "$transcript" ]; then
+elif [ "$(field source)" != "compact" ] && [ -f "$transcript" ]; then
   if state="$(python3 "$root/$oriented" check "$transcript" 2>&1)"; then
     [ "$state" = "marked" ] && mark=""
   else
