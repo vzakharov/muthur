@@ -1,0 +1,104 @@
+{
+  "total": {
+    "inputTokens": 10,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 48333,
+    "cacheReadTokens": 464670,
+    "outputTokens": 1148,
+    "thinkingTokens": 122,
+    "responses": 5,
+    "costUsd": 0.502598
+  },
+  "estimate": {
+    "at": "2026-10-29T05:18:06.412Z",
+    "parts": [
+      {
+        "hours": 1.0,
+        "grade": "senior",
+        "role": "prompter",
+        "comment": "steno.md must hold for a model that cannot interpret, and the waves section sets when the mode pays; that is wording judgement"
+      },
+      {
+        "hours": 2.5,
+        "grade": "senior",
+        "role": "developer",
+        "comment": "the forecast reads real transcripts and files ledger rows under the costs subsystem's filing and concurrency rules"
+      },
+      {
+        "hours": 1.0,
+        "grade": "senior",
+        "role": "analyst",
+        "comment": "a wave cost model that the rows it files can calibrate needs its terms chosen so the comparison is meaningful"
+      }
+    ],
+    "comment": null
+  },
+  "orientation": {
+    "endedBy": "oriented",
+    "endedOn": null,
+    "endedAt": "2026-10-29T05:18:03.376Z",
+    "contextTokens": 110014,
+    "spend": {
+      "inputTokens": 8,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 43840,
+      "cacheReadTokens": 359151,
+      "outputTokens": 671,
+      "thinkingTokens": 67,
+      "responses": 4,
+      "costUsd": 0.4360022
+    }
+  },
+  "sessionId": "edb0db81-3ae1-57c0-8d92-fb2fa66adc6d",
+  "branch": "claude/haiku-edit-relay",
+  "cwd": "/home/user/muthur",
+  "openingPrompt": "/relay take claude/haiku-edit-relay — первая версия режима готова в PR #254, дальше переименование в steno, прогноз по волнам и журнал «прогноз против факта» на…",
+  "prs": [],
+  "url": "https://claude.ai/code/session_01DaohkC8CqD2FqWtVHR6BSe",
+  "operator": "vzakharov",
+  "firstResponseAt": "2026-10-29T05:17:52.862Z",
+  "lastResponseAt": "2026-10-29T05:18:03.376Z",
+  "pricesAsOf": "2026-10-06",
+  "claudeCodeTotalUsd": null,
+  "ownTurns": {
+    "inputTokens": 10,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 48333,
+    "cacheReadTokens": 464670,
+    "outputTokens": 1148,
+    "thinkingTokens": 122,
+    "responses": 5,
+    "costUsd": 0.502598
+  },
+  "subagents": {
+    "inputTokens": 0,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 0,
+    "cacheReadTokens": 0,
+    "outputTokens": 0,
+    "thinkingTokens": 0,
+    "responses": 0,
+    "costUsd": 0.0
+  },
+  "byRate": {
+    "claude-opus-5-5/standard": {
+      "inputTokens": 10,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 48333,
+      "cacheReadTokens": 464670,
+      "outputTokens": 1148,
+      "thinkingTokens": 122,
+      "responses": 5,
+      "costUsd": 0.502598
+    }
+  },
+  "warnings": [],
+  "compactions": [],
+  "telemetry": {
+    "events": 5,
+    "matched": 5,
+    "matchedTableUsd": 0.502598,
+    "matchedEventUsd": 0.502598,
+    "unseen": {}
+  }
+}
