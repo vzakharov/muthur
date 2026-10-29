@@ -20,10 +20,10 @@ from typing import Optional
 
 HOOK = Path(__file__).resolve().parent.parent / ".claude" / "hooks" / "go-delegation.py"
 SWITCH = "MUTHUR_DELEGATION"
-RELAY_SWITCH = "MUTHUR_EDIT_RELAY"
+STENO_SWITCH = "MUTHUR_STENO"
 DELEGATION = "DELEGATION-PROCEDURE-BODY"
 MODELS = "MODEL-NOTES-BODY"
-RELAY = "EDIT-RELAY-BODY"
+STENO = "STENO-BODY"
 
 
 class DelegationTestCase(unittest.TestCase):
@@ -36,20 +36,20 @@ class DelegationTestCase(unittest.TestCase):
         (self.skill_dir / "SKILL.md").write_text("SKILL-BODY")
         (self.skill_dir / "delegation.md").write_text(DELEGATION)
         (self.skill_dir / "delegation-model-capabilities.md").write_text(MODELS)
-        (self.skill_dir / "edit-relay.md").write_text(RELAY)
+        (self.skill_dir / "steno.md").write_text(STENO)
 
     def marker(self, session: str) -> Path:
         return self.root / "tmp" / "go-delegation" / session
 
     def run_hook(
-        self, stdin: str, switch: Optional[str] = None, relay: Optional[str] = None
+        self, stdin: str, switch: Optional[str] = None, steno: Optional[str] = None
     ) -> subprocess.CompletedProcess[str]:
-        env = {k: v for k, v in os.environ.items() if k not in (SWITCH, RELAY_SWITCH)}
+        env = {k: v for k, v in os.environ.items() if k not in (SWITCH, STENO_SWITCH)}
         env["CLAUDE_PROJECT_DIR"] = str(self.root)
         if switch is not None:
             env[SWITCH] = switch
-        if relay is not None:
-            env[RELAY_SWITCH] = relay
+        if steno is not None:
+            env[STENO_SWITCH] = steno
         result = subprocess.run(
             [str(HOOK)], input=stdin, capture_output=True, text=True, env=env, check=False
         )
@@ -57,9 +57,9 @@ class DelegationTestCase(unittest.TestCase):
         return result
 
     def send(
-        self, payload: dict, switch: Optional[str] = None, relay: Optional[str] = None
+        self, payload: dict, switch: Optional[str] = None, steno: Optional[str] = None
     ) -> subprocess.CompletedProcess[str]:
-        return self.run_hook(json.dumps(payload), switch, relay)
+        return self.run_hook(json.dumps(payload), switch, steno)
 
     def context(self, result: subprocess.CompletedProcess[str]) -> str:
         return json.loads(result.stdout)["hookSpecificOutput"]["additionalContext"]
@@ -237,29 +237,29 @@ class AMissingFile(DelegationTestCase):
         self.assertFalse(self.marker("sess").exists())
 
 
-class TheEditRelaySwitch(DelegationTestCase):
+class TheStenoSwitch(DelegationTestCase):
     def test_off_unless_set_to_on(self) -> None:
         for number, value in enumerate((None, "", "1", "off", "ON")):
             with self.subTest(value=value):
-                result = self.send(self.skill_payload("go", session=f"r{number}"), relay=value)
-                self.assertNotIn(RELAY, self.context(result))
+                result = self.send(self.skill_payload("go", session=f"r{number}"), steno=value)
+                self.assertNotIn(STENO, self.context(result))
 
-    def test_on_adds_the_relay_after_both_delegation_files(self) -> None:
-        context = self.context(self.send(self.skill_payload("go"), relay="on"))
+    def test_on_adds_steno_after_both_delegation_files(self) -> None:
+        context = self.context(self.send(self.skill_payload("go"), steno="on"))
         self.assertLess(context.index(DELEGATION), context.index(MODELS))
-        self.assertLess(context.index(MODELS), context.index(RELAY))
+        self.assertLess(context.index(MODELS), context.index(STENO))
 
-    def test_on_with_delegation_off_brings_the_relay_and_the_model_notes(self) -> None:
-        context = self.context(self.send(self.skill_payload("go"), switch="off", relay="on"))
+    def test_on_with_delegation_off_brings_steno_and_the_model_notes(self) -> None:
+        context = self.context(self.send(self.skill_payload("go"), switch="off", steno="on"))
         self.assertNotIn(DELEGATION, context)
         self.assertIn(MODELS, context)
-        self.assertIn(RELAY, context)
+        self.assertIn(STENO, context)
 
-    def test_a_missing_relay_file_fails_open_only_when_on(self) -> None:
-        (self.skill_dir / "edit-relay.md").unlink()
-        result = self.send(self.skill_payload("go"), relay="on")
+    def test_a_missing_steno_file_fails_open_only_when_on(self) -> None:
+        (self.skill_dir / "steno.md").unlink()
+        result = self.send(self.skill_payload("go"), steno="on")
         self.assertEqual(result.stdout, "")
-        self.assertIn("edit-relay.md", result.stderr)
+        self.assertIn("steno.md", result.stderr)
         self.assertFalse(self.marker("sess").exists())
         self.assert_delivered(self.skill_payload("go"))
 

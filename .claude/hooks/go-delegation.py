@@ -14,9 +14,8 @@ in `.claude/settings.json`:
 - `UserPromptSubmit` opening with `/go` or `/implement`, since a typed slash
   command expands without any tool call.
 
-`MUTHUR_EDIT_RELAY=on` adds `edit-relay.md`, and with it the model notes even
-under `MUTHUR_DELEGATION=off`, since the relay's verdict goes into their
-`haiku` entry.
+`MUTHUR_STENO=on` adds `steno.md`, and with it the model notes even under
+`MUTHUR_DELEGATION=off`, since steno's verdict goes into their `haiku` entry.
 
 Once per session: a marker under `tmp/go-delegation/` keeps a later entry
 silent, the files being in context already. Fails open — an unreadable payload
@@ -35,13 +34,13 @@ from typing import Optional
 from session_state import project_root, state_file
 
 SWITCH = "MUTHUR_DELEGATION"
-RELAY_SWITCH = "MUTHUR_EDIT_RELAY"
+STENO_SWITCH = "MUTHUR_STENO"
 SKILLS = {"go", "implement"}
 TYPED = re.compile(r"^\s*/(go|implement)(\s|$)")
 SKILL_DIR = Path(".claude") / "skills" / "go"
 DELEGATION_FILE = "delegation.md"
 MODELS_FILE = "delegation-model-capabilities.md"
-RELAY_FILE = "edit-relay.md"
+STENO_FILE = "steno.md"
 
 
 def say(message: str) -> None:
@@ -50,14 +49,14 @@ def say(message: str) -> None:
 
 def files() -> tuple[str, ...]:
     delegation = os.environ.get(SWITCH) != "off"
-    relay = os.environ.get(RELAY_SWITCH) == "on"
+    steno = os.environ.get(STENO_SWITCH) == "on"
     names = []
     if delegation:
         names.append(DELEGATION_FILE)
-    if delegation or relay:
+    if delegation or steno:
         names.append(MODELS_FILE)
-    if relay:
-        names.append(RELAY_FILE)
+    if steno:
+        names.append(STENO_FILE)
     return tuple(names)
 
 

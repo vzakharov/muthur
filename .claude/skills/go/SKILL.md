@@ -212,9 +212,9 @@ forward-looking voice.
 
 **When `.claude/hooks/go-delegation.py` delivered
 `@.claude/skills/go/delegation.md` this session, the work follows it too**, and
-likewise `edit-relay.md` beside it, which only `MUTHUR_EDIT_RELAY=on` delivers.
-Under a harness that runs no hooks, `Read` the first yourself unless
-`MUTHUR_DELEGATION` is `off`, and the second when the relay is on.
+likewise `steno.md` beside it, which only `MUTHUR_STENO=on` delivers. Under a
+harness that runs no hooks, `Read` the first yourself unless `MUTHUR_DELEGATION`
+is `off`, and the second when steno is on.
 
 Commit/push discipline is already governed by CLAUDE.md — don't reinvent it
 here:

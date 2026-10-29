@@ -1,13 +1,13 @@
 {
   "total": {
-    "inputTokens": 10,
-    "cacheWrite5mTokens": 0,
-    "cacheWrite1hTokens": 48333,
-    "cacheReadTokens": 464670,
-    "outputTokens": 1148,
-    "thinkingTokens": 122,
-    "responses": 5,
-    "costUsd": 0.502598
+    "inputTokens": 44,
+    "cacheWrite5mTokens": 110881,
+    "cacheWrite1hTokens": 115306,
+    "cacheReadTokens": 2632715,
+    "outputTokens": 28928,
+    "thinkingTokens": 13206,
+    "responses": 22,
+    "costUsd": 1.753097605
   },
   "estimate": {
     "at": "2026-10-29T05:18:06.412Z",
@@ -53,52 +53,64 @@
   "branch": "claude/haiku-edit-relay",
   "cwd": "/home/user/muthur",
   "openingPrompt": "/relay take claude/haiku-edit-relay — первая версия режима готова в PR #254, дальше переименование в steno, прогноз по волнам и журнал «прогноз против факта» на…",
-  "prs": [],
+  "prs": [
+    254
+  ],
   "url": "https://claude.ai/code/session_01DaohkC8CqD2FqWtVHR6BSe",
   "operator": "vzakharov",
   "firstResponseAt": "2026-10-29T05:17:52.862Z",
-  "lastResponseAt": "2026-10-29T05:18:03.376Z",
+  "lastResponseAt": "2026-10-29T05:21:38.657Z",
   "pricesAsOf": "2026-10-06",
   "claudeCodeTotalUsd": null,
   "ownTurns": {
-    "inputTokens": 10,
+    "inputTokens": 34,
     "cacheWrite5mTokens": 0,
-    "cacheWrite1hTokens": 48333,
-    "cacheReadTokens": 464670,
-    "outputTokens": 1148,
-    "thinkingTokens": 122,
-    "responses": 5,
-    "costUsd": 0.502598
+    "cacheWrite1hTokens": 115306,
+    "cacheReadTokens": 2247017,
+    "outputTokens": 16586,
+    "thinkingTokens": 7947,
+    "responses": 17,
+    "costUsd": 1.7037074
   },
   "subagents": {
-    "inputTokens": 0,
-    "cacheWrite5mTokens": 0,
+    "inputTokens": 10,
+    "cacheWrite5mTokens": 110881,
     "cacheWrite1hTokens": 0,
-    "cacheReadTokens": 0,
-    "outputTokens": 0,
-    "thinkingTokens": 0,
-    "responses": 0,
-    "costUsd": 0.0
+    "cacheReadTokens": 385698,
+    "outputTokens": 12342,
+    "thinkingTokens": 5259,
+    "responses": 5,
+    "costUsd": 0.049390205000000006
   },
   "byRate": {
     "claude-opus-5-5/standard": {
-      "inputTokens": 10,
+      "inputTokens": 34,
       "cacheWrite5mTokens": 0,
-      "cacheWrite1hTokens": 48333,
-      "cacheReadTokens": 464670,
-      "outputTokens": 1148,
-      "thinkingTokens": 122,
+      "cacheWrite1hTokens": 115306,
+      "cacheReadTokens": 2247017,
+      "outputTokens": 16586,
+      "thinkingTokens": 7947,
+      "responses": 17,
+      "costUsd": 1.7037074
+    },
+    "claude-haiku-5-5/standard": {
+      "inputTokens": 10,
+      "cacheWrite5mTokens": 110881,
+      "cacheWrite1hTokens": 0,
+      "cacheReadTokens": 385698,
+      "outputTokens": 12342,
+      "thinkingTokens": 5259,
       "responses": 5,
-      "costUsd": 0.502598
+      "costUsd": 0.049390205000000006
     }
   },
   "warnings": [],
   "compactions": [],
   "telemetry": {
-    "events": 5,
-    "matched": 5,
-    "matchedTableUsd": 0.502598,
-    "matchedEventUsd": 0.502598,
+    "events": 22,
+    "matched": 22,
+    "matchedTableUsd": 1.753097605,
+    "matchedEventUsd": 1.753097605,
     "unseen": {}
   }
 }
