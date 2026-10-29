@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Hold a session on a model below Opus to `checkpoint-review.md` at each cutoff
-of `/plan`, `/go` and `/finalize`.
+of `/plan`, `/go` and `/finalize`. `/handle` has no cutoff of its own: its lanes
+load `/go` or `/plan`, which enter the gate by `skill_entry.py`'s Read route.
 
 As a hook, on three events, each its own registration in `.claude/settings.json`:
 
