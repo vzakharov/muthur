@@ -1,0 +1,94 @@
+{
+  "total": {
+    "inputTokens": 22,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 100437,
+    "cacheReadTokens": 1237607,
+    "outputTokens": 16264,
+    "thinkingTokens": 10943,
+    "responses": 11,
+    "costUsd": 0.8119534
+  },
+  "estimate": {
+    "at": "2026-10-29T03:10:03.072Z",
+    "parts": [
+      {
+        "hours": 3.0,
+        "grade": "senior",
+        "role": "prompter",
+        "comment": "a new gate procedure plus pointers across four loop skills: judgement-heavy agent prose, no code"
+      }
+    ],
+    "comment": null
+  },
+  "orientation": {
+    "endedBy": "oriented",
+    "endedOn": null,
+    "endedAt": "2026-10-29T03:09:03.408Z",
+    "contextTokens": 93707,
+    "spend": {
+      "inputTokens": 2,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 38790,
+      "cacheReadTokens": 51539,
+      "outputTokens": 633,
+      "thinkingTokens": 142,
+      "responses": 1,
+      "costUsd": 0.1718018
+    }
+  },
+  "sessionId": "cf9cb28e-daae-50c4-a900-42042abdc502",
+  "branch": "claude/opus-quality-gate-tmds1o",
+  "cwd": "/home/user/muthur",
+  "openingPrompt": "давай если сессия запущена на слабой модели (не Опусе), она после каждой отсечки лупа (/plan, если есть; /go; любые последующие /go и /handle; /finalize) создаё…",
+  "prs": [],
+  "url": "https://claude.ai/code/session_01DaohkE7bS8WQiGsVZMXfjw",
+  "operator": "vzakharov",
+  "firstResponseAt": "2026-10-29T03:08:59.467Z",
+  "lastResponseAt": "2026-10-29T03:11:15.059Z",
+  "pricesAsOf": "2026-10-06",
+  "claudeCodeTotalUsd": null,
+  "ownTurns": {
+    "inputTokens": 22,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 100437,
+    "cacheReadTokens": 1237607,
+    "outputTokens": 16264,
+    "thinkingTokens": 10943,
+    "responses": 11,
+    "costUsd": 0.8119534
+  },
+  "subagents": {
+    "inputTokens": 0,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 0,
+    "cacheReadTokens": 0,
+    "outputTokens": 0,
+    "thinkingTokens": 0,
+    "responses": 0,
+    "costUsd": 0.0
+  },
+  "byRate": {
+    "claude-sonnet-5-5/standard": {
+      "inputTokens": 22,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 100437,
+      "cacheReadTokens": 1237607,
+      "outputTokens": 16264,
+      "thinkingTokens": 10943,
+      "responses": 11,
+      "costUsd": 0.8119534
+    }
+  },
+  "warnings": [
+    "prices.json priced the 10 responses the events also priced at $0.7554, against the events' $0.6463: a rate in the table is likely out of date"
+  ],
+  "compactions": [],
+  "telemetry": {
+    "events": 10,
+    "matched": 10,
+    "matchedTableUsd": 0.7553916,
+    "matchedEventUsd": 0.6462658,
+    "unseen": {}
+  }
+}
