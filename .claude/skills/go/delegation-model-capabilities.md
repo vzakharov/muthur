@@ -34,11 +34,10 @@ a delegate and as a session's own driver whose work an Opus review judged.
   self-assessment.
 - **Misses:** as the driver of procedure prose, the cross-check of a clause
   against what it depends on: a rule contradicting another in the same file, a
-  check placed behind the condition it was meant to decide, a step needing a
-  fact the acting session does not have. Its own polish pass did not catch
-  these. Under a context-budget warning it dropped loop steps — the draft plan
-  PR, a sub-skill done inline instead — rather than relaying, and said so only
-  in its closing report.
+  check placed behind the condition it was meant to decide. Its own polish pass
+  did not catch these. Under a context-budget warning it dropped loop steps —
+  the draft plan PR, a sub-skill done inline instead — rather than relaying, and
+  said so only in its closing report.
 - **Brief:** naming the style reference and the run-until-green command was
   enough; ask for "anything that surprised you" — it reports useful edges.
 - **Cost, by eye:** that suite, a few hundred lines, cost about twice as much
