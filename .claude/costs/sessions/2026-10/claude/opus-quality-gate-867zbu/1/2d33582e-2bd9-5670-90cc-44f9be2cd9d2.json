@@ -1,0 +1,100 @@
+{
+  "total": {
+    "inputTokens": 70,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 135977,
+    "cacheReadTokens": 5157049,
+    "outputTokens": 36175,
+    "thinkingTokens": 21144,
+    "responses": 35,
+    "costUsd": 0.42613411
+  },
+  "estimate": {
+    "at": "2026-10-29T03:10:17.601Z",
+    "parts": [
+      {
+        "hours": 3.0,
+        "grade": "middle",
+        "role": "developer",
+        "comment": "one shared procedure file and four checkpoint pointers over an existing loop; routine wiring once the verdict contract is fixed"
+      },
+      {
+        "hours": 1.0,
+        "grade": "senior",
+        "role": "architect",
+        "comment": "the verdict contract and the relay path are a design call that has to hold across four skills"
+      }
+    ],
+    "comment": null
+  },
+  "orientation": {
+    "endedBy": "oriented",
+    "endedOn": null,
+    "endedAt": "2026-10-29T03:07:22.610Z",
+    "contextTokens": 95689,
+    "spend": {
+      "inputTokens": 2,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 39576,
+      "cacheReadTokens": 51539,
+      "outputTokens": 1834,
+      "thinkingTokens": 1321,
+      "responses": 1,
+      "costUsd": 0.00934779
+    }
+  },
+  "sessionId": "2d33582e-2bd9-5670-90cc-44f9be2cd9d2",
+  "branch": "claude/opus-quality-gate-867zbu",
+  "cwd": "/home/user/muthur",
+  "openingPrompt": "давай если сессия запущена на слабой модели (не Опусе), она после каждой отсечки лупа (/plan, если есть; /go; любые последующие /go и /handle; /finalize) создаё…",
+  "prs": [
+    250
+  ],
+  "url": "https://claude.ai/code/session_01DaohkE1kSi2cgf98P77S8p",
+  "operator": "vzakharov",
+  "firstResponseAt": "2026-10-29T03:07:17.682Z",
+  "lastResponseAt": "2026-10-29T03:11:10.534Z",
+  "pricesAsOf": "2026-10-06",
+  "claudeCodeTotalUsd": null,
+  "ownTurns": {
+    "inputTokens": 70,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 135977,
+    "cacheReadTokens": 5157049,
+    "outputTokens": 36175,
+    "thinkingTokens": 21144,
+    "responses": 35,
+    "costUsd": 0.42613411
+  },
+  "subagents": {
+    "inputTokens": 0,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 0,
+    "cacheReadTokens": 0,
+    "outputTokens": 0,
+    "thinkingTokens": 0,
+    "responses": 0,
+    "costUsd": 0.0
+  },
+  "byRate": {
+    "claude-haiku-5-5/standard": {
+      "inputTokens": 70,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 135977,
+      "cacheReadTokens": 5157049,
+      "outputTokens": 36175,
+      "thinkingTokens": 21144,
+      "responses": 35,
+      "costUsd": 0.42613411
+    }
+  },
+  "warnings": [],
+  "compactions": [],
+  "telemetry": {
+    "events": 35,
+    "matched": 35,
+    "matchedTableUsd": 0.42613411,
+    "matchedEventUsd": 0.42613411000000007,
+    "unseen": {}
+  }
+}
