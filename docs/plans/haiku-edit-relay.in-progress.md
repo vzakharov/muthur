@@ -1,9 +1,3 @@
-> ⛔ **DRAFT — DO NOT IMPLEMENT.** This plan is not approved. Do not edit source
-> while this file is named `*.draft.do-not-implement.md` — prep and spikes go in
-> `tmp/`. On an explicit operator go-ahead, `git mv` it to `*.in-progress.md`
-> and delete this banner (quoting the go-ahead in the commit) _before_ touching
-> code.
-
 # Edit relay: Opus lists the edits, Haiku applies them
 
 An experimental `/go` Step 2 mode, off unless `MUTHUR_EDIT_RELAY=on`. The
