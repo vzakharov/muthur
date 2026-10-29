@@ -16,8 +16,11 @@ transcript; on Sonnet or Haiku it delivers the procedure on entering
 /plan, /go or /finalize and denies the step that closes that cutoff
 (the draft flip, the *.completed.md flip, gh pr ready) until the
 session records the review's verdict with the hook's verdict command.
-MUTHUR_CHECKPOINT_REVIEW=off turns it off. The skill-entry detection
-it shares with go-delegation.py lives in skill_entry.py.
+A /go with no plan file, or a /plan whose /go runs elsewhere, has no
+closing step to deny, so only the skill's pointer and /finalize's gate
+hold it to the review. MUTHUR_CHECKPOINT_REVIEW=off turns it off. The
+skill-entry detection it shares with go-delegation.py lives in
+skill_entry.py.
 
 The reviewer answers with one of five verdicts, best to worst: pass;
 revise, stating what to change by substance, after which the session
