@@ -1,0 +1,94 @@
+{
+  "total": {
+    "inputTokens": 56,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 89906,
+    "cacheReadTokens": 3446755,
+    "outputTokens": 13926,
+    "thinkingTokens": 4317,
+    "responses": 28,
+    "costUsd": 1.6873429999999994
+  },
+  "estimate": {
+    "at": "2026-10-29T03:53:54.397Z",
+    "parts": [
+      {
+        "hours": 2.0,
+        "grade": "senior",
+        "role": "architect",
+        "comment": "reviewing a cross-skill gate procedure for contradictions and loop interactions takes someone who knows the whole agent loop"
+      }
+    ],
+    "comment": null
+  },
+  "orientation": {
+    "endedBy": "oriented",
+    "endedOn": null,
+    "endedAt": "2026-10-29T03:53:51.019Z",
+    "contextTokens": 111045,
+    "spend": {
+      "inputTokens": 8,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 54158,
+      "cacheReadTokens": 348191,
+      "outputTokens": 931,
+      "thinkingTokens": 121,
+      "responses": 4,
+      "costUsd": 0.5215542
+    }
+  },
+  "sessionId": "11580aa7-5017-5c16-b810-17e2c3884717",
+  "branch": "claude/opus-quality-gate-867zbu",
+  "cwd": "/home/user/muthur",
+  "openingPrompt": "/relay take claude/opus-quality-gate-867zbu — шлюз качества в PR #250 готов, проверить и поправить его на Опусе",
+  "prs": [
+    250
+  ],
+  "url": "https://claude.ai/code/session_01DaohkCAUm4oyGqC2bhM7vZ",
+  "operator": null,
+  "firstResponseAt": "2026-10-29T03:53:37.196Z",
+  "lastResponseAt": "2026-10-29T03:57:50.720Z",
+  "pricesAsOf": "2026-10-06",
+  "claudeCodeTotalUsd": null,
+  "ownTurns": {
+    "inputTokens": 56,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 89906,
+    "cacheReadTokens": 3446755,
+    "outputTokens": 13926,
+    "thinkingTokens": 4317,
+    "responses": 28,
+    "costUsd": 1.6873429999999994
+  },
+  "subagents": {
+    "inputTokens": 0,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 0,
+    "cacheReadTokens": 0,
+    "outputTokens": 0,
+    "thinkingTokens": 0,
+    "responses": 0,
+    "costUsd": 0.0
+  },
+  "byRate": {
+    "claude-opus-5-5/standard": {
+      "inputTokens": 56,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 89906,
+      "cacheReadTokens": 3446755,
+      "outputTokens": 13926,
+      "thinkingTokens": 4317,
+      "responses": 28,
+      "costUsd": 1.6873429999999994
+    }
+  },
+  "warnings": [],
+  "compactions": [],
+  "telemetry": {
+    "events": 28,
+    "matched": 28,
+    "matchedTableUsd": 1.6873429999999994,
+    "matchedEventUsd": 1.6873429999999994,
+    "unseen": {}
+  }
+}
