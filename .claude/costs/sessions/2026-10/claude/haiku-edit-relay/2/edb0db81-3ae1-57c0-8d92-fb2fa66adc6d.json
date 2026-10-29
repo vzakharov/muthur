@@ -1,0 +1,116 @@
+{
+  "total": {
+    "inputTokens": 132,
+    "cacheWrite5mTokens": 255416,
+    "cacheWrite1hTokens": 156079,
+    "cacheReadTokens": 9898953,
+    "outputTokens": 60299,
+    "thinkingTokens": 21633,
+    "responses": 66,
+    "costUsd": 4.882976205000001
+  },
+  "estimate": {
+    "at": "2026-10-29T05:18:06.412Z",
+    "parts": [
+      {
+        "hours": 1.0,
+        "grade": "senior",
+        "role": "prompter",
+        "comment": "steno.md must hold for a model that cannot interpret, and the waves section sets when the mode pays; that is wording judgement"
+      },
+      {
+        "hours": 2.5,
+        "grade": "senior",
+        "role": "developer",
+        "comment": "the forecast reads real transcripts and files ledger rows under the costs subsystem's filing and concurrency rules"
+      },
+      {
+        "hours": 1.0,
+        "grade": "senior",
+        "role": "analyst",
+        "comment": "a wave cost model that the rows it files can calibrate needs its terms chosen so the comparison is meaningful"
+      }
+    ],
+    "comment": null
+  },
+  "orientation": {
+    "endedBy": "oriented",
+    "endedOn": null,
+    "endedAt": "2026-10-29T05:18:03.376Z",
+    "contextTokens": 110014,
+    "spend": {
+      "inputTokens": 8,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 43840,
+      "cacheReadTokens": 359151,
+      "outputTokens": 671,
+      "thinkingTokens": 67,
+      "responses": 4,
+      "costUsd": 0.4360022
+    }
+  },
+  "sessionId": "edb0db81-3ae1-57c0-8d92-fb2fa66adc6d",
+  "branch": "claude/haiku-edit-relay",
+  "cwd": "/home/user/muthur",
+  "openingPrompt": "/relay take claude/haiku-edit-relay — первая версия режима готова в PR #254, дальше переименование в steno, прогноз по волнам и журнал «прогноз против факта» на…",
+  "prs": [
+    254
+  ],
+  "url": "https://claude.ai/code/session_01DaohkC8CqD2FqWtVHR6BSe",
+  "operator": "vzakharov",
+  "firstResponseAt": "2026-10-29T05:17:52.862Z",
+  "lastResponseAt": "2026-10-29T05:27:37.822Z",
+  "pricesAsOf": "2026-10-06",
+  "claudeCodeTotalUsd": null,
+  "ownTurns": {
+    "inputTokens": 88,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 156079,
+    "cacheReadTokens": 7598528,
+    "outputTokens": 36708,
+    "thinkingTokens": 11682,
+    "responses": 44,
+    "costUsd": 3.5028496
+  },
+  "subagents": {
+    "inputTokens": 44,
+    "cacheWrite5mTokens": 255416,
+    "cacheWrite1hTokens": 0,
+    "cacheReadTokens": 2300425,
+    "outputTokens": 23591,
+    "thinkingTokens": 9951,
+    "responses": 22,
+    "costUsd": 1.380126605
+  },
+  "byRate": {
+    "claude-opus-5-5/standard": {
+      "inputTokens": 122,
+      "cacheWrite5mTokens": 144535,
+      "cacheWrite1hTokens": 156079,
+      "cacheReadTokens": 9513255,
+      "outputTokens": 47957,
+      "thinkingTokens": 16374,
+      "responses": 61,
+      "costUsd": 4.833586
+    },
+    "claude-haiku-5-5/standard": {
+      "inputTokens": 10,
+      "cacheWrite5mTokens": 110881,
+      "cacheWrite1hTokens": 0,
+      "cacheReadTokens": 385698,
+      "outputTokens": 12342,
+      "thinkingTokens": 5259,
+      "responses": 5,
+      "costUsd": 0.049390205000000006
+    }
+  },
+  "warnings": [],
+  "compactions": [],
+  "telemetry": {
+    "events": 66,
+    "matched": 66,
+    "matchedTableUsd": 4.882976205000001,
+    "matchedEventUsd": 4.882976205000001,
+    "unseen": {}
+  }
+}
