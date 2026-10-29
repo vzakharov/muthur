@@ -2,9 +2,7 @@
 
 One entry per `model:` value `Agent` takes below the delegating agent's own,
 kept per `delegation.md` § "Keeping `delegation-model-capabilities.md`", with
-the lessons that hold for every model first. Two kinds of run feed it: a
-sub-task delegated to the model, and a checkpoint review of the model running
-the loop itself (`checkpoint-review.md`).
+the lessons that hold for every model first.
 
 ## Across models
 

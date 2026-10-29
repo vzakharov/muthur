@@ -109,8 +109,8 @@ about the same models running the loop themselves, so the reviewer folds what it
 found into the session model's **Handles** / **Misses** under the file's
 existing keeping rules (kind of work, never the task; compress, don't log; under
 100 lines), and anything true of every subagent — a tool none of them has — into
-§ "Across models". The file's header line and `delegation.md` § "Keeping …" gain
-a clause naming the checkpoint as the second source.
+§ "Across models". `delegation.md` § "Keeping …", which the file's header
+already cites, gains a clause naming the checkpoint as the second source.
 
 ## Steps
 
@@ -121,8 +121,7 @@ a clause naming the checkpoint as the second source.
    Step 3), `/finalize` (after "Then, the quality passes"). Body-only edits, no
    `description:` change, so nothing is staged.
 3. `/relay` Step 3: the escalation exception to "model inherited".
-4. `delegation-model-capabilities.md` header and `delegation.md` § "Keeping …":
-   the checkpoint as a second source.
+4. `delegation.md` § "Keeping …": the checkpoint as a second source.
 5. Catalog: an entry for `checkpoint-review.md` in
    `.claude/skills/update-muthur/catalog/g2-pr-loop.md`, beside the delegation
    files.
