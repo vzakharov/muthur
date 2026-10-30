@@ -1,13 +1,13 @@
 {
   "total": {
-    "inputTokens": 632,
-    "cacheWrite5mTokens": 154204,
-    "cacheWrite1hTokens": 156910,
-    "cacheReadTokens": 8303179,
-    "outputTokens": 54777,
-    "thinkingTokens": 26797,
-    "responses": 65,
-    "costUsd": 3.417627465
+    "inputTokens": 1155,
+    "cacheWrite5mTokens": 166940,
+    "cacheWrite1hTokens": 161384,
+    "cacheReadTokens": 10093702,
+    "outputTokens": 63249,
+    "thinkingTokens": 30041,
+    "responses": 75,
+    "costUsd": 3.982815764999999
   },
   "estimate": {
     "at": "2026-10-30T10:03:54.252Z",
@@ -53,39 +53,39 @@
   "url": "https://claude.ai/code/session_01RAikutax5eGF92PkSppyCn",
   "operator": "vzakharov",
   "firstResponseAt": "2026-10-30T09:59:33.062Z",
-  "lastResponseAt": "2026-10-30T10:11:05.277Z",
+  "lastResponseAt": "2026-10-30T10:12:41.628Z",
   "pricesAsOf": "2026-10-06",
   "claudeCodeTotalUsd": null,
   "ownTurns": {
-    "inputTokens": 75,
+    "inputTokens": 84,
     "cacheWrite5mTokens": 0,
-    "cacheWrite1hTokens": 156910,
-    "cacheReadTokens": 5637151,
-    "outputTokens": 36523,
-    "thinkingTokens": 16221,
-    "responses": 38,
-    "costUsd": 2.1204502
+    "cacheWrite1hTokens": 161384,
+    "cacheReadTokens": 6681370,
+    "outputTokens": 38933,
+    "thinkingTokens": 16805,
+    "responses": 43,
+    "costUsd": 2.3713079999999995
   },
   "subagents": {
-    "inputTokens": 51,
-    "cacheWrite5mTokens": 153442,
+    "inputTokens": 59,
+    "cacheWrite5mTokens": 165903,
     "cacheWrite1hTokens": 0,
-    "cacheReadTokens": 2486761,
-    "outputTokens": 18246,
-    "thinkingTokens": 10576,
-    "responses": 26,
-    "costUsd": 1.275110565
+    "cacheReadTokens": 3027172,
+    "outputTokens": 24305,
+    "thinkingTokens": 13236,
+    "responses": 30,
+    "costUsd": 1.5667097650000001
   },
   "byRate": {
     "claude-sonnet-5-5/standard": {
-      "inputTokens": 581,
-      "cacheWrite5mTokens": 762,
-      "cacheWrite1hTokens": 156910,
-      "cacheReadTokens": 5816418,
-      "outputTokens": 36531,
-      "thinkingTokens": 16221,
-      "responses": 39,
-      "costUsd": 2.1425169
+      "inputTokens": 1096,
+      "cacheWrite5mTokens": 1037,
+      "cacheWrite1hTokens": 161384,
+      "cacheReadTokens": 7066530,
+      "outputTokens": 38944,
+      "thinkingTokens": 16805,
+      "responses": 45,
+      "costUsd": 2.416105999999999
     },
     "claude-haiku-5-5/standard": {
       "inputTokens": 4,
@@ -98,35 +98,35 @@
       "costUsd": 0.009433165
     },
     "claude-opus-5-5/standard": {
-      "inputTokens": 47,
-      "cacheWrite5mTokens": 85099,
+      "inputTokens": 55,
+      "cacheWrite5mTokens": 97560,
       "cacheWrite1hTokens": 0,
-      "cacheReadTokens": 2420172,
-      "outputTokens": 17798,
-      "thinkingTokens": 10383,
-      "responses": 24,
-      "costUsd": 1.2656774000000002
+      "cacheReadTokens": 2960583,
+      "outputTokens": 23857,
+      "thinkingTokens": 13043,
+      "responses": 28,
+      "costUsd": 1.5572766000000002
     }
   },
   "warnings": [
-    "prices.json priced the 64 responses the events also priced at $3.3956, against the events' $2.8318: a rate in the table is likely out of date"
+    "prices.json priced the 73 responses the events also priced at $3.9380, against the events' $3.2699: a rate in the table is likely out of date"
   ],
   "compactions": [],
   "telemetry": {
-    "events": 65,
-    "matched": 64,
-    "matchedTableUsd": 3.395560765,
-    "matchedEventUsd": 2.831845665,
+    "events": 75,
+    "matched": 73,
+    "matchedTableUsd": 3.9380177649999992,
+    "matchedEventUsd": 3.269880765,
     "unseen": {
       "prompt_suggestion": {
-        "inputTokens": 506,
-        "cacheWrite5mTokens": 762,
+        "inputTokens": 1012,
+        "cacheWrite5mTokens": 1037,
         "cacheWrite1hTokens": 0,
-        "cacheReadTokens": 179267,
-        "outputTokens": 8,
+        "cacheReadTokens": 385160,
+        "outputTokens": 11,
         "thinkingTokens": 0,
-        "responses": 1,
-        "costUsd": 0.022066699999999998
+        "responses": 2,
+        "costUsd": 0.044798000000000004
       }
     }
   }
