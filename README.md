@@ -126,3 +126,7 @@ your agent offer to post it for you.
 
 `CLAUDE.md` carries the conventions themselves, and each
 `.claude/skills/*/SKILL.md` carries its own full contract.
+
+## License
+
+[MIT](LICENSE) © 2026 Vladimir Zakharov.
