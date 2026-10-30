@@ -180,6 +180,10 @@ that skips polish, edits after it, or fixes a vet failure or a merge conflict
 after it finds the gate shut, and the deny reason says to run `/polish`, which
 reviews just that.
 
+The `Bash` gate matches the command itself, never the body of a commit message
+or a heredoc: a `git commit -m` that quotes `gh pr ready` is not that command.
+The pattern is anchored to command position, with a test for it.
+
 What the hook still misses, stated so nobody counts on more: a review launched
 with a prompt that does not open with the launch line (`polish/SKILL.md` gives
 that line verbatim, so only a session that ignores the skill writes one); and a
