@@ -7,8 +7,9 @@ whatever the weaker model chose to put in. The reviewer now reads its
 procedure from checkpoint-reviewer.md and derives all of that itself.
 
 The session launches it with one prompt, naming that file, and the
-checkpoint-review hook denies any other prompt to an Opus Agent while a
-review is pending. The reviewer finds the last /plan, /go or /finalize
+checkpoint-review hook denies an Opus Agent prompt that names the review
+without being that line, or that line sent to another model. The
+reviewer finds the last /plan, /go or /finalize
 entry in the parent's transcript, reads the parent's full log, checks
 the work against CLAUDE.md, the skill and every operator message, and
 answers with a verdict. checkpoint-review.md keeps only the session's
