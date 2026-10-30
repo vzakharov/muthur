@@ -1,0 +1,122 @@
+{
+  "total": {
+    "inputTokens": 98,
+    "cacheWrite5mTokens": 143952,
+    "cacheWrite1hTokens": 131046,
+    "cacheReadTokens": 5914899,
+    "outputTokens": 37695,
+    "thinkingTokens": 20345,
+    "responses": 50,
+    "costUsd": 2.569426165
+  },
+  "estimate": {
+    "at": "2026-10-30T10:03:54.252Z",
+    "parts": [
+      {
+        "hours": 3.0,
+        "grade": "middle",
+        "role": "developer",
+        "comment": "a stdlib transcript-extraction script, a shared lib refactor, hook enforcement and tests"
+      },
+      {
+        "hours": 2.0,
+        "grade": "senior",
+        "role": "prompter",
+        "comment": "the reviewer procedure is prose a weaker model's brief must not be able to bend"
+      }
+    ],
+    "comment": null
+  },
+  "orientation": {
+    "endedBy": "oriented",
+    "endedOn": null,
+    "endedAt": "2026-10-30T09:59:40.314Z",
+    "contextTokens": 84889,
+    "spend": {
+      "inputTokens": 6,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 35731,
+      "cacheReadTokens": 128986,
+      "outputTokens": 645,
+      "thinkingTokens": 108,
+      "responses": 2,
+      "costUsd": 0.17518319999999998
+    }
+  },
+  "sessionId": "572cd45a-9280-591e-87a8-fe062f357971",
+  "branch": "claude/checkpoint-reviewer-procedure-wcfux3",
+  "cwd": "/home/user/muthur",
+  "openingPrompt": "давай пофиксим (и сразу задогфудим) принцип \"опус ревьюит более слабые модели\" (b2079f0). проблема: слабые модели пишут постановку задачу субагенту как им бог н…",
+  "prs": [
+    257
+  ],
+  "url": "https://claude.ai/code/session_01RAikutax5eGF92PkSppyCn",
+  "operator": "vzakharov",
+  "firstResponseAt": "2026-10-30T09:59:33.062Z",
+  "lastResponseAt": "2026-10-30T10:08:37.731Z",
+  "pricesAsOf": "2026-10-06",
+  "claudeCodeTotalUsd": null,
+  "ownTurns": {
+    "inputTokens": 62,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 131046,
+    "cacheReadTokens": 4289451,
+    "outputTokens": 25709,
+    "thinkingTokens": 12387,
+    "responses": 31,
+    "costUsd": 1.6392882000000002
+  },
+  "subagents": {
+    "inputTokens": 36,
+    "cacheWrite5mTokens": 143952,
+    "cacheWrite1hTokens": 0,
+    "cacheReadTokens": 1625448,
+    "outputTokens": 11986,
+    "thinkingTokens": 7958,
+    "responses": 19,
+    "costUsd": 0.9301379649999999
+  },
+  "byRate": {
+    "claude-sonnet-5-5/standard": {
+      "inputTokens": 62,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 131046,
+      "cacheReadTokens": 4289451,
+      "outputTokens": 25709,
+      "thinkingTokens": 12387,
+      "responses": 31,
+      "costUsd": 1.6392882000000002
+    },
+    "claude-haiku-5-5/standard": {
+      "inputTokens": 4,
+      "cacheWrite5mTokens": 68343,
+      "cacheWrite1hTokens": 0,
+      "cacheReadTokens": 66589,
+      "outputTokens": 448,
+      "thinkingTokens": 193,
+      "responses": 2,
+      "costUsd": 0.009433165
+    },
+    "claude-opus-5-5/standard": {
+      "inputTokens": 32,
+      "cacheWrite5mTokens": 75609,
+      "cacheWrite1hTokens": 0,
+      "cacheReadTokens": 1558859,
+      "outputTokens": 11538,
+      "thinkingTokens": 7765,
+      "responses": 17,
+      "costUsd": 0.9207048
+    }
+  },
+  "warnings": [
+    "prices.json priced the 50 responses the events also priced at $2.5694, against the events' $2.1405: a rate in the table is likely out of date"
+  ],
+  "compactions": [],
+  "telemetry": {
+    "events": 50,
+    "matched": 50,
+    "matchedTableUsd": 2.569426165,
+    "matchedEventUsd": 2.140481065000001,
+    "unseen": {}
+  }
+}
