@@ -120,8 +120,9 @@ The skill's `description:` names the passes, so it changes too, through a staged
 copy (`.claude/skills/CLAUDE.md`, `@.claude/rules/staging.md`).
 
 `checkpoint-review.md` shrinks to the session's side: when the cutoff runs
-`/polish` (below), how the hook gates it, recording the verdict, and what the
-session does on each. Its brief and verdict sections move to `passes.md`.
+`/polish` (below), how the hook gates it, and what the session does on each
+verdict. Its brief and verdict sections move to `passes.md`; the session records
+nothing, since the verdict is the polish commit's `Review:` line.
 
 Where polish runs: `/go` Step 3 and `/finalize` already do. **`/plan` has no
 polish today**; its publish step gains one when the session is below Opus (the
@@ -154,11 +155,23 @@ protocol therefore does not use one: `revise` is answered by the session making
 the changes and running `/polish` again, which a new subagent starts from the
 new floor.
 
+**The closing-command gate reads the verdict from git.** The weaker session runs
+no recording command. The existing `Bash` gate (`git mv` out of the draft name,
+`git mv` to `*.completed.md`, `gh pr ready`) denies the command on a weaker
+session unless the branch's newest `polish:` commit
+(`git log origin/<base>..HEAD`, as `polish/passes.md` § "The floor" finds it)
+carries a `Review:` line other than `revise`, with no commit after it other than
+merges. A session that skips polish, or edits after it, finds the gate shut. The
+per-session `pending` state, the `verdict` command and the delivery marker's
+bookkeeping for them go; which commits `/finalize` itself adds after its polish
+(squash proposal files, relay sweeps) is listed at implementation, and the gate
+ignores those.
+
 What the hook still misses, stated so nobody counts on more: a review launched
 with a prompt that does not open with the launch line (`polish/SKILL.md` gives
-that line verbatim, so only a session that ignores the skill writes one); a
-session that skips polish and records no verdict, which is the closing-command
-gate's job and stays as it is (`git mv`, `gh pr ready`).
+that line verbatim, so only a session that ignores the skill writes one); and a
+`Review:` line a session types into a commit message by hand, which the gate
+cannot tell from the subagent's.
 
 ### 4. `scripts/session-qa.py` — the parent's questions and answers (new)
 
@@ -247,6 +260,11 @@ failure.
   `passes.md`, which would also stop a delegated subtask that edits it; or a
   gate on every Opus `Agent` call, which would also stop an operator's own
   request.
+- **The verdict lives in the polish commit, not in session state.** One commit
+  closes the run, so there is no window between the passes and the review.
+  Alternatives: a separate review commit or cutoff marker, which a run can stop
+  short of; or the session recording the verdict with a command, which leaves
+  the step to the weaker model.
 - **`/plan` gains a polish step for sessions below Opus** so that plan reviews
   run the same procedure as code reviews.
 
