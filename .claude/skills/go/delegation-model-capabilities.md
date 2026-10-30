@@ -22,8 +22,29 @@ the lessons that hold for every model first.
   back clean with nothing to repair. Driving a short review-lane run of the loop
   itself: a review thread answered with a fix checked against the code, the
   `/go` checkpoint review run where no hook forced it, a reviewer brief of facts
-  only.
-- **Misses:** —
+  only. A plan's shape — every point of the request mapped to a part, DRY notes,
+  a claim settled by a cheap probe rather than assumed. A `revise` of three
+  findings across the PR body, the squash proposal and its comment, and three
+  thread replies, applied whole in one round, the replies opening with the
+  session's words as `CLAUDE.md` asks.
+- **Misses:** planning a reader for an undocumented record format, it drew the
+  shapes from the one existing reader it opened and missed those other readers
+  in the tree already handle; and it scoped a new gate by a state that holds for
+  the whole skill run rather than the moment the gate guards. Rewriting a plan
+  from its own recorded analysis, it widened that gate again (the analysis keyed
+  it on the prompt's first line, the plan on any mention of a path) and left a
+  one-line requirement with no mechanism behind it. Moving that gate's state
+  from the session to git, it made the gate branch-wide (denying a flip the
+  session's own cutoff never covered), and its exemptions named commits that
+  land after the guarded command while missing the ones before it. After an Opus
+  review it edited the plan's text again unreviewed, judging the edit too small;
+  and dropping a part of the design, it changed the plan alone, leaving the PR
+  body, the squash proposal and the thread replies that promised the part saying
+  it was still in. Ask it to list every reader of the format, and, for a gate,
+  every commit and session that reaches the guarded command, in the order the
+  skills make them; on a rewrite, to diff the plan against the analysis it
+  carries out; on dropping a part, to grep every place that describes the change
+  for it.
 - **Brief:** naming the style reference and the run-until-green command was
   enough; ask for "anything that surprised you" — it reports useful edges.
 - **Cost, by eye:** that suite, a few hundred lines, cost about twice as much

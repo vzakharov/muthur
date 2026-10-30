@@ -1,0 +1,127 @@
+{
+  "total": {
+    "inputTokens": 2207,
+    "cacheWrite5mTokens": 168392,
+    "cacheWrite1hTokens": 208878,
+    "cacheReadTokens": 14646645,
+    "outputTokens": 84950,
+    "thinkingTokens": 40958,
+    "responses": 95,
+    "costUsd": 5.265003265000001
+  },
+  "estimate": {
+    "at": "2026-10-30T11:12:30.604Z",
+    "parts": [
+      {
+        "hours": 2.0,
+        "grade": "senior",
+        "role": "architect",
+        "comment": "plan for a shared transcript lib, a reviewer procedure and a hook gate, revised after two review looks and the operator's review analysis"
+      }
+    ],
+    "comment": null
+  },
+  "orientation": {
+    "endedBy": "oriented",
+    "endedOn": null,
+    "endedAt": "2026-10-30T09:59:40.314Z",
+    "contextTokens": 84889,
+    "spend": {
+      "inputTokens": 6,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 35731,
+      "cacheReadTokens": 128986,
+      "outputTokens": 645,
+      "thinkingTokens": 108,
+      "responses": 2,
+      "costUsd": 0.17518319999999998
+    }
+  },
+  "sessionId": "572cd45a-9280-591e-87a8-fe062f357971",
+  "branch": "claude/checkpoint-reviewer-procedure-wcfux3",
+  "cwd": "/home/user/muthur",
+  "openingPrompt": "давай пофиксим (и сразу задогфудим) принцип \"опус ревьюит более слабые модели\" (b2079f0). проблема: слабые модели пишут постановку задачу субагенту как им бог н…",
+  "prs": [
+    257
+  ],
+  "url": "https://claude.ai/code/session_01RAikutax5eGF92PkSppyCn",
+  "operator": "vzakharov",
+  "firstResponseAt": "2026-10-30T09:59:33.062Z",
+  "lastResponseAt": "2026-10-30T11:13:14.856Z",
+  "pricesAsOf": "2026-10-06",
+  "claudeCodeTotalUsd": null,
+  "ownTurns": {
+    "inputTokens": 124,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 208878,
+    "cacheReadTokens": 10801322,
+    "outputTokens": 60603,
+    "thinkingTokens": 27722,
+    "responses": 61,
+    "costUsd": 3.6020543999999988
+  },
+  "subagents": {
+    "inputTokens": 59,
+    "cacheWrite5mTokens": 165903,
+    "cacheWrite1hTokens": 0,
+    "cacheReadTokens": 3027172,
+    "outputTokens": 24305,
+    "thinkingTokens": 13236,
+    "responses": 30,
+    "costUsd": 1.5667097650000001
+  },
+  "byRate": {
+    "claude-sonnet-5-5/standard": {
+      "inputTokens": 2148,
+      "cacheWrite5mTokens": 2489,
+      "cacheWrite1hTokens": 208878,
+      "cacheReadTokens": 11619473,
+      "outputTokens": 60645,
+      "thinkingTokens": 27722,
+      "responses": 65,
+      "costUsd": 3.6982934999999983
+    },
+    "claude-haiku-5-5/standard": {
+      "inputTokens": 4,
+      "cacheWrite5mTokens": 68343,
+      "cacheWrite1hTokens": 0,
+      "cacheReadTokens": 66589,
+      "outputTokens": 448,
+      "thinkingTokens": 193,
+      "responses": 2,
+      "costUsd": 0.009433165
+    },
+    "claude-opus-5-5/standard": {
+      "inputTokens": 55,
+      "cacheWrite5mTokens": 97560,
+      "cacheWrite1hTokens": 0,
+      "cacheReadTokens": 2960583,
+      "outputTokens": 23857,
+      "thinkingTokens": 13043,
+      "responses": 28,
+      "costUsd": 1.5572766000000002
+    }
+  },
+  "warnings": [
+    "prices.json priced the 91 responses the events also priced at $5.1688, against the events' $4.0886: a rate in the table is likely out of date"
+  ],
+  "compactions": [],
+  "telemetry": {
+    "events": 95,
+    "matched": 91,
+    "matchedTableUsd": 5.168764165,
+    "matchedEventUsd": 4.088631965000001,
+    "unseen": {
+      "prompt_suggestion": {
+        "inputTokens": 2024,
+        "cacheWrite5mTokens": 2489,
+        "cacheWrite1hTokens": 0,
+        "cacheReadTokens": 818151,
+        "outputTokens": 42,
+        "thinkingTokens": 0,
+        "responses": 4,
+        "costUsd": 0.09623910000000001
+      }
+    }
+  }
+}

@@ -1,0 +1,143 @@
+{
+  "total": {
+    "inputTokens": 5006,
+    "cacheWrite5mTokens": 388653,
+    "cacheWrite1hTokens": 143145,
+    "cacheReadTokens": 15595805,
+    "outputTokens": 88195,
+    "thinkingTokens": 31423,
+    "responses": 132,
+    "costUsd": 6.892660299999998
+  },
+  "estimate": {
+    "at": "2026-10-30T11:14:16.251Z",
+    "parts": [
+      {
+        "hours": 1.0,
+        "grade": "senior",
+        "role": "architect",
+        "comment": "rewrite the plan to the folded /polish design, answer 8 review threads"
+      },
+      {
+        "hours": 0.5,
+        "grade": "middle",
+        "role": "developer",
+        "comment": "PR retitle, squash body, thread replies"
+      }
+    ],
+    "comment": null
+  },
+  "orientation": {
+    "endedBy": "oriented",
+    "endedOn": null,
+    "endedAt": "2026-10-30T11:14:10.520Z",
+    "contextTokens": 107915,
+    "spend": {
+      "inputTokens": 8,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 46946,
+      "cacheReadTokens": 228972,
+      "outputTokens": 693,
+      "thinkingTokens": 55,
+      "responses": 3,
+      "costUsd": 0.2405244
+    }
+  },
+  "sessionId": "d4836b7b-dc82-5689-bb24-52d5e8ffc24e",
+  "branch": "claude/checkpoint-reviewer-procedure-wcfux3",
+  "cwd": "/home/user/muthur",
+  "openingPrompt": "/relay take claude/checkpoint-reviewer-procedure-wcfux3 — ревью оператора на плане разобрано, осталось переписать план под polish, ответить на 8 тредов и отдать…",
+  "prs": [
+    257
+  ],
+  "url": "https://claude.ai/code/session_01RAikuw9mLu6ZKHhnYf7iHe",
+  "operator": "vzakharov",
+  "firstResponseAt": "2026-10-30T11:13:48.860Z",
+  "lastResponseAt": "2026-10-30T13:05:01.445Z",
+  "pricesAsOf": "2026-10-06",
+  "claudeCodeTotalUsd": null,
+  "ownTurns": {
+    "inputTokens": 104,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 143145,
+    "cacheReadTokens": 8136604,
+    "outputTokens": 39397,
+    "thinkingTokens": 9533,
+    "responses": 54,
+    "costUsd": 2.5940787999999997
+  },
+  "subagents": {
+    "inputTokens": 138,
+    "cacheWrite5mTokens": 384586,
+    "cacheWrite1hTokens": 0,
+    "cacheReadTokens": 6346837,
+    "outputTokens": 48497,
+    "thinkingTokens": 21890,
+    "responses": 70,
+    "costUsd": 4.162789400000001
+  },
+  "byRate": {
+    "claude-sonnet-5-5/standard": {
+      "inputTokens": 3646,
+      "cacheWrite5mTokens": 4067,
+      "cacheWrite1hTokens": 143145,
+      "cacheReadTokens": 9248968,
+      "outputTokens": 39495,
+      "thinkingTokens": 9533,
+      "responses": 61,
+      "costUsd": 2.7296471999999996
+    },
+    "claude-opus-5-5/standard": {
+      "inputTokens": 138,
+      "cacheWrite5mTokens": 384586,
+      "cacheWrite1hTokens": 0,
+      "cacheReadTokens": 6346837,
+      "outputTokens": 48497,
+      "thinkingTokens": 21890,
+      "responses": 70,
+      "costUsd": 4.162789400000001
+    },
+    "claude-haiku-5-5/standard": {
+      "inputTokens": 1222,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 0,
+      "cacheReadTokens": 0,
+      "outputTokens": 203,
+      "thinkingTokens": 0,
+      "responses": 1,
+      "costUsd": 0.00022370000000000002
+    }
+  },
+  "warnings": [
+    "prices.json priced the 124 responses the events also priced at $6.7569, against the events' $5.9432: a rate in the table is likely out of date"
+  ],
+  "compactions": [],
+  "telemetry": {
+    "events": 132,
+    "matched": 124,
+    "matchedTableUsd": 6.756868199999999,
+    "matchedEventUsd": 5.943207799999997,
+    "unseen": {
+      "prompt_suggestion": {
+        "inputTokens": 3542,
+        "cacheWrite5mTokens": 4067,
+        "cacheWrite1hTokens": 0,
+        "cacheReadTokens": 1112364,
+        "outputTokens": 98,
+        "thinkingTokens": 0,
+        "responses": 7,
+        "costUsd": 0.1355684
+      },
+      "generate_session_title": {
+        "inputTokens": 1222,
+        "cacheWrite5mTokens": 0,
+        "cacheWrite1hTokens": 0,
+        "cacheReadTokens": 0,
+        "outputTokens": 203,
+        "thinkingTokens": 0,
+        "responses": 1,
+        "costUsd": 0.00022370000000000002
+      }
+    }
+  }
+}
