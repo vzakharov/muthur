@@ -156,16 +156,29 @@ the changes and running `/polish` again, which a new subagent starts from the
 new floor.
 
 **The closing-command gate reads the verdict from git.** The weaker session runs
-no recording command. The existing `Bash` gate (`git mv` out of the draft name,
+no recording command, so the `verdict` command goes. What stays per session is
+which cutoffs it **entered**, marked on entry as today: the gate guards only
+those, because a branch-wide condition would also deny a Sonnet `/go` the
+go-ahead flip of a plan an Opus `/plan` wrote, which no polish ever reviewed.
+Entries from a subagent's own reads are not marked (the reviewer opens skill
+files); the `/go` spike checks which payload field tells a subagent's tool call
+from the session's.
+
+For an entered cutoff, the existing `Bash` gate (`git mv` out of the draft name,
 `git mv` to `*.completed.md`, `gh pr ready`) denies the command on a weaker
 session unless the branch's newest `polish:` commit
 (`git log origin/<base>..HEAD`, as `polish/passes.md` § "The floor" finds it)
-carries a `Review:` line other than `revise`, with no commit after it other than
-merges. A session that skips polish, or edits after it, finds the gate shut. The
-per-session `pending` state, the `verdict` command and the delivery marker's
-bookkeeping for them go; which commits `/finalize` itself adds after its polish
-(squash proposal files, relay sweeps) is listed at implementation, and the gate
-ignores those.
+carries a `Review:` line other than `revise`, **and** nothing since it needs
+review: `polish/passes.md`'s virtual-merge diff from that commit to `HEAD` — the
+same recipe, so a base merge does not count and its conflict resolution does —
+touches only the loop's working artifacts. Those are any change under
+`docs/issue/`, `docs/pr/` and `docs/remove-before-merging/` (`/handle`'s
+PR-export commit, relay summaries, the squash proposal), and a deletion or pure
+rename under `docs/plans/` (`/finalize` step 3's sweep, the lifecycle flips); an
+edit to a plan's text is the plan cutoff's own subject, so it counts. A session
+that skips polish, edits after it, or fixes a vet failure or a merge conflict
+after it finds the gate shut, and the deny reason says to run `/polish`, which
+reviews just that.
 
 What the hook still misses, stated so nobody counts on more: a review launched
 with a prompt that does not open with the launch line (`polish/SKILL.md` gives
@@ -229,7 +242,11 @@ failure.
   on a weaker session with a non-opus model is rewritten (or denied, per the
   spike), a launch line with extra text is denied, an `Agent` call that does not
   open with the launch line is untouched even when it names `passes.md`, nothing
-  applies on an Opus session or with the switch off.
+  applies on an Opus session or with the switch off. The `Bash` gate on a
+  throwaway repo: open after a `Review: pass` polish commit followed only by a
+  PR-export commit, a base merge, or the `docs/plans/` sweep; shut with no
+  review, a `Review: revise`, a code commit or a plan-text edit after it, or a
+  conflict resolution; untouched for a cutoff the session never entered.
 - `scripts/test_relay_last_reply.py`, `scripts/test_extract_session_images.py`:
   loaders gain `scripts/` on `sys.path` for the `lib` import; their cases stay.
 
@@ -264,7 +281,8 @@ failure.
   closes the run, so there is no window between the passes and the review.
   Alternatives: a separate review commit or cutoff marker, which a run can stop
   short of; or the session recording the verdict with a command, which leaves
-  the step to the weaker model.
+  the step to the weaker model. The gate still keys on the cutoffs the session
+  entered, since the branch alone cannot say whose cutoff a flip closes.
 - **`/plan` gains a polish step for sessions below Opus** so that plan reviews
   run the same procedure as code reviews.
 

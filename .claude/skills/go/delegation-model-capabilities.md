@@ -30,9 +30,13 @@ the lessons that hold for every model first.
   the whole skill run rather than the moment the gate guards. Rewriting a plan
   from its own recorded analysis, it widened that gate again (the analysis keyed
   it on the prompt's first line, the plan on any mention of a path) and left a
-  one-line requirement with no mechanism behind it. Ask it to list every reader
-  of the format, and what the gate could wrongly deny; on a rewrite, to diff the
-  plan against the analysis it carries out.
+  one-line requirement with no mechanism behind it. Moving that gate's state
+  from the session to git, it made the gate branch-wide (denying a flip the
+  session's own cutoff never covered), and its exemptions named commits that
+  land after the guarded command while missing the ones before it. Ask it to
+  list every reader of the format, and, for a gate, every commit and session
+  that reaches the guarded command, in the order the skills make them; on a
+  rewrite, to diff the plan against the analysis it carries out.
 - **Brief:** naming the style reference and the run-until-green command was
   enough; ask for "anything that surprised you" — it reports useful edges.
 - **Cost, by eye:** that suite, a few hundred lines, cost about twice as much
