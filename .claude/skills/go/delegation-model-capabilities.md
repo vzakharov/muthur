@@ -23,7 +23,10 @@ the lessons that hold for every model first.
   itself: a review thread answered with a fix checked against the code, the
   `/go` checkpoint review run where no hook forced it, a reviewer brief of facts
   only. A plan's shape — every point of the request mapped to a part, DRY notes,
-  a claim settled by a cheap probe rather than assumed.
+  a claim settled by a cheap probe rather than assumed. A `revise` of three
+  findings across the PR body, the squash proposal and its comment, and three
+  thread replies, applied whole in one round, the replies opening with the
+  session's words as `CLAUDE.md` asks.
 - **Misses:** planning a reader for an undocumented record format, it drew the
   shapes from the one existing reader it opened and missed those other readers
   in the tree already handle; and it scoped a new gate by a state that holds for

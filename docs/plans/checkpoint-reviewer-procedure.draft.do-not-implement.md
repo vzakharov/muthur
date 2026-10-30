@@ -91,7 +91,9 @@ scope, and opens a diff only where a claim needs it.
   — judged from the capabilities file's **Misses** (§ 5) and what the review
   just saw. It answers `revise` only for what is describable that way. Edits are
   commits under the repository's conventions; the pass never pushes beyond what
-  `passes.md` § "Push before reporting" already does.
+  `passes.md` § "Push before reporting" already does. It does not touch the PR
+  (`passes.md` § "Do NOT"), so a stale PR body, squash proposal comment or
+  thread reply is always a `revise` finding.
 - **Learning.** What the review shows about the session's model goes into that
   model's **Handles**/**Misses** in the capabilities file, committed with the
   fixes or alone after a `pass` that taught something.
@@ -175,6 +177,12 @@ that skips polish, edits after it, or fixes a vet failure or a merge conflict
 after it finds the gate shut, and the deny reason says to run `/polish`, which
 reviews just that.
 
+Only a full run's `polish:` subject counts, as for the floor. A focused
+`polish(<guidance>):` run reviewed for less, and a `polish: restore <what>`
+commit (`polish/SKILL.md`) carries no `Review:` line; after either the gate
+stays shut until a full `/polish`. That run's floor is the restore commit, so
+the restored text, which the operator asked back, is not reviewed again.
+
 The `Bash` gate matches the command itself, never the body of a commit message
 or a heredoc: a `git commit -m` that quotes `gh pr ready` is not that command.
 The pattern is anchored to command position, with a test for it.
@@ -240,8 +248,9 @@ failure.
 - `scripts/test_checkpoint_review.py`: the `Bash` gate on a throwaway repo: open
   after a `Review: pass` polish commit followed only by a PR-export commit, a
   base merge, or the `docs/plans/` sweep; shut with no review, a
-  `Review: revise`, a code commit or a plan-text edit after it, or a conflict
-  resolution; untouched for a cutoff the session never entered.
+  `Review: revise`, a code commit or a plan-text edit after it, a conflict
+  resolution, or a `polish: restore` commit on top; untouched for a cutoff the
+  session never entered.
 - `scripts/test_relay_last_reply.py`, `scripts/test_extract_session_images.py`:
   loaders gain `scripts/` on `sys.path` for the `lib` import; their cases stay.
 
