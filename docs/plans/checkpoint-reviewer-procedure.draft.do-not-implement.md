@@ -147,20 +147,28 @@ own failure.
 `checkpoint-review.py` gains a `PreToolUse` registration on `Agent` in
 `.claude/settings.json`. While a review is pending and the serving model is
 weaker, an `Agent` call is denied when it is a review launch gone wrong: its
-`model` names opus and its `prompt`, stripped, is not exactly the launch line,
-or its `prompt` is the launch line and its `model` is not opus (which would
-inherit the session's own). The reason gives the exact call. Other `Agent` calls
-— a delegation to a weaker model, a read-only `Explore` — pass, and the hook
-fails open like the rest of it.
+`model` names opus and its `prompt` names the checkpoint review
+(`checkpoint[- ]review`, case-insensitive) but, stripped, is not exactly the
+launch line; or its `prompt` is the launch line and its `model` is not opus
+(which would inherit the session's own). The reason gives the exact call. Every
+other `Agent` call passes — a delegation to a weaker model, a read-only
+`Explore`, an Opus call the operator asked for — and the hook fails open like
+the rest of it.
 
-What it still misses, stated so nobody counts on more: a review launched on a
-non-opus model with another prompt; a `SendMessage` follow-up, covered by the
-procedure's step 1 instead; a session that skips the review and records no
-verdict, which is the closing-command gate's job. What it wrongly denies: an
-operator-requested Opus `Agent` call made while a review is pending (pending
-runs from entering the skill to its verdict), whose recourse is
-`MUTHUR_CHECKPOINT_REVIEW=off`. Marks set by a research `Read` widen the window;
-that is the existing marking, not changed here.
+Keying the first case on the prompt naming the review, not on any Opus call,
+matters because pending runs from entering the skill to its verdict, and a
+research `Read` of another skill's `SKILL.md` marks that skill pending for the
+rest of the session (this session marked `go` and `finalize` while planning). A
+gate on every Opus call would deny an operator's Opus request for that whole
+window, with no recourse a running session can reach.
+
+What it still misses, stated so nobody counts on more: an Opus review brief that
+never names the checkpoint review; a review launched on a non-opus model with
+another prompt; a `SendMessage` follow-up, covered by the procedure's step 1
+instead; a session that skips the review and records no verdict, which is the
+closing-command gate's job. What it wrongly denies: an Opus call made while a
+review is pending whose prompt mentions the checkpoint review for another
+reason.
 
 ### 6. Pointers and tests
 
@@ -174,9 +182,11 @@ that is the existing marking, not changed here.
   first-parent head after a merge, `--cutoffs`, `--tools`, a half-written last
   line, an unknown transcript failing loudly.
 - `scripts/test_checkpoint_review.py`: the `Agent` gate — denied with an opus
-  call and a wrong prompt, denied with the exact line on a non-opus model,
-  allowed with the exact line on opus, not applied on an Opus session or with
-  the switch off or with no review pending, other `Agent` calls untouched.
+  call whose prompt names the checkpoint review but is not the line, denied with
+  the exact line on a non-opus model, allowed with the exact line on opus,
+  allowed for an opus call whose prompt does not name the review, not applied on
+  an Opus session or with the switch off or with no review pending, other
+  `Agent` calls untouched.
 - `scripts/test_relay_last_reply.py` and
   `scripts/test_extract_session_images.py`: loaders gain `scripts/` on
   `sys.path` for the `lib` import; their cases stay as they are.
@@ -198,9 +208,10 @@ that is the existing marking, not changed here.
 - **Hook enforcement of the launch line (§5): yes, narrowed to review launches
   gone wrong.** Alternatives: the procedure states it and trusts the session,
   which is the shape that failed; or the gate denies every Opus `Agent` call
-  while a review is pending, which also stops an operator's own request. The
-  narrowed gate trades the misses and the wrong denial §5 lists for not blocking
-  more than the launch.
+  while a review is pending, which also stops an operator's own request for as
+  long as a mark stays pending — to the session's end, for a mark a research
+  `Read` set. The narrowed gate trades the misses §5 lists for blocking nothing
+  but a review launch.
 
 ## DRY notes
 
