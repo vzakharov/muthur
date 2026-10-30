@@ -33,10 +33,15 @@ the lessons that hold for every model first.
   one-line requirement with no mechanism behind it. Moving that gate's state
   from the session to git, it made the gate branch-wide (denying a flip the
   session's own cutoff never covered), and its exemptions named commits that
-  land after the guarded command while missing the ones before it. Ask it to
-  list every reader of the format, and, for a gate, every commit and session
-  that reaches the guarded command, in the order the skills make them; on a
-  rewrite, to diff the plan against the analysis it carries out.
+  land after the guarded command while missing the ones before it. After an Opus
+  review it edited the plan's text again unreviewed, judging the edit too small;
+  and dropping a part of the design, it changed the plan alone, leaving the PR
+  body, the squash proposal and the thread replies that promised the part saying
+  it was still in. Ask it to list every reader of the format, and, for a gate,
+  every commit and session that reaches the guarded command, in the order the
+  skills make them; on a rewrite, to diff the plan against the analysis it
+  carries out; on dropping a part, to grep every place that describes the change
+  for it.
 - **Brief:** naming the style reference and the run-until-green command was
   enough; ask for "anything that surprised you" — it reports useful edges.
 - **Cost, by eye:** that suite, a few hundred lines, cost about twice as much
