@@ -1,13 +1,13 @@
 {
   "total": {
-    "inputTokens": 15,
+    "inputTokens": 22,
     "cacheWrite5mTokens": 0,
-    "cacheWrite1hTokens": 74374,
-    "cacheReadTokens": 662287,
-    "outputTokens": 10209,
-    "thinkingTokens": 2803,
-    "responses": 7,
-    "costUsd": 0.5320734
+    "cacheWrite1hTokens": 84453,
+    "cacheReadTokens": 1180552,
+    "outputTokens": 11640,
+    "thinkingTokens": 3122,
+    "responses": 11,
+    "costUsd": 0.6903664
   },
   "estimate": {
     "at": "2026-10-30T11:14:16.251Z",
@@ -47,22 +47,24 @@
   "branch": "claude/checkpoint-reviewer-procedure-wcfux3",
   "cwd": "/home/user/muthur",
   "openingPrompt": "/relay take claude/checkpoint-reviewer-procedure-wcfux3 — ревью оператора на плане разобрано, осталось переписать план под polish, ответить на 8 тредов и отдать…",
-  "prs": [],
+  "prs": [
+    257
+  ],
   "url": "https://claude.ai/code/session_01RAikuw9mLu6ZKHhnYf7iHe",
   "operator": "vzakharov",
   "firstResponseAt": "2026-10-30T11:13:48.860Z",
-  "lastResponseAt": "2026-10-30T11:14:44.812Z",
+  "lastResponseAt": "2026-10-30T11:15:39.886Z",
   "pricesAsOf": "2026-10-06",
   "claudeCodeTotalUsd": null,
   "ownTurns": {
-    "inputTokens": 15,
+    "inputTokens": 22,
     "cacheWrite5mTokens": 0,
-    "cacheWrite1hTokens": 74374,
-    "cacheReadTokens": 662287,
-    "outputTokens": 10209,
-    "thinkingTokens": 2803,
-    "responses": 7,
-    "costUsd": 0.5320734
+    "cacheWrite1hTokens": 84453,
+    "cacheReadTokens": 1180552,
+    "outputTokens": 11640,
+    "thinkingTokens": 3122,
+    "responses": 11,
+    "costUsd": 0.6903664
   },
   "subagents": {
     "inputTokens": 0,
@@ -76,25 +78,25 @@
   },
   "byRate": {
     "claude-sonnet-5-5/standard": {
-      "inputTokens": 15,
+      "inputTokens": 22,
       "cacheWrite5mTokens": 0,
-      "cacheWrite1hTokens": 74374,
-      "cacheReadTokens": 662287,
-      "outputTokens": 10209,
-      "thinkingTokens": 2803,
-      "responses": 7,
-      "costUsd": 0.5320734
+      "cacheWrite1hTokens": 84453,
+      "cacheReadTokens": 1180552,
+      "outputTokens": 11640,
+      "thinkingTokens": 3122,
+      "responses": 11,
+      "costUsd": 0.6903664
     }
   },
   "warnings": [
-    "prices.json priced the 7 responses the events also priced at $0.5321, against the events' $0.4658: a rate in the table is likely out of date"
+    "prices.json priced the 11 responses the events also priced at $0.6904, against the events' $0.5723: a rate in the table is likely out of date"
   ],
   "compactions": [],
   "telemetry": {
-    "events": 7,
-    "matched": 7,
-    "matchedTableUsd": 0.5320734,
-    "matchedEventUsd": 0.4658447,
+    "events": 11,
+    "matched": 11,
+    "matchedTableUsd": 0.6903664,
+    "matchedEventUsd": 0.5723112,
     "unseen": {}
   }
 }

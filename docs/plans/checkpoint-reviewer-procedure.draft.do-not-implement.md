@@ -106,11 +106,10 @@ Proceed per `.claude/skills/polish/passes.md`
 ```
 
 plus, when `/polish` was given an argument, one further line
-`Argument: <the argument, verbatim>`. The plan is no longer pasted in:
-`passes.md` says to find it under `docs/plans/`. The model is always Opus, so a
-polish run costs the same whichever model drives the session. This is the
-accepted cost: on a Sonnet or Haiku session the two older passes now bill at
-Opus rates too.
+`Argument: <the argument, verbatim>`. `passes.md` finds the plan under
+`docs/plans/` itself. The model is always Opus, so a polish run costs the same
+whichever model drives the session. This is the accepted cost: on a Sonnet or
+Haiku session the two older passes now bill at Opus rates too.
 
 `checkpoint-review.md` shrinks to the session's side: when the cutoff runs
 `/polish` (below), how the hook gates it, recording the verdict, and what the
