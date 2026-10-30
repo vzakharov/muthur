@@ -7,12 +7,12 @@ weaker model chose to put in. The review is now the third pass of
 /polish, in polish/passes.md: the reviewer reads its procedure from
 there and takes the scope from the polish floor.
 
-The session launches it with one line naming passes.md, and a
-PreToolUse hook on Agent rewrites the model to Opus and denies any other
-prompt text for that launch. The review fixes what is cheaper to do than
-to describe, or what the session's model is known not to follow, and
-answers with a verdict recorded in the polish commit. /plan runs polish
-too on a session below Opus.
+The session launches it with one line naming passes.md, which tells the
+reviewer to ignore anything else the launcher wrote. The review fixes
+what is cheaper to do than to describe, or what the session's model is
+known not to follow, and answers with a verdict in the polish commit's
+Review: line; the closing commands are gated on that line, so the weaker
+session records nothing. /plan runs polish too on a session below Opus.
 
 scripts/session-qa.py extracts the parent's questions and answers for
 the reviewer to read when it wants to; the transcript helpers it shares

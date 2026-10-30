@@ -84,7 +84,8 @@ scope, and opens a diff only where a claim needs it.
   relayed session's own transcript starts after the request), and — optionally —
   the parent's questions and answers (§ 4). The procedure says the transcript is
   available, not that it must be read: with the procedure clear, the reviewer
-  decides whether the written record is enough.
+  decides whether the written record is enough, and reads it when that record
+  and the git history disagree.
 - **Fixing.** The reviewer edits itself what is cheaper to do than to describe,
   _or_ what it cannot describe in a form the session's model is known to follow
   — judged from the capabilities file's **Misses** (§ 5) and what the review
