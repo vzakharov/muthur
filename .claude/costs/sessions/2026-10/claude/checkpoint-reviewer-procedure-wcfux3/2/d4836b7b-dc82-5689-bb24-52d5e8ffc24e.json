@@ -1,13 +1,13 @@
 {
   "total": {
-    "inputTokens": 4489,
+    "inputTokens": 4493,
     "cacheWrite5mTokens": 388118,
-    "cacheWrite1hTokens": 135174,
-    "cacheReadTokens": 14259623,
-    "outputTokens": 83348,
+    "cacheWrite1hTokens": 137809,
+    "cacheReadTokens": 14635513,
+    "outputTokens": 84021,
     "thinkingTokens": 30928,
-    "responses": 125,
-    "costUsd": 6.560857799999997
+    "responses": 127,
+    "costUsd": 6.653313799999998
   },
   "estimate": {
     "at": "2026-10-30T11:14:16.251Z",
@@ -53,18 +53,18 @@
   "url": "https://claude.ai/code/session_01RAikuw9mLu6ZKHhnYf7iHe",
   "operator": "vzakharov",
   "firstResponseAt": "2026-10-30T11:13:48.860Z",
-  "lastResponseAt": "2026-10-30T12:08:58.674Z",
+  "lastResponseAt": "2026-10-30T12:09:15.214Z",
   "pricesAsOf": "2026-10-06",
   "claudeCodeTotalUsd": null,
   "ownTurns": {
-    "inputTokens": 93,
+    "inputTokens": 97,
     "cacheWrite5mTokens": 0,
-    "cacheWrite1hTokens": 135174,
-    "cacheReadTokens": 6990041,
-    "outputTokens": 34577,
+    "cacheWrite1hTokens": 137809,
+    "cacheReadTokens": 7365931,
+    "outputTokens": 35250,
     "thinkingTokens": 9038,
-    "responses": 48,
-    "costUsd": 2.2846602
+    "responses": 50,
+    "costUsd": 2.3771161999999997
   },
   "subagents": {
     "inputTokens": 138,
@@ -78,14 +78,14 @@
   },
   "byRate": {
     "claude-sonnet-5-5/standard": {
-      "inputTokens": 3129,
+      "inputTokens": 3133,
       "cacheWrite5mTokens": 3532,
-      "cacheWrite1hTokens": 135174,
-      "cacheReadTokens": 7912786,
-      "outputTokens": 34648,
+      "cacheWrite1hTokens": 137809,
+      "cacheReadTokens": 8288676,
+      "outputTokens": 35321,
       "thinkingTokens": 9038,
-      "responses": 54,
-      "costUsd": 2.3978447
+      "responses": 56,
+      "costUsd": 2.4903006999999997
     },
     "claude-opus-5-5/standard": {
       "inputTokens": 138,
@@ -109,14 +109,14 @@
     }
   },
   "warnings": [
-    "prices.json priced the 118 responses the events also priced at $6.4474, against the events' $5.7484: a rate in the table is likely out of date"
+    "prices.json priced the 120 responses the events also priced at $6.5399, against the events' $5.8033: a rate in the table is likely out of date"
   ],
   "compactions": [],
   "telemetry": {
-    "events": 125,
-    "matched": 118,
-    "matchedTableUsd": 6.447449599999998,
-    "matchedEventUsd": 5.748445499999998,
+    "events": 127,
+    "matched": 120,
+    "matchedTableUsd": 6.539905599999998,
+    "matchedEventUsd": 5.803312499999998,
     "unseen": {
       "prompt_suggestion": {
         "inputTokens": 3036,
