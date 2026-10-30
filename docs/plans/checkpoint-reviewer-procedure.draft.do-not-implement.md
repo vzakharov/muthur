@@ -111,8 +111,14 @@ Proceed per `.claude/skills/polish/passes.md`
 
 plus, when `/polish` was given an argument, one further line
 `Argument: <the argument, verbatim>`. `passes.md` finds the plan under
-`docs/plans/` itself. The model is always Opus, so a polish run costs the same
-whichever model drives the session. This is the accepted cost: on a Sonnet or
+`docs/plans/` itself. The skill says the model is always Opus, so a polish run
+costs the same whichever model drives the session; nothing enforces it.
+
+**`passes.md` opens by ruling out the launcher's words.** If the prompt that
+started the run looks like a request to polish, the reviewer follows this file
+and the `Argument:` line, if any, and nothing else the launching agent wrote —
+not what to check, skip or conclude. A launcher that writes a long brief anyway
+changes nothing the reviewer does. This is the accepted cost: on a Sonnet or
 Haiku session the two older passes now bill at Opus rates too, and every
 session, Opus included, pays for the review pass.
 
@@ -129,31 +135,11 @@ polish today**; its publish step gains one when the session is below Opus (the
 only cutoff the first draft covered that polish does not). `/dry` has nothing to
 find on a plan, `/tend-prose` reads its prose, and the review pass is the point.
 
-### 3. The hook refuses a bad launch — `.claude/hooks/checkpoint-review.py`
+### 3. The closing gate reads the verdict from git — `.claude/hooks/checkpoint-review.py`
 
-A `PreToolUse` registration on `Agent`, alongside the `Bash` one. It recognises
-a polish launch by its own content: a prompt whose first line is the launch
-line. Merely containing the path is not enough, since a delegated `/go` subtask
-that edits `passes.md` — this plan's own § 1 — names it too. It acts only while
-the serving model is weaker (the existing `weaker`), and then:
-
-- a prompt that is not exactly the launch line, optionally followed by the one
-  `Argument:` line, is **denied**, the reason giving the exact call;
-- a recognised launch whose `model` is not `opus` is **rewritten** to `opus`
-  through the hook's `updatedInput` output, so there is no deny round trip.
-
-Because the launch is recognised by its first line, an operator's own Opus
-`Agent` call, and any brief that only mentions `passes.md`, is never touched.
-**Unverified, so the first step of `/go` is a spike in `tmp/`:** that a
-`PreToolUse` hook on `Agent` may return `updatedInput` here. Fallback: deny with
-the exact call. The same spike checks whether a `SubagentStart` hook can inject
-context; the plan does not rely on it, since pre-injecting the log would defeat
-"may read".
-
-A `SendMessage` follow-up bypasses the hook (no hook gates it). The re-look
-protocol therefore does not use one: `revise` is answered by the session making
-the changes and running `/polish` again, which a new subagent starts from the
-new floor.
+`revise` is answered by the session making the changes and running `/polish`
+again, which a new subagent starts from the new floor; no follow-up message to
+the reviewer is needed.
 
 **The closing-command gate reads the verdict from git.** The weaker session runs
 no recording command, so the `verdict` command goes. What stays per session is
@@ -184,11 +170,11 @@ The `Bash` gate matches the command itself, never the body of a commit message
 or a heredoc: a `git commit -m` that quotes `gh pr ready` is not that command.
 The pattern is anchored to command position, with a test for it.
 
-What the hook still misses, stated so nobody counts on more: a review launched
-with a prompt that does not open with the launch line (`polish/SKILL.md` gives
-that line verbatim, so only a session that ignores the skill writes one); and a
-`Review:` line a session types into a commit message by hand, which the gate
-cannot tell from the subagent's.
+What the gate cannot see, stated so nobody counts on more: whether the reviewer
+that wrote a `Review:` line was Opus, or was launched from the line alone; and a
+`Review:` line a session types into a commit message by hand. It guards the
+common failure, a review skipped or outdated by later edits, not a session set
+on getting past it.
 
 ### 4. `scripts/session-qa.py` — the parent's questions and answers (new)
 
@@ -242,15 +228,11 @@ failure.
   skill body, a keepalive wake, a thinking block, a command-envelope prompt —
   plus `--tools`, a half-written last line, an unknown transcript failing
   loudly.
-- `scripts/test_checkpoint_review.py`: the `Agent` gate — the exact launch line
-  on a weaker session with a non-opus model is rewritten (or denied, per the
-  spike), a launch line with extra text is denied, an `Agent` call that does not
-  open with the launch line is untouched even when it names `passes.md`, nothing
-  applies on an Opus session or with the switch off. The `Bash` gate on a
-  throwaway repo: open after a `Review: pass` polish commit followed only by a
-  PR-export commit, a base merge, or the `docs/plans/` sweep; shut with no
-  review, a `Review: revise`, a code commit or a plan-text edit after it, or a
-  conflict resolution; untouched for a cutoff the session never entered.
+- `scripts/test_checkpoint_review.py`: the `Bash` gate on a throwaway repo: open
+  after a `Review: pass` polish commit followed only by a PR-export commit, a
+  base merge, or the `docs/plans/` sweep; shut with no review, a
+  `Review: revise`, a code commit or a plan-text edit after it, or a conflict
+  resolution; untouched for a cutoff the session never entered.
 - `scripts/test_relay_last_reply.py`, `scripts/test_extract_session_images.py`:
   loaders gain `scripts/` on `sys.path` for the `lib` import; their cases stay.
 
@@ -262,10 +244,10 @@ failure.
    — the plan standing in for `passes.md`, which does not exist yet. Its verdict
    and anything the stand-in prompt lacked go in the PR.
 2. **The implementation** is reviewed by the real `/polish` at the end of `/go`:
-   the session launches it with the one-line prompt, the hook enforces it, and
-   the review pass checks the new pass, the hook change, the script, the rename
-   and the pointers against the request above. If Opus cannot do the job from
-   that line alone, the procedure file is what gets fixed.
+   the session launches it with the one-line prompt, and the review pass checks
+   the new pass, the gate change, the script, the rename and the pointers
+   against the request above. If Opus cannot do the job from that line alone,
+   the procedure file is what gets fixed.
 
 ## Decisions with a recommendation in force
 
@@ -275,12 +257,14 @@ failure.
   replaces the reviewer file, `--cutoffs`, route markers and the `skill_entry`
   import the first draft needed. The cost is Opus rates for the older passes on
   weaker sessions.
-- **The hook rewrites the model, and refuses extra prompt text, only for a
-  launch recognised by its first line.** Alternatives: the procedure trusts the
-  session, which is the shape that failed; a gate on any prompt naming
-  `passes.md`, which would also stop a delegated subtask that edits it; or a
-  gate on every Opus `Agent` call, which would also stop an operator's own
-  request.
+- **The reviewer is told to ignore the launcher; no hook inspects the launch.**
+  Recognising a polish launch from its prompt is a heuristic, and a launcher
+  that writes a long brief simply avoids it, so a hook would give an assurance
+  it does not hold. The reviewer's own rule holds for any prompt, and the
+  closing gate (git) is the one hard check. Alternatives: an `Agent` hook that
+  rewrites the model and denies extra text; a subagent definition under
+  `.claude/agents/` pinning Opus — both guard against a session set on getting
+  past the review, which is not the failure being fixed.
 - **The verdict lives in the polish commit, not in session state.** One commit
   closes the run, so there is no window between the passes and the review.
   Alternatives: a separate review commit or cutoff marker, which a run can stop
