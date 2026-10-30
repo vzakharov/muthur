@@ -4,7 +4,7 @@
 > and delete this banner (quoting the go-ahead in the commit) _before_ touching
 > code.
 
-# The Opus checkpoint reviewer reads its own procedure
+# The Opus reviewer reads its procedure from `/polish`
 
 ## Request (verbatim, Russian)
 
@@ -27,202 +27,228 @@
 > ним изменений (или, в случае если Соннет решит идти через план, ревью самого
 > плана).
 
+## The operator's review of the first draft
+
+The first draft built a standalone reviewer file, a cutoff-by-transcript scheme
+and a hook with a narrowed gate. The review (PR threads) turned it into this:
+
+> «а что если нам просто завернуть всё это в polish? т.е. а) polish всегда
+> делает опус, б) последним шагом он проверяет не конкретные вещи (как в
+> dry/tend-prose), а всё вместе (но желательно не читая весь дифф ещё раз,
+> конечно). тогда много из механики схлопывается, остаётся лишь точно так же
+> поправить скилл polish -- чтобы агенты вызывали их с минимум текста (типа
+> просто `/polish <some token arg>`, а всё остальное подагент уже смотрел в
+> соответствующем ранбуке»
+
+Also from the review: the harness can refuse a bad launch programmatically (hook
+on the skill/`Agent` launch), reading the parent's transcript is a _may_ rather
+than a _must_, the reviewer fixes what it cannot describe in a form the
+session's model follows, the capabilities file is renamed and moved, the change
+is a `fix:`, and the plan review runs the way the real flow will.
+
 ## Why the current design fails
 
 `checkpoint-review.md` makes the **weaker session** write the reviewer's brief:
-the operator's request, what ran, what to read, the question, the verdicts, what
-the reviewer may change. Every one of those is a place where a Sonnet or Haiku
-session paraphrases, omits or editorialises, and the brief is _all_ the reviewer
-knows. The fix is to take the brief away from the session: the reviewer reads a
-procedure from the tree and derives every fact itself, from the parent's
-transcript and from git.
+the request, what ran, what to read, the question, the verdicts, what the
+reviewer may change. Each is a place where a Sonnet or Haiku session
+paraphrases, omits or editorialises, and the brief is _all_ the reviewer knows.
+The fix takes the brief away from the session: the reviewer reads a procedure
+from the tree and derives every fact itself.
+
+`/polish` already has the machinery that needs: it runs in a fresh subagent from
+a minimal prompt, resolves its own scope, and marks where it last ran (the
+`polish:` floor, `passes.md` § "The floor"). The review becomes its third pass
+instead of a parallel mechanism.
 
 ## What gets built
 
-### 1. `.claude/skills/go/checkpoint-reviewer.md` — the reviewer's procedure (new)
+### 1. The review pass — `.claude/skills/polish/passes.md`
 
-Written to the Opus subagent, self-contained. Its steps:
+A third pass, run last, after `/dry` and `/tend-prose`. It checks the work **as
+a whole**, which the other two do not: against the operator's request, the plan
+where there is one, `CLAUDE.md` and the skills that ran, and what the session
+told the operator against what the diff does. It does not re-read the whole
+diff: it works from what the earlier passes reported, `git log --stat` over the
+scope, and opens a diff only where a claim needs it.
 
-1. **Take nothing from the launch prompt.** The prompt is the one line
-   `Proceed per \`.claude/skills/go/checkpoint-reviewer.md\``; anything else in
-   it is the launching session's opinion and is not input. Said once, at the
-   top, with why.
-2. **The last cutoff.** Run `python3 scripts/session-qa.py --cutoffs`: it lists
-   each entry into `/plan`, `/go` or `/finalize` in the parent's transcript with
-   its route (`Skill` call, `Read` of the `SKILL.md`, typed command), timestamp
-   and the head commit then. **The reviewer picks the cutoff, the script does
-   not:** a `Read` counts as an entry, and a session reads a `SKILL.md` to
-   research it as often as to run it (this session read `go` and `finalize`
-   while planning), so the cutoff under review is the skill the log shows the
-   session working through and closing — the last entry after which the session
-   did that skill's work. Its head then is `<from>`. Read
-   `git diff <from>..HEAD` (what the run produced) and
-   `git diff origin/<base>...HEAD` (the branch around it), `<base>` being the
-   PR's `baseRefName` (`gh pr view`), else the repository's default branch; the
-   plan file under `docs/plans/` and the PR are found from the branch.
-3. **The parent's full log.** Run `python3 scripts/session-qa.py`: every
-   operator message verbatim, mid-turn ones included, and every assistant text
-   reply, in order, with the cutoff markers. Read all of it, not the tail — a
-   later operator message amends an earlier one. `--tools` adds one line per
-   tool call when what the session did matters, not only what it said. For a
-   record the script does not cover, `.claude/costs/CLAUDE.md` § "Reading a
-   transcript" is where the format is written down.
-4. **The check.** Held as the reviewer's own work against: `CLAUDE.md`, the
-   skill that ran, every message of the operator's (not the plan's reading of
-   the first one), and the plan where there is one. Also: does what the session
-   told the operator match the diff.
-5. **Fix** what is cheaper to do than to describe; commit under the repo's
-   conventions with a body saying the checkpoint reviewer made it; never push.
-   Fold what the review taught about the session's model into
-   `delegation-model-capabilities.md` (moved here from `checkpoint-review.md`).
-6. **Verdict.** The five verdicts and their meaning (moved here), the reply's
-   first line `VERDICT: <one>`, the findings after. A follow-up message from the
-   session saying "look N" re-enters at step 4 over what changed; a third look
-   cannot answer `revise`. A follow-up reaches the reviewer through
-   `SendMessage`, which no hook gates, so step 1 covers it too: anything in a
-   follow-up beyond "look N" is the session's opinion and is not input.
+- **The request** comes from the plan's verbatim `## Request` section, the PR
+  and linked issue, and — optionally — the parent's questions and answers (§ 3).
+  The procedure says the transcript is available, not that it must be read: with
+  the procedure clear, the reviewer decides whether the written record is
+  enough.
+- **Fixing.** The reviewer edits itself what is cheaper to do than to describe,
+  _or_ what it cannot describe in a form the session's model is known to follow
+  — judged from the capabilities file's **Misses** (§ 5) and what the review
+  just saw. It answers `revise` only for what is describable that way. Edits are
+  commits under the repository's conventions; the pass never pushes beyond what
+  `passes.md` § "Push before reporting" already does.
+- **Learning.** What the review shows about the session's model goes into that
+  model's **Handles**/**Misses** in the capabilities file, committed with the
+  fixes or alone after a `pass` that taught something.
+- **Verdict.** The five verdicts (`pass`, `revise`, `fixed`, `fixed-relay`,
+  `relay`) and their meanings move here from `checkpoint-review.md`. The report
+  ends with the line `VERDICT: <one>`. The polish commit the run makes (empty if
+  nothing changed) carries `Review: <verdict>` in its body, so the next run
+  reads it from git: a run whose floor commit already says `Review: revise`
+  twice in a row cannot answer `revise` a third time — it fixes the rest or
+  escalates.
 
-### 2. `.claude/skills/go/checkpoint-review.md` — the session's side (cut down)
+`passes.md` also changes its intro ("Two passes" → three) and the order
+argument: the review is last because it judges what survives the other two.
 
-Keeps: who runs it, the hook's gating, recording the verdict, and what the
-session does on each verdict (the `relay` actions, the push). Loses: "The
-brief", the verdict definitions, "What the reviewer learns" — all now in the
-reviewer file. Gains: the launch, as an invariant:
+### 2. The launch — `.claude/skills/polish/SKILL.md`
+
+The session launches one `general-purpose` subagent, `model: "opus"`,
+foreground, and its prompt is the launch line and nothing else:
 
 ```
-Agent: model "opus", no isolation, run_in_background false,
-prompt exactly: Proceed per `.claude/skills/go/checkpoint-reviewer.md`
+Proceed per `.claude/skills/polish/passes.md`
 ```
 
-The session adds nothing to that prompt — no request, no summary, no opinion.
+plus, when `/polish` was given an argument, one further line
+`Argument: <the argument, verbatim>`. The plan is no longer pasted in:
+`passes.md` says to find it under `docs/plans/`. The model is always Opus, so a
+polish run costs the same whichever model drives the session. This is the
+accepted cost: on a Sonnet or Haiku session the two older passes now bill at
+Opus rates too.
 
-### 3. `scripts/session-qa.py` — questions and answers out of the transcript (new)
+`checkpoint-review.md` shrinks to the session's side: when the cutoff runs
+`/polish` (below), how the hook gates it, recording the verdict, and what the
+session does on each. Its brief and verdict sections move to `passes.md`.
 
-Stdlib, Python 3.9+, prints plain text to stdout:
+Where polish runs: `/go` Step 3 and `/finalize` already do. **`/plan` has no
+polish today**; its publish step gains one when the session is below Opus (the
+only cutoff the first draft covered that polish does not). `/dry` has nothing to
+find on a plan, `/tend-prose` reads its prose, and the review pass is the point.
 
-- an operator message as `## Q <timestamp>` and its text verbatim; an assistant
-  `text` block as `## A <timestamp>` and its text verbatim; thinking, tool
-  results, hook attachments, skill bodies, keepalive wakes and subagent
-  hand-backs are left out. **An operator message has two record shapes:** a
-  prompt that starts a turn is a `user` record, one sent mid-turn is a
-  `queued_command` attachment, and both carry `origin.kind == "human"` — a
-  subagent hand-back is the same attachment with `origin.kind == "peer"`, which
-  is how the two are told apart. A typed slash command arrives wrapped in a
-  `<command-name>` envelope and is unwrapped to `/<name> <args>` before it is
-  shown or tested for an entry. (Subagent records live in their own files under
-  `<session>/subagents/`, so the main transcript holds none.)
-- a cutoff marker line wherever the parent entered `plan`, `go` or `finalize`,
-  with its route and the head commit at that time
-  (`git rev-list -1 --first-parent --before=<timestamp> HEAD` — first-parent, so
-  a base commit merged in later is not taken for the branch's head; if git fails
-  the marker says so rather than omitting it).
-- `--cutoffs` prints only those markers.
-- `--tools` adds one line per tool call (name and the call's main argument).
-- `--transcript PATH`; the default is `$CLAUDE_CODE_SESSION_ID`'s transcript
-  under `~/.claude/projects/` — the id a subagent inherits from its parent
-  (checked: a Haiku subagent here sees the parent's id).
+### 3. The hook refuses a bad launch — `.claude/hooks/checkpoint-review.py`
 
-"Entering a skill" reuses `.claude/hooks/skill_entry.py`'s `entered_skill`, by
-turning each transcript record into the hook payload it corresponds to (`Skill`
-and `Read` tool calls into `PostToolUse` payloads, an unwrapped typed command
-into `UserPromptSubmit`), so the script and the hook agree on what an entry is.
-They share its flaw too — a research `Read` is an entry — which is why the
-reviewer, not the script, picks the cutoff. The import needs a `sys.path` insert
-of `.claude/hooks` in `session-qa.py`, which `scripts/lib` otherwise avoids; the
-alternative seam, moving `skill_entry.py` under `scripts/`, would make the hooks
-do the insert instead, and costs more places.
+A `PreToolUse` registration on `Agent`, alongside the `Bash` one. It recognises
+a polish launch by its own content: a prompt that contains
+`.claude/skills/polish/passes.md`. It acts only while the serving model is
+weaker (the existing `weaker`), and then:
 
-### 4. `scripts/lib/transcript.py` — what the transcript scripts share (new)
+- a prompt that is not exactly the launch line, optionally followed by the one
+  `Argument:` line, is **denied**, the reason giving the exact call;
+- a recognised launch whose `model` is not `opus` is **rewritten** to `opus`
+  through the hook's `updatedInput` output, so there is no deny round trip.
+
+Because the launch is recognised by the path it carries, an operator's own Opus
+`Agent` call is never touched. **Unverified, so the first step of `/go` is a
+spike in `tmp/`:** that a `PreToolUse` hook on `Agent` may return `updatedInput`
+here. Fallback: deny with the exact call. The same spike checks whether a
+`SubagentStart` hook can inject context; the plan does not rely on it, since
+pre-injecting the log would defeat "may read".
+
+A `SendMessage` follow-up bypasses the hook (no hook gates it). The re-look
+protocol therefore does not use one: `revise` is answered by the session making
+the changes and running `/polish` again, which a new subagent starts from the
+new floor.
+
+What the hook still misses, stated so nobody counts on more: a review launched
+with a different prompt that names neither path (the procedure file is what a
+session reaches, so only a session that ignores the skill misses it); a session
+that skips polish and records no verdict, which is the closing-command gate's
+job and stays as it is (`git mv`, `gh pr ready`).
+
+### 4. `scripts/session-qa.py` — the parent's questions and answers (new)
+
+Stdlib, Python 3.9+, plain text to stdout: an operator message as
+`## Q <timestamp>` with its text verbatim, an assistant `text` block as
+`## A <timestamp>`; thinking, tool results, hook attachments, skill bodies,
+keepalive wakes and subagent hand-backs are left out. An operator message has
+two record shapes: a prompt that starts a turn is a `user` record, one sent
+mid-turn is a `queued_command` attachment, both with `origin.kind == "human"` (a
+subagent hand-back is the same attachment with `origin.kind == "peer"`). A typed
+slash command arrives in a `<command-name>` envelope and is unwrapped to
+`/<name> <args>`. `--tools` adds one line per tool call. `--transcript PATH`;
+the default is `$CLAUDE_CODE_SESSION_ID`'s transcript under
+`~/.claude/projects/` (a Haiku subagent here sees the parent's id).
+
+The scope is the polish floor.
+
+### 5. Rename and move the capabilities file
+
+`.claude/skills/go/delegation-model-capabilities.md` →
+`.claude/model-capabilities.md`. The file now serves the polish review as well
+as delegation, so it sits at the `.claude/` root.
+`grep -rn delegation-model-capabilities` finds every reference — docs,
+`go/delegation.md`, `.claude/hooks/go-delegation.py`, the catalog under
+`.claude/skills/update-muthur/catalog/`, the 100-line cap in `scripts/vet.sh`,
+`scripts/test_go_delegation.py` — and one commit updates them all, `git mv`
+keeping the history. The file's keeping rules, now in `go/delegation.md`, gain
+the reviewer as a second writer.
+
+### 6. Shared transcript helpers — `scripts/lib/transcript.py` (new)
 
 `find_transcript`, `prompt_text`, `operator_message` and a record iterator that
 tolerates a half-written last line. `find_transcript` and `prompt_text` move out
-of `relay-last-reply.py`; `operator_message` (with the `origin` check) moves out
-of `extract-session-images.py`, which already reads both record shapes.
+of `relay-last-reply.py`; `operator_message` (with the `origin` check) out of
+`extract-session-images.py`, which already reads both record shapes.
 `relay-last-reply.py`, `extract-session-images.py` and `session-qa.py` import
-them. Errors become a raised `TranscriptError` that each script turns into its
-own failure.
+them. Errors become a raised `TranscriptError` each script turns into its own
+failure.
 
-### 5. The hook enforces the one-line launch
+### 7. Pointers and tests
 
-`checkpoint-review.py` gains a `PreToolUse` registration on `Agent` in
-`.claude/settings.json`. While a review is pending and the serving model is
-weaker, an `Agent` call is denied when it is a review launch gone wrong: its
-`model` names opus and its `prompt` names the checkpoint review
-(`checkpoint[- ]review`, case-insensitive) but, stripped, is not exactly the
-launch line; or its `prompt` is the launch line and its `model` is not opus
-(which would inherit the session's own). The reason gives the exact call. Every
-other `Agent` call passes — a delegation to a weaker model, a read-only
-`Explore`, an Opus call the operator asked for — and the hook fails open like
-the rest of it.
-
-Keying the first case on the prompt naming the review, not on any Opus call,
-matters because pending runs from entering the skill to its verdict, and a
-research `Read` of another skill's `SKILL.md` marks that skill pending for the
-rest of the session (this session marked `go` and `finalize` while planning). A
-gate on every Opus call would deny an operator's Opus request for that whole
-window, with no recourse a running session can reach.
-
-What it still misses, stated so nobody counts on more: an Opus review brief that
-never names the checkpoint review; a review launched on a non-opus model with
-another prompt; a `SendMessage` follow-up, covered by the procedure's step 1
-instead; a session that skips the review and records no verdict, which is the
-closing-command gate's job. What it wrongly denies: an Opus call made while a
-review is pending whose prompt mentions the checkpoint review for another
-reason.
-
-### 6. Pointers and tests
-
-- `/plan`, `/go` and `/finalize` `SKILL.md` pointers and the catalog entries
-  (`g2-pr-loop.md`, `g4-remote-plumbing.md`) name the new files.
+- `/plan`, `/go` and `/finalize` `SKILL.md` pointers, `polish/SKILL.md`, and the
+  catalog entries (`g2-pr-loop.md`, `g4-remote-plumbing.md`) name the changed
+  files.
 - `scripts/test_session_qa.py` (new): Q/A extraction against a transcript built
-  from real record shapes — this session's own, trimmed (a human `user` record,
-  a `queued_command` human attachment, a `queued_command` peer hand-back, a
-  tool-result `user` record, a skill body, a keepalive wake, a thinking block, a
-  command-envelope prompt) — cutoff markers for each entry route and a
-  first-parent head after a merge, `--cutoffs`, `--tools`, a half-written last
-  line, an unknown transcript failing loudly.
-- `scripts/test_checkpoint_review.py`: the `Agent` gate — denied with an opus
-  call whose prompt names the checkpoint review but is not the line, denied with
-  the exact line on a non-opus model, allowed with the exact line on opus,
-  allowed for an opus call whose prompt does not name the review, not applied on
-  an Opus session or with the switch off or with no review pending, other
-  `Agent` calls untouched.
-- `scripts/test_relay_last_reply.py` and
-  `scripts/test_extract_session_images.py`: loaders gain `scripts/` on
-  `sys.path` for the `lib` import; their cases stay as they are.
+  from real record shapes — a human `user` record, a `queued_command` human
+  attachment, a `queued_command` peer hand-back, a tool-result `user` record, a
+  skill body, a keepalive wake, a thinking block, a command-envelope prompt —
+  plus `--tools`, a half-written last line, an unknown transcript failing
+  loudly.
+- `scripts/test_checkpoint_review.py`: the `Agent` gate — the exact launch line
+  on a weaker session with a non-opus model is rewritten (or denied, per the
+  spike), a launch line with extra text is denied, an `Agent` call that does not
+  carry the path is untouched, nothing applies on an Opus session or with the
+  switch off.
+- `scripts/test_relay_last_reply.py`, `scripts/test_extract_session_images.py`:
+  loaders gain `scripts/` on `sys.path` for the `lib` import; their cases stay.
 
 ## Dogfood
 
-1. **This plan** goes through the checkpoint review as the _old_ procedure
-   requires, since the new one does not exist yet; the reviewer's verdict and
-   what its brief lacked go in the PR.
-2. **The implementation** goes through the checkpoint review at the end of `/go`
-   — the first review run by the new procedure: the session launches the
-   reviewer with the one-line prompt and nothing else, and the reviewer checks
-   the new file, the script, the hook change and the pointers against the
-   request above. If Opus cannot do the job from that line alone, the procedure
-   file is what gets fixed.
+1. **This plan** goes through the review the way the real flow will: an Opus
+   subagent whose prompt is
+   `Proceed with the reviewer role per docs/plans/checkpoint-reviewer-procedure.<state>.md, as if it was already implemented`
+   — the plan standing in for `passes.md`, which does not exist yet. Its verdict
+   and anything the stand-in prompt lacked go in the PR.
+2. **The implementation** is reviewed by the real `/polish` at the end of `/go`:
+   the session launches it with the one-line prompt, the hook enforces it, and
+   the review pass checks the new pass, the hook change, the script, the rename
+   and the pointers against the request above. If Opus cannot do the job from
+   that line alone, the procedure file is what gets fixed.
 
-## Decision with a recommendation in force
+## Decisions with a recommendation in force
 
-- **Hook enforcement of the launch line (§5): yes, narrowed to review launches
-  gone wrong.** Alternatives: the procedure states it and trusts the session,
-  which is the shape that failed; or the gate denies every Opus `Agent` call
-  while a review is pending, which also stops an operator's own request for as
-  long as a mark stays pending — to the session's end, for a mark a research
-  `Read` set. The narrowed gate trades the misses §5 lists for blocking nothing
-  but a review launch.
+- **Fold the review into `/polish`** rather than building a separate reviewer
+  file and a transcript-cutoff mechanism. The floor already answers "since
+  when", the subagent launch already exists, and one pass added to `passes.md`
+  replaces the reviewer file, `--cutoffs`, route markers and the `skill_entry`
+  import the first draft needed. The cost is Opus rates for the older passes on
+  weaker sessions.
+- **The hook rewrites the model, and refuses extra prompt text, only for a
+  launch recognised by its path.** Alternatives: the procedure trusts the
+  session, which is the shape that failed; or a gate on every Opus `Agent` call,
+  which would also stop an operator's own request.
+- **`/plan` gains a polish step for sessions below Opus** so that plan reviews
+  run the same procedure as code reviews.
 
 ## DRY notes
 
 - **Shared, extracted:** transcript location, prompt text, the operator-message
   shapes and record iteration (`scripts/lib/transcript.py`), from
   `relay-last-reply.py` and `extract-session-images.py` — the record shape
-  "belongs to the client and is not documented", so a change to it should be
-  fixed in one place, not three. Shared, reused as it stands:
-  `skill_entry.entered_skill` for what counts as entering a skill; the verdict
-  list stays defined in `checkpoint-review.py` (`VERDICTS`) and the reviewer
-  file names the same five.
+  "belongs to the client and is not documented", so a change to it is fixed in
+  one place, not three.
+- **Reused as it stands:** the polish floor, the scope resolution and the empty
+  marker commit for _since when_ and _what_; `checkpoint-review.py`'s `weaker`,
+  `emit`, `state_file` and `VERDICTS`.
+- **Moved, not copied:** the verdict definitions and "what the reviewer learns"
+  leave `checkpoint-review.md` for `passes.md`; the capabilities file moves from
+  `go/` to `.claude/`.
 - **Other transcript readers, not reused:** `.claude/costs/lib/transcript.py`
   reads responses and usage for billing, a different job from reading prompts
   and text. `.claude/costs/lib/identity.py` holds `COMMAND_ENVELOPE`; the costs
@@ -230,9 +256,6 @@ reason.
   `lib/transcript.py` carries its own copy of that one-line pattern and
   `test_session_qa.py` holds the two equal, as `test_relay_last_reply.py` does
   for the keepalive mark.
-- **Moved, not copied:** the verdict definitions and "what the reviewer learns"
-  leave `checkpoint-review.md` for `checkpoint-reviewer.md`, so each stands in
-  one home; the session file keeps only what the _session_ does on each.
 - **Not extracted:** `relay-last-reply.py`'s turn grouping (`turn_texts`) is
   about turns; `session-qa.py` walks records in order. A shared abstraction over
   both would be a generator with two modes and one caller each — net-negative.
@@ -241,6 +264,5 @@ reason.
 
 ## Out of scope
 
-Programmatic extraction of anything beyond Q&A and cutoffs (the request says
-"для начала"): tool results, diffs, thinking. `--tools` is the only step toward
-it.
+Programmatic extraction of anything beyond Q&A (the request says "для начала"):
+tool results, diffs, thinking. `--tools` is the only step toward it.
