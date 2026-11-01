@@ -76,7 +76,11 @@ CUTOFFS = {"plan": "plan", "go": "go", "implement": "go", "finalize": "finalize"
 REVIEWED = ("review(pass):", "review(fixed):", "review(fixed-relay):")
 WEAKER = ("sonnet", "haiku")
 CHUNK = 1 << 16
-WORKING_ARTIFACTS = ("docs/issue/", "docs/pr/", "docs/remove-before-merging/")
+# `.claude/costs/sessions/` holds the cost ledger's display copies, which
+# `.claude/costs/hooks/stage-cost-row.sh` stages into every later commit — the
+# `/finalize` sweep's included — so counting them would shut the gate on any
+# commit made after the review.
+WORKING_ARTIFACTS = ("docs/issue/", "docs/pr/", "docs/remove-before-merging/", ".claude/costs/sessions/")
 PLANS = "docs/plans/"
 
 # A closing command sits at command position: the start, or after `;`, `&&`,

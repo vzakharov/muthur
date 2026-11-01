@@ -254,6 +254,7 @@ class Gate(CheckpointTestCase):
         self.review("pass")
         self.commit({"docs/pr/251/pr.md": "export"}, "chore: export")
         self.commit({"docs/remove-before-merging/relay-1.md": "r", "docs/issue/9/issue.md": "i"}, "docs: relay")
+        self.commit({".claude/costs/sessions/2026-10/b/1/s.json": "{}"}, "chore: cost row")
         self.assert_allowed(CLOSING["finalize"])
 
     def test_the_plan_sweep_and_lifecycle_flips_leave_it_open(self) -> None:
