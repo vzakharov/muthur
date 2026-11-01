@@ -62,10 +62,10 @@
   read off its transcript, is Sonnet or Haiku to `checkpoint-review.md`: deliver
   it on entering `/plan`, `/go` or `/finalize`, and deny the command closing
   that cutoff — the draft flip, the `*.completed.md` flip, `gh pr ready` — until
-  its `verdict` subcommand records the review; silent under
-  `MUTHUR_CHECKPOINT_REVIEW=off`. Stdlib-only, tested by
-  `scripts/test_checkpoint_review.py`.
-  - **Requires:** `python3` ≥3.9, `.claude/settings.json` wiring (G4)
+  the branch's newest `polish:` commit carries a passing `Review:` line with
+  only working artifacts after it; silent under `MUTHUR_CHECKPOINT_REVIEW=off`.
+  Stdlib-only, tested by `scripts/test_checkpoint_review.py`.
+  - **Requires:** `python3` ≥3.9, `git`, `.claude/settings.json` wiring (G4)
   - **Pulls in:** `/go`, `.claude/hooks/session_state.py`,
     `.claude/hooks/skill_entry.py` (G4)
   - **Disposition:** adopt — **with `checkpoint-review.md`**
@@ -110,7 +110,7 @@
   - **Requires:** `python3`; `create_session` for the spawn on the web; a typed
     line locally
   - **Pulls in:** `/from-branch`, `/go`, `/finalize`,
-    `scripts/relay-last-reply.py`
+    `scripts/relay-last-reply.py`, `scripts/lib/session_transcript.py` (G4)
   - **Disposition:** adopt
 - `/handle` — Pick up a branch and do what it needs: attach, read off whether it
   carries an approved plan, a plan still under review, or feedback on shipped
