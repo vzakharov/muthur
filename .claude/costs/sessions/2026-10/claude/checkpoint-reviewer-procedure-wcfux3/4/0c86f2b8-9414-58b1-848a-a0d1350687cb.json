@@ -1,0 +1,112 @@
+{
+  "total": {
+    "inputTokens": 99,
+    "cacheWrite5mTokens": 136791,
+    "cacheWrite1hTokens": 137833,
+    "cacheReadTokens": 6538015,
+    "outputTokens": 43759,
+    "thinkingTokens": 11576,
+    "responses": 52,
+    "costUsd": 3.0671760000000003
+  },
+  "estimate": {
+    "at": "2026-11-01T09:22:05.692Z",
+    "parts": [
+      {
+        "hours": 3.0,
+        "grade": "senior",
+        "role": "prompter",
+        "comment": "the review pass, launch line and checkpoint file are prose a weaker model must follow without drift"
+      },
+      {
+        "hours": 3.0,
+        "grade": "middle",
+        "role": "developer",
+        "comment": "the gate rewrite reading the verdict from git, with its throwaway-repo tests"
+      }
+    ],
+    "comment": null
+  },
+  "orientation": {
+    "endedBy": "oriented",
+    "endedOn": null,
+    "endedAt": "2026-11-01T09:22:04.326Z",
+    "contextTokens": 106690,
+    "spend": {
+      "inputTokens": 8,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 47235,
+      "cacheReadTokens": 229907,
+      "outputTokens": 700,
+      "thinkingTokens": 76,
+      "responses": 3,
+      "costUsd": 0.2419374
+    }
+  },
+  "sessionId": "0c86f2b8-9414-58b1-848a-a0d1350687cb",
+  "branch": "claude/checkpoint-reviewer-procedure-wcfux3",
+  "cwd": "/home/user/muthur",
+  "openingPrompt": "/relay take claude/checkpoint-reviewer-procedure-wcfux3 — код-часть плана готова (перенос файла, session-qa.py, общие хелперы), дальше go: процедура ревью в pol…",
+  "prs": [
+    257
+  ],
+  "url": "https://claude.ai/code/session_01RAikuwJqYVnBNGAkZFF1BU",
+  "operator": "vzakharov",
+  "firstResponseAt": "2026-11-01T09:21:51.270Z",
+  "lastResponseAt": "2026-11-01T09:29:22.597Z",
+  "pricesAsOf": "2026-10-06",
+  "claudeCodeTotalUsd": null,
+  "ownTurns": {
+    "inputTokens": 60,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 137833,
+    "cacheReadTokens": 4338162,
+    "outputTokens": 35117,
+    "thinkingTokens": 7645,
+    "responses": 31,
+    "costUsd": 1.7702544
+  },
+  "subagents": {
+    "inputTokens": 39,
+    "cacheWrite5mTokens": 136791,
+    "cacheWrite1hTokens": 0,
+    "cacheReadTokens": 2199853,
+    "outputTokens": 8642,
+    "thinkingTokens": 3931,
+    "responses": 21,
+    "costUsd": 1.2969216
+  },
+  "byRate": {
+    "claude-sonnet-5-5/standard": {
+      "inputTokens": 60,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 137833,
+      "cacheReadTokens": 4338162,
+      "outputTokens": 35117,
+      "thinkingTokens": 7645,
+      "responses": 31,
+      "costUsd": 1.7702544
+    },
+    "claude-opus-5-5/standard": {
+      "inputTokens": 39,
+      "cacheWrite5mTokens": 136791,
+      "cacheWrite1hTokens": 0,
+      "cacheReadTokens": 2199853,
+      "outputTokens": 8642,
+      "thinkingTokens": 3931,
+      "responses": 21,
+      "costUsd": 1.2969216
+    }
+  },
+  "warnings": [
+    "prices.json priced the 52 responses the events also priced at $3.0672, against the events' $2.6334: a rate in the table is likely out of date"
+  ],
+  "compactions": [],
+  "telemetry": {
+    "events": 52,
+    "matched": 52,
+    "matchedTableUsd": 3.0671760000000003,
+    "matchedEventUsd": 2.6333598000000005,
+    "unseen": {}
+  }
+}
