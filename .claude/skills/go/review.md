@@ -19,9 +19,9 @@ python3 scripts/floor.py 'review(pass):' 'review(fixed):' 'review(fixed-relay):'
 It finds the newest commit a review left (§ "The commit") and prints the ref the
 scope starts from: `git diff <that ref>` is the work since the last review,
 `/polish`'s commits included, and the whole branch where none has run. Read it
-as `@.claude/skills/polish/passes.md` § "Scope" reads its own, a staged copy by
-its diff against the real file. The commits below the floor and the rest of the
-tree stay readable as context.
+as `@.claude/skills/polish/passes.md` § "Scope: the branch, not the session"
+reads its own, a staged copy by its diff against the real file. The commits
+below the floor and the rest of the tree stay readable as context.
 
 A scope with nothing in it has nothing to review: say so and answer `pass`
 without a commit, since the floor already stands.
@@ -30,7 +30,7 @@ without a commit, since the floor already stands.
 
 Whether the work passes the repository's quality bar: `CLAUDE.md`, the skills
 that ran, the operator's request, and the plan where there is one — held as you
-would hold your own work. `/polish` has already read the diff for duplication
+would hold your own work. Where `/polish` ran, it read the diff for duplication
 and prose; this is the look at the whole: whether the work answers the request,
 whether it is built right, and whether what the session told the operator — PR
 body, squash proposal, thread replies, its last messages — matches what the diff

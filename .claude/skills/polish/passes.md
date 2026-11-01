@@ -99,13 +99,13 @@ The floor is the newest commit the branch added whose subject opens with
 is a `full` run whether or not the word was typed**, and nobody has to remember
 to ask for that.
 
-`/polish full` ignores the floor and drops the floor back to the base — as far
-as it ever goes: in either mode the scope is the branch's own diff against
-`origin/<base>`, not the tree it sits in. It is the override for a floor that
-lies, which is the one failure this mechanism cannot detect on its own: a run
-that committed its mark and then stopped early, or a standard that has since
-moved — `/tend-prose` gaining a lens, `/dry` tightening what counts. Both leave
-a commit claiming ground was cleared that was not.
+`/polish full` drops the floor back to the base — as far as it ever goes: in
+either mode the scope is the branch's own diff against `origin/<base>`, not the
+tree it sits in. It is the override for a floor that lies, which is the one
+failure this mechanism cannot detect on its own: a run that committed its mark
+and then stopped early, or a standard that has since moved — `/tend-prose`
+gaining a lens, `/dry` tightening what counts. Both leave a commit claiming
+ground was cleared that was not.
 
 **The floor narrows what gets reviewed, not what it is compared against.**
 `/dry`'s findings are duplications _between_ the new code and what was already
