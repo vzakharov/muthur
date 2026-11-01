@@ -149,14 +149,6 @@ def masked(command: str) -> str:
     return HEREDOC.sub(lambda m: m.group(1).rstrip("\n") + " " + SEPARATORS.sub(" ", m.group(4)) + m.group(5), command)
 
 
-def base_ref(root: Path) -> str:
-    floor = floor_module()
-    try:
-        return floor.git(root, "symbolic-ref", "--short", "refs/remotes/origin/HEAD").strip()
-    except floor.GitError:
-        return "origin/main"
-
-
 def changes_since(root: Path, review: str, base: str) -> List[tuple]:
     """`(status, paths)` per change from the review commit to HEAD with the base
     merged in below the line, as `scripts/floor.py` computes it."""
@@ -181,7 +173,7 @@ def is_working_artifact(status: str, paths: List[str]) -> bool:
 
 def review_gap(root: Path) -> Optional[str]:
     """Why the branch has no passing review at its head, or None when it has one."""
-    base = base_ref(root)
+    base = f"origin/{floor_module().origin_head(root)}"
     review = floor_module().find_floor(root, base, REVIEWED)
     if review is None:
         return "no checkpoint review has let this branch through"

@@ -34,8 +34,8 @@ The lookup's range being two-dot is what keeps it honest without bookkeeping: a
 marked commit the base carries is never a floor, and one a rebase, amend or reset
 rewrote away cannot come back as one.
 
-`.claude/hooks/checkpoint-review.py` imports `find_floor` and `scope_start`,
-without the fetch: a hook does not reach the network.
+`.claude/hooks/checkpoint-review.py` imports `origin_head`, `find_floor` and
+`scope_start`, without `gh` or the fetch: a hook does not reach the network.
 
 Exit status is non-zero when git cannot answer — the fetch, a ref, the merge.
 Stdlib only — no third-party deps. Python 3.9+.
@@ -97,14 +97,17 @@ def pr_base(root: Path) -> Optional[str]:
     return result.stdout.strip() if result.returncode == 0 and result.stdout.strip() else None
 
 
-def default_base(root: Path) -> str:
-    found = pr_base(root)
-    if found is not None:
-        return found
+def origin_head(root: Path) -> str:
+    """The branch `origin/HEAD` names, else `main` — the base when no PR names one."""
     try:
         return git(root, "symbolic-ref", "--short", "refs/remotes/origin/HEAD").strip().removeprefix("origin/")
     except GitError:
         return "main"
+
+
+def default_base(root: Path) -> str:
+    found = pr_base(root)
+    return found if found is not None else origin_head(root)
 
 
 def _die(message: str) -> NoReturn:
