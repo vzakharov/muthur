@@ -16,7 +16,7 @@ session records nothing. /plan runs polish too on a session below Opus.
 
 scripts/session-qa.py extracts the parent's questions and answers for
 the reviewer to read when it wants to; the transcript helpers it shares
-with relay-last-reply.py move to scripts/lib/transcript.py.
+with relay-last-reply.py move to scripts/lib/session_transcript.py.
 delegation-model-capabilities.md moves to .claude/model-capabilities.md.
 
 Co-authored-by: Claude <noreply@anthropic.com>
