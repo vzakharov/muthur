@@ -67,9 +67,8 @@ def turn_texts(transcript: Path) -> List[Tuple[bool, List[str]]]:
     whether a keepalive wake opened it."""
     turns: Dict[str, Tuple[bool, List[str]]] = {}
     current: Optional[str] = None
-    # The transcript is appended to while this reads it, so the last line can be
-    # half-written; `iter_records` passes it over, and it belongs to the running
-    # turn.
+    # A half-written last line, which `iter_records` passes over, belongs to the
+    # running turn.
     for record in iter_records(transcript):
         if record.get("isSidechain"):
             continue

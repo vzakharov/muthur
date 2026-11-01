@@ -7,10 +7,9 @@ nothing stronger looks at its work before the operator does. So each cutoff —
 whole. `/handle` reaches it through the `/go` or `/plan` its lane runs, so its
 run gets one review, not two.
 
-The session writes no brief and records nothing: `/polish` launches the reviewer
-with one line, the reviewer reads its procedure from
-`@.claude/skills/polish/passes.md`, and the verdict is the `Review:` line of the
-polish commit.
+The session writes no brief: `/polish` launches the reviewer with one line, the
+reviewer reads its procedure from `@.claude/skills/polish/passes.md`, and the
+verdict is the `Review:` line of the polish commit.
 
 ## Who runs it
 
