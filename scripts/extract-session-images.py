@@ -130,7 +130,7 @@ def iter_attachments(transcript: Path, verbose: bool) -> Iterator[Attachment]:
             print(f"  {where}: {why}, skipped", file=sys.stderr)
 
     # A half-written last line is passed over; the next firing catches the record.
-    for record in iter_records(transcript, skipped=rejected):
+    for record in iter_records(transcript, skipped=lambda line, why: rejected(why, line)):
         seen += 1
         if record.get("isSidechain"):
             continue

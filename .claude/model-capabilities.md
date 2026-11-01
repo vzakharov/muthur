@@ -1,8 +1,8 @@
 # What the models below Opus can and cannot do
 
 One entry per `model:` value `Agent` takes below the delegating agent's own,
-kept per `go/delegation.md` § "Keeping `model-capabilities.md`" by two writers:
-the session that delegated to the model, and the Opus review that
+kept per `go/delegation.md` § "Keeping `.claude/model-capabilities.md`" by two
+writers: the session that delegated to the model, and the Opus review that
 `polish/passes.md` runs over a session on it. The lessons that hold for every
 model come first.
 
@@ -28,7 +28,9 @@ model come first.
   a claim settled by a cheap probe rather than assumed. A `revise` of three
   findings across the PR body, the squash proposal and its comment, and three
   thread replies, applied whole in one round, the replies opening with the
-  session's words as `CLAUDE.md` asks.
+  session's words as `CLAUDE.md` asks. Implementing a plan's remaining parts
+  after a relay — a gate moved from session state to git with throwaway-repo
+  tests, the polish reviewer launched with exactly the one line its skill gives.
 - **Misses:** planning a reader for an undocumented record format, it drew the
   shapes from the one existing reader it opened and missed those other readers
   in the tree already handle; and it scoped a new gate by a state that holds for
@@ -42,11 +44,14 @@ model come first.
   review it edited the plan's text again unreviewed, judging the edit too small;
   and dropping a part of the design, it changed the plan alone, leaving the PR
   body, the squash proposal and the thread replies that promised the part saying
-  it was still in. Ask it to list every reader of the format, and, for a gate,
-  every commit and session that reaches the guarded command, in the order the
-  skills make them; on a rewrite, to diff the plan against the analysis it
-  carries out; on dropping a part, to grep every place that describes the change
-  for it.
+  it was still in; renaming a planned module, it left the old name in the PR
+  body and the squash proposal. Moving code onto a shared helper, it passed its
+  own callback where the helper calls back with the arguments in the other
+  order, on a path no test ran. Ask it to list every reader of the format, and,
+  for a gate, every commit and session that reaches the guarded command, in the
+  order the skills make them; on a rewrite, to diff the plan against the
+  analysis it carries out; on dropping or renaming a part, to grep every place
+  that describes the change for it; on a refactor, to test each path it moved.
 - **Brief:** naming the style reference and the run-until-green command was
   enough; ask for "anything that surprised you" — it reports useful edges.
 - **Cost, by eye:** that suite, a few hundred lines, cost about twice as much
