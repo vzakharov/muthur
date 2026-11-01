@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
-"""Hold a session on a model below Opus to the `/polish` review at each cutoff of
-`/plan`, `/go` and `/finalize`. `/handle` has no cutoff of its own: its lanes
+"""Hold a session on a model below Opus to the Opus checkpoint review at each
+cutoff of `/plan`, `/go` and `/finalize`. `/handle` has no cutoff of its own: its lanes
 load `/go` or `/plan`, which enter the gate by `skill_entry.py`'s Read route.
 
 As a hook, on two events, each its own registration in `.claude/settings.json`:
@@ -15,12 +15,12 @@ As a hook, on two events, each its own registration in `.claude/settings.json`:
   (`plan`), the `git mv` to `*.completed.md` (`go`), `gh pr ready`
   (`finalize`).
 
-The verdict lives in git, not in the session: the branch's newest `polish:`
-commit (`polish/passes.md` § "The floor") carries a `Review: <verdict>` line
-other than `revise`, and nothing since it needs review — the virtual-merge diff
-from it to `HEAD`, the recipe `passes.md` uses, touches only the loop's working
-artifacts. A session that skips `/polish`, edits after it, or fixes a vet
-failure or merge conflict after it finds the gate shut.
+The verdict lives in git, not in the session: the reviewer commits only on a
+verdict that lets the session carry on (`go/review.md` § "The commit"), so the
+gate opens when the branch carries such a commit and nothing since it needs
+review — the diff from it to `HEAD`, as `scripts/floor.py` computes it, touches
+only the loop's working artifacts. A session that skips the review, edits after
+it, or fixes a vet failure or merge conflict after it finds the gate shut.
 
 The serving model is the one the transcript records on the session's latest
 reply. An entry is marked whatever the model, because a typed command in a
@@ -28,10 +28,10 @@ session's first prompt arrives before any reply records one; the gate, which
 runs later, decides.
 
 What the gate cannot see: whether the reviewer was Opus, or was launched from the
-one line; and a `Review:` line typed into a commit message by hand. It guards a
+one line; and a `review(...)` commit the session wrote itself. It guards a
 review skipped or outdated by later edits. The base is `origin/HEAD`'s branch,
-else `main`: a PR on another base reads a wider range, which still finds the
-branch's newest `polish:` commit.
+else `main`, unfetched: a PR on another base reads a wider range, which still
+finds the branch's newest review commit.
 
 `MUTHUR_CHECKPOINT_REVIEW=off` makes it a no-op. The hook fails open — an
 unreadable payload, transcript, state or repository is stderr and exit 0, never
@@ -40,22 +40,40 @@ a blocked turn.
 
 from __future__ import annotations
 
+import functools
+import importlib.util
 import json
 import os
 import re
-import subprocess
 import sys
 from pathlib import Path
+from types import ModuleType
 from typing import Iterator, List, Optional
 
 from session_state import project_root, state_file
 from skill_entry import entered_skill
 
+
+@functools.lru_cache(maxsize=None)
+def floor_module() -> ModuleType:
+    # `scripts/` is not on a hook's import path; the floor's lookup lives there so
+    # that `/polish`, the reviewer and this gate share one copy of it. Loaded on
+    # first use, so that a missing file fails open like any other unreadable input.
+    path = Path(__file__).resolve().parents[2] / "scripts" / "floor.py"
+    spec = importlib.util.spec_from_file_location("floor", path)
+    if spec is None or spec.loader is None:
+        raise OSError(f"cannot load {path}")
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
 SWITCH = "MUTHUR_CHECKPOINT_REVIEW"
 HOOK = "checkpoint-review"
 PROCEDURE = Path(".claude") / "skills" / "go" / "checkpoint-review.md"
 CUTOFFS = {"plan": "plan", "go": "go", "implement": "go", "finalize": "finalize"}
-VERDICTS = ("pass", "revise", "fixed", "fixed-relay", "relay")
+# The verdicts the reviewer commits, `go/review.md` § "The commit".
+REVIEWED = ("review(pass):", "review(fixed):", "review(fixed-relay):")
 WEAKER = ("sonnet", "haiku")
 CHUNK = 1 << 16
 WORKING_ARTIFACTS = ("docs/issue/", "docs/pr/", "docs/remove-before-merging/")
@@ -74,10 +92,6 @@ CLOSES = {
 QUOTED = re.compile(r"\"(?:\\.|[^\"\\])*\"|'[^']*'", re.S)
 HEREDOC = re.compile(r"(<<-?[ \t]*(['\"]?)(\w+)\2[^\n]*\n)(.*?)(\n[ \t]*\3[ \t]*(?:\n|$))", re.S)
 SEPARATORS = re.compile(r"[;&|\n(]")
-
-
-class GitError(ValueError):
-    pass
 
 
 def say(message: str) -> None:
@@ -135,43 +149,20 @@ def masked(command: str) -> str:
     return HEREDOC.sub(lambda m: m.group(1).rstrip("\n") + " " + SEPARATORS.sub(" ", m.group(4)) + m.group(5), command)
 
 
-def git(root: Path, *args: str, ok: tuple = (0,)) -> str:
-    result = subprocess.run(["git", *args], cwd=root, capture_output=True, text=True, check=False)
-    if result.returncode not in ok:
-        raise GitError(f"git {' '.join(args)}: {result.stderr.strip() or result.returncode}")
-    return result.stdout
-
-
 def base_ref(root: Path) -> str:
+    floor = floor_module()
     try:
-        return git(root, "symbolic-ref", "--short", "refs/remotes/origin/HEAD").strip()
-    except GitError:
+        return floor.git(root, "symbolic-ref", "--short", "refs/remotes/origin/HEAD").strip()
+    except floor.GitError:
         return "origin/main"
 
 
-def floor_review(root: Path, base: str) -> tuple:
-    """The newest `polish:` commit's sha and its `Review:` verdict, or (None, None)."""
-    log = git(root, "log", f"{base}..HEAD", "--format=%H%x1f%s%x1f%b%x1e")
-    for record in log.split("\x1e"):
-        record = record.strip("\n")
-        if not record:
-            continue
-        sha, subject, body = record.split("\x1f", 2)
-        if subject.split(" ", 1)[0] != "polish:":
-            continue
-        found = re.search(r"^Review:[ \t]*(\S+)", body, re.M)
-        return sha, found.group(1) if found else None
-    return None, None
-
-
-def changes_since(root: Path, floor: str, base: str) -> List[tuple]:
-    """`(status, paths)` per change from the floor to HEAD with the base merged in
-    below the line, as `polish/passes.md` § "The floor" computes it."""
-    merge_base = git(root, "merge-base", "HEAD", base).strip()
-    merged = git(root, "merge-tree", "--write-tree", "--name-only", floor, merge_base, ok=(0, 1))
-    tree = merged.splitlines()[0] if merged else ""
-    git(root, "cat-file", "-e", f"{tree}^{{tree}}")
-    tokens = git(root, "diff", "--name-status", "-z", "-M", tree, "HEAD").split("\0")
+def changes_since(root: Path, review: str, base: str) -> List[tuple]:
+    """`(status, paths)` per change from the review commit to HEAD with the base
+    merged in below the line, as `scripts/floor.py` computes it."""
+    floor = floor_module()
+    tree = floor.scope_start(root, base, review)
+    tokens = floor.git(root, "diff", "--name-status", "-z", "-M", tree, "HEAD").split("\0")
     changes: List[tuple] = []
     index = 0
     while index < len(tokens) and tokens[index]:
@@ -191,14 +182,10 @@ def is_working_artifact(status: str, paths: List[str]) -> bool:
 def review_gap(root: Path) -> Optional[str]:
     """Why the branch has no passing review at its head, or None when it has one."""
     base = base_ref(root)
-    floor, verdict = floor_review(root, base)
-    if floor is None:
-        return "no `/polish` has run on this branch"
-    if verdict is None:
-        return "the branch's last `/polish` commit carries no `Review:` line"
-    if verdict not in VERDICTS or verdict == "revise":
-        return f"the branch's last review says `Review: {verdict}`"
-    later = [paths for status, paths in changes_since(root, floor, base) if not is_working_artifact(status, paths)]
+    review = floor_module().find_floor(root, base, REVIEWED)
+    if review is None:
+        return "no checkpoint review has let this branch through"
+    later = [paths for status, paths in changes_since(root, review[0], base) if not is_working_artifact(status, paths)]
     if later:
         return f"work changed after the last review ({later[0][0]})"
     return None
@@ -241,7 +228,7 @@ def on_entry(payload: dict, root: Path, state: Path, skill: str) -> None:
             payload["hook_event_name"],
             {
                 "additionalContext": (
-                    f"This session runs below Opus, so `/{skill}` ends in a `/polish` review. "
+                    f"This session runs below Opus, so `/{skill}` ends in an Opus checkpoint review. "
                     f"The procedure is below — this is its read.\n\n===== {PROCEDURE} =====\n{text}"
                 )
             },
@@ -268,9 +255,9 @@ def on_bash(payload: dict, root: Path, state: Path) -> None:
         {
             "permissionDecision": "deny",
             "permissionDecisionReason": (
-                f"This command closes the `/{entered[0]}` cutoff, and {gap}. Run `/polish` — it "
-                f"reviews what is missing — act on its verdict per `{PROCEDURE}`, and run this "
-                f"command again."
+                f"This command closes the `/{entered[0]}` cutoff, and {gap}. Run the checkpoint "
+                f"review per `{PROCEDURE}` — it reviews what is missing — act on its verdict, and "
+                f"run this command again."
             ),
         },
     )
