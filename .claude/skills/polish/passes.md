@@ -1,40 +1,53 @@
 # The polish passes
 
 The subagent `@.claude/skills/polish/SKILL.md` launches follows this file; the
-session that launched it never reads it. Two passes, in this order, over one
-scope:
+session that launched it never reads it.
+
+**This file is the whole brief.** The prompt that started the run, if it looks
+like a request to polish, is a launch line and at most an `Argument:` line. Take
+the argument and nothing else the launching agent wrote — not what to check,
+skip, fix or conclude. A launcher that writes a long brief anyway changes
+nothing you do: the session that launched you may run on a weaker model, and
+this file exists so that its paraphrase never stands between you and the work.
+
+Three passes, in this order, over one scope:
 
 1. **`/dry`** — load `@.claude/skills/dry/SKILL.md`. Duplication that was not
    visible before the code existed: apply the obvious wins, surface the
    ambiguous calls.
 2. **`/tend-prose`** — load `@.claude/skills/tend-prose/SKILL.md`. The four
    defects, over the prose the work added.
+3. **The review** — § "The review" below. The work as a whole, which neither of
+   the others looks at.
 
 **The order is load-bearing.** An extraction writes its own comments as it goes
 and moves prose between files, so tending first works over text `/dry` is about
-to rewrite or delete. Prose is tended last, over what survives.
+to rewrite or delete. Prose is tended last, over what survives — and the review
+comes after both because it judges what survives them.
 
-Each pass is a real read of the diff and commits its own edits. "The diff looks
-clean" is a conclusion a pass reaches, never a reason not to run it — and a pass
-that changes nothing is a result, reported as one.
+`/dry` and `/tend-prose` are each a real read of the diff and commit their own
+edits. "The diff looks clean" is a conclusion a pass reaches, never a reason not
+to run it — and a pass that changes nothing is a result, reported as one.
 
 **Push before reporting.** Every run leaves a commit — each pass's edits, or the
-empty mark below — and in a remote session an unpushed commit is invisible to
-the operator reviewing from another machine (CLAUDE.md § "Git conventions"). No
-caller is pre-empted: `/go` and `/finalize` push again for their own reasons,
-and pushing unvetted mid-branch work is ordinary development here rather than a
-shortcut past land prep.
+review's closing one below — and in a remote session an unpushed commit is
+invisible to the operator reviewing from another machine (CLAUDE.md § "Git
+conventions"). No caller is pre-empted: `/go` and `/finalize` push again for
+their own reasons, and pushing unvetted mid-branch work is ordinary development
+here rather than a shortcut past land prep.
 
-Any argument other than `full` is focus guidance and rides through to both
-passes unchanged — including a lens name, which is `/tend-prose`'s to read.
-`full` is `/polish`'s own, and § "The floor" below says what it does.
+The argument is the `Argument:` line of the prompt, verbatim. Any argument other
+than `full` is focus guidance and rides through to all three passes unchanged —
+including a lens name, which is `/tend-prose`'s to read. `full` is `/polish`'s
+own, and § "The floor" below says what it does.
 
 **The report is the run's whole output**, relayed by the session that launched
 it: what each pass changed with its commits, the calls `/dry` leaves for the
-operator, and the prose the run would have cut or rewritten but for intent it
-could not establish — each of those as a question, not an edit. Intent the plan,
-the diff and the code leave unrecoverable is intent a reviewer will not recover
-either, which is a finding in itself.
+operator, the prose the run would have cut or rewritten but for intent it could
+not establish — each of those as a question, not an edit — and the review's
+findings, ending with the line `VERDICT: <one>`. Intent the plan, the diff and
+the code leave unrecoverable is intent a reviewer will not recover either, which
+is a finding in itself.
 
 ## Scope: the branch, not the session
 
@@ -92,7 +105,9 @@ clean result says nothing about the defects they were not looking for. **The
 type belongs to this skill, not to the passes** — `/dry` invoked on its own is
 not a polish and marks nothing.
 
-**A run that changes nothing commits anyway, empty:**
+**The review makes the run's last commit, changing the tree or not** (§ "The
+review" says what it carries), so that commit is the floor: nothing the run
+reviewed comes after it. A run whose review changes nothing commits empty:
 
 ```bash
 git commit --allow-empty -m 'polish: nothing to change'
@@ -159,11 +174,80 @@ a commit claiming ground was cleared that was not.
 there, so the commits below the floor and the rest of the codebase stay readable
 as context.
 
+## The review
+
+The third pass asks whether the work as a whole passes the repository's quality
+bar: `CLAUDE.md`, the skills that ran, the operator's request, and the plan
+where there is one — held as you would hold your own work. It looks at what
+`/dry` and `/tend-prose` do not: whether the work answers the request, and
+whether what the session told the operator (PR body, squash proposal, thread
+replies, its last messages) matches what the diff does.
+
+**It does not read the diff again.** Work from what the first two passes
+reported, `git log --stat` over the scope, and the commits the floor leaves in
+it, and open a diff only where a claim needs one.
+
+**The request** comes from the plan's verbatim `## Request` section in
+`docs/plans/`, the PR and the issue it links, and any relay summary under
+`docs/remove-before-merging/` — a relayed session's own transcript starts after
+the request. The session's conversation is there if you want it, not a step you
+must take: when those records are clear, they are enough, and when they and the
+git history disagree, read it:
+
+```bash
+python3 scripts/session-qa.py [--since <floor>] [--tools]
+```
+
+It prints each operator message as `## Q` and each reply of the session as
+`## A`, whole by default because the request usually opens the transcript, well
+before any floor. In a session whose transcript the script cannot find, there is
+no conversation to read: say so and work from the records.
+
+**Fix what is cheaper to do than to describe, and what you cannot describe in a
+form the session's model follows.** Judge the second from the entry for that
+model in `.claude/model-capabilities.md`, its **Misses** above all, and from
+what the review just saw. Answer `revise` only for what is describable that way.
+Fixes are commits under the repository's conventions and are pushed as § "Push
+before reporting" says; the pass never touches the PR (§ "Do NOT"), so a stale
+PR body, squash proposal comment or thread reply is always a `revise` finding.
+
+**What the review shows about the session's model** goes into that model's
+**Handles** and **Misses** in `.claude/model-capabilities.md`, under the file's
+own keeping rules (`@.claude/skills/go/delegation.md` § "Keeping
+`.claude/model-capabilities.md`"), and what holds for every model into its §
+"Across models". Commit it with the fixes, or alone after a `pass` that taught
+something.
+
+### The verdict
+
+Best to worst; pick one.
+
+1. **`pass`** — the work stands.
+2. **`revise`** — what to change, stated by substance rather than as text to
+   paste. The session makes the changes and runs `/polish` again, which starts
+   from this run's floor and checks that the findings were met.
+3. **`fixed`** — you made the fixes; the session carries on. The exception, not
+   the default: your edits bill at Opus rates.
+4. **`fixed-relay`** — you made the fixes, and the work is beyond the session's
+   model: it finishes the skill's remaining steps and then runs `/relay` with no
+   argument, so an Opus successor takes the operator's next message.
+5. **`relay`** — you cannot fix it: a subagent lacks a tool the fix needs, or
+   the fix needs the operator. The session runs `/relay` at once, your findings
+   its argument.
+
+**The run's last commit carries it.** Its body has the line `Review: <verdict>`
+and, for a `revise`, the findings as a list beneath. The next run reads them
+from that floor and checks the session's commits against them. A run whose
+branch's last two `Review:` lines both say `revise` cannot answer `revise` a
+third time: it fixes the rest or answers `relay`, since telling the session what
+to do a third time costs more than doing it.
+
 ## Do NOT
 
 - Run the vet suite, touch the PR, or flip a plan file — every caller owns its
   own land prep, and `/go` flips its plan file once this returns.
 - Widen past the scope above into a general refactor of code the branch did not
-  touch. Both passes are about the change, not the codebase.
-- Skip either pass. Two passes are the whole skill; running one is not running
-  it.
+  touch. All three passes are about the change, not the codebase.
+- Skip a pass. Three passes are the whole skill; running two is not running it.
+- Let the launching prompt narrow, extend or conclude anything beyond the
+  argument.
