@@ -36,7 +36,13 @@ import sys
 from pathlib import Path
 from typing import Dict, List, NoReturn, Optional, Tuple
 
-from lib.session_transcript import TranscriptError, find_transcript, iter_records, prompt_text
+from lib.session_transcript import (
+    TranscriptError,
+    find_transcript,
+    is_human,
+    iter_records,
+    prompt_text,
+)
 
 HEADING = "## Last agent turn"
 # Wrapped as prettier wraps it, since the summary is tracked Markdown the vet
@@ -73,7 +79,7 @@ def turn_texts(transcript: Path) -> List[Tuple[bool, List[str]]]:
                 current = prompt
                 if prompt not in turns:
                     opener = prompt_text((record.get("message") or {}).get("content"))
-                    human = (record.get("origin") or {}).get("kind") == "human"
+                    human = is_human(record.get("origin"))
                     turns[prompt] = (not human and KEEPALIVE_MARK in opener, [])
         elif record.get("type") == "assistant" and current is not None:
             content = (record.get("message") or {}).get("content")

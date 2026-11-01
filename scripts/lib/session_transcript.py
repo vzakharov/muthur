@@ -78,7 +78,7 @@ def iter_records(
                 yield record
 
 
-def _human(origin: object) -> bool:
+def is_human(origin: object) -> bool:
     return isinstance(origin, dict) and origin.get("kind") == "human"
 
 
@@ -93,7 +93,7 @@ def operator_message(record: dict) -> Optional[Tuple[object, str]]:
     of blocks when the message carries an image.
     """
     if record.get("type") == "user":
-        if not _human(record.get("origin")):
+        if not is_human(record.get("origin")):
             return None
         message = record.get("message")
         content = message.get("content") if isinstance(message, dict) else None
@@ -102,7 +102,7 @@ def operator_message(record: dict) -> Optional[Tuple[object, str]]:
         attachment = record.get("attachment")
         if not isinstance(attachment, dict) or attachment.get("type") != "queued_command":
             return None
-        if not _human(attachment.get("origin")):
+        if not is_human(attachment.get("origin")):
             return None
         content = attachment.get("prompt")
         timestamp = attachment.get("timestamp") or record.get("timestamp")
