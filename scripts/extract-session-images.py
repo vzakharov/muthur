@@ -23,8 +23,9 @@ shape belongs to the client and is not documented, so when it changes the filter
 matches nothing and this exits 0 — that flag is how the silence is diagnosed.
 
 Running this file as `python3 scripts/extract-session-images.py` puts `scripts/`
-on `sys.path[0]`, so `lib.media` resolves as a PEP 420 namespace package from any
-working directory — no `__init__.py`, no `sys.path` manipulation.
+on `sys.path[0]`, so `lib.media` and `lib.session_transcript` resolve as PEP 420
+namespace packages from any working directory — no `__init__.py`, no `sys.path`
+manipulation.
 
 Stdlib only — no third-party deps. Python 3.9+.
 """
@@ -35,13 +36,13 @@ import argparse
 import base64
 import binascii
 import hashlib
-import json
 import re
 import sys
 from pathlib import Path
 from typing import Iterator, List, NamedTuple, NoReturn, Optional
 
 from lib.media import extension_for_bytes
+from lib.session_transcript import iter_records, operator_message
 
 DEFAULT_OUT = Path("tmp") / "session-images"
 MANIFEST_NAME = "index.md"
@@ -111,39 +112,6 @@ def _cell(text: str) -> str:
     return text.replace("|", "\\|") or "—"
 
 
-def _human(origin: object) -> bool:
-    return isinstance(origin, dict) and origin.get("kind") == "human"
-
-
-def _operator_message(record: dict) -> Optional[tuple[List[object], str]]:
-    """An operator's message as its content blocks and timestamp, or None.
-
-    A prompt that starts a turn is a `user` record; one sent mid-turn is folded
-    into the running turn as a `queued_command` attachment, whose `prompt` is a
-    plain string when it carries no image.
-    """
-    if record.get("type") == "user":
-        if not _human(record.get("origin")):
-            return None
-        content = record.get("message", {}).get("content")
-        timestamp = record.get("timestamp")
-    elif record.get("type") == "attachment":
-        attachment = record.get("attachment")
-        if not isinstance(attachment, dict):
-            return None
-        if attachment.get("type") != "queued_command":
-            return None
-        if not _human(attachment.get("origin")):
-            return None
-        content = attachment.get("prompt")
-        timestamp = attachment.get("timestamp") or record.get("timestamp")
-    else:
-        return None
-    if not isinstance(content, list):
-        return None
-    return content, str(timestamp or "")
-
-
 def iter_attachments(transcript: Path, verbose: bool) -> Iterator[Attachment]:
     """Yield every operator-attached image in the transcript, in order.
 
@@ -156,64 +124,53 @@ def iter_attachments(transcript: Path, verbose: bool) -> Iterator[Attachment]:
     """
     seen = matched = 0
 
-    def rejected(why: str) -> None:
+    def rejected(why: str, line: Optional[int] = None) -> None:
         if verbose:
-            print(f"  line {seen}: {why}, skipped", file=sys.stderr)
+            where = f"line {line}" if line is not None else f"record {seen}"
+            print(f"  {where}: {why}, skipped", file=sys.stderr)
 
-    with transcript.open(encoding="utf-8", errors="replace") as fh:
-        for line in fh:
-            line = line.strip()
-            if not line:
+    # A half-written last line is passed over; the next firing catches the record.
+    for record in iter_records(transcript, skipped=rejected):
+        seen += 1
+        if record.get("isSidechain"):
+            continue
+        message = operator_message(record)
+        if message is None or not isinstance(message[0], list):
+            continue
+        content, timestamp = message
+
+        images = [
+            block
+            for block in content
+            if isinstance(block, dict) and block.get("type") == "image"
+        ]
+        if not images:
+            continue
+
+        prompt = _text_of(content)[:PROMPT_EXCERPT_CHARS]
+        for ordinal, block in enumerate(images, start=1):
+            source = block.get("source")
+            if not isinstance(source, dict) or source.get("type") != "base64":
+                rejected("image source is not base64")
                 continue
-            seen += 1
             try:
-                record = json.loads(line)
-            except json.JSONDecodeError:
-                # A transcript is appended to while this reads it, so the last
-                # line can be half-written. The next firing catches the record.
-                rejected("unparseable")
+                data = base64.b64decode(source.get("data", ""), validate=True)
+            except (binascii.Error, ValueError):
+                rejected("image data is not valid base64")
                 continue
-            if not isinstance(record, dict):
+            if not data:
                 continue
-            if record.get("isSidechain"):
-                continue
-            message = _operator_message(record)
-            if message is None:
-                continue
-            content, timestamp = message
-
-            images = [
-                block
-                for block in content
-                if isinstance(block, dict) and block.get("type") == "image"
-            ]
-            if not images:
-                continue
-
-            prompt = _text_of(content)[:PROMPT_EXCERPT_CHARS]
-            for ordinal, block in enumerate(images, start=1):
-                source = block.get("source")
-                if not isinstance(source, dict) or source.get("type") != "base64":
-                    rejected("image source is not base64")
-                    continue
-                try:
-                    data = base64.b64decode(source.get("data", ""), validate=True)
-                except (binascii.Error, ValueError):
-                    rejected("image data is not valid base64")
-                    continue
-                if not data:
-                    continue
-                matched += 1
-                yield Attachment(
-                    data=data,
-                    media_type=source.get("media_type"),
-                    timestamp=timestamp,
-                    uuid=str(record.get("uuid") or ""),
-                    branch=str(record.get("gitBranch") or ""),
-                    prompt=prompt,
-                    ordinal=ordinal,
-                    of=len(images),
-                )
+            matched += 1
+            yield Attachment(
+                data=data,
+                media_type=source.get("media_type"),
+                timestamp=timestamp,
+                uuid=str(record.get("uuid") or ""),
+                branch=str(record.get("gitBranch") or ""),
+                prompt=prompt,
+                ordinal=ordinal,
+                of=len(images),
+            )
     if verbose:
         print(
             f"extract-session-images: {seen} records read, {matched} attachments matched",
