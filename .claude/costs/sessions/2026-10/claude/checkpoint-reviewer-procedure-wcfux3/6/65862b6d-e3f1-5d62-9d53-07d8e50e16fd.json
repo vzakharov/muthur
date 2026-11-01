@@ -1,0 +1,94 @@
+{
+  "total": {
+    "inputTokens": 53,
+    "cacheWrite5mTokens": 132391,
+    "cacheWrite1hTokens": 58168,
+    "cacheReadTokens": 2692715,
+    "outputTokens": 10889,
+    "thinkingTokens": 4878,
+    "responses": 27,
+    "costUsd": 1.883834
+  },
+  "estimate": {
+    "at": "2026-11-01T16:50:21.134Z",
+    "parts": [
+      {
+        "hours": 1.0,
+        "grade": "senior",
+        "role": "prompter",
+        "comment": "running the passes, the dogfood review and the PR refresh means judging the reviewer's findings against a design the operator settled in conversation"
+      }
+    ],
+    "comment": null
+  },
+  "orientation": {
+    "endedBy": "oriented",
+    "endedOn": null,
+    "endedAt": "2026-11-01T16:50:19.443Z",
+    "contextTokens": 104739,
+    "spend": {
+      "inputTokens": 12,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 48908,
+      "cacheReadTokens": 431248,
+      "outputTokens": 758,
+      "thinkingTokens": 55,
+      "responses": 5,
+      "costUsd": 0.49272160000000004
+    }
+  },
+  "sessionId": "65862b6d-e3f1-5d62-9d53-07d8e50e16fd",
+  "branch": "claude/checkpoint-reviewer-procedure-wcfux3",
+  "cwd": "/home/user/muthur",
+  "openingPrompt": "/relay take claude/checkpoint-reviewer-procedure-wcfux3 — ревью вынесено из polish в отдельного подагента и запушено, дальше polish, догфуд нового ревью и обнов…",
+  "prs": [
+    257
+  ],
+  "url": "https://claude.ai/code/session_01DaohkFcprjdSKSRhqhU46L",
+  "operator": "vzakharov",
+  "firstResponseAt": "2026-11-01T16:50:06.678Z",
+  "lastResponseAt": "2026-11-01T16:52:35.744Z",
+  "pricesAsOf": "2026-10-06",
+  "claudeCodeTotalUsd": null,
+  "ownTurns": {
+    "inputTokens": 21,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 58168,
+    "cacheReadTokens": 958693,
+    "outputTokens": 2168,
+    "thinkingTokens": 611,
+    "responses": 10,
+    "costUsd": 0.7005266000000001
+  },
+  "subagents": {
+    "inputTokens": 32,
+    "cacheWrite5mTokens": 132391,
+    "cacheWrite1hTokens": 0,
+    "cacheReadTokens": 1734022,
+    "outputTokens": 8721,
+    "thinkingTokens": 4267,
+    "responses": 17,
+    "costUsd": 1.1833074000000001
+  },
+  "byRate": {
+    "claude-opus-5-5/standard": {
+      "inputTokens": 53,
+      "cacheWrite5mTokens": 132391,
+      "cacheWrite1hTokens": 58168,
+      "cacheReadTokens": 2692715,
+      "outputTokens": 10889,
+      "thinkingTokens": 4878,
+      "responses": 27,
+      "costUsd": 1.883834
+    }
+  },
+  "warnings": [],
+  "compactions": [],
+  "telemetry": {
+    "events": 27,
+    "matched": 27,
+    "matchedTableUsd": 1.883834,
+    "matchedEventUsd": 1.883834,
+    "unseen": {}
+  }
+}
