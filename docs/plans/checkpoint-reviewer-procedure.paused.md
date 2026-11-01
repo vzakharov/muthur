@@ -218,7 +218,7 @@ as delegation, so it sits at the `.claude/` root.
 keeping the history. The file's keeping rules, now in `go/delegation.md`, gain
 the reviewer as a second writer.
 
-### 6. Shared transcript helpers — `scripts/lib/transcript.py` (new)
+### 6. Shared transcript helpers — `scripts/lib/session_transcript.py` (new)
 
 `find_transcript`, `prompt_text`, `operator_message` and a record iterator that
 tolerates a half-written last line. `find_transcript` and `prompt_text` move out
@@ -289,7 +289,7 @@ failure.
 ## DRY notes
 
 - **Shared, extracted:** transcript location, prompt text, the operator-message
-  shapes and record iteration (`scripts/lib/transcript.py`), from
+  shapes and record iteration (`scripts/lib/session_transcript.py`), from
   `relay-last-reply.py` and `extract-session-images.py` — the record shape
   "belongs to the client and is not documented", so a change to it is fixed in
   one place, not three.
@@ -303,7 +303,7 @@ failure.
   reads responses and usage for billing, a different job from reading prompts
   and text. `.claude/costs/lib/identity.py` holds `COMMAND_ENVELOPE`; the costs
   tree is its own shipping group and `session-qa.py` ships without it, so
-  `lib/transcript.py` carries its own copy of that one-line pattern and
+  `lib/session_transcript.py` carries its own copy of that one-line pattern and
   `test_session_qa.py` holds the two equal, as `test_relay_last_reply.py` does
   for the keepalive mark.
 - **Not extracted:** `relay-last-reply.py`'s turn grouping (`turn_texts`) is
@@ -316,3 +316,49 @@ failure.
 
 Programmatic extraction of anything beyond Q&A (the request says "для начала"):
 tool results, diffs, thinking. `--tools` is the only step toward it.
+
+## Progress (paused for the context budget)
+
+Done, committed and pushed (`31d081e`, `795a73d`), tests green:
+
+- **Part 5** — `.claude/model-capabilities.md` moved with every reference
+  (`go/delegation.md`, `go-delegation.py` and its test, the `vet.sh` cap, the
+  `update-muthur` sync note, `g2-pr-loop.md`). Its header now names the two
+  writers. `g2-pr-loop.md` already describes `checkpoint-review.md` as the
+  session's side (run `/polish`), ahead of that file being rewritten.
+- **Parts 4 and 6** — `scripts/session-qa.py` with `scripts/test_session_qa.py`;
+  the shared helpers live in `scripts/lib/session_transcript.py`, **not**
+  `transcript.py`: `.claude/costs/lib/transcript.py` has that name and a process
+  loading both trees (the keepalive-mark test) resolved one to the other.
+  `relay-last-reply.py` and `extract-session-images.py` import them;
+  `test_relay_last_reply.py` puts `scripts/` on `sys.path` in its loader.
+
+Left, in this order:
+
+1. **`.claude/skills/polish/passes.md`** — the third pass (§ 1 above): intro and
+   § "Do NOT" say three passes; the review is last; verdicts and "learning" move
+   in from `checkpoint-review.md`; the opening rules out the launcher's words;
+   `Review: <verdict>` in the run's last (possibly empty) `polish:` commit; the
+   two-`revise` cap. It tells the reviewer `scripts/session-qa.py` exists.
+2. **`.claude/skills/polish/SKILL.md`** — the description changes, so stage it
+   first (`scripts/staged.sh stage`, commit alone, then edit the copy); the
+   launch becomes the one line
+   `Proceed per \`.claude/skills/polish/passes.md\``plus an optional`Argument:`line, model`opus`
+   always. Remove the "prompt carries" bullets.
+3. **`.claude/skills/go/checkpoint-review.md`** — shrink to the session's side:
+   when each cutoff runs `/polish`, how the gate reads, what to do on each
+   verdict (a `revise` is: make the changes, run `/polish` again).
+4. **`.claude/hooks/checkpoint-review.py`** (§ 3) — drop the `verdict` command
+   and the delivered-per-session `pending` list semantics for the verdict; keep
+   the entered-cutoffs mark; the `Bash` gate reads the verdict from git
+   (`polish:` floor commit's `Review:` line, plus the virtual-merge diff
+   touching only working artifacts). Anchor the command patterns to command
+   position. Spike first: which payload field tells a subagent's `Read` from the
+   session's, so the reviewer's skill-file reads are not marked as entries.
+   Rewrite `scripts/test_checkpoint_review.py` per § 7.
+5. **Pointers** — `/plan` gains a polish step below Opus; `/go` Step 3,
+   `/finalize`, `/relay` (line ~149) reword; `g4-remote-plumbing.md` and
+   `g2-pr-loop.md` name the changed files (`session-qa.py`,
+   `lib/session_transcript.py` if scripts are catalogued).
+6. **Dogfood** — then `/polish` over the branch (the real flow), `/pr` refresh,
+   and the Opus plan-review result from the old PR body stays in the PR.
