@@ -285,14 +285,12 @@ Implementation is where they earn the most: a plan is written before the code
 exists, so the duplication it didn't foresee and the prose that narrates the
 work rather than the result both surface only now.
 
-**The polish ends in an Opus review of the whole**, which is the checkpoint
-review of a session below Opus: it runs here, before the flip below and Step 4,
-so the plan is marked done and the PR body written only over a reviewed diff.
-When `.claude/hooks/checkpoint-review.py` delivered
-`@.claude/skills/go/checkpoint-review.md` this session, the flip is denied until
-the polish left a passing `Review:` line, and that file says what each verdict
-asks of the session. A `relay` verdict leaves the plan to § "Stopping partway
-releases the plan" instead of the flip.
+**When `.claude/hooks/checkpoint-review.py` delivered
+`@.claude/skills/go/checkpoint-review.md` this session, the checkpoint review
+runs next**, before the flip below and Step 4, so the plan is marked done and
+the PR body written only over a reviewed diff. Under a harness that runs no
+hooks, that file's § "Who runs it" says whether it runs. A `relay` verdict
+leaves the plan to § "Stopping partway releases the plan" instead of the flip.
 
 Then **`git mv` the plan to `docs/plans/<slug>.completed.md`** and commit —
 implementation and its quality passes are done. An elephant with any of it left

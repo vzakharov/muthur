@@ -90,8 +90,8 @@ turn count you assumed wherever you report it.
 After a review that taught something — a kind of work the model handled cleanly,
 a mistake it made, a brief wording that prevented one, what it cost against
 doing it in-session — rewrite that model's entry in place and commit it with the
-work it came from. The Opus reviewer of `@.claude/skills/polish/passes.md` keeps
-the same file the same way, after a review of a session on that model. It is a
+work it came from. The Opus reviewer of `review.md` beside this file keeps the
+same file the same way, after a review of a session on that model. It is a
 compressed summary, not a log: fold the new observation into what the entry
 already says, replace what it contradicts, and drop detail that no longer
 changes which model you pick or how you brief it. Stay under 100 lines;

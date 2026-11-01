@@ -2,8 +2,8 @@
 
 One entry per `model:` value `Agent` takes below the delegating agent's own,
 kept per `go/delegation.md` § "Keeping `.claude/model-capabilities.md`" by two
-writers: the session that delegated to the model, and the Opus review that
-`polish/passes.md` runs over a session on it. The lessons that hold for every
+writers: the session that delegated to the model, and the Opus checkpoint
+reviewer (`go/review.md`) of a session on it. The lessons that hold for every
 model come first.
 
 ## Across models
@@ -30,7 +30,7 @@ model come first.
   thread replies, applied whole in one round, the replies opening with the
   session's words as `CLAUDE.md` asks. Implementing a plan's remaining parts
   after a relay — a gate moved from session state to git with throwaway-repo
-  tests, the polish reviewer launched with exactly the one line its skill gives.
+  tests, a reviewer launched with exactly the one line its skill gives.
 - **Misses:** planning a reader for an undocumented record format, it drew the
   shapes from the one existing reader it opened and missed those other readers
   in the tree already handle; and it scoped a new gate by a state that holds for

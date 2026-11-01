@@ -16,7 +16,7 @@ The whole transcript is printed by default, since the request usually opens it,
 well before any commit that could cut it. `--since COMMIT` starts at that
 commit's committer time, compared with each record's timestamp.
 
-`polish/passes.md`'s review reads the transcript through this: the reviewer can
+The checkpoint reviewer (`go/review.md`) reads the transcript through this: it can
 settle what the operator asked without taking a launching agent's account of it.
 The transcript defaults to the running session's, found from
 `$CLAUDE_CODE_SESSION_ID`; a subagent sees its parent's id.

@@ -1,13 +1,13 @@
 {
   "total": {
-    "inputTokens": 74,
+    "inputTokens": 111,
     "cacheWrite5mTokens": 0,
-    "cacheWrite1hTokens": 145243,
-    "cacheReadTokens": 5760832,
-    "outputTokens": 39283,
-    "thinkingTokens": 18896,
-    "responses": 39,
-    "costUsd": 3.1000664
+    "cacheWrite1hTokens": 175230,
+    "cacheReadTokens": 9968602,
+    "outputTokens": 53888,
+    "thinkingTokens": 21720,
+    "responses": 59,
+    "costUsd": 4.4737644
   },
   "estimate": {
     "at": "2026-11-01T16:31:10.524Z",
@@ -47,22 +47,24 @@
   "branch": "claude/checkpoint-reviewer-procedure-wcfux3",
   "cwd": "/home/user/muthur",
   "openingPrompt": "/relay take claude/checkpoint-reviewer-procedure-wcfux3 в общем проблема с этой реализацией (см. подробности в последнем релее) -- что а) опус сначала \"высушива…",
-  "prs": [],
+  "prs": [
+    257
+  ],
   "url": "https://claude.ai/code/session_01DaohkCxXCdxHVodLAeJa72",
   "operator": "vzakharov",
   "firstResponseAt": "2026-11-01T16:29:25.179Z",
-  "lastResponseAt": "2026-11-01T16:45:00.905Z",
+  "lastResponseAt": "2026-11-01T16:47:59.663Z",
   "pricesAsOf": "2026-10-06",
   "claudeCodeTotalUsd": null,
   "ownTurns": {
-    "inputTokens": 74,
+    "inputTokens": 111,
     "cacheWrite5mTokens": 0,
-    "cacheWrite1hTokens": 145243,
-    "cacheReadTokens": 5760832,
-    "outputTokens": 39283,
-    "thinkingTokens": 18896,
-    "responses": 39,
-    "costUsd": 3.1000664
+    "cacheWrite1hTokens": 175230,
+    "cacheReadTokens": 9968602,
+    "outputTokens": 53888,
+    "thinkingTokens": 21720,
+    "responses": 59,
+    "costUsd": 4.4737644
   },
   "subagents": {
     "inputTokens": 0,
@@ -76,23 +78,23 @@
   },
   "byRate": {
     "claude-opus-5-5/standard": {
-      "inputTokens": 74,
+      "inputTokens": 111,
       "cacheWrite5mTokens": 0,
-      "cacheWrite1hTokens": 145243,
-      "cacheReadTokens": 5760832,
-      "outputTokens": 39283,
-      "thinkingTokens": 18896,
-      "responses": 39,
-      "costUsd": 3.1000664
+      "cacheWrite1hTokens": 175230,
+      "cacheReadTokens": 9968602,
+      "outputTokens": 53888,
+      "thinkingTokens": 21720,
+      "responses": 59,
+      "costUsd": 4.4737644
     }
   },
   "warnings": [],
   "compactions": [],
   "telemetry": {
-    "events": 39,
-    "matched": 39,
-    "matchedTableUsd": 3.1000664,
-    "matchedEventUsd": 3.1000664,
+    "events": 59,
+    "matched": 59,
+    "matchedTableUsd": 4.4737644,
+    "matchedEventUsd": 4.4737644,
     "unseen": {}
   }
 }

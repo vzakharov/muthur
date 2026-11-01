@@ -92,11 +92,11 @@ the working tree clean, and behaves the same everywhere.
   - **Disposition:** adopt — **with any script that imports it**
 - `scripts/session-qa.py` — Print a session's operator messages and the agent's
   replies as `## Q` / `## A` text from its transcript, optionally from a
-  commit's time on, with a line per tool call under `--tools`. Read by the
-  `/polish` reviewer (`.claude/skills/polish/passes.md`) when the written record
-  is not enough. Stdlib-only, tested by `scripts/test_session_qa.py`.
+  commit's time on, with a line per tool call under `--tools`. Read by G2's
+  checkpoint reviewer (`.claude/skills/go/review.md`) when the written record is
+  not enough. Stdlib-only, tested by `scripts/test_session_qa.py`.
   - **Requires:** `python3` ≥3.9, `scripts/lib/session_transcript.py`
-  - **Disposition:** adopt — **with `/polish`**
+  - **Disposition:** adopt — **with `checkpoint-review.md`**
 - `scripts/multi-repo-hooks.py` — In a cloud session with several repositories
   attached, which loads none of their hooks, write the parent's
   `.claude/settings.json` from every repository's own hooks, each run with

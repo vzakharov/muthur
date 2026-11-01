@@ -46,7 +46,7 @@
 #   the model notes cap — holds `.claude/model-capabilities.md` to the 100
 #     lines its keeping rule sets, so a summary rewritten every session cannot
 #     drift into a log. Keyed on the file, so a repo that drops delegation and
-#     the polish review has nothing to check.
+#     the checkpoint review has nothing to check.
 #   check-muthur.sh — everything that tests only this repo's own machinery: the
 #     repo-identity check and every `scripts/test_*.py`. One line because an
 #     adopting repo drops them together; it keys on the catalog and exits 0

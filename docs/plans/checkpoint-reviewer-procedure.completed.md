@@ -362,3 +362,38 @@ Left, in this order:
    `lib/session_transcript.py` if scripts are catalogued).
 6. **Dogfood** — then `/polish` over the branch (the real flow), `/pr` refresh,
    and the Opus plan-review result from the old PR body stays in the PR.
+
+## Revision: the review leaves `/polish`
+
+The operator's request after the implementation above (verbatim, Russian):
+
+> в общем проблема с этой реализацией (см. подробности в последнем релее) -- что
+> а) опус сначала "высушивает" то, что потом может вообще посчитать непригодным
+> б) вариант с "шагом 0" мне тоже не нравится; интуитивно это слишком усложняет
+> процесс и приводит ко всяким хакам.
+>
+> предлагаю так: 1- polish проходит как раньше, на той же модели с которой
+> запускался, короче polish возвращаем к тому что было 2- после polish
+> запускается (новым подагентом) review. в случае с fixed/pass, отчитываетсяк
+> коммитом `review(fixed)` / `review(pass)`. В случае revise, коммит не создаёт
+> до тех пор пока не пройдёт второй раз и не скажет fixed/pass. Соответственно,
+> каждый следующий ревью смотрит изменения от прошлого коммита review, как
+> polish смотрит от polish 3- вся общая механика а ля "найди прошлый коммит
+> такого-то формата и посмотри дифф начиная с него (учитывая возможные влияния с
+> мейна)" (т.е. то что в полише уже есть) выносится наружу DRY
+>
+> соответственно, review видит в том числе и polish, а polish видит в том числе
+> и (прдедыдущий) review, что кажется правильным.
+
+Settled in the session: the review runs only below Opus, as on `main` («не
+смотри по сравнению с "пока внутри polish", смотри по сравнению с "до пиара"»);
+a `revise` goes back to the same reviewer by `SendMessage`, as on `main` («так и
+должно быть, да, и для экономии токенов и для сохранения контекста»), and that
+message may carry the session's explanations («во второй раз можно и
+пояснениями, почему нет»); `fixed-relay` commits, `relay` does not.
+
+Built: `scripts/floor.py` (the shared lookup, used by `polish/passes.md`,
+`go/review.md` and the gate hook); `go/review.md` (the reviewer's procedure);
+`go/checkpoint-review.md` (the session's side: launch, verdicts, look again);
+`polish/` and the cutoff skills back to `main`'s text; the gate opens on a
+`review(pass|fixed|fixed-relay):` commit.

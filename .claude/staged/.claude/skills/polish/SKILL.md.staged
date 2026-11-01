@@ -1,9 +1,8 @@
 ---
 description: >-
-  Run the standard quality passes over work just done — `/dry`, `/tend-prose`,
-  then an Opus review of the work as a whole — scoped to what the branch has
-  changed since it was last polished, committing what they change. These are
-  the passes `/go` runs at its
+  Run the standard quality passes over work just done — `/dry`, then
+  `/tend-prose` — scoped to what the branch has changed since it was last
+  polished, committing what they change. These are the passes `/go` runs at its
   Step 3; this skill is how work that never went through `/go` gets them. Invoke
   as `/polish [focus guidance]`, or `/polish full` to re-read the branch's whole
   diff against its base rather than only what it changed since the last polish
@@ -18,28 +17,23 @@ change's history in mind, so a comment narrating the edit, or two blocks it
 remembers as different, reads fine to it and not to a reviewer. A subagent has
 only the diff and the plan, as the reviewer will.
 
-So launch one `general-purpose` subagent with `model: "opus"`, whichever model
-drives this session, in the foreground (`run_in_background: false`) since it
-edits, commits and pushes the working tree, and touch nothing until it returns.
-Its prompt is this line and nothing else:
+So launch one `general-purpose` subagent, in the foreground
+(`run_in_background: false`) since it edits, commits and pushes the working
+tree, and touch nothing until it returns. Its prompt carries:
 
-```
-Proceed per `.claude/skills/polish/passes.md`
-```
+- `@.claude/skills/polish/passes.md`, to load and follow — the whole procedure,
+  which this session does not read;
+- the argument, verbatim;
+- the plan under `docs/plans/`, when the branch has one, as the record of
+  intent.
 
-plus, when `/polish` was given an argument, a second line
-`Argument: <the argument, verbatim>`. The procedure, the plan and the request
-are the subagent's to find, and `passes.md` tells it to ignore anything else the
-prompt says: no account of what was built or why, from a model whose account is
-the thing under review. Nothing enforces the model, so a run on Opus is the
-accepted cost of every session, Opus ones included.
+Nothing else: no account of what was built or why.
 
 **It reports, and the session relays.** Answer the intent questions this
 session's context settles and act on them, committed under the type the edit
 would carry anyway: a `polish:` subject would put the edit below the next run's
 floor (`passes.md` § "The floor"), unreviewed. The rest go to the operator with
-`/dry`'s calls. The report ends with `VERDICT: <one>`; what the session does on
-each is `@.claude/skills/go/checkpoint-review.md` § "The verdicts".
+`/dry`'s calls.
 
 **Putting back what a run changed, on the operator's ask, is itself a `polish:`
 commit** — `polish: restore <what>`. That run already read what it restores, so
