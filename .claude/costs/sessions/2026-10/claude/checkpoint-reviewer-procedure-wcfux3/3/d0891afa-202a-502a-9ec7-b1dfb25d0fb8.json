@@ -1,0 +1,83 @@
+{
+  "total": {
+    "inputTokens": 19,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 65049,
+    "cacheReadTokens": 883843,
+    "outputTokens": 2755,
+    "thinkingTokens": 448,
+    "responses": 9,
+    "costUsd": 0.46455260000000004
+  },
+  "estimate": null,
+  "orientation": {
+    "endedBy": "oriented",
+    "endedOn": null,
+    "endedAt": "2026-11-01T09:15:50.137Z",
+    "contextTokens": 108729,
+    "spend": {
+      "inputTokens": 10,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 52472,
+      "cacheReadTokens": 336641,
+      "outputTokens": 1057,
+      "thinkingTokens": 167,
+      "responses": 4,
+      "costUsd": 0.2878062
+    }
+  },
+  "sessionId": "d0891afa-202a-502a-9ec7-b1dfb25d0fb8",
+  "branch": "claude/checkpoint-reviewer-procedure-wcfux3",
+  "cwd": "/home/user/muthur",
+  "openingPrompt": "/go claude/checkpoint-reviewer-procedure-wcfux3",
+  "prs": [],
+  "url": "https://claude.ai/code/session_01RAikuvwB3j4GJDojEFqeUt",
+  "operator": "vzakharov",
+  "firstResponseAt": "2026-11-01T09:15:31.814Z",
+  "lastResponseAt": "2026-11-01T09:16:05.030Z",
+  "pricesAsOf": "2026-10-06",
+  "claudeCodeTotalUsd": null,
+  "ownTurns": {
+    "inputTokens": 19,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 65049,
+    "cacheReadTokens": 883843,
+    "outputTokens": 2755,
+    "thinkingTokens": 448,
+    "responses": 9,
+    "costUsd": 0.46455260000000004
+  },
+  "subagents": {
+    "inputTokens": 0,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 0,
+    "cacheReadTokens": 0,
+    "outputTokens": 0,
+    "thinkingTokens": 0,
+    "responses": 0,
+    "costUsd": 0.0
+  },
+  "byRate": {
+    "claude-sonnet-5-5/standard": {
+      "inputTokens": 19,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 65049,
+      "cacheReadTokens": 883843,
+      "outputTokens": 2755,
+      "thinkingTokens": 448,
+      "responses": 9,
+      "costUsd": 0.46455260000000004
+    }
+  },
+  "warnings": [
+    "prices.json priced the 8 responses the events also priced at $0.4376, against the events' $0.3605: a rate in the table is likely out of date"
+  ],
+  "compactions": [],
+  "telemetry": {
+    "events": 8,
+    "matched": 8,
+    "matchedTableUsd": 0.4375506,
+    "matchedEventUsd": 0.3604703,
+    "unseen": {}
+  }
+}
