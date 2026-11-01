@@ -35,19 +35,20 @@
   branch to attach to, or a task with no plan behind it. Carries
   `delegation.md`, handing sub-tasks that need no judgement to cheaper models in
   worktrees and reviewing them before they merge, and
-  `delegation-model-capabilities.md`, the ≤100-line summary of what each model
-  has handled, which `scripts/vet.sh` caps. `MUTHUR_DELEGATION=off` leaves `/go`
-  as if neither were there. Also carries `checkpoint-review.md`, the Opus
-  subagent review a session below Opus runs at each cutoff of `/plan`, `/go` and
-  `/finalize`, escalating through `/relay` to an Opus session when the work is
-  beyond it; `MUTHUR_CHECKPOINT_REVIEW=off` turns it off.
+  `.claude/model-capabilities.md`, the ≤100-line summary of what each model has
+  handled, which `scripts/vet.sh` caps. `MUTHUR_DELEGATION=off` leaves `/go` as
+  if neither were there. Also carries `checkpoint-review.md`, what a session
+  below Opus does at each cutoff of `/plan`, `/go` and `/finalize`: run
+  `/polish`, whose Opus subagent ends in a review of the whole, escalating
+  through `/relay` to an Opus session when the work is beyond it;
+  `MUTHUR_CHECKPOINT_REVIEW=off` turns the gate off.
   - **Pulls in:** `/polish` (G1); `/from-branch`, `/plan`, `/pr`, `/relay`,
     `/task`; `.claude/hooks/go-delegation.py`,
     `.claude/hooks/checkpoint-review.py`; **conditionally** `/take-issue`,
     `/propose-issue` (G3), `.claude/costs/` (G7) for the delegation's weighing
-  - **Disposition:** adopt — `delegation-model-capabilities.md` as it stands,
-    its lessons being general, then merged by lesson on every sync
-    (`/update-muthur` Step 5)
+  - **Disposition:** adopt — `.claude/model-capabilities.md` as it stands, its
+    lessons being general, then merged by lesson on every sync (`/update-muthur`
+    Step 5)
 - `.claude/hooks/go-delegation.py` — Deliver `/go`'s two delegation files as
   context the first time `/go` enters a session — through the `Skill` tool, a
   `Read` of its `SKILL.md`, or a typed `/go` — so the agent spends no round trip

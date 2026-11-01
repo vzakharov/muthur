@@ -318,7 +318,7 @@ de-vendored rewrites, not copies, so every hunk conflicts. Read the source's
 diff to understand what changed and why, then re-express it in this repo's
 vocabulary and file layout.
 
-**`.claude/skills/go/delegation-model-capabilities.md` is merged by lesson,
+**`.claude/model-capabilities.md` is merged by lesson,
 never ported or skipped.** Each repo's copy holds what its own delegations
 taught, so it differs from the source's by design and the record never mentions
 it. Read the source's file whole — not the diff, since an entry the source

@@ -27,11 +27,10 @@ done in-session without comment.
 
 ## Picking the model
 
-`delegation-model-capabilities.md` beside this file is the summary of what each
-model has handled. Read it before the session's first delegation — the hook's
-delivery counts as that read — and pick the cheapest model whose entry covers
-this kind of work. A model with no entry for it gets a small, easily checked
-piece first.
+`.claude/model-capabilities.md` is the summary of what each model has handled.
+Read it before the session's first delegation — the hook's delivery counts as
+that read — and pick the cheapest model whose entry covers this kind of work. A
+model with no entry for it gets a small, easily checked piece first.
 
 ## Launching
 
@@ -82,21 +81,21 @@ Where the script is not in the tree, weigh the same terms by eye: the subagent's
 turns re-reading a context growing toward its `subagent_tokens`, against its
 output at your rate plus your context re-read on each turn you would have taken.
 
-The verdict goes into the model's entry in `delegation-model-capabilities.md`,
-and what it teaches about every model into that file's § "Across models". Say
-which turn count you assumed wherever you report it.
+The verdict goes into the model's entry in `.claude/model-capabilities.md`, and
+what it teaches about every model into that file's § "Across models". Say which
+turn count you assumed wherever you report it.
 
-## Keeping `delegation-model-capabilities.md`
+## Keeping `.claude/model-capabilities.md`
 
 After a review that taught something — a kind of work the model handled cleanly,
 a mistake it made, a brief wording that prevented one, what it cost against
 doing it in-session — rewrite that model's entry in place and commit it with the
-work it came from. An Opus reviewer keeps the same file the same way after a
-checkpoint review (`checkpoint-review.md` beside this file). It is a compressed
-summary, not a log: fold the new observation into what the entry already says,
-replace what it contradicts, and drop detail that no longer changes which model
-you pick or how you brief it. Stay under 100 lines; `scripts/vet.sh` fails it
-past that.
+work it came from. The Opus reviewer of `@.claude/skills/polish/passes.md` keeps
+the same file the same way, after a review of a session on that model. It is a
+compressed summary, not a log: fold the new observation into what the entry
+already says, replace what it contradicts, and drop detail that no longer
+changes which model you pick or how you brief it. Stay under 100 lines;
+`scripts/vet.sh` fails it past that.
 
 **An entry names the kind of work, never the task.** "A unittest suite against a
 hook" holds in any repo; a branch, file, PR or case count does not, and every

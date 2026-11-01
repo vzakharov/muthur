@@ -1,8 +1,10 @@
-# What delegated models can and cannot do
+# What the models below Opus can and cannot do
 
 One entry per `model:` value `Agent` takes below the delegating agent's own,
-kept per `delegation.md` § "Keeping `delegation-model-capabilities.md`", with
-the lessons that hold for every model first.
+kept per `go/delegation.md` § "Keeping `model-capabilities.md`" by two writers:
+the session that delegated to the model, and the Opus review that
+`polish/passes.md` runs over a session on it. The lessons that hold for every
+model come first.
 
 ## Across models
 
