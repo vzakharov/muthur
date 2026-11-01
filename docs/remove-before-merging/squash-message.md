@@ -3,21 +3,24 @@ Proposed squash body:
 ```
 A session below Opus wrote the Opus reviewer's brief itself, so what the
 reviewer knew of the request, the run and the diff was whatever the
-weaker model chose to put in. The review is now the third pass of
-/polish, in polish/passes.md: the reviewer reads its procedure from
-there and takes the scope from the polish floor.
+weaker model chose to put in. Now the session launches the reviewer
+with one line naming .claude/skills/go/review.md, the reviewer's whole
+procedure, and passes on nothing of its own. /polish stays on the
+session's model; the review follows it, below Opus only.
 
-The session launches it with one line naming passes.md, which tells the
-reviewer to ignore anything else the launcher wrote. The review fixes
-what is cheaper to do than to describe, or what the session's model is
-known not to follow, and answers with a verdict in the polish commit's
-Review: line; the closing commands are gated on that line, so the weaker
-session records nothing. /plan runs polish too on a session below Opus.
+The verdict lives in git: pass, fixed and fixed-relay end in a
+review(<verdict>): commit, which the checkpoint hook requires before a
+cutoff's closing step, with only working artifacts changed since. On
+revise the session fixes and asks the same reviewer to look again by
+SendMessage, so it keeps its findings and counts its looks.
 
-scripts/session-qa.py extracts the parent's questions and answers for
-the reviewer to read when it wants to; the transcript helpers it shares
-with relay-last-reply.py move to scripts/lib/session_transcript.py.
-delegation-model-capabilities.md moves to .claude/model-capabilities.md.
+scripts/floor.py is the one floor lookup /polish, the reviewer and the
+hook share: the newest commit of the given types, with base merges kept
+below it, so each sees the other's work since its own last run.
+scripts/session-qa.py prints a session's questions and answers for the
+reviewer; the transcript helpers it shares with relay-last-reply.py
+move to scripts/lib/session_transcript.py, and the model capabilities
+file moves to .claude/model-capabilities.md.
 
 Co-authored-by: Claude <noreply@anthropic.com>
 ```

@@ -1,13 +1,13 @@
 {
   "total": {
-    "inputTokens": 50,
-    "cacheWrite5mTokens": 132391,
-    "cacheWrite1hTokens": 55379,
-    "cacheReadTokens": 2476794,
-    "outputTokens": 10206,
-    "thinkingTokens": 4450,
-    "responses": 25,
-    "costUsd": 1.8046658000000002
+    "inputTokens": 133,
+    "cacheWrite5mTokens": 234316,
+    "cacheWrite1hTokens": 84710,
+    "cacheReadTokens": 7175646,
+    "outputTokens": 26135,
+    "thinkingTokens": 9497,
+    "responses": 66,
+    "costUsd": 3.8076212
   },
   "estimate": {
     "at": "2026-11-01T16:50:21.134Z",
@@ -41,52 +41,54 @@
   "branch": "claude/checkpoint-reviewer-procedure-wcfux3",
   "cwd": "/home/user/muthur",
   "openingPrompt": "/relay take claude/checkpoint-reviewer-procedure-wcfux3 — ревью вынесено из polish в отдельного подагента и запушено, дальше polish, догфуд нового ревью и обнов…",
-  "prs": [],
+  "prs": [
+    257
+  ],
   "url": "https://claude.ai/code/session_01DaohkFcprjdSKSRhqhU46L",
   "operator": "vzakharov",
   "firstResponseAt": "2026-11-01T16:50:06.678Z",
-  "lastResponseAt": "2026-11-01T16:52:26.224Z",
+  "lastResponseAt": "2026-11-01T16:55:53.719Z",
   "pricesAsOf": "2026-10-06",
   "claudeCodeTotalUsd": null,
   "ownTurns": {
-    "inputTokens": 18,
+    "inputTokens": 46,
     "cacheWrite5mTokens": 0,
-    "cacheWrite1hTokens": 55379,
-    "cacheReadTokens": 742772,
-    "outputTokens": 1485,
-    "thinkingTokens": 183,
-    "responses": 8,
-    "costUsd": 0.6213584000000001
+    "cacheWrite1hTokens": 84710,
+    "cacheReadTokens": 2253954,
+    "outputTokens": 5840,
+    "thinkingTokens": 802,
+    "responses": 21,
+    "costUsd": 1.2454547999999999
   },
   "subagents": {
-    "inputTokens": 32,
-    "cacheWrite5mTokens": 132391,
+    "inputTokens": 87,
+    "cacheWrite5mTokens": 234316,
     "cacheWrite1hTokens": 0,
-    "cacheReadTokens": 1734022,
-    "outputTokens": 8721,
-    "thinkingTokens": 4267,
-    "responses": 17,
-    "costUsd": 1.1833074000000001
+    "cacheReadTokens": 4921692,
+    "outputTokens": 20295,
+    "thinkingTokens": 8695,
+    "responses": 45,
+    "costUsd": 2.5621664000000006
   },
   "byRate": {
     "claude-opus-5-5/standard": {
-      "inputTokens": 50,
-      "cacheWrite5mTokens": 132391,
-      "cacheWrite1hTokens": 55379,
-      "cacheReadTokens": 2476794,
-      "outputTokens": 10206,
-      "thinkingTokens": 4450,
-      "responses": 25,
-      "costUsd": 1.8046658000000002
+      "inputTokens": 133,
+      "cacheWrite5mTokens": 234316,
+      "cacheWrite1hTokens": 84710,
+      "cacheReadTokens": 7175646,
+      "outputTokens": 26135,
+      "thinkingTokens": 9497,
+      "responses": 66,
+      "costUsd": 3.8076212
     }
   },
   "warnings": [],
   "compactions": [],
   "telemetry": {
-    "events": 23,
-    "matched": 23,
-    "matchedTableUsd": 1.7314958,
-    "matchedEventUsd": 1.7314958000000003,
+    "events": 66,
+    "matched": 66,
+    "matchedTableUsd": 3.8076212,
+    "matchedEventUsd": 3.8076212000000007,
     "unseen": {}
   }
 }
