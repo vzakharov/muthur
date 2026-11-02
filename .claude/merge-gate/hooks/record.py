@@ -1,9 +1,7 @@
 """What the merge gate reads off the PR's conversation comments: the attestation
 and the squash record. Each mirrors a prose home — the attestation template in
 `.claude/skills/finalize/attest.md`, the read-back in
-`.claude/skills/finalize/merge.md` § "Merging". `test_merge_gate.py` asserts
-`VALUES` equals the template's alternatives line by line; the squash read-back
-has no such check.
+`.claude/skills/finalize/merge.md` § "Merging".
 """
 
 from __future__ import annotations
