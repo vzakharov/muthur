@@ -34,16 +34,18 @@ Whether the work passes the repository's quality bar: `CLAUDE.md`, the skills
 that ran, the operator's request, and the plan where there is one — held as you
 would hold your own work. Where `/polish` ran, it read the diff for duplication
 and prose; this is the look at the whole: whether the work answers the request,
-whether it is built right, and whether what the session told the operator — PR
-body, squash proposal, thread replies, its last messages — matches what the diff
-does.
+whether it is built right, and whether what the session last told the operator
+matches what the diff does. The PR body, the squash proposal comment and the
+thread replies are not yours to check or fix: every cutoff writes them after
+this review, so a stale one is no finding.
 
 **The request** comes from the plan's verbatim `## Request` section in
 `docs/plans/` where the branch has a plan, the PR and the issue it links, and
 any relay summary under `docs/remove-before-merging/` — a relayed session's own
-transcript starts after the request. The session's conversation is there if you
-want it, not a step you must take: when those records are clear, they are
-enough, and when they and the git history disagree, read it:
+transcript starts after the request. The session's conversation, where its
+transcript can be found, is there if you want it, not a step you must take: when
+those records are clear, they are enough, and when they and the git history
+disagree, read it:
 
 ```bash
 python3 scripts/session-qa.py [--since <floor>] [--tools]
@@ -60,10 +62,7 @@ costs more than making it in place — a stale reference, a renamed token, a
 one-line wording; or you cannot describe it in a form the session's model
 follows.** Judge the last from the entry for that model in
 `.claude/model-capabilities.md`, its **Misses** above all, and from what the
-review just saw. Answer `revise` only for what is describable that way. The PR
-body, the squash proposal comment and the thread replies are posts to GitHub
-that `/pr`, `/finalize` and the session own, so a stale one is a `revise`
-finding, never a fix of yours.
+review just saw. Answer `revise` only for what is describable that way.
 
 **What the review shows about the session's model** goes into that model's
 **Handles** and **Misses** in `.claude/model-capabilities.md`, under the file's
