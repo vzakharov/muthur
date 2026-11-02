@@ -77,8 +77,8 @@ commits, and its report names the verdict in a line.
   cutoff was `/finalize`.
 - **`none`** — the reviewer found nothing in its scope, so the session launched
   a review it had no work for, or the floor stands wrong. Report that to the
-  operator and stop: the gate stays shut, and launching another reviewer would
-  look at nothing again.
+  operator and stop rather than launch another reviewer, which would look at
+  nothing again. The verdict leaves no commit, so the gate stands as it was.
 
 Either relay is an escalation, which `/relay` Step 3 starts on Opus. Work
 committed after a passing verdict — a vet fix, a conflict resolution — shuts the
