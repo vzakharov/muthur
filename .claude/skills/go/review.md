@@ -42,10 +42,9 @@ this review, so a stale one is no finding.
 **The request** comes from the plan's verbatim `## Request` section in
 `docs/plans/` where the branch has a plan, the PR and the issue it links, and
 any relay summary under `docs/remove-before-merging/` — a relayed session's own
-transcript starts after the request. The session's conversation, where its
-transcript can be found, is there if you want it, not a step you must take: when
-those records are clear, they are enough, and when they and the git history
-disagree, read it:
+transcript starts after the request. The session's conversation is there if you
+want it, not a step you must take: when those records are clear, they are
+enough, and when they and the git history disagree, read it:
 
 ```bash
 python3 scripts/session-qa.py [--since <floor>] [--tools]
