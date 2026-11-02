@@ -14,8 +14,9 @@ in `.claude/settings.json`:
 - `UserPromptSubmit` opening with `/go` or `/implement`, since a typed slash
   command expands without any tool call.
 
-`MUTHUR_EXPERIMENTAL_STENO=on` adds `steno.md`, and with it the model notes even under
-`MUTHUR_DELEGATION=off`, since steno's verdict goes into their `haiku` entry.
+`MUTHUR_EXPERIMENTAL_STENO=on` adds `steno.md`, and with it the model notes
+even under `MUTHUR_DELEGATION=off`, since steno's verdict goes into their
+`haiku` entry.
 
 Once per session: a marker under `tmp/go-delegation/` keeps a later entry
 silent, the files being in context already. Fails open — an unreadable payload
