@@ -30,7 +30,9 @@ model come first.
   thread replies, applied whole in one round, the replies opening with the
   session's words as `CLAUDE.md` asks. Implementing a plan's remaining parts
   after a relay — a gate moved from session state to git with throwaway-repo
-  tests, a reviewer launched with exactly the one line its skill gives.
+  tests, a reviewer launched with exactly the one line its skill gives. A batch
+  of review comments on skill prose answered in one round, a renamed commit type
+  followed through every hook, test, catalog entry and skill naming it.
 - **Misses:** planning a reader for an undocumented record format, it drew the
   shapes from the one existing reader it opened and missed those other readers
   in the tree already handle; and it scoped a new gate by a state that holds for
@@ -40,18 +42,20 @@ model come first.
   one-line requirement with no mechanism behind it. Moving that gate's state
   from the session to git, it made the gate branch-wide (denying a flip the
   session's own cutoff never covered), and its exemptions named commits that
-  land after the guarded command while missing the ones before it. After an Opus
-  review it edited the plan's text again unreviewed, judging the edit too small;
-  and dropping a part of the design, it changed the plan alone, leaving the PR
-  body, the squash proposal and the thread replies that promised the part saying
-  it was still in; renaming a planned module, it left the old name in the PR
-  body and the squash proposal. Moving code onto a shared helper, it passed its
-  own callback where the helper calls back with the arguments in the other
-  order, on a path no test ran. Ask it to list every reader of the format, and,
-  for a gate, every commit and session that reaches the guarded command, in the
-  order the skills make them; on a rewrite, to diff the plan against the
-  analysis it carries out; on dropping or renaming a part, to grep every place
-  that describes the change for it; on a refactor, to test each path it moved.
+  land after the guarded command while missing the ones before it; adding a
+  verdict, it stated the gate's state after it from one case, missing the one
+  where an earlier review had already opened it. After an Opus review it edited
+  the plan's text again unreviewed, judging the edit too small; and dropping a
+  part of the design, it changed the plan alone, leaving the PR body, the squash
+  proposal and the thread replies that promised the part saying it was still in;
+  renaming a planned module, it left the old name in the PR body and the squash
+  proposal. Moving code onto a shared helper, it passed its own callback where
+  the helper calls back with the arguments in the other order, on a path no test
+  ran. Ask it to list every reader of the format, and, for a gate, every commit
+  and session that reaches the guarded command, in the order the skills make
+  them; on a rewrite, to diff the plan against the analysis it carries out; on
+  dropping or renaming a part, to grep every place that describes the change for
+  it; on a refactor, to test each path it moved.
 - **Brief:** naming the style reference and the run-until-green command was
   enough; ask for "anything that surprised you" — it reports useful edges.
 - **Cost, by eye:** that suite, a few hundred lines, cost about twice as much
