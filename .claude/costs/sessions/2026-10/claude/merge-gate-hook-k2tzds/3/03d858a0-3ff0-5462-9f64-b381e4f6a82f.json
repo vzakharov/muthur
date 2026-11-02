@@ -1,0 +1,81 @@
+{
+  "total": {
+    "inputTokens": 12,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 48070,
+    "cacheReadTokens": 428582,
+    "outputTokens": 975,
+    "thinkingTokens": 19,
+    "responses": 5,
+    "costUsd": 0.48982440000000005
+  },
+  "estimate": null,
+  "orientation": {
+    "endedBy": null,
+    "endedOn": null,
+    "endedAt": null,
+    "contextTokens": null,
+    "spend": {
+      "inputTokens": 12,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 48070,
+      "cacheReadTokens": 428582,
+      "outputTokens": 975,
+      "thinkingTokens": 19,
+      "responses": 5,
+      "costUsd": 0.48982440000000005
+    }
+  },
+  "sessionId": "03d858a0-3ff0-5462-9f64-b381e4f6a82f",
+  "branch": "claude/merge-gate-hook-k2tzds",
+  "cwd": "/home/user/muthur",
+  "openingPrompt": "/handle claude/merge-gate-hook-k2tzds",
+  "prs": [],
+  "url": "https://claude.ai/code/session_01DaohkDjMxeXJ2DhKD8aqgY",
+  "operator": "vzakharov",
+  "firstResponseAt": "2026-11-02T02:52:47.676Z",
+  "lastResponseAt": "2026-11-02T02:53:03.476Z",
+  "pricesAsOf": "2026-10-06",
+  "claudeCodeTotalUsd": null,
+  "ownTurns": {
+    "inputTokens": 12,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 48070,
+    "cacheReadTokens": 428582,
+    "outputTokens": 975,
+    "thinkingTokens": 19,
+    "responses": 5,
+    "costUsd": 0.48982440000000005
+  },
+  "subagents": {
+    "inputTokens": 0,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 0,
+    "cacheReadTokens": 0,
+    "outputTokens": 0,
+    "thinkingTokens": 0,
+    "responses": 0,
+    "costUsd": 0.0
+  },
+  "byRate": {
+    "claude-opus-5-5/standard": {
+      "inputTokens": 12,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 48070,
+      "cacheReadTokens": 428582,
+      "outputTokens": 975,
+      "thinkingTokens": 19,
+      "responses": 5,
+      "costUsd": 0.48982440000000005
+    }
+  },
+  "warnings": [],
+  "compactions": [],
+  "telemetry": {
+    "events": 5,
+    "matched": 5,
+    "matchedTableUsd": 0.48982440000000005,
+    "matchedEventUsd": 0.48982439999999994,
+    "unseen": {}
+  }
+}
