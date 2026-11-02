@@ -1,15 +1,32 @@
 {
   "total": {
-    "inputTokens": 21,
-    "cacheWrite5mTokens": 0,
-    "cacheWrite1hTokens": 53489,
-    "cacheReadTokens": 946033,
-    "outputTokens": 2743,
-    "thinkingTokens": 538,
-    "responses": 10,
-    "costUsd": 0.4306346
+    "inputTokens": 633,
+    "cacheWrite5mTokens": 220970,
+    "cacheWrite1hTokens": 121863,
+    "cacheReadTokens": 7464911,
+    "outputTokens": 34031,
+    "thinkingTokens": 15098,
+    "responses": 67,
+    "costUsd": 3.2471379000000002
   },
-  "estimate": null,
+  "estimate": {
+    "at": "2026-11-02T02:10:18.901Z",
+    "parts": [
+      {
+        "hours": 2.0,
+        "grade": "senior",
+        "role": "developer",
+        "comment": "review feedback on a hook, a floor script and agent-facing procedure prose: eight threads needing design calls (one commit type, an empty-scope verdict) plus matching tests and catalog edits"
+      },
+      {
+        "hours": 1.0,
+        "grade": "middle",
+        "role": "editor",
+        "comment": "the procedure prose needed rewording against the operator's comments"
+      }
+    ],
+    "comment": null
+  },
   "orientation": {
     "endedBy": "end_turn",
     "endedOn": null,
@@ -36,50 +53,71 @@
   "url": "https://claude.ai/code/session_01DaohkDGp2zE67i64rKqBEe",
   "operator": "vzakharov",
   "firstResponseAt": "2026-11-02T02:03:27.312Z",
-  "lastResponseAt": "2026-11-02T02:04:03.159Z",
+  "lastResponseAt": "2026-11-02T02:12:25.221Z",
   "pricesAsOf": "2026-10-06",
   "claudeCodeTotalUsd": null,
   "ownTurns": {
-    "inputTokens": 21,
+    "inputTokens": 66,
     "cacheWrite5mTokens": 0,
-    "cacheWrite1hTokens": 53489,
-    "cacheReadTokens": 946033,
-    "outputTokens": 2743,
-    "thinkingTokens": 538,
-    "responses": 10,
-    "costUsd": 0.4306346
+    "cacheWrite1hTokens": 121863,
+    "cacheReadTokens": 4447719,
+    "outputTokens": 20700,
+    "thinkingTokens": 8550,
+    "responses": 34,
+    "costUsd": 1.5841278
   },
   "subagents": {
-    "inputTokens": 0,
-    "cacheWrite5mTokens": 0,
+    "inputTokens": 61,
+    "cacheWrite5mTokens": 220517,
     "cacheWrite1hTokens": 0,
-    "cacheReadTokens": 0,
-    "outputTokens": 0,
-    "thinkingTokens": 0,
-    "responses": 0,
-    "costUsd": 0.0
+    "cacheReadTokens": 2912059,
+    "outputTokens": 13322,
+    "thinkingTokens": 6548,
+    "responses": 32,
+    "costUsd": 1.6495828000000001
   },
   "byRate": {
     "claude-sonnet-5-5/standard": {
-      "inputTokens": 21,
-      "cacheWrite5mTokens": 0,
-      "cacheWrite1hTokens": 53489,
-      "cacheReadTokens": 946033,
-      "outputTokens": 2743,
-      "thinkingTokens": 538,
-      "responses": 10,
-      "costUsd": 0.4306346
+      "inputTokens": 591,
+      "cacheWrite5mTokens": 103213,
+      "cacheWrite1hTokens": 121863,
+      "cacheReadTokens": 5362021,
+      "outputTokens": 25225,
+      "thinkingTokens": 10201,
+      "responses": 45,
+      "costUsd": 2.0614869000000002
+    },
+    "claude-opus-5-5/standard": {
+      "inputTokens": 42,
+      "cacheWrite5mTokens": 117757,
+      "cacheWrite1hTokens": 0,
+      "cacheReadTokens": 2102890,
+      "outputTokens": 8806,
+      "thinkingTokens": 4897,
+      "responses": 22,
+      "costUsd": 1.1856509999999998
     }
   },
   "warnings": [
-    "prices.json priced the 10 responses the events also priced at $0.4306, against the events' $0.3360: a rate in the table is likely out of date"
+    "prices.json priced the 66 responses the events also priced at $3.2337, against the events' $2.7080: a rate in the table is likely out of date"
   ],
   "compactions": [],
   "telemetry": {
-    "events": 10,
-    "matched": 10,
-    "matchedTableUsd": 0.4306346,
-    "matchedEventUsd": 0.3360313,
-    "unseen": {}
+    "events": 67,
+    "matched": 66,
+    "matchedTableUsd": 3.2337106,
+    "matchedEventUsd": 2.7080218000000005,
+    "unseen": {
+      "prompt_suggestion": {
+        "inputTokens": 506,
+        "cacheWrite5mTokens": 453,
+        "cacheWrite1hTokens": 0,
+        "cacheReadTokens": 105133,
+        "outputTokens": 9,
+        "thinkingTokens": 0,
+        "responses": 1,
+        "costUsd": 0.013427300000000001
+      }
+    }
   }
 }
