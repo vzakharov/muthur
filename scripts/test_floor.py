@@ -98,12 +98,12 @@ class FindFloor(FloorTestCase):
     def test_the_newest_exact_match(self) -> None:
         older = self.commit({}, "polish: first")
         self.assertEqual(floor.find_floor(self.root, "origin/main", ["polish:"]), (older, "polish: first"))
-        newer = self.commit({}, "review(fixed): second")
+        newer = self.commit({}, "review: second")
         self.commit({}, "polish(prose only): focused")
         self.commit({}, "fix: polish: in the middle")
         self.assertEqual(floor.find_floor(self.root, "origin/main", ["polish:"])[0], older)
-        found = floor.find_floor(self.root, "origin/main", ["review(pass):", "review(fixed):"])
-        self.assertEqual(found, (newer, "review(fixed): second"))
+        found = floor.find_floor(self.root, "origin/main", ["polish:", "review:"])
+        self.assertEqual(found, (newer, "review: second"))
 
 
 class ScopeStart(FloorTestCase):
@@ -140,7 +140,7 @@ class Cli(FloorTestCase):
 
     def test_full_and_no_floor_start_at_the_base(self) -> None:
         self.commit({"a.py": "a"}, "feat: work")
-        self.assertEqual(self.cli("review(pass):")[0], "floor none")
+        self.assertEqual(self.cli("review:")[0], "floor none")
         self.commit({}, "polish: tidy")
         start = self.cli("--full", "polish:")[1]
         self.assertEqual(self.changed(start.removeprefix("from ")), ["a.py"])

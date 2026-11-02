@@ -9,8 +9,7 @@ review, not two.
 
 The session writes no brief: the reviewer reads its procedure from
 `@.claude/skills/go/review.md`, finds the scope and the request itself, and
-records a verdict that lets the session through as a `review(<verdict>):`
-commit.
+records a verdict that lets the session through as a `review:` commit.
 
 ## Who runs it
 
@@ -24,9 +23,9 @@ the model the session's transcript records on its latest reply:
 - for an entered cutoff, the hook denies the step that would close it — the
   `git mv` out of `*.draft.do-not-implement.md` for `/plan`, the `git mv` to
   `*.completed.md` for `/go`, `gh pr ready` for `/finalize` — unless the branch
-  carries a `review(pass|fixed|fixed-relay):` commit with nothing but the loop's
-  working artifacts changed since. A skipped review, or work done after it,
-  stops the session there rather than passing unseen.
+  carries a `review:` commit with nothing but the loop's working artifacts
+  changed since. A skipped review, or work done after it, stops the session
+  there rather than passing unseen.
 
 A cutoff the session never entered is not gated — a Sonnet `/go` flipping a plan
 an Opus `/plan` wrote has no review of its own to show. The gate also needs the
@@ -71,11 +70,15 @@ commits, and its report names the verdict in a line.
   The gate stays shut until a look answers otherwise.
 - **`fixed-relay`** — the reviewer fixed what it found, and the work is beyond
   the session's model. Finish the skill's remaining steps, then run `/relay`
-  (`@.claude/skills/relay/SKILL.md`) with no argument, so the Opus successor
-  takes the operator's next message.
+  (`@.claude/skills/relay/SKILL.md`) with no argument. The successor it starts
+  runs on Opus (below), and takes the operator's next message.
 - **`relay`** — the reviewer cannot fix it. Run `/relay` at once, its argument
   the reviewer's findings to act on, followed by the skill to re-run where the
   cutoff was `/finalize`.
+- **`none`** — the reviewer found nothing in its scope, so the session launched
+  a review it had no work for, or the floor stands wrong. Report that to the
+  operator and stop: the gate stays shut, and launching another reviewer would
+  look at nothing again.
 
 Either relay is an escalation, which `/relay` Step 3 starts on Opus. Work
 committed after a passing verdict — a vet fix, a conflict resolution — shuts the

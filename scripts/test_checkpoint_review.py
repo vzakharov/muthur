@@ -2,10 +2,9 @@
 """Drives `.claude/hooks/checkpoint-review.py` as the harness does — a payload on
 stdin, in a throwaway git repository. What it protects is that a session below
 Opus gets the procedure on entering a cutoff skill, that the command closing an
-entered cutoff is denied until the branch carries a `review(pass|fixed|fixed-relay):`
-commit with nothing but working artifacts since, that
-an Opus session and a cutoff the session never entered are never stopped, and
-that the hook fails open.
+entered cutoff is denied until the branch carries a `review:` commit with nothing
+but working artifacts since, that an Opus session and a cutoff the session never
+entered are never stopped, and that the hook fails open.
 
 Run by path (`python3 scripts/test_checkpoint_review.py`), as
 `scripts/check-muthur.sh` does.
@@ -73,8 +72,8 @@ class CheckpointTestCase(unittest.TestCase):
             self.git("add", name)
         self.git("commit", "-q", "--allow-empty", "-m", message)
 
-    def review(self, verdict: str = "pass", files: Optional[Dict[str, Optional[str]]] = None) -> None:
-        self.commit(files or {}, f"review({verdict}): looked")
+    def review(self, files: Optional[Dict[str, Optional[str]]] = None) -> None:
+        self.commit(files or {}, "review: looked")
 
     def model(self, *models: str, sidechain: Optional[str] = None) -> None:
         entries: List[dict] = [{"type": "user", "message": {"content": "hi"}}]
@@ -216,26 +215,22 @@ class Gate(CheckpointTestCase):
     def test_open_after_a_passing_review(self) -> None:
         self.enter_all()
         self.commit({"src.py": "2"}, "feat: work")
-        self.review("pass")
+        self.review()
         for command in CLOSING.values():
             self.assert_allowed(command)
 
-    def test_each_committed_verdict_opens(self) -> None:
+    def test_a_review_that_fixed_something_opens(self) -> None:
         self.enter_all()
         self.commit({"src.py": "2"}, "feat: work")
-        for verdict in ("pass", "fixed", "fixed-relay"):
-            with self.subTest(verdict=verdict):
-                self.review(verdict, {"src.py": verdict})
-                self.assert_allowed(CLOSING["go"])
+        self.review({"src.py": "fixed"})
+        self.assert_allowed(CLOSING["go"])
 
     def test_other_subjects_do_not_count_as_a_review(self) -> None:
         self.enter_all()
         for subject in (
-            "review(revise): looked",
-            "review(relay): looked",
-            "review: looked",
+            "review(pass): looked",
             "polish: tidy\n\nReview: pass",
-            "fix: per review(pass): x",
+            "fix: per review: x",
         ):
             with self.subTest(subject=subject):
                 self.commit({}, subject)
@@ -243,15 +238,15 @@ class Gate(CheckpointTestCase):
 
     def test_the_newest_review_commit_decides(self) -> None:
         self.enter_all()
-        self.review("pass")
+        self.review()
         self.commit({"src.py": "2"}, "fix: revised")
         self.assert_denied(CLOSING["go"])
-        self.review("fixed", {"src.py": "3"})
+        self.review({"src.py": "3"})
         self.assert_allowed(CLOSING["go"])
 
     def test_working_artifacts_after_the_review_leave_it_open(self) -> None:
         self.enter_all()
-        self.review("pass")
+        self.review()
         self.commit({"docs/pr/251/pr.md": "export"}, "chore: export")
         self.commit({"docs/remove-before-merging/relay-1.md": "r", "docs/issue/9/issue.md": "i"}, "docs: relay")
         self.commit({".claude/costs/sessions/2026-10/b/1/s.json": "{}"}, "chore: cost row")
@@ -259,7 +254,7 @@ class Gate(CheckpointTestCase):
 
     def test_the_plan_sweep_and_lifecycle_flips_leave_it_open(self) -> None:
         self.enter_all()
-        self.review("pass")
+        self.review()
         self.git("mv", "docs/plans/x.md", "docs/plans/x.completed.md")
         self.git("commit", "-q", "-m", "chore: flip")
         self.assert_allowed(CLOSING["finalize"])
@@ -268,17 +263,17 @@ class Gate(CheckpointTestCase):
 
     def test_a_plan_text_edit_or_code_after_the_review_shuts_it(self) -> None:
         self.enter_all()
-        self.review("pass")
+        self.review()
         self.commit({"docs/plans/x.md": "plan, revised"}, "docs: plan")
         self.assert_denied(CLOSING["go"])
-        self.review("pass")
+        self.review()
         self.commit({"src.py": "2"}, "fix: late")
         reason = self.assert_denied(CLOSING["go"])
         self.assertIn("src.py", reason)
 
     def test_a_base_merge_after_the_review_leaves_it_open(self) -> None:
         self.enter_all()
-        self.review("pass")
+        self.review()
         self.git("checkout", "-q", "main")
         self.commit({"other.py": "landed"}, "feat: landed on main")
         self.git("update-ref", "refs/remotes/origin/main", "HEAD")
@@ -289,7 +284,7 @@ class Gate(CheckpointTestCase):
     def test_a_conflict_resolution_after_the_review_shuts_it(self) -> None:
         self.enter_all()
         self.commit({"src.py": "feature"}, "feat: work")
-        self.review("pass")
+        self.review()
         self.git("checkout", "-q", "main")
         self.commit({"src.py": "main"}, "feat: main's own")
         self.git("update-ref", "refs/remotes/origin/main", "HEAD")
@@ -300,7 +295,7 @@ class Gate(CheckpointTestCase):
 
     def test_a_polish_after_the_review_shuts_it_only_if_it_changed_the_tree(self) -> None:
         self.enter_all()
-        self.review("pass")
+        self.review()
         self.commit({}, "polish: nothing to change")
         self.assert_allowed(CLOSING["go"])
         self.commit({"src.py": "tidied"}, "polish: tidy")

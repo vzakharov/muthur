@@ -13,7 +13,7 @@ is the session's account too, held against the diff like any claim.
 ## Scope: the branch since the last review
 
 ```bash
-python3 scripts/floor.py 'review(pass):' 'review(fixed):' 'review(fixed-relay):'
+python3 scripts/floor.py 'review:'
 ```
 
 It finds the newest commit a review left (§ "The commit") and prints the ref the
@@ -23,8 +23,10 @@ as `@.claude/skills/polish/passes.md` § "Scope: the branch, not the session"
 reads its own, a staged copy by its diff against the real file. The commits
 below the floor and the rest of the tree stay readable as context.
 
-A scope with nothing in it has nothing to review: say so and answer `pass`
-without a commit, since the floor already stands.
+A scope with nothing in it means something is off — the session launched a
+review it had no work for, or the floor stands where it should not. Make no
+commit, say so in the report, and end it `VERDICT: none`, so the session learns
+of it rather than carrying on over a review that looked at nothing.
 
 ## What to check
 
@@ -37,11 +39,11 @@ body, squash proposal, thread replies, its last messages — matches what the di
 does.
 
 **The request** comes from the plan's verbatim `## Request` section in
-`docs/plans/`, the PR and the issue it links, and any relay summary under
-`docs/remove-before-merging/` — a relayed session's own transcript starts after
-the request. The session's conversation is there if you want it, not a step you
-must take: when those records are clear, they are enough, and when they and the
-git history disagree, read it:
+`docs/plans/` where the branch has a plan, the PR and the issue it links, and
+any relay summary under `docs/remove-before-merging/` — a relayed session's own
+transcript starts after the request. The session's conversation is there if you
+want it, not a step you must take: when those records are clear, they are
+enough, and when they and the git history disagree, read it:
 
 ```bash
 python3 scripts/session-qa.py [--since <floor>] [--tools]
@@ -52,12 +54,13 @@ It prints each operator message as `## Q` and each reply of the session as
 before any floor. In a session whose transcript the script cannot find, there is
 no conversation to read: say so and work from the records.
 
-**Fix what is cheaper to do than to describe, and what you cannot describe in a
-form the session's model follows.** Judge the second from the entry for that
-model in `.claude/model-capabilities.md`, its **Misses** above all, and from
-what the review just saw. Answer `revise` only for what is describable that way.
-You never touch the PR, so a stale PR body, squash proposal comment or thread
-reply is always a `revise` finding.
+**Fix a finding when either holds: it is cheaper to do than to describe, or you
+cannot describe it in a form the session's model follows.** Judge the second
+from the entry for that model in `.claude/model-capabilities.md`, its **Misses**
+above all, and from what the review just saw. Answer `revise` only for what is
+describable that way. The PR body, the squash proposal comment and the thread
+replies are posts to GitHub that `/pr`, `/finalize` and the session own, so a
+stale one is a `revise` finding, never a fix of yours.
 
 **What the review shows about the session's model** goes into that model's
 **Handles** and **Misses** in `.claude/model-capabilities.md`, under the file's
@@ -83,13 +86,13 @@ Best to worst; pick one.
 
 **A look again** reads the session's commits since your last look against your
 findings, and anything else they changed as fresh work. The third look cannot
-answer `revise`: it fixes the rest or answers `relay`, since telling the session
-what to do a third time costs more than doing it.
+answer `revise`: it fixes the rest or answers `relay`, so that the exchange does
+not spiral.
 
 ## The commit
 
 **`pass`, `fixed` and `fixed-relay` end the run in a commit whose subject opens
-with `review(<verdict>):`; `revise` and `relay` make none.** Fixes and
+with `review:`; `revise`, `relay` and `none` make none.** Fixes and
 `.claude/model-capabilities.md` rewrites commit as you go under the type each
 would carry anyway, and the verdict commit comes last, empty unless it holds the
 last of them:
@@ -102,7 +105,7 @@ That commit is the next review's floor and what
 `.claude/hooks/checkpoint-review.py` opens the session's closing step on — the
 reason it waits for a verdict that lets the session through, and the reason
 fixes made under a `revise` stay above the floor, in your next look's scope.
-`review(...)` is a branch-local type for the reason `polish:` is
+`review:` is a branch-local type for the reason `polish:` is
 (`@.claude/skills/polish/passes.md` § "The floor"). Push before reporting: in a
 remote session an unpushed commit is invisible to the operator.
 

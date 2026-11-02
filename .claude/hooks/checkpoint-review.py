@@ -28,7 +28,7 @@ session's first prompt arrives before any reply records one; the gate, which
 runs later, decides.
 
 What the gate cannot see: whether the reviewer was Opus, or was launched from the
-one line; and a `review(...)` commit the session wrote itself. It guards a
+one line; and a `review:` commit the session wrote itself. It guards a
 review skipped or outdated by later edits. The base is `origin/HEAD`'s branch,
 else `main`, unfetched: a PR on another base reads a wider range, which still
 finds the branch's newest review commit.
@@ -72,8 +72,8 @@ SWITCH = "MUTHUR_CHECKPOINT_REVIEW"
 HOOK = "checkpoint-review"
 PROCEDURE = Path(".claude") / "skills" / "go" / "checkpoint-review.md"
 CUTOFFS = {"plan": "plan", "go": "go", "implement": "go", "finalize": "finalize"}
-# The verdicts the reviewer commits, `go/review.md` § "The commit".
-REVIEWED = ("review(pass):", "review(fixed):", "review(fixed-relay):")
+# The commit a verdict that lets the session through leaves, `go/review.md` § "The commit".
+REVIEWED = ("review:",)
 WEAKER = ("sonnet", "haiku")
 CHUNK = 1 << 16
 # `.claude/costs/sessions/` holds the cost ledger's display copies, which

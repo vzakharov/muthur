@@ -5,8 +5,9 @@ the newest commit that pass left, or its whole change when it has left none.
 Usage:
   python3 scripts/floor.py [--full] [--base BRANCH] TYPE...
 
-TYPE is a commit subject's first token, exactly — `polish:`, `review(pass):` —
-and the **floor** is the newest commit in `origin/<base>..HEAD` whose subject
+TYPE is a commit subject's first token, exactly — `polish:`, `review:`; a scoped
+subject like `polish(prose only):` is a different token, which `/polish` relies
+on — and the **floor** is the newest commit in `origin/<base>..HEAD` whose subject
 opens with one of them. Two lines go to stdout:
 
   floor <sha> <subject>        or   floor none

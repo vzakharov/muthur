@@ -40,8 +40,8 @@
   if neither were there. Also carries `checkpoint-review.md`, what a session
   below Opus does at each cutoff of `/plan`, `/go` and `/finalize`: launch an
   Opus reviewer that reads its procedure from `review.md` and commits a
-  `review(<verdict>):` mark, escalating through `/relay` to an Opus session when
-  the work is beyond it; `MUTHUR_CHECKPOINT_REVIEW=off` turns the gate off.
+  `review:` mark, escalating through `/relay` to an Opus session when the work
+  is beyond it; `MUTHUR_CHECKPOINT_REVIEW=off` turns the gate off.
   - **Pulls in:** `/polish`, `scripts/floor.py` (G1); `scripts/session-qa.py`
     (G4); `/from-branch`, `/plan`, `/pr`, `/relay`, `/task`;
     `.claude/hooks/go-delegation.py`, `.claude/hooks/checkpoint-review.py`;
@@ -63,9 +63,9 @@
   read off its transcript, is Sonnet or Haiku to `checkpoint-review.md`: deliver
   it on entering `/plan`, `/go` or `/finalize`, and deny the command closing
   that cutoff — the draft flip, the `*.completed.md` flip, `gh pr ready` — until
-  the branch carries a `review(pass|fixed|fixed-relay):` commit with only
-  working artifacts after it; silent under `MUTHUR_CHECKPOINT_REVIEW=off`.
-  Stdlib-only, tested by `scripts/test_checkpoint_review.py`.
+  the branch carries a `review:` commit with only working artifacts after it;
+  silent under `MUTHUR_CHECKPOINT_REVIEW=off`. Stdlib-only, tested by
+  `scripts/test_checkpoint_review.py`.
   - **Requires:** `python3` ≥3.9, `git`, `.claude/settings.json` wiring (G4)
   - **Pulls in:** `/go`, `scripts/floor.py` (G1),
     `.claude/hooks/session_state.py`, `.claude/hooks/skill_entry.py` (G4)
