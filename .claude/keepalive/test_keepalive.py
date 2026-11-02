@@ -53,23 +53,26 @@ class HookCase(unittest.TestCase):
     def env(self, extra: Optional[Dict[str, str]]) -> Dict[str, str]:
         return {"PATH": "/usr/bin:/bin", "CLAUDE_PROJECT_DIR": str(self.root), **(extra or {})}
 
-    def start_watcher(self) -> "subprocess.Popen[str]":
+    def start_watcher(self, env: Optional[Dict[str, str]] = None) -> "subprocess.Popen[str]":
         return subprocess.Popen(
             [sys.executable, str(HOOK), "watch", "sess", str(self.transcript)],
             stderr=subprocess.PIPE,
             text=True,
-            env=self.env(None),
+            env=self.env(env),
         )
 
+    def await_lock(self, by: float) -> None:
+        """Returns once a started watcher holds its lock — the state file is
+        written under it — failing at `by`."""
+        while not (self.state / "sess.json").exists():
+            self.assertLess(time.time(), by)
+            time.sleep(0.05)
+
     def running_watcher(self) -> "subprocess.Popen[str]":
-        """A watcher a minute from its wake, past taking its lock — the state
-        file is written under it."""
+        """A watcher a minute from its wake, past taking its lock."""
         self.knob(60)
         watcher = self.start_watcher()
-        deadline = time.time() + 10
-        while not (self.state / "sess.json").exists():
-            self.assertLess(time.time(), deadline)
-            time.sleep(0.05)
+        self.await_lock(time.time() + 10)
         return watcher
 
     def wake(self) -> None:
@@ -108,9 +111,11 @@ class HookCase(unittest.TestCase):
 class WhenAnOperatorPromptArrives(HookCase):
     def test_the_agent_is_told_to_start_the_watcher_unless_told_to_stop(self) -> None:
         out, _ = self.prompt()
-        self.assertIn("As this turn's last action, start the cache keepalive's watcher", out)
+        self.assertIn("As this turn's first action, start the cache keepalive's watcher", out)
         self.assertIn(f"{HOOK} watch sess {self.transcript}", out)
         self.assertIn("Skip it when the operator's message asks to stop the keepalive", out)
+        self.assertIn("or when the operator's message asks to park the session", out)
+        self.assertIn("then run `/relay park`", out)
 
     def test_a_running_watcher_is_left_to_the_agent_to_stop(self) -> None:
         self.session(ago=1)
@@ -131,7 +136,7 @@ class WhenAnOperatorPromptArrives(HookCase):
         watcher.kill()
         watcher.communicate()
         out, _ = self.prompt()
-        self.assertIn("As this turn's last action, start the cache keepalive's watcher", out)
+        self.assertIn("As this turn's first action, start the cache keepalive's watcher", out)
 
     def test_a_second_watcher_leaves_the_first_one_running(self) -> None:
         self.session(ago=1)
@@ -203,6 +208,22 @@ class TheDeadline(HookCase):
 
     def test_a_session_with_no_transcript_yet_is_left_alone(self) -> None:
         self.assertIsNone(keepalive.deadline(self.transcript, 300))
+
+    def test_a_response_written_after_the_watcher_starts_replaces_its_deadline(self) -> None:
+        # A lead of an hour less two seconds makes the first response due in
+        # two; the five-minute one written next leaves nothing due, so a
+        # watcher alive past the first deadline read the second.
+        self.session(ago=0)
+        due = time.time() + 2
+        watcher = self.start_watcher({"MUTHUR_CACHE_KEEPALIVE_LEAD": "3598"})
+        try:
+            self.await_lock(due)
+            self.session(ago=0, ttl="5m")
+            time.sleep(max(0.0, due - time.time()) + 1.5)
+            self.assertIsNone(watcher.poll())
+        finally:
+            watcher.kill()
+            watcher.communicate()
 
 
 class TheSwitches(HookCase):
