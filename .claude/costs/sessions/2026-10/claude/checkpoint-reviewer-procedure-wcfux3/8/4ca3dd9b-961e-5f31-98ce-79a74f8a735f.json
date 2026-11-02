@@ -1,0 +1,96 @@
+{
+  "total": {
+    "inputTokens": 46,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 79236,
+    "cacheReadTokens": 2634150,
+    "outputTokens": 5720,
+    "thinkingTokens": 1380,
+    "responses": 23,
+    "costUsd": 0.9010660000000001
+  },
+  "estimate": {
+    "at": "2026-11-02T02:29:12.505Z",
+    "parts": [
+      {
+        "hours": 0.25,
+        "grade": "senior",
+        "role": "developer",
+        "comment": "finalize tail: ready, squash reconcile, merge check, sweep, attest"
+      }
+    ],
+    "comment": null
+  },
+  "orientation": {
+    "endedBy": "end_turn",
+    "endedOn": null,
+    "endedAt": "2026-11-02T02:33:10.958Z",
+    "contextTokens": 130939,
+    "spend": {
+      "inputTokens": 44,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 79061,
+      "cacheReadTokens": 2503388,
+      "outputTokens": 5201,
+      "thinkingTokens": 1380,
+      "responses": 22,
+      "costUsd": 0.8690196000000001
+    }
+  },
+  "sessionId": "4ca3dd9b-961e-5f31-98ce-79a74f8a735f",
+  "branch": "claude/checkpoint-reviewer-procedure-wcfux3",
+  "cwd": "/home/user/muthur",
+  "openingPrompt": "/relay take claude/checkpoint-reviewer-procedure-wcfux3 — PR #257 почти готов, дальше finalize с шага gh pr ready",
+  "prs": [
+    257
+  ],
+  "url": "https://claude.ai/code/session_01DaohkBnWesvknc645J2MTD",
+  "operator": "vzakharov",
+  "firstResponseAt": "2026-11-02T02:29:00.768Z",
+  "lastResponseAt": "2026-11-02T02:33:10.958Z",
+  "pricesAsOf": "2026-10-06",
+  "claudeCodeTotalUsd": null,
+  "ownTurns": {
+    "inputTokens": 46,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 79236,
+    "cacheReadTokens": 2634150,
+    "outputTokens": 5720,
+    "thinkingTokens": 1380,
+    "responses": 23,
+    "costUsd": 0.9010660000000001
+  },
+  "subagents": {
+    "inputTokens": 0,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 0,
+    "cacheReadTokens": 0,
+    "outputTokens": 0,
+    "thinkingTokens": 0,
+    "responses": 0,
+    "costUsd": 0.0
+  },
+  "byRate": {
+    "claude-sonnet-5-5/standard": {
+      "inputTokens": 46,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 79236,
+      "cacheReadTokens": 2634150,
+      "outputTokens": 5720,
+      "thinkingTokens": 1380,
+      "responses": 23,
+      "costUsd": 0.9010660000000001
+    }
+  },
+  "warnings": [
+    "prices.json priced the 23 responses the events also priced at $0.9011, against the events' $0.6377: a rate in the table is likely out of date"
+  ],
+  "compactions": [],
+  "telemetry": {
+    "events": 23,
+    "matched": 23,
+    "matchedTableUsd": 0.9010660000000001,
+    "matchedEventUsd": 0.637651,
+    "unseen": {}
+  }
+}
