@@ -8,11 +8,11 @@ with one line naming .claude/skills/go/review.md, the reviewer's whole
 procedure, and passes on nothing of its own. /polish stays on the
 session's model; the review follows it, below Opus only.
 
-The verdict lives in git: pass, fixed and fixed-relay end in a
-review(<verdict>): commit, which the checkpoint hook requires before a
-cutoff's closing step, with only working artifacts changed since. On
-revise the session fixes and asks the same reviewer to look again by
-SendMessage, so it keeps its findings and counts its looks.
+The verdict lives in git: pass, fixed and fixed-relay end in a review:
+commit, which the checkpoint hook requires before a cutoff's closing
+step, with only working artifacts changed since. On revise the session
+fixes and asks the same reviewer to look again by SendMessage, so it
+keeps its findings and counts its looks.
 
 scripts/floor.py is the one floor lookup /polish, the reviewer and the
 hook share: the newest commit of the given types, with base merges kept
