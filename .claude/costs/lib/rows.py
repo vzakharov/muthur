@@ -188,6 +188,12 @@ def pending_estimate_path(session_id: str) -> Path:
     return ROOT / "tmp" / "estimates" / f"{session_id}.json"
 
 
+def telemetry_path(session_id: str) -> Path:
+    """Where `hooks/start-telemetry-receiver.sh`'s receiver writes the session's
+    events."""
+    return ROOT / "tmp" / "telemetry" / f"{session_id}.jsonl"
+
+
 def read_pending_estimate(session_id: str) -> Optional[Estimate]:
     path = pending_estimate_path(session_id)
     if not path.exists():

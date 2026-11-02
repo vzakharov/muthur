@@ -47,22 +47,13 @@ and the ladder falls through to "nothing to review".
 So the scope is resolved **here**, once, and handed to both passes:
 
 ```bash
-gh pr view --json baseRefName --jq .baseRefName   # the base, when there is a PR and gh reaches it
-git fetch origin <base>                           # a stale ref silently widens the range
-git diff origin/<base>...HEAD                     # the branch's net change
+python3 scripts/floor.py polish:          # --full for `/polish full`
 ```
 
-**The fetch is not optional.** `origin/<base>` in a session's working copy is as
-old as the clone; against a stale one the range picks up every commit the base
-has landed since, and the pass reads a codebase's worth of other people's work
-as if this branch had written it.
-
-`<base>` is the repo's default branch wherever that lookup has no answer — no PR
-yet, no `gh`, no GitHub at all. Nothing here needs the PR except the name of the
-branch this work merges into.
-
-That range plus anything uncommitted is the scope, unless the floor below moves
-up.
+It fetches the branch's base, finds the floor below, and prints the ref the
+scope starts from: `git diff <that ref>`, untracked files besides, is the scope.
+Its docstring says how the base is chosen and why the range is not a plain
+`<floor>..HEAD`.
 
 **A staged copy counts by its diff against the real file.** One under
 `.claude/staged/` (`@.claude/rules/staging.md`) shows in the range as a whole
@@ -103,33 +94,18 @@ and it is precisely the run whose floor the next one needs. An empty commit is
 how git records that something was done to a tree without changing it, which is
 exactly the claim being made.
 
-The floor is the newest full-polish commit the branch still carries:
+The floor is the newest commit the branch added whose subject opens with
+`polish:`. Nothing found means the branch has no floor yet, so **its first run
+is a `full` run whether or not the word was typed**, and nobody has to remember
+to ask for that.
 
-```bash
-git log origin/<base>..HEAD --format='%H %s' | awk '$2 == "polish:" { print $1; exit }'
-```
-
-The commit's subject line is matched rather than `--grep`, which would also hit
-a body line that happens to open the same way. Found →
-`git diff <that sha>..HEAD`. Nothing found means the branch has no floor yet, so
-**its first run is a `full` run whether or not the word was typed** — the scope
-stays the whole `origin/<base>...HEAD` above, and nobody has to remember to ask
-for that.
-
-Everything else falls out of the range being two-dot: only the commits this
-branch added are candidates. A `polish:` commit the base carries is never the
-floor, so the lookup does not rest on the convention above holding — and a
-commit a rebase, amend or reset rewrote away cannot come back as one, so there
-is nothing to invalidate. Both need `origin/<base>` to be the fetched one, which
-is the second thing the fetch above buys.
-
-`/polish full` ignores the answer and drops the floor back to the base — as far
-as it ever goes: in either mode the scope is the branch's own diff against
-`origin/<base>`, not the tree it sits in. It is the override for a floor that
-lies, which is the one failure this mechanism cannot detect on its own: a run
-that committed its mark and then stopped early, or a standard that has since
-moved — `/tend-prose` gaining a lens, `/dry` tightening what counts. Both leave
-a commit claiming ground was cleared that was not.
+`/polish full` drops the floor back to the base — as far as it ever goes: in
+either mode the scope is the branch's own diff against `origin/<base>`, not the
+tree it sits in. It is the override for a floor that lies, which is the one
+failure this mechanism cannot detect on its own: a run that committed its mark
+and then stopped early, or a standard that has since moved — `/tend-prose`
+gaining a lens, `/dry` tightening what counts. Both leave a commit claiming
+ground was cleared that was not.
 
 **The floor narrows what gets reviewed, not what it is compared against.**
 `/dry`'s findings are duplications _between_ the new code and what was already

@@ -3,6 +3,7 @@
 
 from __future__ import annotations
 
+import json
 from dataclasses import dataclass, replace
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Sequence, Tuple
@@ -31,6 +32,33 @@ class Response:
     request_id: Optional[str]
     calls: Tuple[ToolCall, ...]
     tokens: Tally
+
+
+def main_chain_model(jsonl: str) -> Optional[str]:
+    """The model the session's main chain last ran on: its latest `model`
+    attachment or main-chain response, whichever the file holds later. The
+    attachment is written before the first response, so a session's first prompt
+    already has one. A line that does not decode is skipped — the last may still
+    be being written — and a transcript with neither record has no model."""
+    found = None
+    for line in jsonl.split("\n"):
+        try:
+            record = json.loads(line)
+        except json.JSONDecodeError:
+            continue
+        if not isinstance(record, dict) or record.get("isSidechain") is True:
+            continue
+        attachment, message = record.get("attachment"), record.get("message")
+        if isinstance(attachment, dict) and attachment.get("type") == "model":
+            identity = attachment.get("identity")
+            model = identity.get("modelId") if isinstance(identity, dict) else None
+        elif record.get("type") == "assistant" and isinstance(message, dict):
+            model = message.get("model")
+        else:
+            continue
+        if isinstance(model, str) and model != SYNTHETIC_MODEL:
+            found = model
+    return found
 
 
 def is_response_record(record: Any) -> bool:

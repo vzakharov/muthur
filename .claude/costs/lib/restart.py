@@ -135,20 +135,17 @@ def verdict(saving: Saving) -> str:
     return f"costs ~${-saving.usd:.2f} more than carrying on"
 
 
-def line_for(s: Session, slice_tokens: int, share: float) -> Optional[int]:
+def line_for(s: Session, slice_tokens: int, saving: float) -> Optional[int]:
     """The context at which a warm relay's saving over `slice_tokens` reaches
-    `share` of carrying on's cost: `saving_over` solved for context. None when
-    no context gets there."""
+    `saving` dollars: `saving_over` solved for context. None when no context
+    gets there."""
     n = slice_tokens * s.requests_per_token
     r = s.rates.cache_read / 1_000_000
     fixed = usd(SUMMARY_OUT, s.rates.output) + s.reorientation.cost_usd
-    per_token = r * (n - 1 - share * n)
+    per_token = r * (n - 1)
     if per_token <= 0:
         return None
-    reached = n * r * s.reorientation.context + fixed + share * (
-        n * r * slice_tokens / 2 + usd(slice_tokens, s.write)
-    )
-    return round(reached / per_token)
+    return round((saving + fixed + n * r * s.reorientation.context) / per_token)
 
 
 # --- Reading the transcript ---------------------------------------------------

@@ -106,11 +106,11 @@ class TheCostModel(unittest.TestCase):
         self.assertAlmostEqual(line, 200_000, delta=5_000)
         self.assertAlmostEqual(saving_over(worked(line), SLICE).usd, 0.0, places=4)
 
-    def test_the_pause_line_is_where_it_saves_a_fifth(self) -> None:
-        line = line_for(worked(0), SLICE, 0.2)
+    def test_a_line_is_where_a_relay_saves_the_dollars_asked(self) -> None:
+        line = line_for(worked(0), SLICE, 0.8)
         assert line is not None
-        self.assertAlmostEqual(line, 300_000, delta=10_000)
-        self.assertAlmostEqual(saving_over(worked(line), SLICE).share, 0.2, places=4)
+        self.assertAlmostEqual(line, 312_000, delta=5_000)
+        self.assertAlmostEqual(saving_over(worked(line), SLICE).usd, 0.8, places=4)
 
     def test_a_relay_costs_the_summary_turn_and_the_reorientation(self) -> None:
         saving = saving_over(worked(126_000), SLICE)

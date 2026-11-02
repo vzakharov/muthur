@@ -87,6 +87,10 @@
           },
           {
             "type": "command",
+            "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/checkpoint-review.py"
+          },
+          {
+            "type": "command",
             "command": "$CLAUDE_PROJECT_DIR/.claude/costs/hooks/estimate-notice.sh"
           },
           {
@@ -116,6 +120,10 @@
           {
             "type": "command",
             "command": "$CLAUDE_PROJECT_DIR/.claude/costs/hooks/stage-cost-row.sh"
+          },
+          {
+            "type": "command",
+            "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/checkpoint-review.py"
           }
         ]
       }
@@ -127,6 +135,10 @@
           {
             "type": "command",
             "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/go-delegation.py"
+          },
+          {
+            "type": "command",
+            "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/checkpoint-review.py"
           }
         ]
       },
