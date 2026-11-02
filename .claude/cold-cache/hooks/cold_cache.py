@@ -38,6 +38,11 @@ from lib.restart import (
 
 PRICES = ROOT / ".claude" / "costs" / "prices.json"
 RESEND = "!"
+# Hooks of one event run in parallel, so a bare `/merge` is the merge gate's to
+# stop: it runs this guard itself on a decline, marking the event so.
+MERGE = "/merge"
+MERGE_GATE = ROOT / ".claude" / "merge-gate" / "hooks" / "merge_gate.py"
+MERGE_GATE_DECLINED = "merge_gate_declined"
 DEFAULT_MIN_USD = 0.30
 DEFAULT_MARGIN = 0.10
 
@@ -232,6 +237,8 @@ def on_prompt(event: Dict[str, Any], state: State, min_usd: float, margin: float
     prompt = event.get("prompt") or ""
     if prompt.strip() == RESEND:
         return resent(state)
+    if prompt.strip() == MERGE and MERGE_GATE.is_file() and not event.get(MERGE_GATE_DECLINED):
+        return Verdict()
     transcript = Path(event.get("transcript_path") or "")
     if passes(prompt) or not transcript.is_file():
         return Verdict()

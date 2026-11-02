@@ -142,6 +142,15 @@ class WhenAPromptIsStopped(HookCase):
                 self.session()
                 self.assertIsNotNone(self.prompt(command))
 
+    def test_a_bare_merge_is_the_merge_gates_until_it_declines(self) -> None:
+        self.session()
+        self.assertIsNone(self.prompt("/merge"))
+        self.assertIsNotNone(self.prompt("/merge", **{hook.MERGE_GATE_DECLINED: True}))
+
+    def test_a_merge_with_an_argument_is_a_prompt_like_any_other(self) -> None:
+        self.session()
+        self.assertIsNotNone(self.prompt("/merge #7"))
+
     def test_a_bare_bang_resends_the_stopped_prompt(self) -> None:
         self.session()
         self.assertIsNotNone(self.prompt("fix the flaky test"))

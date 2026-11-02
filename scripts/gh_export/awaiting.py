@@ -76,6 +76,38 @@ def awaiting_section(
 
     `rest` measures the export outside this section; `warn_line` is the context
     budget's, in tokens."""
+    rows = awaiting_rows(
+        comments, reviews, review_comments, resolved_by_comment_id, include_resolved, previous
+    )
+    against = (
+        f"the export committed at {previous.commit}"
+        if previous
+        else "no export committed on the branch yet"
+    )
+    rule = (
+        "_Unresolved threads whose newest post is a human's, and human reviews "
+        "and comments that are new since the last export or that no agent post "
+        f"has followed ({against}). "
+        "Resolved threads never count; an `(agent)` tail is a reply already given._"
+    )
+    listing = [*rows, ""] if rows else []
+    heading = [f"{HEADING}: {len(rows) or 'none'}", ""]
+    body = [rule, "", *listing, "---", ""]
+    own = ExportSize.of("\n".join([*heading, *body]))
+    size = ExportSize(rest.lines + own.lines, rest.chars + own.chars)
+    return "\n".join([*heading, *_large_review_warning(len(rows), size, warn_line), *body])
+
+
+def awaiting_rows(
+    comments: list[dict[str, Any]],
+    reviews: list[dict[str, Any]],
+    review_comments: list[dict[str, Any]],
+    resolved_by_comment_id: dict[int, bool],
+    include_resolved: bool,
+    previous: PreviousExport | None,
+) -> list[str]:
+    """One Markdown row per post awaiting an answer; the export renders them
+    and the merge gate counts them."""
     seen = set(_POST_ID.findall(previous.text)) if previous else None
     last_agent_post = _last_agent_post(comments, reviews, review_comments)
 
@@ -105,24 +137,7 @@ def awaiting_section(
         key = f"issuecomment-{comment.get('id')}"
         if not _by_agent(comment) and awaits(key, comment.get("created_at")):
             rows.append(f"{comment_summary(number, comment)} → [↓](#c{number:02d})")
-
-    against = (
-        f"the export committed at {previous.commit}"
-        if previous
-        else "no export committed on the branch yet"
-    )
-    rule = (
-        "_Unresolved threads whose newest post is a human's, and human reviews "
-        "and comments that are new since the last export or that no agent post "
-        f"has followed ({against}). "
-        "Resolved threads never count; an `(agent)` tail is a reply already given._"
-    )
-    listing = [*rows, ""] if rows else []
-    heading = [f"{HEADING}: {len(rows) or 'none'}", ""]
-    body = [rule, "", *listing, "---", ""]
-    own = ExportSize.of("\n".join([*heading, *body]))
-    size = ExportSize(rest.lines + own.lines, rest.chars + own.chars)
-    return "\n".join([*heading, *_large_review_warning(len(rows), size, warn_line), *body])
+    return rows
 
 
 def _large_review_warning(awaiting: int, size: ExportSize, warn_line: int) -> list[str]:

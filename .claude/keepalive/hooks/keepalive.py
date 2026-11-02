@@ -17,11 +17,12 @@ from __future__ import annotations
 import fcntl
 import json
 import os
+import subprocess
 import sys
 import time
 from dataclasses import dataclass
 from pathlib import Path
-from typing import IO, Any, Dict, Optional
+from typing import IO, Any, Dict, List, Optional
 
 # The ledger's lib is reached by path, as its own scripts reach it.
 ROOT = Path(__file__).resolve().parents[3]
@@ -42,6 +43,8 @@ LIFETIME = BASH_CAP - 200
 MARK = "Cache keepalive"
 TASK = f"{MARK} watcher"
 HOOK = Path(__file__).resolve()
+# Seconds the hook waits on `git` and `gh` before treating the branch as live.
+PROBE_TIMEOUT = 5
 
 
 @dataclass(frozen=True)
@@ -98,6 +101,44 @@ def running(state: State) -> bool:
         return True
     probe.close()
     return False
+
+
+# --- The branch's PR ----------------------------------------------------------
+
+
+def output(cmd: List[str], cwd: Path) -> Optional[str]:
+    try:
+        proc = subprocess.run(cmd, cwd=cwd, capture_output=True, text=True, timeout=PROBE_TIMEOUT)
+    except (OSError, subprocess.SubprocessError):
+        return None
+    return proc.stdout.strip() if proc.returncode == 0 else None
+
+
+def landed(state: State, project: Path) -> bool:
+    """Whether the checked-out branch's PR is merged or closed with HEAD at or
+    behind its head. Commits past the PR, and any failure to tell, read as live.
+
+    A landed answer is remembered against HEAD in the state file, so GitHub is
+    asked once per commit rather than once per turn."""
+    head = output(["git", "rev-parse", "HEAD"], project)
+    if head is None:
+        return False
+    if state.read().get("landed") == head:
+        return True
+    raw = output(["gh", "pr", "view", "--json", "state,headRefOid"], project)
+    try:
+        pr = json.loads(raw) if raw else None
+    except ValueError:
+        return False
+    if not isinstance(pr, dict) or pr.get("state") not in ("MERGED", "CLOSED"):
+        return False
+    tip = pr.get("headRefOid")
+    if not isinstance(tip, str):
+        return False
+    if head != tip and output(["git", "merge-base", "--is-ancestor", head, tip], project) is None:
+        return False
+    state.write({**state.read(), "landed": head})
+    return True
 
 
 # --- The watcher --------------------------------------------------------------
@@ -167,11 +208,22 @@ PARK = (
 )
 
 
-def context(data: Dict[str, Any], alive: bool, renewals: int, session: str, transcript: str) -> Optional[str]:
+def context(
+    data: Dict[str, Any], alive: bool, done: bool, renewals: int, session: str, transcript: str
+) -> Optional[str]:
     if alive:
         return (
             f"A {MARK.lower()} watcher is running. {PARK} If {STOP},"
             " stop it with TaskStop (its id is in the Bash result that started it)."
+        )
+    if done:
+        if not data.get("fired"):
+            return None
+        return (
+            f"{MARK}: this branch's PR is merged or closed, so this wake neither parks the session"
+            " nor starts a watcher — there is nothing to summarize, and a commit here would sit on"
+            " landed history. Reply in the conversation's language with one line and nothing else:"
+            " the keepalive stopped because the branch's PR has landed."
         )
     spent = int(data.get("wakes", 0))
     if not data.get("fired"):
@@ -197,11 +249,17 @@ def context(data: Dict[str, Any], alive: bool, renewals: int, session: str, tran
     )
 
 
-def on_prompt(state: State, prompt: str, renewals: int, session: str, transcript: str) -> Optional[str]:
+def on_prompt(
+    state: State, project: Path, prompt: str, renewals: int, session: str, transcript: str
+) -> Optional[str]:
+    alive = running(state)
+    # Only a turn that would start a watcher or park asks; a live watcher's
+    # turns cost nothing, and its wake asks then.
+    done = not alive and landed(state, project)
     data = state.read()
     if MARK not in prompt:
         data["wakes"] = 0
-    out = context(data, running(state), renewals, session, transcript)
+    out = context(data, alive, done, renewals, session, transcript)
     data["fired"] = False
     state.write(data)
     return out
@@ -232,7 +290,8 @@ def main() -> int:
     lead = setting("MUTHUR_CACHE_KEEPALIVE_LEAD", DEFAULT_LEAD)
     if renewals is None or lead is None:
         return 0
-    home = Path(os.environ.get("CLAUDE_PROJECT_DIR") or ROOT) / "tmp" / "keepalive"
+    project = Path(os.environ.get("CLAUDE_PROJECT_DIR") or ROOT)
+    home = project / "tmp" / "keepalive"
     if sys.argv[1:2] == ["watch"] and len(sys.argv) == 4:
         session, transcript = sys.argv[2], sys.argv[3]
         if not safe(session):
@@ -243,7 +302,7 @@ def main() -> int:
     if event.get("hook_event_name") != "UserPromptSubmit" or not safe(session):
         return 0
     state = State(home, session)
-    out = on_prompt(state, event.get("prompt") or "", renewals, session, event.get("transcript_path") or "")
+    out = on_prompt(state, project, event.get("prompt") or "", renewals, session, event.get("transcript_path") or "")
     if out is not None:
         print(json.dumps({"hookSpecificOutput": {"hookEventName": "UserPromptSubmit", "additionalContext": out}}))
     return 0
