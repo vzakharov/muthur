@@ -20,7 +20,7 @@ from typing import Optional
 
 HOOK = Path(__file__).resolve().parent.parent / ".claude" / "hooks" / "go-delegation.py"
 SWITCH = "MUTHUR_DELEGATION"
-STENO_SWITCH = "MUTHUR_STENO"
+STENO_SWITCH = "MUTHUR_EXPERIMENTAL_STENO"
 DELEGATION = "DELEGATION-PROCEDURE-BODY"
 MODELS = "MODEL-NOTES-BODY"
 STENO = "STENO-BODY"

@@ -16,7 +16,7 @@ inline. delegation.py --forecast prices both from the running session,
 and weighing a wave files its forecast beside its measured cost on
 cost-ledger under delegations/, which later forecasts calibrate from.
 
-The mode is experimental and off unless MUTHUR_STENO=on.
+The mode is experimental and off unless MUTHUR_EXPERIMENTAL_STENO=on.
 go-delegation.py delivers .claude/skills/go/steno.md alongside the
 delegation files when the switch is on, and with the capabilities file
 even under MUTHUR_DELEGATION=off; /go Step 2 and the G2 catalog entry

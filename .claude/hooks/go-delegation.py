@@ -14,7 +14,7 @@ in `.claude/settings.json`:
 - `UserPromptSubmit` opening with `/go` or `/implement`, since a typed slash
   command expands without any tool call.
 
-`MUTHUR_STENO=on` adds `steno.md`, and with it the model notes even under
+`MUTHUR_EXPERIMENTAL_STENO=on` adds `steno.md`, and with it the model notes even under
 `MUTHUR_DELEGATION=off`, since steno's verdict goes into their `haiku` entry.
 
 Once per session: a marker under `tmp/go-delegation/` keeps a later entry
@@ -34,7 +34,7 @@ from typing import Optional
 from session_state import project_root, state_file
 
 SWITCH = "MUTHUR_DELEGATION"
-STENO_SWITCH = "MUTHUR_STENO"
+STENO_SWITCH = "MUTHUR_EXPERIMENTAL_STENO"
 SKILLS = {"go", "implement"}
 TYPED = re.compile(r"^\s*/(go|implement)(\s|$)")
 SKILL_DIR = Path(".claude") / "skills" / "go"

@@ -38,8 +38,8 @@
   `delegation-model-capabilities.md`, the ≤100-line summary of what each model
   has handled, which `scripts/vet.sh` caps. `MUTHUR_DELEGATION=off` leaves `/go`
   as if neither were there. `steno.md` is an experimental mode beside them, off
-  unless `MUTHUR_STENO=on`: the delegator dictates every edit and a Haiku
-  subagent applies the list.
+  unless `MUTHUR_EXPERIMENTAL_STENO=on`: the delegator dictates every edit and a
+  Haiku subagent applies the list.
   - **Pulls in:** `/polish` (G1); `/from-branch`, `/plan`, `/pr`, `/task`;
     `.claude/hooks/go-delegation.py`; **conditionally** `/take-issue`,
     `/propose-issue` (G3), `.claude/costs/` (G7) for the delegation's weighing
@@ -47,9 +47,9 @@
     its lessons being general, then merged by lesson on every sync
     (`/update-muthur` Step 5)
 - `.claude/hooks/go-delegation.py` — Deliver `/go`'s two delegation files, and
-  `steno.md` under `MUTHUR_STENO=on`, as context the first time `/go` enters a
-  session — through the `Skill` tool, a `Read` of its `SKILL.md`, or a typed
-  `/go` — so the agent spends no round trip on them; silent under
+  `steno.md` under `MUTHUR_EXPERIMENTAL_STENO=on`, as context the first time
+  `/go` enters a session — through the `Skill` tool, a `Read` of its `SKILL.md`,
+  or a typed `/go` — so the agent spends no round trip on them; silent under
   `MUTHUR_DELEGATION=off` unless steno is on. Stdlib-only, tested by
   `scripts/test_go_delegation.py`.
   - **Requires:** `python3` ≥3.9, `.claude/settings.json` wiring (G4)

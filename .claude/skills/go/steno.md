@@ -1,10 +1,11 @@
 # Steno: you dictate the edits, Haiku takes them down
 
-An experimental mode of `/go`'s Step 2, on only under `MUTHUR_STENO=on`. You
-decide every edit a stretch of work needs and dictate them as one list; a Haiku
-subagent applies the list in your own tree and reports item by item; you review
-the diff and commit. Haiku applies a named change exactly and only as named, and
-misreads anything it has to restate — so the list leaves it nothing to restate.
+An experimental mode of `/go`'s Step 2, on only under
+`MUTHUR_EXPERIMENTAL_STENO=on`. You decide every edit a stretch of work needs
+and dictate them as one list; a Haiku subagent applies the list in your own tree
+and reports item by item; you review the diff and commit. Haiku applies a named
+change exactly and only as named, and misreads anything it has to restate — so
+the list leaves it nothing to restate.
 
 ## Where it pays
 
