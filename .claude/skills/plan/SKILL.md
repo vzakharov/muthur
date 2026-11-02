@@ -167,10 +167,10 @@ PR-creation off `/pr` would leave exactly that entry on a PR-less branch.
 
 **When `.claude/hooks/checkpoint-review.py` delivered
 `@.claude/skills/go/checkpoint-review.md` this session, the checkpoint review
-runs once the plan is published**, before the handoff, over the plan and its PR;
-under a harness that runs no hooks, that file's § "Who runs it" says whether it
-runs. Its fixes are plan revisions, so a review that changed the plan refreshes
-the PR through `/pr`.
+runs once the plan is published**, before the handoff, over the plan; under a
+harness that runs no hooks, that file's § "Who runs it" says whether it runs.
+Its fixes are plan revisions, so a review that changed the plan refreshes the PR
+through `/pr`.
 
 ### Handing off — end the plan turn with a copyable `/go` block
 

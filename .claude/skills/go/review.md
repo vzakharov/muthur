@@ -36,15 +36,16 @@ would hold your own work. Where `/polish` ran, it read the diff for duplication
 and prose; this is the look at the whole: whether the work answers the request,
 whether it is built right, and whether what the session last told the operator
 matches what the diff does. The PR body, the squash proposal comment and the
-thread replies are not yours to check or fix: every cutoff writes them after
-this review, so a stale one is no finding.
+thread replies are not yours to check or fix: every cutoff brings them up to
+date after this review, so a stale one is no finding.
 
 **The request** comes from the plan's verbatim `## Request` section in
 `docs/plans/` where the branch has a plan, the PR and the issue it links, and
 any relay summary under `docs/remove-before-merging/` — a relayed session's own
-transcript starts after the request. The session's conversation is there if you
-want it, not a step you must take: when those records are clear, they are
-enough, and when they and the git history disagree, read it:
+transcript starts after the request. The session's conversation, where its
+transcript can be found, is there if you want it, not a step you must take: when
+those records are clear, they are enough, and when they and the git history
+disagree, read it:
 
 ```bash
 python3 scripts/session-qa.py [--since <floor>] [--tools]
@@ -52,8 +53,8 @@ python3 scripts/session-qa.py [--since <floor>] [--tools]
 
 It prints each operator message as `## Q` and each reply of the session as
 `## A`, whole by default because the request usually opens the transcript, well
-before any floor. In a session whose transcript the script cannot find, there is
-no conversation to read: say so and work from the records.
+before any floor. Where it finds no transcript, say so and work from the
+records.
 
 **Fix a finding when any holds: it is cheaper to do than to describe; it is
 minor enough that the round trip of telling the session and waiting for its fix
