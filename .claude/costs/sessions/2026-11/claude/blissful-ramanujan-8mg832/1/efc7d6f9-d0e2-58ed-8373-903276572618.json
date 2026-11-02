@@ -1,0 +1,92 @@
+{
+  "total": {
+    "inputTokens": 14,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 43564,
+    "cacheReadTokens": 501518,
+    "outputTokens": 2256,
+    "thinkingTokens": 823,
+    "responses": 6,
+    "costUsd": 0.4939916000000001
+  },
+  "estimate": {
+    "at": "2026-11-02T02:12:02.622Z",
+    "parts": [
+      {
+        "hours": 0.5,
+        "grade": "middle",
+        "role": "developer",
+        "comment": "answering needs reading the shell-nudge hook's parser to see which command in the compound it flagged; a middle developer traces that in half an hour"
+      }
+    ],
+    "comment": null
+  },
+  "orientation": {
+    "endedBy": "oriented",
+    "endedOn": null,
+    "endedAt": "2026-11-02T02:12:00.623Z",
+    "contextTokens": 94161,
+    "spend": {
+      "inputTokens": 8,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 36618,
+      "cacheReadTokens": 224512,
+      "outputTokens": 1036,
+      "thinkingTokens": 588,
+      "responses": 3,
+      "costUsd": 0.35859840000000004
+    }
+  },
+  "sessionId": "efc7d6f9-d0e2-58ed-8373-903276572618",
+  "branch": "claude/blissful-ramanujan-8mg832",
+  "cwd": "/home/user/muthur",
+  "openingPrompt": "почему агент, которому запретили прочесть tail через bash, читает файл полностью? разве у него нет средств для чтения ограниченного количества строк?",
+  "prs": [],
+  "url": "https://claude.ai/code/session_01DaohkFLU7V1bn2k1Ycok13",
+  "operator": null,
+  "firstResponseAt": "2026-11-02T02:11:52.035Z",
+  "lastResponseAt": "2026-11-02T02:12:13.288Z",
+  "pricesAsOf": "2026-10-06",
+  "claudeCodeTotalUsd": null,
+  "ownTurns": {
+    "inputTokens": 14,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 43564,
+    "cacheReadTokens": 501518,
+    "outputTokens": 2256,
+    "thinkingTokens": 823,
+    "responses": 6,
+    "costUsd": 0.4939916000000001
+  },
+  "subagents": {
+    "inputTokens": 0,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 0,
+    "cacheReadTokens": 0,
+    "outputTokens": 0,
+    "thinkingTokens": 0,
+    "responses": 0,
+    "costUsd": 0.0
+  },
+  "byRate": {
+    "claude-opus-5-5/standard": {
+      "inputTokens": 14,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 43564,
+      "cacheReadTokens": 501518,
+      "outputTokens": 2256,
+      "thinkingTokens": 823,
+      "responses": 6,
+      "costUsd": 0.4939916000000001
+    }
+  },
+  "warnings": [],
+  "compactions": [],
+  "telemetry": {
+    "events": 6,
+    "matched": 6,
+    "matchedTableUsd": 0.4939916000000001,
+    "matchedEventUsd": 0.49399160000000003,
+    "unseen": {}
+  }
+}
