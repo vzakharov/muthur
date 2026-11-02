@@ -7,24 +7,18 @@
 - **Draft:** yes
 - **Merged:** _not merged_
 - **Created:** 2026-10-30T10:05:34Z
-- **Updated:** 2026-11-02T02:06:33Z
+- **Updated:** 2026-11-02T02:18:37Z
 - **Closed:** _not closed_
 - **Labels:** _none_
 
 ---
 
-## Awaiting an answer: 8
+## Awaiting an answer: 2
 
-_Unresolved threads whose newest post is a human's, and human reviews and comments that are new since the last export or that no agent post has followed (the export committed at cb4f1ff). Resolved threads never count; an `(agent)` tail is a reply already given._
+_Unresolved threads whose newest post is a human's, and human reviews and comments that are new since the last export or that no agent post has followed (the export committed at 872c9c5). Resolved threads never count; an `(agent)` tail is a reply already given._
 
-- **T01** `.claude/skills/go/checkpoint-review.md`:75 — unresolved — last: @vzakharov (human) 2026-11-02T01:49:27Z — "уточнить что run на Opus, а то "Opus successor" begs the que…" → [↓](#t01)
-- **T02** `.claude/skills/go/review.md`:16 — unresolved — last: @vzakharov (human) 2026-11-02T01:51:46Z — "давай учитывать только оснонвую часть префикса (в данном слу…" → [↓](#t02)
-- **T03** `.claude/skills/go/review.md`:27 — unresolved — last: @vzakharov (human) 2026-11-02T01:52:51Z — "ну вообще это непонятная ситуация -- с чего его тогда запуст…" → [↓](#t03)
-- **T04** `.claude/skills/go/review.md`:40 — unresolved — last: @vzakharov (human) 2026-11-02T01:53:55Z — "не всегда план существует" → [↓](#t04)
-- **T05** `.claude/skills/go/review.md`:55 — unresolved — last: @vzakharov (human) 2026-11-02T01:54:40Z — "почему and а не or?" → [↓](#t05)
-- **T06** `.claude/skills/go/review.md`:60 — unresolved — last: @vzakharov (human) 2026-11-02T01:55:06Z — "почему?" → [↓](#t06)
-- **T07** `.claude/skills/go/review.md`:87 — unresolved — last: @vzakharov (human) 2026-11-02T01:56:14Z — "это hand-waving -- мы не знаем что стоит больше; скорее здес…" → [↓](#t07)
-- **T08** `.claude/skills/go/review.md`:91 — unresolved — last: @vzakharov (human) 2026-11-02T01:57:03Z — "а нужен ли нам `...-relay` именно как scope для префикса? по…" → [↓](#t08)
+- **T01** `.claude/skills/go/review.md`:40 — unresolved — last: @vzakharov (human) 2026-11-02T02:17:40Z — "и session-qa" → [↓](#t01)
+- **T02** `.claude/skills/go/review.md`:60 — unresolved — last: @vzakharov (human) 2026-11-02T02:18:37Z — "да, пусть не считает" → [↓](#t02)
 
 ---
 
@@ -33,17 +27,17 @@ _Unresolved threads whose newest post is a human's, and human reviews and commen
 ## Summary
 
 - The Opus review of a weaker session's work no longer takes a brief from that session. `.claude/skills/go/checkpoint-review.md` (delivered by the hook to Sonnet/Haiku sessions only, as on `main`) launches an Opus subagent with one line, ``Proceed per `.claude/skills/go/review.md` ``, and `review.md` is the reviewer's whole procedure: scope, what to check, verdicts, the commit. `/polish` is back to `main`'s two passes on the session's own model.
-- Verdicts are recorded in git: `pass`, `fixed` and `fixed-relay` end in a `review(<verdict>):` commit, `revise` and `relay` make none. On `revise` the session fixes and sends the **same** reviewer a look-again message by `SendMessage`, so it keeps its findings and counts its looks (the third cannot `revise`).
-- `scripts/floor.py` is the one floor lookup: the newest branch commit of the given types, diffed from with base merges kept below the line. `/polish` (from `polish:`), the reviewer (from `review(...)`) and the hook all use it, so each sees the other's commits since its own last run.
-- `.claude/hooks/checkpoint-review.py` gates the closing step of an entered cutoff (`git mv` out of the draft name, to `*.completed.md`, `gh pr ready`) on a passing `review(...)` commit with only working artifacts changed since; the cost-row copies under `.claude/costs/sessions/` count as working artifacts, since a hook adds one to every commit.
+- Verdicts are recorded in git: `pass`, `fixed` and `fixed-relay` end in a `review:` commit, `revise` and `relay` make none, and an empty scope answers `none` without a commit, telling the session something is off. On `revise` the session fixes and sends the **same** reviewer a look-again message by `SendMessage`, so it keeps its findings and counts its looks (the third cannot `revise`).
+- `scripts/floor.py` is the one floor lookup: the newest branch commit of the given types, diffed from with base merges kept below the line. `/polish` (from `polish:`), the reviewer (from `review:`) and the hook all use it, so each sees the other's commits since its own last run.
+- `.claude/hooks/checkpoint-review.py` gates the closing step of an entered cutoff (`git mv` out of the draft name, to `*.completed.md`, `gh pr ready`) on a `review:` commit with only working artifacts changed since; the cost-row copies under `.claude/costs/sessions/` count as working artifacts, since a hook adds one to every commit.
 - `scripts/session-qa.py` prints a session's questions and answers for the reviewer to read when the records disagree with git; the helpers it shares with `relay-last-reply.py` move to `scripts/lib/session_transcript.py`. `delegation-model-capabilities.md` moves to `.claude/model-capabilities.md`, since the reviewer keeps it too.
 - Dogfooded: an Opus subagent launched with the one line reviewed the branch, fixed the cost-row gate bug itself, and answered `revise` on this body and the squash proposal being stale.
 
 ## QA Checklist
 
-- [ ] `review-procedure` — `go/review.md` and `go/checkpoint-review.md` match the design the operator settled: review only below Opus, one-line launch, same reviewer on `revise`, verdict commits.
-- [ ] `floor` — `python3 scripts/floor.py 'polish:'` and `python3 scripts/floor.py 'review(pass):' 'review(fixed):' 'review(fixed-relay):'` print the right floor and `from` ref on this branch.
-- [ ] `closing-gate` — on a Sonnet session the closing command is open after a `review(pass):` commit, stays open after a cost-row-only commit, and shuts after a later code or plan-text commit.
+- [ ] `review-procedure` — `go/review.md` and `go/checkpoint-review.md` match the design the operator settled: review only below Opus, one-line launch, same reviewer on `revise`, one `review:` commit type, `none` on an empty scope.
+- [ ] `floor` — `python3 scripts/floor.py 'polish:'` and `python3 scripts/floor.py 'review:'` print the right floor and `from` ref on this branch.
+- [ ] `closing-gate` — on a Sonnet session the closing command is open after a `review:` commit, stays open after a cost-row-only commit, and shuts after a later code or plan-text commit.
 - [ ] `qa-script` — `python3 scripts/session-qa.py` on a real session prints its questions and answers, and `--since <commit>` filters them.
 
 | Item | Automatable | Covered? | Notes |
@@ -77,11 +71,11 @@ with one line naming .claude/skills/go/review.md, the reviewer's whole
 procedure, and passes on nothing of its own. /polish stays on the
 session's model; the review follows it, below Opus only.
 
-The verdict lives in git: pass, fixed and fixed-relay end in a
-review(<verdict>): commit, which the checkpoint hook requires before a
-cutoff's closing step, with only working artifacts changed since. On
-revise the session fixes and asks the same reviewer to look again by
-SendMessage, so it keeps its findings and counts its looks.
+The verdict lives in git: pass, fixed and fixed-relay end in a review:
+commit, which the checkpoint hook requires before a cutoff's closing
+step, with only working artifacts changed since. On revise the session
+fixes and asks the same reviewer to look again by SendMessage, so it
+keeps its findings and counts its looks.
 
 scripts/floor.py is the one floor lookup /polish, the reviewer and the
 hook share: the newest commit of the given types, with base merges kept
@@ -98,78 +92,12 @@ Co-authored-by: Claude <noreply@anthropic.com>
 
 ## Review threads
 
-_8 resolved threads omitted; re-run with `--include-resolved` to export them._
+_14 resolved threads omitted; re-run with `--include-resolved` to export them._
 
-- **T01** `.claude/skills/go/checkpoint-review.md`:75 — unresolved — last: @vzakharov (human) 2026-11-02T01:49:27Z — "уточнить что run на Opus, а то "Opus successor" begs the que…" → [↓](#t01)
-- **T02** `.claude/skills/go/review.md`:16 — unresolved — last: @vzakharov (human) 2026-11-02T01:51:46Z — "давай учитывать только оснонвую часть префикса (в данном слу…" → [↓](#t02)
-- **T03** `.claude/skills/go/review.md`:27 — unresolved — last: @vzakharov (human) 2026-11-02T01:52:51Z — "ну вообще это непонятная ситуация -- с чего его тогда запуст…" → [↓](#t03)
-- **T04** `.claude/skills/go/review.md`:40 — unresolved — last: @vzakharov (human) 2026-11-02T01:53:55Z — "не всегда план существует" → [↓](#t04)
-- **T05** `.claude/skills/go/review.md`:55 — unresolved — last: @vzakharov (human) 2026-11-02T01:54:40Z — "почему and а не or?" → [↓](#t05)
-- **T06** `.claude/skills/go/review.md`:60 — unresolved — last: @vzakharov (human) 2026-11-02T01:55:06Z — "почему?" → [↓](#t06)
-- **T07** `.claude/skills/go/review.md`:87 — unresolved — last: @vzakharov (human) 2026-11-02T01:56:14Z — "это hand-waving -- мы не знаем что стоит больше; скорее здес…" → [↓](#t07)
-- **T08** `.claude/skills/go/review.md`:91 — unresolved — last: @vzakharov (human) 2026-11-02T01:57:03Z — "а нужен ли нам `...-relay` именно как scope для префикса? по…" → [↓](#t08)
+- **T01** `.claude/skills/go/review.md`:40 — unresolved — last: @vzakharov (human) 2026-11-02T02:17:40Z — "и session-qa" → [↓](#t01)
+- **T02** `.claude/skills/go/review.md`:60 — unresolved — last: @vzakharov (human) 2026-11-02T02:18:37Z — "да, пусть не считает" → [↓](#t02)
 
 <a id="t01"></a>
-
-### `.claude/skills/go/checkpoint-review.md`:75 — unresolved
-
-```diff
-@@ -14,101 +20,64 @@ mid-session changes that. `.claude/hooks/checkpoint-review.py` decides it, from
-… 137 lines elided …
-+  does a new one start, from the launch line; it reviews the same scope afresh.
-+  The gate stays shut until a look answers otherwise.
-+- **`fixed-relay`** — the reviewer fixed what it found, and the work is beyond
-+  the session's model. Finish the skill's remaining steps, then run `/relay`
-+  (`@.claude/skills/relay/SKILL.md`) with no argument, so the Opus successor
-+  takes the operator's next message.
-```
-
-**@vzakharov (human)** — 2026-11-02T01:49:27Z
-
-уточнить что run на Opus, а то "Opus successor" begs the question
-
----
-
-<a id="t02"></a>
-
-### `.claude/skills/go/review.md`:16 — unresolved
-
-```diff
-@@ -0,0 +1,118 @@
-… 12 lines elided …
-+## Scope: the branch since the last review
-+
-+```bash
-+python3 scripts/floor.py 'review(pass):' 'review(fixed):' 'review(fixed-relay):'
-```
-
-**@vzakharov (human)** — 2026-11-02T01:51:46Z
-
-давай учитывать только оснонвую часть префикса (в  данном случае же не важно, какой `(...)` был для этого). Если для полиша важно, то сделать опциональным аргументом
-
----
-
-<a id="t03"></a>
-
-### `.claude/skills/go/review.md`:27 — unresolved
-
-```diff
-@@ -0,0 +1,118 @@
-… 22 lines elided …
-+reads its own, a staged copy by its diff against the real file. The commits
-+below the floor and the rest of the tree stay readable as context.
-+
-+A scope with nothing in it has nothing to review: say so and answer `pass`
-+without a commit, since the floor already stands.
-```
-
-**@vzakharov (human)** — 2026-11-02T01:52:51Z
-
-ну вообще это непонятная ситуация -- с чего его тогда запустили; нужно сообщить запускающему агенту что что-то не так
-
----
-
-<a id="t04"></a>
 
 ### `.claude/skills/go/review.md`:40 — unresolved
 
@@ -187,28 +115,17 @@ _8 resolved threads omitted; re-run with `--include-resolved` to export them._
 
 не всегда план существует
 
----
+**@vzakharov (agent)** — 2026-11-02T02:14:22Z
 
-<a id="t05"></a>
+Поправил: план — один из источников запроса, «где у ветки он есть»; без плана остаются PR, его issue и relay-сводки. f0af92c
 
-### `.claude/skills/go/review.md`:55 — unresolved
+**@vzakharov (human)** — 2026-11-02T02:17:40Z
 
-```diff
-@@ -0,0 +1,118 @@
-… 51 lines elided …
-+before any floor. In a session whose transcript the script cannot find, there is
-+no conversation to read: say so and work from the records.
-+
-+**Fix what is cheaper to do than to describe, and what you cannot describe in a
-```
-
-**@vzakharov (human)** — 2026-11-02T01:54:40Z
-
-почему and а не or?
+и session-qa
 
 ---
 
-<a id="t06"></a>
+<a id="t02"></a>
 
 ### `.claude/skills/go/review.md`:60 — unresolved
 
@@ -226,44 +143,13 @@ _8 resolved threads omitted; re-run with `--include-resolved` to export them._
 
 почему?
 
----
+**@vzakharov (agent)** — 2026-11-02T02:14:25Z
 
-<a id="t07"></a>
+Основание было в том, что PR-тело, squash-комментарий и ответы в тредах — посты на GitHub, которыми владеют `/pr`, `/finalize` и сама сессия; в тексте этого не стояло, теперь стоит. Но ревьюер подсветил побочный эффект: в `/go` ревью идёт раньше `/pr`, так что устаревшее тело почти всегда даёт `revise` на то, что следующий шаг и так обновит. Это решение за тобой, я его не менял: например, не считать PR-посты находкой на `/go`, или дать ревьюеру их чинить. f0af92c
 
-### `.claude/skills/go/review.md`:87 — unresolved
+**@vzakharov (human)** — 2026-11-02T02:18:37Z
 
-```diff
-@@ -0,0 +1,118 @@
-… 82 lines elided …
-+
-+**A look again** reads the session's commits since your last look against your
-+findings, and anything else they changed as fresh work. The third look cannot
-+answer `revise`: it fixes the rest or answers `relay`, since telling the session
-+what to do a third time costs more than doing it.
-```
-
-**@vzakharov (human)** — 2026-11-02T01:56:14Z
-
-это hand-waving -- мы не знаем что стоит больше; скорее здесь про avoid spiraling
-
----
-
-<a id="t08"></a>
-
-### `.claude/skills/go/review.md`:91 — unresolved
-
-```diff
-@@ -0,0 +1,118 @@
-… 87 lines elided …
-+
-+## The commit
-+
-+**`pass`, `fixed` and `fixed-relay` end the run in a commit whose subject opens
-```
-
-**@vzakharov (human)** — 2026-11-02T01:57:03Z
-
-а нужен ли нам `...-relay` именно как scope для префикса? по сути и то и то fixed? к слову now that I'm asking it, а зачем нам вообще скоуп нужен?
+да, пусть не считает
 
 ---
 
