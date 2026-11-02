@@ -1,0 +1,94 @@
+{
+  "total": {
+    "inputTokens": 44,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 79546,
+    "cacheReadTokens": 2399439,
+    "outputTokens": 12253,
+    "thinkingTokens": 3142,
+    "responses": 22,
+    "costUsd": 1.3614918000000003
+  },
+  "estimate": {
+    "at": "2026-11-02T02:55:06.382Z",
+    "parts": [
+      {
+        "hours": 1.0,
+        "grade": "senior",
+        "role": "developer",
+        "comment": "answering both threads means tracing the gate's attestation and ledger-only checks against finalize's sweep order, and weighing four DRY designs across prose and code"
+      }
+    ],
+    "comment": null
+  },
+  "orientation": {
+    "endedBy": "oriented",
+    "endedOn": null,
+    "endedAt": "2026-11-02T02:53:20.598Z",
+    "contextTokens": 101441,
+    "spend": {
+      "inputTokens": 16,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 48812,
+      "cacheReadTokens": 628068,
+      "outputTokens": 1471,
+      "thinkingTokens": 153,
+      "responses": 7,
+      "costUsd": 0.5455936000000001
+    }
+  },
+  "sessionId": "03d858a0-3ff0-5462-9f64-b381e4f6a82f",
+  "branch": "claude/merge-gate-hook-k2tzds",
+  "cwd": "/home/user/muthur",
+  "openingPrompt": "/handle claude/merge-gate-hook-k2tzds",
+  "prs": [
+    246
+  ],
+  "url": "https://claude.ai/code/session_01DaohkDjMxeXJ2DhKD8aqgY",
+  "operator": "vzakharov",
+  "firstResponseAt": "2026-11-02T02:52:47.676Z",
+  "lastResponseAt": "2026-11-02T02:55:18.649Z",
+  "pricesAsOf": "2026-10-06",
+  "claudeCodeTotalUsd": null,
+  "ownTurns": {
+    "inputTokens": 44,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 79546,
+    "cacheReadTokens": 2399439,
+    "outputTokens": 12253,
+    "thinkingTokens": 3142,
+    "responses": 22,
+    "costUsd": 1.3614918000000003
+  },
+  "subagents": {
+    "inputTokens": 0,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 0,
+    "cacheReadTokens": 0,
+    "outputTokens": 0,
+    "thinkingTokens": 0,
+    "responses": 0,
+    "costUsd": 0.0
+  },
+  "byRate": {
+    "claude-opus-5-5/standard": {
+      "inputTokens": 44,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 79546,
+      "cacheReadTokens": 2399439,
+      "outputTokens": 12253,
+      "thinkingTokens": 3142,
+      "responses": 22,
+      "costUsd": 1.3614918000000003
+    }
+  },
+  "warnings": [],
+  "compactions": [],
+  "telemetry": {
+    "events": 22,
+    "matched": 22,
+    "matchedTableUsd": 1.3614918000000003,
+    "matchedEventUsd": 1.3614918,
+    "unseen": {}
+  }
+}
