@@ -4,7 +4,7 @@
 `.claude/skills/go/SKILL.md` points at `delegation.md` only conditionally, so
 that `MUTHUR_DELEGATION=off` leaves `/go` reading as if delegation had never
 been written. This hook saves the agent the round trip: it prints
-`delegation.md` and `delegation-model-capabilities.md` as additional context
+`delegation.md` and `.claude/model-capabilities.md` as additional context
 when `/go`'s body arrives, or that of its redirect `implement`, by any of the
 routes `skill_entry.py` names.
 
@@ -26,8 +26,10 @@ from skill_entry import entered_skill
 
 SWITCH = "MUTHUR_DELEGATION"
 SKILLS = {"go", "implement"}
-SKILL_DIR = Path(".claude") / "skills" / "go"
-FILES = ("delegation.md", "delegation-model-capabilities.md")
+FILES = (
+    Path(".claude") / "skills" / "go" / "delegation.md",
+    Path(".claude") / "model-capabilities.md",
+)
 
 
 def say(message: str) -> None:
@@ -37,9 +39,9 @@ def say(message: str) -> None:
 def brief(root: Path) -> Optional[str]:
     parts = []
     for name in FILES:
-        path = root / SKILL_DIR / name
+        path = root / name
         try:
-            parts.append(f"===== {SKILL_DIR / name} =====\n{path.read_text()}")
+            parts.append(f"===== {name} =====\n{path.read_text()}")
         except OSError as error:
             say(f"cannot read {path} ({error}); no delegation brief delivered.")
             return None

@@ -96,6 +96,17 @@ class ExtractTest(unittest.TestCase):
     def test_sidechain(self) -> None:
         self.assertEqual(self.extract(prompt_record(PNG, isSidechain=True)), [])
 
+    def test_verbose_names_the_line_it_could_not_parse(self) -> None:
+        transcript = self.dir / "session.jsonl"
+        transcript.write_text(json.dumps(prompt_record(PNG)) + "\n{half-written\n")
+        result = subprocess.run(
+            [sys.executable, str(SCRIPT), str(transcript), "--out", str(self.out), "--verbose"],
+            capture_output=True,
+            text=True,
+            check=True,
+        )
+        self.assertIn("line 2: unparseable, skipped", result.stderr)
+
     def test_same_image_twice_is_written_once(self) -> None:
         written = self.extract(prompt_record(PNG), mid_turn_record([image_block(PNG)]))
         self.assertEqual(len(written), 1)

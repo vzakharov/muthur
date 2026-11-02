@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 """Drives `.claude/hooks/checkpoint-review.py` as the harness does — a payload on
-stdin — and as a session does, through its `verdict` command. What it protects
-is that a session below Opus gets the procedure on entering a cutoff skill, that
-the command closing a cutoff is denied until its review records a verdict other
-than `revise`, that an Opus session is never stopped, and that the hook fails
-open.
+stdin, in a throwaway git repository. What it protects is that a session below
+Opus gets the procedure on entering a cutoff skill, that the command closing an
+entered cutoff is denied until the branch carries a `review:` commit with nothing
+but working artifacts since, that an Opus session and a cutoff the session never
+entered are never stopped, and that the hook fails open.
 
 Run by path (`python3 scripts/test_checkpoint_review.py`), as
 `scripts/check-muthur.sh` does.
@@ -18,7 +18,7 @@ import subprocess
 import tempfile
 import unittest
 from pathlib import Path
-from typing import List, Optional
+from typing import Dict, List, Optional
 
 HOOK = Path(__file__).resolve().parent.parent / ".claude" / "hooks" / "checkpoint-review.py"
 SWITCH = "MUTHUR_CHECKPOINT_REVIEW"
@@ -44,6 +44,36 @@ class CheckpointTestCase(unittest.TestCase):
         (skills / "go" / "checkpoint-review.md").write_text(PROCEDURE)
         self.transcript = self.root / "transcript.jsonl"
         self.model(SONNET)
+        self.git("init", "-q", "-b", "main")
+        self.commit({"docs/plans/x.md": "plan", "src.py": "1"}, "chore: base")
+        self.git("update-ref", "refs/remotes/origin/main", "HEAD")
+        self.git("checkout", "-q", "-b", "feature")
+
+    def git(self, *args: str) -> str:
+        result = subprocess.run(
+            ["git", "-c", "user.name=t", "-c", "user.email=t@t", *args],
+            cwd=self.root,
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        if result.returncode not in (0, 1) or (result.returncode == 1 and args[0] != "merge"):
+            self.fail(f"git {args}: {result.stderr}")
+        return result.stdout
+
+    def commit(self, files: Dict[str, Optional[str]], message: str) -> None:
+        for name, content in files.items():
+            path = self.root / name
+            if content is None:
+                self.git("rm", "-q", name)
+                continue
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_text(content)
+            self.git("add", name)
+        self.git("commit", "-q", "--allow-empty", "-m", message)
+
+    def review(self, files: Optional[Dict[str, Optional[str]]] = None) -> None:
+        self.commit(files or {}, "review: looked")
 
     def model(self, *models: str, sidechain: Optional[str] = None) -> None:
         entries: List[dict] = [{"type": "user", "message": {"content": "hi"}}]
@@ -71,16 +101,6 @@ class CheckpointTestCase(unittest.TestCase):
 
     def send(self, payload: dict, switch: Optional[str] = None) -> subprocess.CompletedProcess[str]:
         return self.run_hook(json.dumps(payload), switch)
-
-    def verdict(self, *args: str, switch: Optional[str] = None) -> subprocess.CompletedProcess[str]:
-        return subprocess.run(
-            [str(HOOK), "verdict", *args],
-            capture_output=True,
-            text=True,
-            env=self.env(switch),
-            cwd=self.root,
-            check=False,
-        )
 
     def base(self, session: str) -> dict:
         return {"session_id": session, "transcript_path": str(self.transcript)}
@@ -121,11 +141,11 @@ class CheckpointTestCase(unittest.TestCase):
 
 
 class Entry(CheckpointTestCase):
-    def test_each_cutoff_delivers_the_procedure_naming_the_session(self) -> None:
+    def test_each_cutoff_delivers_the_procedure(self) -> None:
         for skill in ("plan", "go", "implement", "/finalize"):
             with self.subTest(skill=skill):
                 context = self.assert_delivered(self.enter(skill, session=f"s-{skill.strip('/')}"))
-                self.assertIn(f"s-{skill.strip('/')}", context)
+                self.assertIn("checkpoint review", context)
 
     def test_a_read_and_a_typed_command_enter_too(self) -> None:
         read = {
@@ -136,6 +156,17 @@ class Entry(CheckpointTestCase):
         }
         self.assert_delivered(read)
         self.assert_delivered({**self.base("typed"), "hook_event_name": "UserPromptSubmit", "prompt": "/finalize and merge"})
+
+    def test_a_subagents_read_marks_nothing(self) -> None:
+        read = {
+            **self.base("sub"),
+            "hook_event_name": "PostToolUse",
+            "tool_name": "Read",
+            "agent_id": "agent-1",
+            "tool_input": {"file_path": str(self.root / ".claude" / "skills" / "go" / "SKILL.md")},
+        }
+        self.assertEqual(self.send(read).stdout, "")
+        self.assertFalse(self.state("sub").exists())
 
     def test_once_per_session(self) -> None:
         self.assert_delivered(self.enter("plan"))
@@ -169,14 +200,108 @@ class Entry(CheckpointTestCase):
 
 
 class Gate(CheckpointTestCase):
-    def test_each_closing_command_is_denied_while_its_review_is_pending(self) -> None:
+    def enter_all(self) -> None:
+        for skill in CLOSING:
+            self.send(self.enter(skill))
+
+    def test_each_closing_command_is_denied_with_no_review(self) -> None:
         for skill, command in CLOSING.items():
             with self.subTest(skill=skill):
                 self.send(self.enter(skill, session=skill))
                 reason = self.assert_denied(command, session=skill)
-                self.assertIn(f"verdict {skill} {skill} <verdict>", reason)
+                self.assertIn("checkpoint review", reason)
+                self.assertIn(f"/{skill}", reason)
 
-    def test_a_command_is_allowed_when_its_own_review_is_not_pending(self) -> None:
+    def test_open_after_a_passing_review(self) -> None:
+        self.enter_all()
+        self.commit({"src.py": "2"}, "feat: work")
+        self.review()
+        for command in CLOSING.values():
+            self.assert_allowed(command)
+
+    def test_a_review_that_fixed_something_opens(self) -> None:
+        self.enter_all()
+        self.commit({"src.py": "2"}, "feat: work")
+        self.review({"src.py": "fixed"})
+        self.assert_allowed(CLOSING["go"])
+
+    def test_other_subjects_do_not_count_as_a_review(self) -> None:
+        self.enter_all()
+        for subject in (
+            "review(pass): looked",
+            "polish: tidy\n\nReview: pass",
+            "fix: per review: x",
+        ):
+            with self.subTest(subject=subject):
+                self.commit({}, subject)
+                self.assert_denied(CLOSING["go"])
+
+    def test_the_newest_review_commit_decides(self) -> None:
+        self.enter_all()
+        self.review()
+        self.commit({"src.py": "2"}, "fix: revised")
+        self.assert_denied(CLOSING["go"])
+        self.review({"src.py": "3"})
+        self.assert_allowed(CLOSING["go"])
+
+    def test_working_artifacts_after_the_review_leave_it_open(self) -> None:
+        self.enter_all()
+        self.review()
+        self.commit({"docs/pr/251/pr.md": "export"}, "chore: export")
+        self.commit({"docs/remove-before-merging/relay-1.md": "r", "docs/issue/9/issue.md": "i"}, "docs: relay")
+        self.commit({".claude/costs/sessions/2026-10/b/1/s.json": "{}"}, "chore: cost row")
+        self.assert_allowed(CLOSING["finalize"])
+
+    def test_the_plan_sweep_and_lifecycle_flips_leave_it_open(self) -> None:
+        self.enter_all()
+        self.review()
+        self.git("mv", "docs/plans/x.md", "docs/plans/x.completed.md")
+        self.git("commit", "-q", "-m", "chore: flip")
+        self.assert_allowed(CLOSING["finalize"])
+        self.commit({"docs/plans/x.completed.md": None}, "chore: sweep")
+        self.assert_allowed(CLOSING["finalize"])
+
+    def test_a_plan_text_edit_or_code_after_the_review_shuts_it(self) -> None:
+        self.enter_all()
+        self.review()
+        self.commit({"docs/plans/x.md": "plan, revised"}, "docs: plan")
+        self.assert_denied(CLOSING["go"])
+        self.review()
+        self.commit({"src.py": "2"}, "fix: late")
+        reason = self.assert_denied(CLOSING["go"])
+        self.assertIn("src.py", reason)
+
+    def test_a_base_merge_after_the_review_leaves_it_open(self) -> None:
+        self.enter_all()
+        self.review()
+        self.git("checkout", "-q", "main")
+        self.commit({"other.py": "landed"}, "feat: landed on main")
+        self.git("update-ref", "refs/remotes/origin/main", "HEAD")
+        self.git("checkout", "-q", "feature")
+        self.git("merge", "-q", "--no-edit", "main")
+        self.assert_allowed(CLOSING["finalize"])
+
+    def test_a_conflict_resolution_after_the_review_shuts_it(self) -> None:
+        self.enter_all()
+        self.commit({"src.py": "feature"}, "feat: work")
+        self.review()
+        self.git("checkout", "-q", "main")
+        self.commit({"src.py": "main"}, "feat: main's own")
+        self.git("update-ref", "refs/remotes/origin/main", "HEAD")
+        self.git("checkout", "-q", "feature")
+        self.git("merge", "--no-edit", "main")
+        self.commit({"src.py": "resolved"}, "merge: main")
+        self.assert_denied(CLOSING["finalize"])
+
+    def test_a_polish_after_the_review_shuts_it_only_if_it_changed_the_tree(self) -> None:
+        self.enter_all()
+        self.review()
+        self.commit({}, "polish: nothing to change")
+        self.assert_allowed(CLOSING["go"])
+        self.commit({"src.py": "tidied"}, "polish: tidy")
+        self.assert_denied(CLOSING["go"])
+
+    def test_a_cutoff_the_session_never_entered_is_not_gated(self) -> None:
         self.send(self.enter("plan"))
         self.assert_allowed(CLOSING["go"])
         self.assert_allowed(CLOSING["finalize"])
@@ -184,29 +309,6 @@ class Gate(CheckpointTestCase):
     def test_nothing_entered_nothing_denied(self) -> None:
         for command in CLOSING.values():
             self.assert_allowed(command)
-
-    def test_a_verdict_clears_only_its_own_skill(self) -> None:
-        self.send(self.enter("plan"))
-        self.send(self.enter("go"))
-        self.assertEqual(self.verdict("sess", "plan", "pass").returncode, 0)
-        self.assert_allowed(CLOSING["plan"])
-        self.assert_denied(CLOSING["go"])
-
-    def test_every_verdict_but_revise_clears(self) -> None:
-        for given in ("pass", "fixed", "fixed-relay", "relay"):
-            with self.subTest(verdict=given):
-                self.send(self.enter("go", session=given))
-                self.assertEqual(self.verdict(given, "implement", given).returncode, 0)
-                self.assert_allowed(CLOSING["go"], session=given)
-
-    def test_revise_keeps_it_shut_until_a_later_verdict(self) -> None:
-        self.send(self.enter("finalize"))
-        result = self.verdict("sess", "finalize", "revise")
-        self.assertEqual(result.returncode, 0)
-        self.assertIn("still pending", result.stdout)
-        self.assert_denied(CLOSING["finalize"])
-        self.verdict("sess", "finalize", "pass")
-        self.assert_allowed(CLOSING["finalize"])
 
     def test_an_opus_session_is_never_stopped(self) -> None:
         self.send(self.enter("go"))
@@ -221,30 +323,40 @@ class Gate(CheckpointTestCase):
         self.assert_denied(CLOSING["go"])
 
     def test_commands_that_do_not_close_a_cutoff(self) -> None:
-        for skill in CLOSING:
-            self.send(self.enter(skill))
+        self.enter_all()
         for command in (
             "gh pr ready 251 --undo",
             "git mv docs/plans/x.in-progress.md docs/plans/x.paused.md",
             "git status && echo docs/plans/x.completed.md",
             "gh pr view 251",
+            'git commit -m "gh pr ready"',
+            'git commit -m "wrap up; gh pr ready 251"',
+            "git commit -m \"$(cat <<'EOF'\nfeat: x\n\ngh pr ready 251\nEOF\n)\"",
+            "cat <<'EOF'\ngit mv a.in-progress.md a.completed.md\nEOF",
         ):
             with self.subTest(command=command):
                 self.assert_allowed(command)
 
-    def test_a_closing_command_chained_after_another(self) -> None:
+    def test_a_closing_command_at_command_position_is_still_caught(self) -> None:
         self.send(self.enter("go"))
-        self.assert_denied("git add -A && " + CLOSING["go"])
+        self.send(self.enter("finalize"))
+        for command in (
+            "git add -A && " + CLOSING["go"],
+            "git add -A; " + CLOSING["go"],
+            "echo done\n" + CLOSING["finalize"],
+            "GH_TOKEN=x " + CLOSING["finalize"],
+            "git mv 'docs/plans/x.in-progress.md' 'docs/plans/x.completed.md'",
+        ):
+            with self.subTest(command=command):
+                self.assert_denied(command)
 
 
 class SwitchAndFailingOpen(CheckpointTestCase):
-    def test_the_switch_off_silences_entry_gate_and_verdict(self) -> None:
+    def test_the_switch_off_silences_entry_and_gate(self) -> None:
         self.assertEqual(self.send(self.enter("go"), switch="off").stdout, "")
         self.assertFalse(self.state().exists())
         self.send(self.enter("go"))
         self.assert_allowed(CLOSING["go"], switch="off")
-        result = self.verdict("sess", "go", "pass", switch="off")
-        self.assertEqual((result.returncode, result.stdout), (0, ""))
         self.assert_denied(CLOSING["go"])
 
     def test_a_bad_payload(self) -> None:
@@ -267,6 +379,13 @@ class SwitchAndFailingOpen(CheckpointTestCase):
         self.assertEqual(result.stdout, "")
         self.assertIn("nothing checked", result.stderr)
 
+    def test_a_repository_that_cannot_be_read_allows(self) -> None:
+        self.send(self.enter("go"))
+        self.git("update-ref", "-d", "refs/remotes/origin/main")
+        result = self.send(self.bash(CLOSING["go"]))
+        self.assertEqual(result.stdout, "")
+        self.assertIn("nothing checked", result.stderr)
+
     def test_a_session_id_that_cannot_name_a_state_file(self) -> None:
         for session in ("", "a/b", ".hidden"):
             with self.subTest(session=session):
@@ -281,13 +400,6 @@ class SwitchAndFailingOpen(CheckpointTestCase):
         self.assertIn("checkpoint-review.md", result.stderr)
         procedure.write_text(PROCEDURE)
         self.assert_delivered(self.enter("plan"))
-
-    def test_a_malformed_verdict_command_fails_loudly(self) -> None:
-        for args in ((), ("sess", "go"), ("sess", "task", "pass"), ("sess", "go", "ok"), ("a/b", "go", "pass")):
-            with self.subTest(args=args):
-                result = self.verdict(*args)
-                self.assertEqual(result.returncode, 2)
-                self.assertNotEqual(result.stderr, "")
 
 
 if __name__ == "__main__":
