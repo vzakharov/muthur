@@ -54,13 +54,16 @@ It prints each operator message as `## Q` and each reply of the session as
 before any floor. In a session whose transcript the script cannot find, there is
 no conversation to read: say so and work from the records.
 
-**Fix a finding when either holds: it is cheaper to do than to describe, or you
-cannot describe it in a form the session's model follows.** Judge the second
-from the entry for that model in `.claude/model-capabilities.md`, its **Misses**
-above all, and from what the review just saw. Answer `revise` only for what is
-describable that way. The PR body, the squash proposal comment and the thread
-replies are posts to GitHub that `/pr`, `/finalize` and the session own, so a
-stale one is a `revise` finding, never a fix of yours.
+**Fix a finding when any holds: it is cheaper to do than to describe; it is
+minor enough that the round trip of telling the session and waiting for its fix
+costs more than making it in place — a stale reference, a renamed token, a
+one-line wording; or you cannot describe it in a form the session's model
+follows.** Judge the last from the entry for that model in
+`.claude/model-capabilities.md`, its **Misses** above all, and from what the
+review just saw. Answer `revise` only for what is describable that way. The PR
+body, the squash proposal comment and the thread replies are posts to GitHub
+that `/pr`, `/finalize` and the session own, so a stale one is a `revise`
+finding, never a fix of yours.
 
 **What the review shows about the session's model** goes into that model's
 **Handles** and **Misses** in `.claude/model-capabilities.md`, under the file's
