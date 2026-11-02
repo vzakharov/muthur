@@ -33,6 +33,10 @@ VALUES = {
 }
 
 
+def bold(value: str) -> str:
+    return f"**{value}**"
+
+
 def _pattern(values: Sequence[str]) -> re.Pattern[str]:
     alternatives = (re.escape(v).replace(re.escape(RUN_LINK), r"\(.+\)") for v in values)
     return re.compile(r"\*\*(?:" + "|".join(alternatives) + r")\*\*")
@@ -90,7 +94,7 @@ def attestation(bodies: Sequence[str]) -> Optional[Attestation]:
         if len(found) != 1 or not allowed.fullmatch(found[0]):
             return None
         values[prefix] = found[0]
-    return Attestation(sha, values[CI] != f"**{NOTHING_RUNS}**", values[BUCKETS] == f"**{STUB}**")
+    return Attestation(sha, values[CI] != bold(NOTHING_RUNS), values[BUCKETS] == bold(STUB))
 
 
 def squash(bodies: Sequence[str], title: str, number: int) -> Optional[Squash]:

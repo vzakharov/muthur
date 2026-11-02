@@ -168,7 +168,7 @@ class Merges(GateCase):
 
     def test_no_check_runs_pass_where_nothing_runs_on_a_pr(self) -> None:
         self.github.routes[CHECK_RUNS] = {"total_count": 0, "check_runs": []}
-        self.github.set_comments(attestation_body(ci=f"**{record.NOTHING_RUNS}**"), squash_body())
+        self.github.set_comments(attestation_body(ci=record.bold(record.NOTHING_RUNS)), squash_body())
         self.assertIsNotNone(self.prompt())
 
     def test_an_identical_head_passes(self) -> None:
@@ -300,7 +300,7 @@ class Attestation(unittest.TestCase):
 class StubLine(GateCase):
     def setUp(self) -> None:
         super().setUp()
-        self.github.set_comments(attestation_body(buckets=f"**{record.STUB}**"), squash_body())
+        self.github.set_comments(attestation_body(buckets=record.bold(record.STUB)), squash_body())
 
     def test_passes_over_a_stub(self) -> None:
         self.assertIsNotNone(self.prompt())
