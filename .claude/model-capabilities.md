@@ -49,13 +49,16 @@ model come first.
   part of the design, it changed the plan alone, leaving the PR body, the squash
   proposal and the thread replies that promised the part saying it was still in;
   renaming a planned module, it left the old name in the PR body and the squash
-  proposal. Moving code onto a shared helper, it passed its own callback where
-  the helper calls back with the arguments in the other order, on a path no test
-  ran. Ask it to list every reader of the format, and, for a gate, every commit
-  and session that reaches the guarded command, in the order the skills make
-  them; on a rewrite, to diff the plan against the analysis it carries out; on
-  dropping or renaming a part, to grep every place that describes the change for
-  it; on a refactor, to test each path it moved.
+  proposal. Polishing a fix it made for a review thread, it cut as a duplicate
+  the very clause the operator had asked for there. Moving code onto a shared
+  helper, it passed its own callback where the helper calls back with the
+  arguments in the other order, on a path no test ran. Ask it to list every
+  reader of the format, and, for a gate, every commit and session that reaches
+  the guarded command, in the order the skills make them; on a rewrite, to diff
+  the plan against the analysis it carries out; on dropping or renaming a part,
+  to grep every place that describes the change for it; on a refactor, to test
+  each path it moved; on a polish cut, to check it against the review threads
+  open on those lines.
 - **Brief:** naming the style reference and the run-until-green command was
   enough; ask for "anything that surprised you" — it reports useful edges.
 - **Cost, by eye:** that suite, a few hundred lines, cost about twice as much
