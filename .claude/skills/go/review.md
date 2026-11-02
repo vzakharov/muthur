@@ -98,7 +98,7 @@ would carry anyway, and the verdict commit comes last, empty unless it holds the
 last of them:
 
 ```bash
-git commit --allow-empty -m 'review(pass): nothing to change'
+git commit --allow-empty -m 'review: nothing to change'
 ```
 
 That commit is the next review's floor and what
