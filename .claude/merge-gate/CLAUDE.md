@@ -9,8 +9,9 @@ request, so landing a finalized PR costs no model turn and re-caches nothing.
   `.claude/skills/finalize/merge.md` § "Step 8 — the gate" and § "Merging" say
   what `/merge` checks and how it reads the squash record back;
   `.claude/skills/finalize/attest.md` says which value each attestation line may
-  hold. A change there is a change here, and `test_merge_gate.py` reads
-  `attest.md`'s template so the attestation patterns cannot drift from it.
+  hold. A change there is a change here. `test_merge_gate.py` holds the
+  attestation values equal to `attest.md`'s template both ways; nothing checks
+  the squash read-back against `merge.md`.
 - **Every fact comes from GitHub, never the checkout**: a container that woke
   for this prompt may hold a stale tree.
 - **A decline prints nothing**, whether a check failed or the gate raised, so

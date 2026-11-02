@@ -168,7 +168,7 @@ class Merges(GateCase):
 
     def test_no_check_runs_pass_where_nothing_runs_on_a_pr(self) -> None:
         self.github.routes[CHECK_RUNS] = {"total_count": 0, "check_runs": []}
-        self.github.set_comments(attestation_body(ci=record.NOTHING_RUNS), squash_body())
+        self.github.set_comments(attestation_body(ci=f"**{record.NOTHING_RUNS}**"), squash_body())
         self.assertIsNotNone(self.prompt())
 
     def test_an_identical_head_passes(self) -> None:
@@ -272,18 +272,26 @@ class Declines(GateCase):
 
 
 class Attestation(unittest.TestCase):
-    def test_every_value_the_template_allows_passes(self) -> None:
-        """Read off `attest.md`'s first template, so the patterns follow it."""
+    def test_the_values_are_the_templates(self) -> None:
+        """Read off `attest.md`'s first template, in both directions: a value
+        the template drops must stop passing, not only a new one start."""
         template = re.search(r"```md\n(.*?)\n```", ATTEST.read_text(), re.DOTALL)
         assert template is not None
-        lines = {p: line[len(p) :] for line in template.group(1).split("\n") for p in record.ALLOWED if line.startswith(p)}
-        self.assertEqual(set(lines), set(record.ALLOWED))
+        lines = {p: line[len(p) :] for line in template.group(1).split("\n") for p in record.VALUES if line.startswith(p)}
+        self.assertEqual(set(lines), set(record.VALUES))
         for prefix, value in lines.items():
-            choices = re.fullmatch(r"\*\*<(.*)>\*\*", value)
-            alternatives = [f"**{c}**" for c in choices.group(1).split(" | ")] if choices else [value]
-            for alternative in alternatives:
-                with self.subTest(alternative=alternative):
-                    self.assertTrue(record.ALLOWED[prefix].fullmatch(alternative))
+            spelled = re.fullmatch(r"\*\*(?:<(.*)>|(.*))\*\*", value)
+            assert spelled is not None
+            choices = spelled.group(1).split(" | ") if spelled.group(1) else [spelled.group(2)]
+            with self.subTest(prefix=prefix):
+                self.assertEqual(sorted(choices), sorted(record.VALUES[prefix]))
+
+    def test_the_run_link_takes_any_parenthesized_text_and_nothing_else(self) -> None:
+        ci = record.ALLOWED[record.CI]
+        self.assertTrue(ci.fullmatch("**green ([run](https://example.com/run/1))**"))
+        for value in ("**green**", "**green ()**", "**green (run link) and more**"):
+            with self.subTest(value=value):
+                self.assertFalse(ci.fullmatch(value))
 
     def test_crlf_line_ends_read_as_lf(self) -> None:
         self.assertIsNotNone(record.attestation([attestation_body().replace("\n", "\r\n")]))
@@ -292,7 +300,7 @@ class Attestation(unittest.TestCase):
 class StubLine(GateCase):
     def setUp(self) -> None:
         super().setUp()
-        self.github.set_comments(attestation_body(buckets=record.STUB), squash_body())
+        self.github.set_comments(attestation_body(buckets=f"**{record.STUB}**"), squash_body())
 
     def test_passes_over_a_stub(self) -> None:
         self.assertIsNotNone(self.prompt())

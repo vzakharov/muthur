@@ -1,8 +1,9 @@
 """What the merge gate reads off the PR's conversation comments: the attestation
 and the squash record. Each mirrors a prose home — the attestation template in
 `.claude/skills/finalize/attest.md`, the read-back in
-`.claude/skills/finalize/merge.md` § "Merging" — and `test_merge_gate.py` reads
-the template, so the patterns here cannot drift from it unnoticed.
+`.claude/skills/finalize/merge.md` § "Merging". `test_merge_gate.py` asserts
+`VALUES` equals the template's alternatives line by line; the squash read-back
+has no such check.
 """
 
 from __future__ import annotations
@@ -17,19 +18,27 @@ HEADING = "### Attestation"
 VET = "- `./scripts/vet.sh` — "
 CI = "- CI on this PR — "
 BUCKETS = "- CI-only buckets — "
-NOTHING_RUNS = "**nothing runs on a PR in this repo**"
-STUB = "**/test-on-gh is an unhydrated stub**"
+NOTHING_RUNS = "nothing runs on a PR in this repo"
+STUB = "/test-on-gh is an unhydrated stub"
+# The template's placeholder, filled with any text in parentheses.
+RUN_LINK = "(run link)"
 
-# Each line's values the template allows; anything else — a red line, a
-# recorded two-shot stop — is a run the gate does not merge on.
-ALLOWED = {
-    VET: re.compile(r"\*\*green\*\*(?: \(.*\))?"),
-    CI: re.compile(r"\*\*green \(.+\)\*\*|" + re.escape(NOTHING_RUNS)),
-    BUCKETS: re.compile(
-        r"\*\*dispatched and passed \(.+\)\*\*"
-        r"|\*\*not dispatched: the diff doesn't reach them\*\*|" + re.escape(STUB)
-    ),
+# Each line's values, spelled as the template's `**<a | b>**` spells them;
+# anything else — a red line, a recorded two-shot stop — is a run the gate does
+# not merge on.
+VALUES = {
+    VET: ("green",),
+    CI: (f"green {RUN_LINK}", NOTHING_RUNS),
+    BUCKETS: (f"dispatched and passed {RUN_LINK}", "not dispatched: the diff doesn't reach them", STUB),
 }
+
+
+def _pattern(values: Sequence[str]) -> re.Pattern[str]:
+    alternatives = (re.escape(v).replace(re.escape(RUN_LINK), r"\(.+\)") for v in values)
+    return re.compile(r"\*\*(?:" + "|".join(alternatives) + r")\*\*")
+
+
+ALLOWED = {prefix: _pattern(values) for prefix, values in VALUES.items()}
 
 SQUASH_HEADERS = ("Proposed squash body:", "Proposed squash title/body:")
 FENCE = re.compile(r"^```[^\n]*\n(.*?)\n```$", re.MULTILINE | re.DOTALL)
@@ -81,7 +90,7 @@ def attestation(bodies: Sequence[str]) -> Optional[Attestation]:
         if len(found) != 1 or not allowed.fullmatch(found[0]):
             return None
         values[prefix] = found[0]
-    return Attestation(sha, values[CI] != NOTHING_RUNS, values[BUCKETS] == STUB)
+    return Attestation(sha, values[CI] != f"**{NOTHING_RUNS}**", values[BUCKETS] == f"**{STUB}**")
 
 
 def squash(bodies: Sequence[str], title: str, number: int) -> Optional[Squash]:
