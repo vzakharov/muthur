@@ -1,0 +1,83 @@
+{
+  "total": {
+    "inputTokens": 16,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 48907,
+    "cacheReadTokens": 636777,
+    "outputTokens": 1619,
+    "thinkingTokens": 363,
+    "responses": 7,
+    "costUsd": 0.3392054
+  },
+  "estimate": null,
+  "orientation": {
+    "endedBy": null,
+    "endedOn": null,
+    "endedAt": null,
+    "contextTokens": null,
+    "spend": {
+      "inputTokens": 16,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 48907,
+      "cacheReadTokens": 636777,
+      "outputTokens": 1619,
+      "thinkingTokens": 363,
+      "responses": 7,
+      "costUsd": 0.3392054
+    }
+  },
+  "sessionId": "3f686544-ca5f-5ebe-85fc-81c39be9c8dc",
+  "branch": "claude/checkpoint-reviewer-procedure-wcfux3",
+  "cwd": "/home/user/muthur",
+  "openingPrompt": "/handle claude/checkpoint-reviewer-procedure-wcfux3",
+  "prs": [],
+  "url": "https://claude.ai/code/session_01DaohkDGp2zE67i64rKqBEe",
+  "operator": "vzakharov",
+  "firstResponseAt": "2026-11-02T02:03:27.312Z",
+  "lastResponseAt": "2026-11-02T02:03:47.565Z",
+  "pricesAsOf": "2026-10-06",
+  "claudeCodeTotalUsd": null,
+  "ownTurns": {
+    "inputTokens": 16,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 48907,
+    "cacheReadTokens": 636777,
+    "outputTokens": 1619,
+    "thinkingTokens": 363,
+    "responses": 7,
+    "costUsd": 0.3392054
+  },
+  "subagents": {
+    "inputTokens": 0,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 0,
+    "cacheReadTokens": 0,
+    "outputTokens": 0,
+    "thinkingTokens": 0,
+    "responses": 0,
+    "costUsd": 0.0
+  },
+  "byRate": {
+    "claude-sonnet-5-5/standard": {
+      "inputTokens": 16,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 48907,
+      "cacheReadTokens": 636777,
+      "outputTokens": 1619,
+      "thinkingTokens": 363,
+      "responses": 7,
+      "costUsd": 0.3392054
+    }
+  },
+  "warnings": [
+    "prices.json priced the 7 responses the events also priced at $0.3392, against the events' $0.2755: a rate in the table is likely out of date"
+  ],
+  "compactions": [],
+  "telemetry": {
+    "events": 7,
+    "matched": 7,
+    "matchedTableUsd": 0.3392054,
+    "matchedEventUsd": 0.2755277,
+    "unseen": {}
+  }
+}
