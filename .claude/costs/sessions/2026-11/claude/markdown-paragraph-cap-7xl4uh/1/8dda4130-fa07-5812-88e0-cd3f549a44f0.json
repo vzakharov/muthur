@@ -1,13 +1,13 @@
 {
   "total": {
-    "inputTokens": 23,
-    "cacheWrite5mTokens": 0,
-    "cacheWrite1hTokens": 52697,
-    "cacheReadTokens": 1009229,
-    "outputTokens": 6758,
-    "thinkingTokens": 1899,
-    "responses": 11,
-    "costUsd": 0.7586738
+    "inputTokens": 550,
+    "cacheWrite5mTokens": 1275,
+    "cacheWrite1hTokens": 66803,
+    "cacheReadTokens": 2128109,
+    "outputTokens": 10279,
+    "thinkingTokens": 2377,
+    "responses": 21,
+    "costUsd": 1.1780258
   },
   "estimate": {
     "at": "2026-11-03T08:33:46.636Z",
@@ -38,25 +38,25 @@
     }
   },
   "sessionId": "8dda4130-fa07-5812-88e0-cd3f549a44f0",
-  "branch": "claude/keen-noether-7xl4uh",
+  "branch": "claude/markdown-paragraph-cap-7xl4uh",
   "cwd": "/home/user/muthur",
   "openingPrompt": "чего нам будет стоить добавить правило не более пяти строк прозы на абзац/элемент списка в md",
   "prs": [],
   "url": "https://claude.ai/code/session_01DaohkBhVnymkcskczYQ5j9",
   "operator": "vzakharov",
   "firstResponseAt": "2026-11-03T08:32:53.355Z",
-  "lastResponseAt": "2026-11-03T08:33:56.925Z",
+  "lastResponseAt": "2026-11-03T09:29:42.454Z",
   "pricesAsOf": "2026-10-06",
   "claudeCodeTotalUsd": null,
   "ownTurns": {
-    "inputTokens": 23,
+    "inputTokens": 44,
     "cacheWrite5mTokens": 0,
-    "cacheWrite1hTokens": 52697,
-    "cacheReadTokens": 1009229,
-    "outputTokens": 6758,
-    "thinkingTokens": 1899,
-    "responses": 11,
-    "costUsd": 0.7586738
+    "cacheWrite1hTokens": 66803,
+    "cacheReadTokens": 2023781,
+    "outputTokens": 10263,
+    "thinkingTokens": 2377,
+    "responses": 20,
+    "costUsd": 1.1446162
   },
   "subagents": {
     "inputTokens": 0,
@@ -70,23 +70,34 @@
   },
   "byRate": {
     "claude-opus-5-5/standard": {
-      "inputTokens": 23,
-      "cacheWrite5mTokens": 0,
-      "cacheWrite1hTokens": 52697,
-      "cacheReadTokens": 1009229,
-      "outputTokens": 6758,
-      "thinkingTokens": 1899,
-      "responses": 11,
-      "costUsd": 0.7586738
+      "inputTokens": 550,
+      "cacheWrite5mTokens": 1275,
+      "cacheWrite1hTokens": 66803,
+      "cacheReadTokens": 2128109,
+      "outputTokens": 10279,
+      "thinkingTokens": 2377,
+      "responses": 21,
+      "costUsd": 1.1780258
     }
   },
   "warnings": [],
   "compactions": [],
   "telemetry": {
-    "events": 11,
-    "matched": 11,
-    "matchedTableUsd": 0.7586738,
-    "matchedEventUsd": 0.7586738,
-    "unseen": {}
+    "events": 21,
+    "matched": 20,
+    "matchedTableUsd": 1.1446162,
+    "matchedEventUsd": 1.1446162,
+    "unseen": {
+      "prompt_suggestion": {
+        "inputTokens": 506,
+        "cacheWrite5mTokens": 1275,
+        "cacheWrite1hTokens": 0,
+        "cacheReadTokens": 104328,
+        "outputTokens": 16,
+        "thinkingTokens": 0,
+        "responses": 1,
+        "costUsd": 0.0334096
+      }
+    }
   }
 }
