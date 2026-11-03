@@ -1,13 +1,13 @@
 {
   "total": {
-    "inputTokens": 61,
+    "inputTokens": 83,
     "cacheWrite5mTokens": 101791,
-    "cacheWrite1hTokens": 86592,
-    "cacheReadTokens": 2641262,
-    "outputTokens": 13609,
-    "thinkingTokens": 7326,
-    "responses": 26,
-    "costUsd": 2.0023674
+    "cacheWrite1hTokens": 103990,
+    "cacheReadTokens": 3954908,
+    "outputTokens": 16886,
+    "thinkingTokens": 7495,
+    "responses": 35,
+    "costUsd": 2.4699086000000006
   },
   "estimate": {
     "at": "2026-11-03T03:06:54.463Z",
@@ -41,22 +41,24 @@
   "branch": "claude/finalize-hands-off-to-cloud-pqglq8",
   "cwd": "/home/user/muthur",
   "openingPrompt": "давай, если finalize запускается из сессии, где нет bash (чаще всего это локальная сессия на маке), агент сразу это понимает и запускает finalize на вновь созда…",
-  "prs": [],
+  "prs": [
+    258
+  ],
   "url": "https://claude.ai/code/session_01DaohkCoE7BZoawbFpCRKed",
   "operator": "vzakharov",
   "firstResponseAt": "2026-11-03T03:05:30.501Z",
-  "lastResponseAt": "2026-11-03T03:08:00.279Z",
+  "lastResponseAt": "2026-11-03T03:08:45.512Z",
   "pricesAsOf": "2026-10-06",
   "claudeCodeTotalUsd": null,
   "ownTurns": {
-    "inputTokens": 48,
+    "inputTokens": 70,
     "cacheWrite5mTokens": 0,
-    "cacheWrite1hTokens": 86592,
-    "cacheReadTokens": 2127246,
-    "outputTokens": 8921,
-    "thinkingTokens": 4905,
-    "responses": 19,
-    "costUsd": 1.2967972
+    "cacheWrite1hTokens": 103990,
+    "cacheReadTokens": 3440892,
+    "outputTokens": 12198,
+    "thinkingTokens": 5074,
+    "responses": 28,
+    "costUsd": 1.7643384000000004
   },
   "subagents": {
     "inputTokens": 13,
@@ -70,23 +72,23 @@
   },
   "byRate": {
     "claude-opus-5-5/standard": {
-      "inputTokens": 61,
+      "inputTokens": 83,
       "cacheWrite5mTokens": 101791,
-      "cacheWrite1hTokens": 86592,
-      "cacheReadTokens": 2641262,
-      "outputTokens": 13609,
-      "thinkingTokens": 7326,
-      "responses": 26,
-      "costUsd": 2.0023674
+      "cacheWrite1hTokens": 103990,
+      "cacheReadTokens": 3954908,
+      "outputTokens": 16886,
+      "thinkingTokens": 7495,
+      "responses": 35,
+      "costUsd": 2.4699086000000006
     }
   },
   "warnings": [],
   "compactions": [],
   "telemetry": {
-    "events": 26,
-    "matched": 26,
-    "matchedTableUsd": 2.0023674,
-    "matchedEventUsd": 2.0023674,
+    "events": 35,
+    "matched": 35,
+    "matchedTableUsd": 2.4699086000000006,
+    "matchedEventUsd": 2.4699086000000006,
     "unseen": {}
   }
 }
