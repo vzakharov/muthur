@@ -5,13 +5,15 @@ Proposed squash body:
 runs use bash 4 features such as mapfile, and macOS ships bash 3.2 at
 /bin/bash, which vet.sh's shebang names, so the vet run failed partway.
 
-/finalize now checks, before anything else, that both /bin/bash and the
-bash on PATH are 4 or newer. When either is older, or the session has no
-shell tool, it pushes the branch and starts the same /finalize, with the
-whole argument and the branch named, in a new cloud session -- through
-claude --cloud, or create_session the way /relay starts a successor --
-then reports the link and stops. Uncommitted changes stop it with a
-question instead, since the cloud session clones from GitHub.
+A new hook, finalize-bash-gate.py, checks /bin/bash and the bash on
+PATH. Where either is older than 4 it denies entering /finalize through
+the Skill tool or a Read of its SKILL.md, and the denial tells the agent
+to push and start the same /finalize in a new cloud session, through
+claude --cloud or create_session. A typed /finalize, which no hook can
+stop, gets the same steps as context. The hook is Python because it
+runs where bash cannot be trusted, and its check subcommand serves a
+harness without hooks. skill_entry.py gains entering_skill, the
+PreToolUse twin of entered_skill.
 
 Co-authored-by: Claude <noreply@anthropic.com>
 ```
