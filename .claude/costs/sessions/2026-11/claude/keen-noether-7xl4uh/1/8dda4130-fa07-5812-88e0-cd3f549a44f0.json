@@ -1,0 +1,92 @@
+{
+  "total": {
+    "inputTokens": 23,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 52697,
+    "cacheReadTokens": 1009229,
+    "outputTokens": 6758,
+    "thinkingTokens": 1899,
+    "responses": 11,
+    "costUsd": 0.7586738
+  },
+  "estimate": {
+    "at": "2026-11-03T08:33:46.636Z",
+    "parts": [
+      {
+        "hours": 1.0,
+        "grade": "senior",
+        "role": "analyst",
+        "comment": "Pricing a prose convention needs someone who knows the loop's vet and staging machinery and can measure the existing corpus rather than guess at it"
+      }
+    ],
+    "comment": null
+  },
+  "orientation": {
+    "endedBy": "oriented",
+    "endedOn": null,
+    "endedAt": "2026-11-03T08:33:02.314Z",
+    "contextTokens": 95427,
+    "spend": {
+      "inputTokens": 6,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 37012,
+      "cacheReadTokens": 225014,
+      "outputTokens": 820,
+      "thinkingTokens": 215,
+      "responses": 3,
+      "costUsd": 0.3575228
+    }
+  },
+  "sessionId": "8dda4130-fa07-5812-88e0-cd3f549a44f0",
+  "branch": "claude/keen-noether-7xl4uh",
+  "cwd": "/home/user/muthur",
+  "openingPrompt": "чего нам будет стоить добавить правило не более пяти строк прозы на абзац/элемент списка в md",
+  "prs": [],
+  "url": "https://claude.ai/code/session_01DaohkBhVnymkcskczYQ5j9",
+  "operator": "vzakharov",
+  "firstResponseAt": "2026-11-03T08:32:53.355Z",
+  "lastResponseAt": "2026-11-03T08:33:56.925Z",
+  "pricesAsOf": "2026-10-06",
+  "claudeCodeTotalUsd": null,
+  "ownTurns": {
+    "inputTokens": 23,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 52697,
+    "cacheReadTokens": 1009229,
+    "outputTokens": 6758,
+    "thinkingTokens": 1899,
+    "responses": 11,
+    "costUsd": 0.7586738
+  },
+  "subagents": {
+    "inputTokens": 0,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 0,
+    "cacheReadTokens": 0,
+    "outputTokens": 0,
+    "thinkingTokens": 0,
+    "responses": 0,
+    "costUsd": 0.0
+  },
+  "byRate": {
+    "claude-opus-5-5/standard": {
+      "inputTokens": 23,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 52697,
+      "cacheReadTokens": 1009229,
+      "outputTokens": 6758,
+      "thinkingTokens": 1899,
+      "responses": 11,
+      "costUsd": 0.7586738
+    }
+  },
+  "warnings": [],
+  "compactions": [],
+  "telemetry": {
+    "events": 11,
+    "matched": 11,
+    "matchedTableUsd": 0.7586738,
+    "matchedEventUsd": 0.7586738,
+    "unseen": {}
+  }
+}
