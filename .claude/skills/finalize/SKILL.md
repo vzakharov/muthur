@@ -2,6 +2,11 @@
 description: Finalize (a.k.a. "prep merge") — land prep: verify there's a draft PR, run the quality passes (`/polish`), run the vet suite, merge the base branch, mark ready for review, propose a squash body and settle the PR title it lands under, and post the attestation comment. Pass an optional branch/PR target first (`/finalize <branch|#PR|PR-url>`) to attach to that existing branch before finalizing. `/finalize no vet` is the docs-only mode; `/finalize revoke` withdraws an attestation; `/finalize and merge` squash-merges the PR as well, but only if the run turned up nothing to decide. An operator's ask to merge — "merge", "мерджи", in any words — is `/merge`, which sends a branch not yet finalized here.
 ---
 
+**Where bash is older than 4, `.claude/hooks/finalize-bash-gate.py` refuses this
+skill** and says how to run it in a cloud session instead. Under a harness that
+runs no hooks, run `.claude/hooks/finalize-bash-gate.py check` before anything
+else: when it prints, what it prints replaces everything below.
+
 **Optional branch/PR target**: if the first token of the argument is a branch
 name, `#NNN` PR number, or PR URL, then `/finalize <target>` is shorthand for
 attaching to that branch first and then finalizing — equivalent to
