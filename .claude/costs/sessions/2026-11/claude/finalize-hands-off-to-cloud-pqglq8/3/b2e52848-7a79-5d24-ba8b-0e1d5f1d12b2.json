@@ -1,0 +1,88 @@
+{
+  "total": {
+    "inputTokens": 68,
+    "cacheWrite5mTokens": 104068,
+    "cacheWrite1hTokens": 80783,
+    "cacheReadTokens": 3641861,
+    "outputTokens": 9746,
+    "thinkingTokens": 2015,
+    "responses": 35,
+    "costUsd": 2.0901682
+  },
+  "estimate": {
+    "at": "2026-11-03T04:07:24.834Z",
+    "parts": [
+      {
+        "hours": 0.75,
+        "grade": "middle",
+        "role": "developer",
+        "comment": "land prep is a checklist run: vet, base merge, squash text and attestation, judged against an already-reviewed diff"
+      }
+    ],
+    "comment": null
+  },
+  "orientation": {
+    "endedBy": "oriented",
+    "endedOn": null,
+    "endedAt": "2026-11-03T04:06:19.180Z",
+    "contextTokens": 106000,
+    "spend": {
+      "inputTokens": 12,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 54107,
+      "cacheReadTokens": 437939,
+      "outputTokens": 986,
+      "thinkingTokens": 87,
+      "responses": 5,
+      "costUsd": 0.5402117999999999
+    }
+  },
+  "sessionId": "b2e52848-7a79-5d24-ba8b-0e1d5f1d12b2",
+  "branch": "claude/finalize-hands-off-to-cloud-pqglq8",
+  "cwd": "/home/user/muthur",
+  "openingPrompt": "Background (from the session that started this one): The operator ran `/finalize claude/finalize-hands-off-to-cloud-pqglq8` in a local desktop session on a Mac,…",
+  "prs": [
+    258
+  ],
+  "url": "https://claude.ai/code/session_016Z4TKpyaRguSd2bMMjM1uH",
+  "operator": "vzakharov",
+  "firstResponseAt": "2026-11-03T04:05:58.500Z",
+  "lastResponseAt": "2026-11-03T04:13:06.422Z",
+  "pricesAsOf": "2026-10-06",
+  "claudeCodeTotalUsd": null,
+  "ownTurns": {
+    "inputTokens": 51,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 80783,
+    "cacheReadTokens": 2901992,
+    "outputTokens": 6165,
+    "thinkingTokens": 1077,
+    "responses": 26,
+    "costUsd": 1.3501664
+  },
+  "subagents": {
+    "inputTokens": 17,
+    "cacheWrite5mTokens": 104068,
+    "cacheWrite1hTokens": 0,
+    "cacheReadTokens": 739869,
+    "outputTokens": 3581,
+    "thinkingTokens": 938,
+    "responses": 9,
+    "costUsd": 0.7400018
+  },
+  "byRate": {
+    "claude-opus-5-5/standard": {
+      "inputTokens": 68,
+      "cacheWrite5mTokens": 104068,
+      "cacheWrite1hTokens": 80783,
+      "cacheReadTokens": 3641861,
+      "outputTokens": 9746,
+      "thinkingTokens": 2015,
+      "responses": 35,
+      "costUsd": 2.0901682
+    }
+  },
+  "warnings": [],
+  "compactions": [],
+  "telemetry": null
+}
