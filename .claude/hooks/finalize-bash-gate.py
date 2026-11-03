@@ -33,16 +33,20 @@ SHELLS = ("/bin/bash", "bash")
 INSTRUCTION = """\
 /finalize does not run in this session: {why}. The scripts it runs need bash 4 \
 at both `/bin/bash` and the `bash` on `PATH`, since their shebangs name one or \
-the other. Run it in a new cloud session instead, and none of it here:
+the other. Run it in a new cloud session instead, and none of it here. The \
+operator's /finalize is their ask for that session, so start it without asking \
+again — not as an offer or a proposal card:
 
 1. The cloud session clones the branch from GitHub, not this checkout. \
 Uncommitted changes → stop and ask the operator what becomes of them; unpushed \
 commits → `git push -u origin HEAD`.
-2. Start it on the argument this /finalize was given, the current branch put \
-first when that names no target: `claude --cloud "/finalize <branch> <the \
-rest>"` from the checkout — or, with `create_session` from the Claude Code \
-Remote tools, the way `.claude/skills/relay/SKILL.md` § "Step 3 — Start the \
-successor" starts one on the web.
+2. Its prompt is `/finalize <branch> <the rest>`: the argument this /finalize \
+was given, the current branch put first when that names no target. In the \
+Claude desktop app, start it with `start_session` (`target: "cloud"`, \
+`initiation: "user_asked"`); on the web, with `create_session` from the Claude \
+Code Remote tools, the way `.claude/skills/relay/SKILL.md` § "Step 3 — Start \
+the successor" starts one; in a terminal, with `claude --cloud "/finalize \
+<branch> <the rest>"` from the checkout.
 3. Report the session's link and stop."""
 
 TYPED_SUFFIX = (

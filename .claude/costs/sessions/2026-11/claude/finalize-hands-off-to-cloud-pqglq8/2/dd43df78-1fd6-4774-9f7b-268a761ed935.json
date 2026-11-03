@@ -1,0 +1,86 @@
+{
+  "total": {
+    "inputTokens": 32,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 77239,
+    "cacheReadTokens": 1583931,
+    "outputTokens": 8456,
+    "thinkingTokens": 3371,
+    "responses": 15,
+    "costUsd": 1.1039462
+  },
+  "estimate": {
+    "at": "2026-11-03T04:02:00.302Z",
+    "parts": [
+      {
+        "hours": 0.25,
+        "grade": "middle",
+        "role": "developer",
+        "comment": "attaching to a branch and reading a gate's verdict is routine; the finalize run itself belongs to the session that can execute it"
+      }
+    ],
+    "comment": null
+  },
+  "orientation": {
+    "endedBy": "end_turn",
+    "endedOn": null,
+    "endedAt": "2026-11-03T04:02:13.597Z",
+    "contextTokens": 110394,
+    "spend": {
+      "inputTokens": 18,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 64484,
+      "cacheReadTokens": 778789,
+      "outputTokens": 3377,
+      "thinkingTokens": 1376,
+      "responses": 8,
+      "costUsd": 0.7392418
+    }
+  },
+  "sessionId": "dd43df78-1fd6-4774-9f7b-268a761ed935",
+  "branch": "claude/finalize-hands-off-to-cloud-pqglq8",
+  "cwd": "/Users/vova/Documents/GitHub/agent-project-boilerplate",
+  "openingPrompt": "/finalize claude/finalize-hands-off-to-cloud-pqglq8",
+  "prs": [],
+  "url": null,
+  "operator": "vzakharov",
+  "firstResponseAt": "2026-11-03T04:01:24.046Z",
+  "lastResponseAt": "2026-11-03T04:03:27.676Z",
+  "pricesAsOf": "2026-10-06",
+  "claudeCodeTotalUsd": null,
+  "ownTurns": {
+    "inputTokens": 32,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 77239,
+    "cacheReadTokens": 1583931,
+    "outputTokens": 8456,
+    "thinkingTokens": 3371,
+    "responses": 15,
+    "costUsd": 1.1039462
+  },
+  "subagents": {
+    "inputTokens": 0,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 0,
+    "cacheReadTokens": 0,
+    "outputTokens": 0,
+    "thinkingTokens": 0,
+    "responses": 0,
+    "costUsd": 0.0
+  },
+  "byRate": {
+    "claude-opus-5-5/standard": {
+      "inputTokens": 32,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 77239,
+      "cacheReadTokens": 1583931,
+      "outputTokens": 8456,
+      "thinkingTokens": 3371,
+      "responses": 15,
+      "costUsd": 1.1039462
+    }
+  },
+  "warnings": [],
+  "compactions": [],
+  "telemetry": null
+}

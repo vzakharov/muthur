@@ -115,6 +115,8 @@ class TheHook(unittest.TestCase):
                 reason = self.assert_denied(self.skill_call(skill))
                 self.assertIn('claude --cloud "/finalize', reason)
                 self.assertIn("create_session", reason)
+                self.assertIn("start_session", reason)
+                self.assertIn("without asking", reason)
 
     def test_a_read_of_the_skill_body_is_denied(self) -> None:
         # How /merge and /from-branch reach /finalize.
