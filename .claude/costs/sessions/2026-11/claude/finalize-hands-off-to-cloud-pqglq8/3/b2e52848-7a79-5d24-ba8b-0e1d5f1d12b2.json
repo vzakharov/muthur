@@ -1,0 +1,77 @@
+{
+  "total": {
+    "inputTokens": 36,
+    "cacheWrite5mTokens": 103375,
+    "cacheWrite1hTokens": 56649,
+    "cacheReadTokens": 1607067,
+    "outputTokens": 5164,
+    "thinkingTokens": 1285,
+    "responses": 18,
+    "costUsd": 1.3949043999999995
+  },
+  "estimate": null,
+  "orientation": {
+    "endedBy": "oriented",
+    "endedOn": null,
+    "endedAt": "2026-11-03T04:06:19.180Z",
+    "contextTokens": 106000,
+    "spend": {
+      "inputTokens": 12,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 54107,
+      "cacheReadTokens": 437939,
+      "outputTokens": 986,
+      "thinkingTokens": 87,
+      "responses": 5,
+      "costUsd": 0.5402117999999999
+    }
+  },
+  "sessionId": "b2e52848-7a79-5d24-ba8b-0e1d5f1d12b2",
+  "branch": "claude/finalize-hands-off-to-cloud-pqglq8",
+  "cwd": "/home/user/muthur",
+  "openingPrompt": "Background (from the session that started this one): The operator ran `/finalize claude/finalize-hands-off-to-cloud-pqglq8` in a local desktop session on a Mac,…",
+  "prs": [
+    258
+  ],
+  "url": "https://claude.ai/code/session_016Z4TKpyaRguSd2bMMjM1uH",
+  "operator": "vzakharov",
+  "firstResponseAt": "2026-11-03T04:05:58.500Z",
+  "lastResponseAt": "2026-11-03T04:07:09.551Z",
+  "pricesAsOf": "2026-10-06",
+  "claudeCodeTotalUsd": null,
+  "ownTurns": {
+    "inputTokens": 21,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 56649,
+    "cacheReadTokens": 970573,
+    "outputTokens": 2228,
+    "thinkingTokens": 347,
+    "responses": 10,
+    "costUsd": 0.6919505999999997
+  },
+  "subagents": {
+    "inputTokens": 15,
+    "cacheWrite5mTokens": 103375,
+    "cacheWrite1hTokens": 0,
+    "cacheReadTokens": 636494,
+    "outputTokens": 2936,
+    "thinkingTokens": 938,
+    "responses": 8,
+    "costUsd": 0.7029538000000001
+  },
+  "byRate": {
+    "claude-opus-5-5/standard": {
+      "inputTokens": 36,
+      "cacheWrite5mTokens": 103375,
+      "cacheWrite1hTokens": 56649,
+      "cacheReadTokens": 1607067,
+      "outputTokens": 5164,
+      "thinkingTokens": 1285,
+      "responses": 18,
+      "costUsd": 1.3949043999999995
+    }
+  },
+  "warnings": [],
+  "compactions": [],
+  "telemetry": null
+}
