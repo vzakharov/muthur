@@ -9,11 +9,14 @@ A new hook, finalize-bash-gate.py, checks /bin/bash and the bash on
 PATH. Where either is older than 4 it denies entering /finalize through
 the Skill tool or a Read of its SKILL.md, and the denial tells the agent
 to push and start the same /finalize in a new cloud session, through
-claude --cloud or create_session. A typed /finalize, which no hook can
-stop, gets the same steps as context. The hook is Python because it
-runs where bash cannot be trusted, and its check subcommand serves a
-harness without hooks. skill_entry.py gains entering_skill, the
-PreToolUse twin of entered_skill.
+claude --cloud, create_session or the desktop app's start_session. It
+starts that session without asking, since the operator's /finalize
+already is the ask. A typed /finalize, which no hook can stop, gets the
+same steps as context.
+
+The hook is Python because it runs where bash cannot be trusted, and
+its check subcommand serves a harness without hooks. skill_entry.py
+gains entering_skill, the PreToolUse twin of entered_skill.
 
 Co-authored-by: Claude <noreply@anthropic.com>
 ```
