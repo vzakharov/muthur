@@ -17,8 +17,8 @@ nothing:
 2. **Start it on the whole argument**, the current branch put first when the
    argument names no target: `claude --cloud "/finalize <branch> <the rest>"`
    from the checkout. Under a harness with `create_session` from the Claude Code
-   Remote tools, that instead, `source_url` the `origin` URL and
-   `source_revision` the branch.
+   Remote tools, start it the way `@.claude/skills/relay/SKILL.md` § "Step 3 —
+   Start the successor" does on the web, with this prompt.
 3. **Report the session's link and stop.** With no shell tool, the report gives
    the operator the push and the command to run instead.
 
