@@ -1,13 +1,13 @@
 {
   "total": {
-    "inputTokens": 20,
+    "inputTokens": 46,
     "cacheWrite5mTokens": 0,
-    "cacheWrite1hTokens": 64930,
-    "cacheReadTokens": 888735,
-    "outputTokens": 4076,
-    "thinkingTokens": 1376,
-    "responses": 9,
-    "costUsd": 0.7787869999999999
+    "cacheWrite1hTokens": 83105,
+    "cacheReadTokens": 2333665,
+    "outputTokens": 10382,
+    "thinkingTokens": 3603,
+    "responses": 21,
+    "costUsd": 1.339397
   },
   "estimate": {
     "at": "2026-11-03T04:02:00.302Z",
@@ -41,22 +41,24 @@
   "branch": "claude/finalize-hands-off-to-cloud-pqglq8",
   "cwd": "/Users/vova/Documents/GitHub/agent-project-boilerplate",
   "openingPrompt": "/finalize claude/finalize-hands-off-to-cloud-pqglq8",
-  "prs": [],
+  "prs": [
+    258
+  ],
   "url": null,
   "operator": "vzakharov",
   "firstResponseAt": "2026-11-03T04:01:24.046Z",
-  "lastResponseAt": "2026-11-03T04:02:13.597Z",
+  "lastResponseAt": "2026-11-03T04:04:00.647Z",
   "pricesAsOf": "2026-10-06",
   "claudeCodeTotalUsd": null,
   "ownTurns": {
-    "inputTokens": 20,
+    "inputTokens": 46,
     "cacheWrite5mTokens": 0,
-    "cacheWrite1hTokens": 64930,
-    "cacheReadTokens": 888735,
-    "outputTokens": 4076,
-    "thinkingTokens": 1376,
-    "responses": 9,
-    "costUsd": 0.7787869999999999
+    "cacheWrite1hTokens": 83105,
+    "cacheReadTokens": 2333665,
+    "outputTokens": 10382,
+    "thinkingTokens": 3603,
+    "responses": 21,
+    "costUsd": 1.339397
   },
   "subagents": {
     "inputTokens": 0,
@@ -70,14 +72,14 @@
   },
   "byRate": {
     "claude-opus-5-5/standard": {
-      "inputTokens": 20,
+      "inputTokens": 46,
       "cacheWrite5mTokens": 0,
-      "cacheWrite1hTokens": 64930,
-      "cacheReadTokens": 888735,
-      "outputTokens": 4076,
-      "thinkingTokens": 1376,
-      "responses": 9,
-      "costUsd": 0.7787869999999999
+      "cacheWrite1hTokens": 83105,
+      "cacheReadTokens": 2333665,
+      "outputTokens": 10382,
+      "thinkingTokens": 3603,
+      "responses": 21,
+      "costUsd": 1.339397
     }
   },
   "warnings": [],
