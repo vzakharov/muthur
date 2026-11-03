@@ -1,0 +1,103 @@
+{
+  "total": {
+    "inputTokens": 548,
+    "cacheWrite5mTokens": 1275,
+    "cacheWrite1hTokens": 66288,
+    "cacheReadTokens": 2008915,
+    "outputTokens": 9842,
+    "thinkingTokens": 2355,
+    "responses": 20,
+    "costUsd": 1.141319
+  },
+  "estimate": {
+    "at": "2026-11-03T08:33:46.636Z",
+    "parts": [
+      {
+        "hours": 1.0,
+        "grade": "senior",
+        "role": "analyst",
+        "comment": "Pricing a prose convention needs someone who knows the loop's vet and staging machinery and can measure the existing corpus rather than guess at it"
+      }
+    ],
+    "comment": null
+  },
+  "orientation": {
+    "endedBy": "oriented",
+    "endedOn": null,
+    "endedAt": "2026-11-03T08:33:02.314Z",
+    "contextTokens": 95427,
+    "spend": {
+      "inputTokens": 6,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 37012,
+      "cacheReadTokens": 225014,
+      "outputTokens": 820,
+      "thinkingTokens": 215,
+      "responses": 3,
+      "costUsd": 0.3575228
+    }
+  },
+  "sessionId": "8dda4130-fa07-5812-88e0-cd3f549a44f0",
+  "branch": "claude/markdown-paragraph-cap-7xl4uh",
+  "cwd": "/home/user/muthur",
+  "openingPrompt": "чего нам будет стоить добавить правило не более пяти строк прозы на абзац/элемент списка в md",
+  "prs": [],
+  "url": "https://claude.ai/code/session_01DaohkBhVnymkcskczYQ5j9",
+  "operator": "vzakharov",
+  "firstResponseAt": "2026-11-03T08:32:53.355Z",
+  "lastResponseAt": "2026-11-03T09:29:31.680Z",
+  "pricesAsOf": "2026-10-06",
+  "claudeCodeTotalUsd": null,
+  "ownTurns": {
+    "inputTokens": 42,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 66288,
+    "cacheReadTokens": 1904587,
+    "outputTokens": 9826,
+    "thinkingTokens": 2355,
+    "responses": 19,
+    "costUsd": 1.1079094
+  },
+  "subagents": {
+    "inputTokens": 0,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 0,
+    "cacheReadTokens": 0,
+    "outputTokens": 0,
+    "thinkingTokens": 0,
+    "responses": 0,
+    "costUsd": 0.0
+  },
+  "byRate": {
+    "claude-opus-5-5/standard": {
+      "inputTokens": 548,
+      "cacheWrite5mTokens": 1275,
+      "cacheWrite1hTokens": 66288,
+      "cacheReadTokens": 2008915,
+      "outputTokens": 9842,
+      "thinkingTokens": 2355,
+      "responses": 20,
+      "costUsd": 1.141319
+    }
+  },
+  "warnings": [],
+  "compactions": [],
+  "telemetry": {
+    "events": 19,
+    "matched": 18,
+    "matchedTableUsd": 1.0608336,
+    "matchedEventUsd": 1.0608336,
+    "unseen": {
+      "prompt_suggestion": {
+        "inputTokens": 506,
+        "cacheWrite5mTokens": 1275,
+        "cacheWrite1hTokens": 0,
+        "cacheReadTokens": 104328,
+        "outputTokens": 16,
+        "thinkingTokens": 0,
+        "responses": 1,
+        "costUsd": 0.0334096
+      }
+    }
+  }
+}
