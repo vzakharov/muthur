@@ -2,6 +2,26 @@
 description: Finalize (a.k.a. "prep merge") — land prep: verify there's a draft PR, run the quality passes (`/polish`), run the vet suite, merge the base branch, mark ready for review, propose a squash body and settle the PR title it lands under, and post the attestation comment. Pass an optional branch/PR target first (`/finalize <branch|#PR|PR-url>`) to attach to that existing branch before finalizing. `/finalize no vet` is the docs-only mode; `/finalize revoke` withdraws an attestation; `/finalize and merge` squash-merges the PR as well, but only if the run turned up nothing to decide. An operator's ask to merge — "merge", "мерджи", in any words — is `/merge`, which sends a branch not yet finalized here.
 ---
 
+**A session with no bash 4 hands the run to a cloud session, before anything
+else below.** The scripts the run calls need bash 4 (`mapfile` among others) at
+`/bin/bash` and at the `bash` on `PATH`, since their shebangs name one or the
+other, and macOS ships 3.2 at `/bin/bash` — so a local session on a Mac fails
+the vet run halfway, whatever Homebrew installed. The check:
+`/bin/bash -c '((BASH_VERSINFO[0] >= 4))' && bash -c '((BASH_VERSINFO[0] >= 4))'`.
+When it fails, or there is no shell tool to run it with, this session finalizes
+nothing:
+
+1. **Push what the cloud session should see.** It clones the branch from GitHub,
+   not this checkout. Uncommitted changes → stop and ask what becomes of them;
+   unpushed commits → `git push -u origin HEAD`.
+2. **Start it on the whole argument**, the current branch put first when the
+   argument names no target: `claude --cloud "/finalize <branch> <the rest>"`
+   from the checkout. Under a harness with `create_session` from the Claude Code
+   Remote tools, that instead, `source_url` the `origin` URL and
+   `source_revision` the branch.
+3. **Report the session's link and stop.** With no shell tool, the report gives
+   the operator the push and the command to run instead.
+
 **Optional branch/PR target**: if the first token of the argument is a branch
 name, `#NNN` PR number, or PR URL, then `/finalize <target>` is shorthand for
 attaching to that branch first and then finalizing — equivalent to
