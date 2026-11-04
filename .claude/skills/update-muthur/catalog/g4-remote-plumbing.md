@@ -67,9 +67,10 @@ the working tree clean, and behaves the same everywhere.
   - **Disposition:** adopt
 - `.claude/hooks/permission-denied-phrase.sh` — When auto mode denies a tool
   call, record it under `tmp/`; at the turn's end, unless the last reply already
-  holds a fenced block, block the stop once and have the agent hand the operator
-  a copy-pasteable message naming each still-needed action exactly, which the
-  classifier reads as explicit authorization on the retry. A
+  holds a fenced block, block the stop once and have the agent run the narrow
+  script `permissions.allow` covers for the action, or failing one, hand the
+  operator a copy-pasteable message naming each still-needed action exactly,
+  which the classifier reads as explicit authorization on the retry. A
   `PermissionDenied` + `Stop` pair, because `PermissionDenied` cannot speak to
   the agent.
   - **Requires:** `bash`, `jq`, `.claude/settings.json` wiring (G4)
