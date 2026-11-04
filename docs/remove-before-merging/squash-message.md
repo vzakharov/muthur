@@ -1,8 +1,4 @@
-Proposed squash title/body:
-
-```
-fix: steer hand-rolled sticky-comment writes to scripts/pr-comment.sh (#260)
-```
+Proposed squash body:
 
 ```
 scripts/pr-comment.sh is the one approved way to post or edit the squash
@@ -11,17 +7,18 @@ proposal and the finalize attestation, but only /squash-message and
 proposal" rebuilt the find-and-PATCH with gh api, met auto mode's
 denial, and asked its operator for a phrase instead.
 
-A PreToolUse hook now denies, once, a gh api, gh pr comment or GitHub
-MCP comment write whose new body, or the comment it edits (fetched),
-leads with a sticky-comment marker, and names the exact pr-comment.sh
-line to run. It runs before the classifier, so no denial is ever met;
-what it cannot show is sticky passes. The shell parsing and deny-once
-record it shares with the file-tools nudge live in one module, and a
-test keeps its markers equal to the script's.
+A PreToolUse hook now denies, once, a gh api, gh pr/issue comment or
+GitHub MCP comment write whose new body, or the comment it edits
+(fetched), leads with a sticky-comment marker, and names the exact
+pr-comment.sh line to run. It runs before the classifier, so no denial
+is ever met; what it cannot show is sticky passes. It shares the shell
+parser and the deny-once record with the file-tools nudge, the parser
+now splitting words where the shell does, and a test keeps its markers
+equal to the script's.
 
-CLAUDE.md sends an auto-mode denial to the narrow scripts in
-permissions.allow before any phrase, and a /relay Next step names the
-skill that owns its action.
+CLAUDE.md and the denial Stop hook send an auto-mode denial to the
+narrow scripts in permissions.allow before any phrase, and a /relay
+Next step names the skill that owns its action.
 
 Co-authored-by: Claude <noreply@anthropic.com>
 ```
