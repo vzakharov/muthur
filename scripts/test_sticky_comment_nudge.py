@@ -120,9 +120,9 @@ class NudgeTestCase(unittest.TestCase):
 class TheIncident(NudgeTestCase):
     def command(self) -> str:
         return (
-            f"cd {self.root} && id=$(gh api repos/vzakharov/site/issues/248/comments "
+            f"cd {self.root} && id=$(gh api repos/o/r/issues/248/comments "
             "--jq '.[] | select(.body | startswith(\"Proposed squash\")) | .id' | tail -1) "
-            "&& gh api -X PATCH repos/vzakharov/site/issues/comments/$id -F body=@squash.md"
+            "&& gh api -X PATCH repos/o/r/issues/comments/$id -F body=@squash.md"
         )
 
     def test_refused_naming_the_script_line(self) -> None:
