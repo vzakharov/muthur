@@ -39,7 +39,14 @@ the working tree clean, and behaves the same everywhere.
 - `.claude/hooks/session_state.py` — Imported by G1's `file-tools-nudge.py` and
   G2's `go-delegation.py`, `checkpoint-review.py` and `finalize-bash-gate.py`:
   the project root, and the per-session state file `tmp/<hook>/<session_id>`,
-  refused for a session id that could name a path elsewhere.
+  refused for a session id that could name a path elsewhere; and the record
+  behind refusing a call once and letting the identical retry through.
+  - **Requires:** `python3` ≥3.9
+  - **Disposition:** adopt — **with any hook that imports it**
+- `.claude/hooks/shell_words.py` — Imported by G1's `file-tools-nudge.py`: a
+  Bash command split into the simple commands it runs — heredocs dropped,
+  wrappers such as `timeout` and `env` seen through, and whether each one's
+  output feeds another command.
   - **Requires:** `python3` ≥3.9
   - **Disposition:** adopt — **with any hook that imports it**
 - `.claude/hooks/skill_entry.py` — Imported by G2's `go-delegation.py`,
