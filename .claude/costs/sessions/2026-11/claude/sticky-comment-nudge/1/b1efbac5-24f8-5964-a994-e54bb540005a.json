@@ -1,13 +1,13 @@
 {
   "total": {
-    "inputTokens": 33,
+    "inputTokens": 54,
     "cacheWrite5mTokens": 0,
-    "cacheWrite1hTokens": 80093,
-    "cacheReadTokens": 1786973,
-    "outputTokens": 10816,
-    "thinkingTokens": 3697,
-    "responses": 16,
-    "costUsd": 1.2145906000000002
+    "cacheWrite1hTokens": 95495,
+    "cacheReadTokens": 3048537,
+    "outputTokens": 13546,
+    "thinkingTokens": 3860,
+    "responses": 25,
+    "costUsd": 1.6448034000000002
   },
   "estimate": {
     "at": "2026-11-04T13:23:04.123Z",
@@ -53,22 +53,24 @@
   "branch": "claude/sticky-comment-nudge",
   "cwd": "/home/user/muthur",
   "openingPrompt": "Придумай, как сделать, чтобы агенты не упускали из виду scripts/pr-comment.sh, и предложи это (по обычному маршруту /task). Что случилось (в vzakharov/vovazakha…",
-  "prs": [],
+  "prs": [
+    260
+  ],
   "url": "https://claude.ai/code/session_01DaohkFr1NFWfQeAuZeSDAj",
   "operator": "vzakharov",
   "firstResponseAt": "2026-11-04T13:21:58.244Z",
-  "lastResponseAt": "2026-11-04T13:23:53.332Z",
+  "lastResponseAt": "2026-11-04T13:24:34.349Z",
   "pricesAsOf": "2026-10-06",
   "claudeCodeTotalUsd": null,
   "ownTurns": {
-    "inputTokens": 33,
+    "inputTokens": 54,
     "cacheWrite5mTokens": 0,
-    "cacheWrite1hTokens": 80093,
-    "cacheReadTokens": 1786973,
-    "outputTokens": 10816,
-    "thinkingTokens": 3697,
-    "responses": 16,
-    "costUsd": 1.2145906000000002
+    "cacheWrite1hTokens": 95495,
+    "cacheReadTokens": 3048537,
+    "outputTokens": 13546,
+    "thinkingTokens": 3860,
+    "responses": 25,
+    "costUsd": 1.6448034000000002
   },
   "subagents": {
     "inputTokens": 0,
@@ -82,23 +84,23 @@
   },
   "byRate": {
     "claude-opus-5-5/standard": {
-      "inputTokens": 33,
+      "inputTokens": 54,
       "cacheWrite5mTokens": 0,
-      "cacheWrite1hTokens": 80093,
-      "cacheReadTokens": 1786973,
-      "outputTokens": 10816,
-      "thinkingTokens": 3697,
-      "responses": 16,
-      "costUsd": 1.2145906000000002
+      "cacheWrite1hTokens": 95495,
+      "cacheReadTokens": 3048537,
+      "outputTokens": 13546,
+      "thinkingTokens": 3860,
+      "responses": 25,
+      "costUsd": 1.6448034000000002
     }
   },
   "warnings": [],
   "compactions": [],
   "telemetry": {
-    "events": 15,
-    "matched": 15,
-    "matchedTableUsd": 1.1754538,
-    "matchedEventUsd": 1.1754538,
+    "events": 24,
+    "matched": 24,
+    "matchedTableUsd": 1.6096706000000003,
+    "matchedEventUsd": 1.6096706000000003,
     "unseen": {}
   }
 }
