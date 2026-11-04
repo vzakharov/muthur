@@ -61,11 +61,11 @@ First look in .claude/settings.json permissions.allow for a narrow script that
 does the denied action, and run that instead, spelled as its rule matches.
 
 For each one no such script covers and you still need, give the operator a
-message to send back as their
-explicit authorization, in its own fenced code block so it copies in one click.
-The classifier reads the operator's messages and lets a soft-denied action
-through when one directly and specifically describes it — the exact command,
-file, branch or target — while a general "go ahead" does not count. So:
+message to send back as their explicit authorization, in its own fenced code
+block so it copies in one click. The classifier reads the operator's messages
+and lets a soft-denied action through when one directly and specifically
+describes it — the exact command, file, branch or target — while a general "go
+ahead" does not count. So:
 
 - name the action exactly as it is, never softened or reworded to slip past;
 - write it in the language the operator is talking to you in;
