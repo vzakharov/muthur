@@ -212,6 +212,18 @@
   add (`docs/adopting/web-remote.md`).
   - **Requires:** `bash`, `gh`, `git`, `scripts/lib/gh-repo.sh`
   - **Disposition:** adopt
+- `.claude/hooks/sticky-comment-nudge.py` — Before a `Bash` call or a GitHub MCP
+  comment write, refuse the first hand-built write of the squash proposal or the
+  attestation — a `gh api`, `gh pr comment` or MCP write whose new body leads
+  with the comment's marker, or which edits a comment (fetched with `gh`) that
+  does — naming the `scripts/pr-comment.sh` line to run instead; the identical
+  call again goes through, and whatever it cannot prove sticky passes.
+  Stdlib-only, tested by `scripts/test_sticky_comment_nudge.py`, which also
+  keeps its markers equal to the script's.
+  - **Requires:** `python3` ≥3.9, `gh`, `.claude/settings.json` wiring (G4)
+  - **Pulls in:** `scripts/pr-comment.sh`, `.claude/hooks/session_state.py`,
+    `.claude/hooks/shell_words.py` (G4)
+  - **Disposition:** adopt — **with `scripts/pr-comment.sh`**
 - `scripts/staged.sh` — Stage an always-loaded file as a byte-identical copy at
   `.claude/staged/<path>.staged`, and swap it back at `/finalize` — merging in
   whatever the real file gained meanwhile. Also the check the vet run makes, and

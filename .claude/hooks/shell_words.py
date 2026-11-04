@@ -50,6 +50,10 @@ def strip_heredocs(command: str) -> str:
 def tokens(command: str) -> list[str]:
     lexer = shlex.shlex(strip_heredocs(command), posix=True, punctuation_chars=PUNCTUATION)
     lexer.whitespace = " \t\r"
+    # Words break where the shell breaks them — on whitespace and punctuation —
+    # rather than at every character outside `shlex`'s word set, so
+    # `body=@f.md` and `issues/comments/$id` each stay one word.
+    lexer.whitespace_split = True
     return list(lexer)
 
 
