@@ -11,13 +11,13 @@ proposal and the finalize attestation, but only /squash-message and
 proposal" rebuilt the find-and-PATCH with gh api, met auto mode's
 denial, and asked its operator for a phrase instead.
 
-A PreToolUse hook now denies, once, a gh api or gh pr comment write, or
-a GitHub MCP comment write, whose body leads with a sticky-comment
-marker, and names the exact pr-comment.sh line to run. It runs before
-the classifier, so no denial is ever met; a body it cannot resolve
-passes. The shell parsing and deny-once record it shares with the
-file-tools nudge live in one module, and a test keeps its markers equal
-to the script's.
+A PreToolUse hook now denies, once, a gh api, gh pr comment or GitHub
+MCP comment write whose new body, or the comment it edits (fetched),
+leads with a sticky-comment marker, and names the exact pr-comment.sh
+line to run. It runs before the classifier, so no denial is ever met;
+what it cannot show is sticky passes. The shell parsing and deny-once
+record it shares with the file-tools nudge live in one module, and a
+test keeps its markers equal to the script's.
 
 CLAUDE.md sends an auto-mode denial to the narrow scripts in
 permissions.allow before any phrase, and a /relay Next step names the

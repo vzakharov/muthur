@@ -34,8 +34,11 @@ command to run instead. A `PreToolUse` hook runs before auto mode's classifier,
 so the agent is redirected before any denial exists and no phrase is ever asked
 for.
 
-**What it catches** — a write whose body leads with one of the script's markers
-(`Proposed squash`, `<!-- finalize-attestation`):
+**What it catches** — a comment write where either side is a sticky comment,
+told apart by the markers the script itself keys on (`Proposed squash`,
+`<!-- finalize-attestation`): the **new body** leads with one, or the **comment
+being edited** already does. A review reply, an ordinary PR comment and an edit
+of one carry neither, and pass.
 
 - **`Bash`**: a simple command running `gh` (through the same wrapper unwrapping
   the file-tools nudge does), anywhere in a chain or `$(…)`, that is either
@@ -47,11 +50,22 @@ for.
 - **The body** is read from where the command names it: inline `body=<text>` /
   `--body <text>`, or a file — `body=@<path>`, `--body-file <path>` — whose
   leading bytes are checked, resolved against the payload's `cwd`. A body the
-  hook cannot resolve (`body=@$f`, stdin) is let through: the hook stays narrow
-  and never nudges a comment it cannot prove is a sticky one.
-- **`mcp__github__add_issue_comment` / `mcp__github__update_issue_comment`**
-  whose `body` leads with a marker — the same write through the other door the
-  classifier also gates.
+  hook cannot resolve (`body=@$f`, stdin) counts as no marker.
+- **The edited comment** is fetched when the command names it — a literal id in
+  `issues/comments/<id>`, or `gh pr comment --edit-last` (the PR's newest
+  comment by the authenticated user) — with a `GET` of the same path through
+  `gh` from the payload's `cwd`, so `{owner}/{repo}` placeholders resolve as
+  they would for the command itself. This catches an edit that would strip the
+  marker and leave the proposal no longer findable by the script. Edits are
+  rare, so a network call on each is cheap; a fetch that fails or times out (a
+  few seconds) counts as no marker, and an id the hook cannot read (`$id`) is
+  not fetched — the incident's command is still caught on its body.
+- **Neither side proven sticky → let through**: the hook stays narrow and never
+  nudges a comment it cannot show is a sticky one.
+- **`mcp__github__add_issue_comment` / `mcp__github__update_issue_comment`** —
+  the same write through the other door the classifier also gates: the `body`
+  field, and for an update the comment its `comment_id` names, fetched the same
+  way.
 
 **What it says** — the kind, and the exact line to run:
 `scripts/pr-comment.sh <kind> <n> <file>`, "from the repository root, spelled
@@ -68,7 +82,8 @@ still stands behind it. A `DELETE`, or a read, is never touched: the script does
 neither.
 
 **Fails open** like its sibling: unreadable payload, untokenisable command,
-unreadable file, unrecordable state → allowed, with a line on stderr.
+unreadable file, failed fetch, unrecordable state → allowed, with a line on
+stderr.
 
 Wired in `.claude/settings.json` `PreToolUse` (the `Bash` group, and a new
 matcher for the two MCP tools), in `scripts/multi-repo-hooks.py`'s list, and in
@@ -119,6 +134,16 @@ other `scripts/test_*.py`):
 - `-f body='Proposed squash…'` inline → denied;
 - a POST of a body without a marker, a GET listing, a `DELETE` → allowed;
 - `body=@$f` → allowed;
+- `-X PATCH …/issues/comments/<id>` with a markerless body, where `<id>` is the
+  squash proposal → denied; where it is an ordinary comment → allowed;
+- `gh pr comment <n> --edit-last` whose last comment is the attestation →
+  denied;
+- a review reply (`pulls/<n>/comments/<id>/replies`) → allowed, nothing fetched;
+- the fetch failing → allowed.
+
+The fetch is mocked at its boundary — a stub `gh` first on `PATH` answering the
+`GET` — never by patching the hook's own functions.
+
 - `scripts/pr-comment.sh squash 248 f.md` itself → allowed;
 - the MCP `update_issue_comment` with a marker body → denied; without → allowed.
 
