@@ -80,8 +80,23 @@ unreadable file, failed fetch, unrecordable state → allowed, with a line on
 stderr.
 
 Wired in `.claude/settings.json` `PreToolUse` (the `Bash` group, and a new
-matcher for the two MCP tools), in `scripts/multi-repo-hooks.py`'s list, and in
-the update-muthur catalog (`g2-pr-loop.md`, beside the script's entry).
+matcher for the two MCP tools) and in the update-muthur catalog
+(`g2-pr-loop.md`, beside the script's entry). `scripts/multi-repo-hooks.py`
+needs no entry: a hook it does not list runs once per session, which is right
+for this one.
+
+Found while building, and in the hook:
+
+- `gh issue comment` writes the same comments, so it is read like
+  `gh pr comment`.
+- A `cd <dir>` earlier in the chain moves where a body file resolves — the
+  incident's command, and every command in a multi-repo session, starts with
+  one.
+- A write by comment id takes its PR number from an `issues/<n>/comments` lookup
+  chained before it, so the incident's reason names `248` rather than `<n>`.
+- `shell_words.tokens` splits words only where the shell does (`shlex`'s
+  `whitespace_split`): it used to break `body=@file` and `issues/comments/$id`
+  at `@` and `$`.
 
 ### 2. CLAUDE.md § "Key principles", the auto-mode-denial bullet
 
