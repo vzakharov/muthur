@@ -157,6 +157,6 @@ other `scripts/test_*.py`):
 
 1. `refactor:` extract `shell_words.py` and the deny-once record from the
    file-tools nudge (its tests unchanged and green).
-2. `feat:` the sticky-comment nudge hook, its wiring, catalog entry and tests.
-3. `feat:` the CLAUDE.md clause (staged) and the Stop-hook sentence.
-4. `feat:` `/relay`'s Next step names the skill that owns it.
+2. `fix:` the sticky-comment nudge hook, its wiring, catalog entry and tests.
+3. `fix:` the CLAUDE.md clause (staged) and the Stop-hook sentence.
+4. `fix:` `/relay`'s Next step names the skill that owns it.

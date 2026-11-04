@@ -1,7 +1,7 @@
 Proposed squash title/body:
 
 ```
-feat: steer hand-rolled sticky-comment writes to scripts/pr-comment.sh (#260)
+fix: steer hand-rolled sticky-comment writes to scripts/pr-comment.sh (#260)
 ```
 
 ```

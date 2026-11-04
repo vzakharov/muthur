@@ -93,7 +93,7 @@ None.
 - Squash proposal: comment posted at
   https://github.com/vzakharov/muthur/pull/260#issuecomment-6631797844. Working
   file `docs/remove-before-merging/squash-message.md`. The PR title is
-  `feat: steer hand-rolled sticky-comment writes to scripts/pr-comment.sh`.
+  `fix: steer hand-rolled sticky-comment writes to scripts/pr-comment.sh`.
 - Estimate:
   - This session: 1 h senior architect ("choosing which of three intervention
     points carries the fix needs judgement of the loop as a whole") + 0.5 h
