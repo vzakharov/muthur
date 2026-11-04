@@ -50,7 +50,32 @@ proposal; two forks left open). Wrote the draft plan, opened draft PR #260,
 posted the squash proposal with `scripts/pr-comment.sh`, and asked two questions
 with recommendations: (1) the denial clause in CLAUDE.md and the Stop hook both
 (recommended) or the Stop hook only; (2) the hook denies once (recommended) or
-always. Ended with the `/go claude/sticky-comment-nudge` handoff block.
+always. Ended with the `/go claude/sticky-comment-nudge` handoff block. (A
+keepalive wake then parked the session into this file.)
+
+**Operator**: «это не feat: а fix:»
+
+**Agent**: agreed — the agents were already meant to reach the script, so this
+closes a gap. Retitled PR #260 to `fix: …`, re-posted the squash proposal, and
+switched the plan's commit list to `fix:`.
+
+**Operator**: «а как план предполагает отличать редактуру поддерживаемого
+коммента (squash/attestation) от например редактуры коммента-ответа на ревью
+(или лбього другого)?»
+
+**Agent**: explained that the plan tells them apart by the marker the script
+itself keys on, read from the new body. Review replies go to `pulls/…` paths,
+which the hook never matches. The one real gap is a PATCH of the sticky comment
+with a markerless body. Closing it would need a GET of the edited comment. The
+agent recommended against that, as a network call per edit.
+
+**Operator**: «ну пусть лезет, команда редактуры коммента не такая частая»
+
+**Agent**: revised the plan so the hook also fetches the comment an edit
+targets: a literal id, `--edit-last`, or MCP `comment_id`. The fetch goes
+through `gh` from the payload's cwd. A failed fetch or an unreadable `$id`
+counts as no marker. Added tests with a stub `gh` on `PATH`. Updated the squash
+proposal; a first post briefly carried an over-width line before it was fixed.
 (verbatim in Last agent turn)
 
 ## 3. Intent
@@ -66,9 +91,14 @@ immediate implementation.
   classifier, so the agent is redirected before any denial. It beat relying on
   prose alone, because the incident's agent never loaded the skill that names
   the script.
-- **The hook only fires when it can prove a sticky body.** That means an inline
-  body or a readable `body=@file`/`--body-file` leading with a marker.
-  Unresolved bodies pass, so the hook never nags about ordinary comments.
+- **The hook fires when either side of the write is provably sticky.** The new
+  body counts when it is inline or a readable `body=@file`/`--body-file` that
+  leads with a marker. The edited comment counts when it is fetched by GET and
+  leads with a marker. Whatever it cannot prove passes, so ordinary comments and
+  review replies are never nagged. The operator chose the fetch over avoiding
+  the network call: «ну пусть лезет, команда редактуры коммента не такая
+  частая».
+- **The change is typed `fix:`, not `feat:`**, by the operator's call.
 - **The GitHub MCP comment tools are covered too**, as the other door to the
   same write.
 - **The shell parser and the deny-once record are extracted** from
@@ -81,11 +111,13 @@ immediate implementation.
 
 ## 5. Errors and dead ends
 
-None.
+One `scripts/pr-comment.sh` post went out after `check-squash-message.sh` had
+failed on an over-width line (a formatter had joined two lines). It was fixed
+and re-posted at once: always run the check and read its result before posting.
 
 ## 6. State
 
-- Branch `claude/sticky-comment-nudge`, pushed. Head `d74be37` (plus this
+- Branch `claude/sticky-comment-nudge`, pushed. Head `e283121` (plus this
   summary's commit).
 - Draft PR https://github.com/vzakharov/muthur/pull/260.
 - Plan: `docs/plans/sticky-comment-nudge.draft.do-not-implement.md`, still a
@@ -125,8 +157,10 @@ None.
 
 ## 8. Next step
 
-Wait for the operator. They will review PR #260 and answer the two open
-questions or give a go-ahead (`/go claude/sticky-comment-nudge`).
+Wait for the operator. Two plan questions are still open: whether the denial
+clause goes in both CLAUDE.md and the Stop hook (recommended) or the Stop hook
+only, and whether the hook denies once (recommended) or always. After that, a
+go-ahead: `/go claude/sticky-comment-nudge`.
 
 ## Last agent turn
 
@@ -135,38 +169,33 @@ The agent's last turn before the relay, verbatim, appended by
 unneeded but harmless; the reply proper is usually its last paragraphs.
 
 ````text
-Привет, Вова. Это ступень 1 лестницы: просьба меняет сам muthur (хук, правило или скилл), так что иду через `/task`.
+Пропустил, что проверка упала, и выложил кривую версию. Сейчас исправлю.
 
-Создаю ветку и пишу план.
+Добавил это в план, коммит `e283121`. Теперь комментарий считается sticky, если маркер стоит хотя бы с одной стороны правки: в новом теле или в том комментарии, который правят.
 
-План закоммичен, публикую его через `/pr`.
+Какой комментарий правят, хук узнаёт GET-запросом через `gh` из того же `cwd`, так что `{owner}/{repo}` подставляются так же, как в самой команде. Запрос делается, когда цель видна прямо в команде:
+- числовой id в `issues/comments/<id>`;
+- `gh pr comment --edit-last` (последний комментарий твоего пользователя в этом PR);
+- `comment_id` в MCP-инструменте `update_issue_comment`.
 
-Теперь squash-предложение — через `/squash-message`.
+Есть два случая, когда хук на ответ GitHub не опирается:
+- **Запрос упал или не уложился в несколько секунд.** Тогда считается, что маркера нет, и правка проходит.
+- **id не задан литералом** (`$id`). Тогда хук ничего не запрашивает. Инцидент он всё равно ловит: тело в той команде начиналось с маркера.
 
-Написал план и отдаю его тебе на одобрение, а не реализую сразу: ты просил предложение, и в нём осталось два выбора за тобой. Если хочешь без ревью, скажи `go`, и я начну реализацию в этой сессии.
+В тесты добавил случаи:
+- PATCH squash-комментария телом без маркера отклоняется;
+- такой же PATCH обычного комментария проходит;
+- `--edit-last`, если последний комментарий — это аттестация, отклоняется;
+- ответ на ревью проходит, и хук ничего не запрашивает;
+- упавший запрос пропускает правку.
 
-**Почему агент прошёл мимо скрипта.** `scripts/pr-comment.sh` упомянут только в `/squash-message` и `/finalize`. Если агент правит sticky-комментарий откуда-то ещё (из Next step после relay, по просьбе, по памяти), он о скрипте просто не узнаёт. И на ручном пути нет ничего, что вернуло бы его к скрипту.
+`gh` в тестах подменяется заглушкой первой в `PATH`, а не моками внутренних функций хука.
 
-**Что предлагаю, от сильного к слабому:**
+Squash-предложение обновил. Правда, сначала я выложил версию со строкой длиннее 72 символов: проверка упала, а я этого не заметил. Сразу перевыложил исправленную, сейчас в PR правильная версия.
 
-1. **`PreToolUse`-хук `sticky-comment-nudge.py`.** Это главный слой, и только он один остановил бы инцидент на #248. Хук ловит запись комментария через `gh api …issues/…/comments` (POST/PATCH или поле `body`), `gh pr comment` и MCP-инструменты `add_issue_comment`/`update_issue_comment`, если тело начинается с маркера. Тело читается и инлайн, и из `body=@файл`: файл хук открывает и проверяет первые байты. Хук отказывает один раз и называет точную команду `scripts/pr-comment.sh squash <n> <file>`. Он срабатывает до классификатора, так что до отказа и до фразы для оператора дело не доходит. Повтор той же команды проходит, как у «Did you forget?». Тело, которое хук не может прочитать (`body=@$f`), он пропускает, чтобы не задевать чужие комментарии.
-2. **Одна фраза в CLAUDE.md** в пункт про отказ auto-режима: прежде чем просить фразу, проверить, нет ли в `permissions.allow` узкого скрипта для этого действия. Список allow сам служит реестром, поэтому правило подхватит и будущие скрипты. Та же фраза идёт в Stop-хук.
-3. **`/relay`:** если в Next step есть действие, которым владеет скилл, он этот скилл называет. Например, «refresh the squash proposal» превращается в `/squash-message update-only`.
-
-Повторов кода не будет: парсер шелла и механизм «отказать один раз» я вынесу из `file-tools-nudge.py` в общий модуль. Маркеры будут жить константой в хуке, а тест проверит, что они совпадают с теми, что в скрипте.
-
-**Вопросы. Рекомендации уже заложены в план, так что молчание тоже ответ:**
-
-1. Слой 2 ставить и в CLAUDE.md, или только в Stop-хук? Рекомендую в оба места. Сам по себе Stop-хук в этом инциденте промолчал бы: фраза в ответе уже стояла в блоке кода, а такой ответ он считает выполненным.
-2. Отказывать один раз или всегда? Рекомендую один раз, иначе скрипт становится единственной дорогой даже тогда, когда ломается именно он.
-
-План и черновой PR: https://github.com/vzakharov/muthur/pull/260. Предложение для squash я там уже повесил тем самым скриптом. Он отработал на ура, что в этой истории звучит даже немного обидно.
-
-Для реализации начни новую сессию с:
+Чтобы начать реализацию, открой новую сессию с:
 
 ```
 /go claude/sticky-comment-nudge
 ```
-
-Ждёт твоего ответа.
 ````
