@@ -1,0 +1,100 @@
+{
+  "total": {
+    "inputTokens": 147,
+    "cacheWrite5mTokens": 136964,
+    "cacheWrite1hTokens": 160770,
+    "cacheReadTokens": 11611846,
+    "outputTokens": 62336,
+    "thinkingTokens": 23597,
+    "responses": 77,
+    "costUsd": 5.5406572
+  },
+  "estimate": {
+    "at": "2026-11-04T16:23:28.029Z",
+    "parts": [
+      {
+        "hours": 6.0,
+        "grade": "senior",
+        "role": "developer",
+        "comment": "a PreToolUse hook that parses gh invocations, resolves body files and fetches the edited comment, with the shared shell parser pulled out of an existing hook and tests for both"
+      },
+      {
+        "hours": 1.5,
+        "grade": "senior",
+        "role": "prompter",
+        "comment": "the rule clauses in CLAUDE.md, the Stop hook and /relay change agent behaviour on every session and must fire without over-firing"
+      }
+    ],
+    "comment": null
+  },
+  "orientation": {
+    "endedBy": "oriented",
+    "endedOn": null,
+    "endedAt": "2026-11-04T16:23:16.856Z",
+    "contextTokens": 119502,
+    "spend": {
+      "inputTokens": 12,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 53745,
+      "cacheReadTokens": 460464,
+      "outputTokens": 1233,
+      "thinkingTokens": 137,
+      "responses": 5,
+      "costUsd": 0.5467608
+    }
+  },
+  "sessionId": "6a8f1af3-858c-56c3-ad89-73f78b38548e",
+  "branch": "claude/sticky-comment-nudge",
+  "cwd": "/home/user/muthur",
+  "openingPrompt": "/go claude/sticky-comment-nudge",
+  "prs": [
+    260
+  ],
+  "url": "https://claude.ai/code/session_01DaohkCGVewjiLfxkVXNZMg",
+  "operator": "vzakharov",
+  "firstResponseAt": "2026-11-04T16:22:55.969Z",
+  "lastResponseAt": "2026-11-04T16:33:20.299Z",
+  "pricesAsOf": "2026-10-06",
+  "claudeCodeTotalUsd": null,
+  "ownTurns": {
+    "inputTokens": 105,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 160770,
+    "cacheReadTokens": 9331449,
+    "outputTokens": 50336,
+    "thinkingTokens": 17085,
+    "responses": 55,
+    "costUsd": 4.159589799999999
+  },
+  "subagents": {
+    "inputTokens": 42,
+    "cacheWrite5mTokens": 136964,
+    "cacheWrite1hTokens": 0,
+    "cacheReadTokens": 2280397,
+    "outputTokens": 12000,
+    "thinkingTokens": 6512,
+    "responses": 22,
+    "costUsd": 1.3810674
+  },
+  "byRate": {
+    "claude-opus-5-5/standard": {
+      "inputTokens": 147,
+      "cacheWrite5mTokens": 136964,
+      "cacheWrite1hTokens": 160770,
+      "cacheReadTokens": 11611846,
+      "outputTokens": 62336,
+      "thinkingTokens": 23597,
+      "responses": 77,
+      "costUsd": 5.5406572
+    }
+  },
+  "warnings": [],
+  "compactions": [],
+  "telemetry": {
+    "events": 77,
+    "matched": 77,
+    "matchedTableUsd": 5.5406572,
+    "matchedEventUsd": 5.540657200000001,
+    "unseen": {}
+  }
+}
