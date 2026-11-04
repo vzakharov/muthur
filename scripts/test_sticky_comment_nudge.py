@@ -184,9 +184,11 @@ class BodiesThatLeadWithAMarker(NudgeTestCase):
 
 
 class EditsOfAStickyComment(NudgeTestCase):
+    PATCH = "gh api -X PATCH repos/o/r/issues/comments/123 -F body=@plain.md"
+
     def test_a_markerless_patch_of_the_squash_proposal(self) -> None:
         self.github_answers(SQUASH)
-        reason = self.reason("gh api -X PATCH repos/o/r/issues/comments/123 -F body=@plain.md")
+        reason = self.reason(self.PATCH)
         self.assert_refused(reason, "scripts/pr-comment.sh squash <n> <file>")
         assert reason is not None
         self.assertIn("does not lead with `Proposed squash`", reason)
@@ -194,9 +196,7 @@ class EditsOfAStickyComment(NudgeTestCase):
 
     def test_a_markerless_patch_of_an_ordinary_comment(self) -> None:
         self.github_answers("Thanks!\n")
-        self.assertIsNone(
-            self.reason("gh api -X PATCH repos/o/r/issues/comments/123 -F body=@plain.md")
-        )
+        self.assertIsNone(self.reason(self.PATCH))
 
     def test_edit_last_over_the_attestation(self) -> None:
         self.github_answers(ATTESTATION)
@@ -209,9 +209,7 @@ class EditsOfAStickyComment(NudgeTestCase):
 
     def test_a_failed_fetch_lets_it_through(self) -> None:
         self.github_fails()
-        self.assertIsNone(
-            self.reason("gh api -X PATCH repos/o/r/issues/comments/123 -F body=@plain.md")
-        )
+        self.assertIsNone(self.reason(self.PATCH))
 
 
 class WhatIsLeftAlone(NudgeTestCase):
