@@ -1,0 +1,81 @@
+{
+  "total": {
+    "inputTokens": 12,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 48028,
+    "cacheReadTokens": 431846,
+    "outputTokens": 1081,
+    "thinkingTokens": 82,
+    "responses": 5,
+    "costUsd": 0.49226120000000007
+  },
+  "estimate": null,
+  "orientation": {
+    "endedBy": null,
+    "endedOn": null,
+    "endedAt": null,
+    "contextTokens": null,
+    "spend": {
+      "inputTokens": 12,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 48028,
+      "cacheReadTokens": 431846,
+      "outputTokens": 1081,
+      "thinkingTokens": 82,
+      "responses": 5,
+      "costUsd": 0.49226120000000007
+    }
+  },
+  "sessionId": "07d0a121-3307-58db-9014-3d0e34c282d1",
+  "branch": "docs/adopter-license",
+  "cwd": "/home/user/muthur",
+  "openingPrompt": "/handle docs/adopter-license",
+  "prs": [],
+  "url": "https://claude.ai/code/session_01DaohkExKMDF37SRKm46UnD",
+  "operator": "vzakharov",
+  "firstResponseAt": "2026-11-05T13:25:52.268Z",
+  "lastResponseAt": "2026-11-05T13:26:08.921Z",
+  "pricesAsOf": "2026-10-06",
+  "claudeCodeTotalUsd": null,
+  "ownTurns": {
+    "inputTokens": 12,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 48028,
+    "cacheReadTokens": 431846,
+    "outputTokens": 1081,
+    "thinkingTokens": 82,
+    "responses": 5,
+    "costUsd": 0.49226120000000007
+  },
+  "subagents": {
+    "inputTokens": 0,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 0,
+    "cacheReadTokens": 0,
+    "outputTokens": 0,
+    "thinkingTokens": 0,
+    "responses": 0,
+    "costUsd": 0.0
+  },
+  "byRate": {
+    "claude-opus-5-5/standard": {
+      "inputTokens": 12,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 48028,
+      "cacheReadTokens": 431846,
+      "outputTokens": 1081,
+      "thinkingTokens": 82,
+      "responses": 5,
+      "costUsd": 0.49226120000000007
+    }
+  },
+  "warnings": [],
+  "compactions": [],
+  "telemetry": {
+    "events": 5,
+    "matched": 5,
+    "matchedTableUsd": 0.49226120000000007,
+    "matchedEventUsd": 0.49226119999999995,
+    "unseen": {}
+  }
+}
