@@ -20,6 +20,13 @@ someone else's work in progress, not the product.
 - `README.md` — What this repo is, and the two ways to acquire it. Yours already
   exists.
   - **Disposition:** never
+- `LICENSE` — muthur's own MIT license. Your repo's terms are yours, so it never
+  becomes your root `LICENSE`, but its text still travels: MIT asks for its
+  notice in every copy of a substantial portion, which a verbatim skill or
+  script is. Copy it unchanged to `.claude/LICENSE.muthur`, the one notice for
+  every file you took from here, and when a sync finds `LICENSE` changed, carry
+  the change into that copy.
+  - **Disposition:** never
 - `ADOPTING.md` — The acquisition procedure. Read once, over the network, from
   the clone.
   - **Disposition:** never

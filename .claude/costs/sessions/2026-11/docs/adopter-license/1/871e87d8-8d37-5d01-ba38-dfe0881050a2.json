@@ -1,0 +1,98 @@
+{
+  "total": {
+    "inputTokens": 34,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 68231,
+    "cacheReadTokens": 1777621,
+    "outputTokens": 9446,
+    "thinkingTokens": 5333,
+    "responses": 17,
+    "costUsd": 1.0904282
+  },
+  "estimate": {
+    "at": "2026-11-05T11:04:42.110Z",
+    "parts": [
+      {
+        "hours": 1.5,
+        "grade": "senior",
+        "role": "prompter",
+        "comment": "placing one fact across never.md, ADOPTING, /detemplate and /update-muthur without stating it twice takes knowing how each reads the catalog"
+      },
+      {
+        "hours": 0.5,
+        "grade": "middle",
+        "role": "analyst",
+        "comment": "reading MIT's notice clause against verbatim vendoring is a licensing call, not a writing one"
+      }
+    ],
+    "comment": null
+  },
+  "orientation": {
+    "endedBy": "oriented",
+    "endedOn": null,
+    "endedAt": "2026-11-05T11:04:36.613Z",
+    "contextTokens": 115298,
+    "spend": {
+      "inputTokens": 23,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 61154,
+      "cacheReadTokens": 1072634,
+      "outputTokens": 4714,
+      "thinkingTokens": 2771,
+      "responses": 11,
+      "costUsd": 0.7981308
+    }
+  },
+  "sessionId": "871e87d8-8d37-5d01-ba38-dfe0881050a2",
+  "branch": "docs/adopter-license",
+  "cwd": "/home/user/muthur",
+  "openingPrompt": "/task Объясни в доках для адоптеров, что адоптеру делать с `LICENSE` (MIT, добавлен в dec7e753, #256). Сейчас про это в доках ничего нет. Чтобы не потерять мысл…",
+  "prs": [],
+  "url": "https://claude.ai/code/session_01DaohkEGD6ehkW7EJPLcbVB",
+  "operator": "vzakharov",
+  "firstResponseAt": "2026-11-05T11:03:24.769Z",
+  "lastResponseAt": "2026-11-05T11:06:35.666Z",
+  "pricesAsOf": "2026-10-06",
+  "claudeCodeTotalUsd": null,
+  "ownTurns": {
+    "inputTokens": 34,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 68231,
+    "cacheReadTokens": 1777621,
+    "outputTokens": 9446,
+    "thinkingTokens": 5333,
+    "responses": 17,
+    "costUsd": 1.0904282
+  },
+  "subagents": {
+    "inputTokens": 0,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 0,
+    "cacheReadTokens": 0,
+    "outputTokens": 0,
+    "thinkingTokens": 0,
+    "responses": 0,
+    "costUsd": 0.0
+  },
+  "byRate": {
+    "claude-opus-5-5/standard": {
+      "inputTokens": 34,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 68231,
+      "cacheReadTokens": 1777621,
+      "outputTokens": 9446,
+      "thinkingTokens": 5333,
+      "responses": 17,
+      "costUsd": 1.0904282
+    }
+  },
+  "warnings": [],
+  "compactions": [],
+  "telemetry": {
+    "events": 16,
+    "matched": 16,
+    "matchedTableUsd": 1.0496012000000001,
+    "matchedEventUsd": 1.0496012000000001,
+    "unseen": {}
+  }
+}
