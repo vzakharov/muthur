@@ -3,23 +3,17 @@ Proposed squash body:
 ```
 LICENSE (#256) sat in neither the catalog nor never.md, so every
 /update-muthur sync met it as an undecided path and asked its operator
-afresh; metkain/metka declined it as the template's own license.
+afresh; metkain/metka declined it as the template's own license. It is
+now a never entry, and /update-muthur Step 4a no longer offers a path
+the catalog marks never.
 
-It is now a never entry: MIT is permissive, covering only the files
-copied from here, so muthur's license never becomes an adopter's root
-LICENSE and their repo keeps its own terms. But MIT keeps its notice
-with every substantial copy, which a verbatim skill or script is, so
-the entry has adopters copy the text unchanged to
-.claude/LICENSE.muthur, one notice for every file taken, and carry
-later changes to LICENSE into that copy.
-ADOPTING.md Step 4 and /detemplate Step 5.2 (which moves the fork's
-LICENSE there instead of deleting it) send readers to the same answer,
-and /update-muthur Step 4a no longer offers a path the catalog marks
-never.
+muthur is relicensed from MIT to MIT-0, MIT without the notice clause.
+Adopters copy muthur's files and edit them, and under MIT each such
+copy, however lightly edited, had to keep the notice beside it; under
+MIT-0 the files are the adopter's under their own terms.
 
-Adopters: copy this repo's LICENSE, unchanged, to
-.claude/LICENSE.muthur and commit it with the sync. Your own root
-LICENSE, if any, stays as it is.
+/detemplate deletes the fork's LICENSE with the other never entries,
+leaving the project's own license to the operator.
 
 Fixes #261
 
