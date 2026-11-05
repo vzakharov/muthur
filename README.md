@@ -129,4 +129,4 @@ your agent offer to post it for you.
 
 ## License
 
-[MIT](LICENSE) © 2026 Vladimir Zakharov.
+[MIT-0](LICENSE) © 2026 Vladimir Zakharov.

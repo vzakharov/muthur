@@ -189,10 +189,9 @@ Ordering is load-bearing at exactly one point, and it is the first step:
    of remembered.
 2. **The rest of the `never` entries**: `README.md` — replaced with the
    project's, not merely deleted — `ADOPTING.md`, and **`docs/adopting/`** with
-   it: its chapters, which a sweep of the one file strands as orphans.
-   **`LICENSE` moves to `.claude/LICENSE.muthur` rather than going**, since the
-   fork keeps muthur's files and MIT keeps its notice with them; the project's
-   own license at the root is the operator's call.
+   it: its chapters, which a sweep of the one file strands as orphans. `LICENSE`
+   goes too, its MIT-0 asking no notice in copies; the project's own license at
+   the root is the operator's call.
 3. **Prune the groups**, applying the reverse-closure edits the plan recorded.
 4. **Fill `CLAUDE.md` § "About this project"'s stub** from the brief — which
    retires the standing notice in § "Recognizing an undetemplated fork" along
