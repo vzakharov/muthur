@@ -1,0 +1,100 @@
+{
+  "total": {
+    "inputTokens": 70,
+    "cacheWrite5mTokens": 45432,
+    "cacheWrite1hTokens": 87091,
+    "cacheReadTokens": 3808636,
+    "outputTokens": 11318,
+    "thinkingTokens": 2791,
+    "responses": 36,
+    "costUsd": 1.9122552
+  },
+  "estimate": {
+    "at": "2026-11-05T13:27:50.089Z",
+    "parts": [
+      {
+        "hours": 0.5,
+        "grade": "senior",
+        "role": "analyst",
+        "comment": "judging whether MIT's notice duty reaches an adopter's own code needs someone who reads licenses carefully"
+      },
+      {
+        "hours": 0.25,
+        "grade": "middle",
+        "role": "editor",
+        "comment": "one catalog entry reworded to state that scope without growing"
+      }
+    ],
+    "comment": null
+  },
+  "orientation": {
+    "endedBy": "Edit",
+    "endedOn": ".claude/skills/update-muthur/catalog/never.md",
+    "endedAt": "2026-11-05T13:26:42.166Z",
+    "contextTokens": 117384,
+    "spend": {
+      "inputTokens": 21,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 63040,
+      "cacheReadTokens": 946522,
+      "outputTokens": 3050,
+      "thinkingTokens": 1048,
+      "responses": 10,
+      "costUsd": 0.7547084000000002
+    }
+  },
+  "sessionId": "07d0a121-3307-58db-9014-3d0e34c282d1",
+  "branch": "docs/adopter-license",
+  "cwd": "/home/user/muthur",
+  "openingPrompt": "/handle docs/adopter-license",
+  "prs": [
+    262
+  ],
+  "url": "https://claude.ai/code/session_01DaohkExKMDF37SRKm46UnD",
+  "operator": "vzakharov",
+  "firstResponseAt": "2026-11-05T13:25:52.268Z",
+  "lastResponseAt": "2026-11-05T13:28:52.729Z",
+  "pricesAsOf": "2026-10-06",
+  "claudeCodeTotalUsd": null,
+  "ownTurns": {
+    "inputTokens": 53,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 87091,
+    "cacheReadTokens": 3098498,
+    "outputTokens": 8041,
+    "thinkingTokens": 1549,
+    "responses": 27,
+    "costUsd": 1.4774596000000002
+  },
+  "subagents": {
+    "inputTokens": 17,
+    "cacheWrite5mTokens": 45432,
+    "cacheWrite1hTokens": 0,
+    "cacheReadTokens": 710138,
+    "outputTokens": 3277,
+    "thinkingTokens": 1242,
+    "responses": 9,
+    "costUsd": 0.4347956
+  },
+  "byRate": {
+    "claude-opus-5-5/standard": {
+      "inputTokens": 70,
+      "cacheWrite5mTokens": 45432,
+      "cacheWrite1hTokens": 87091,
+      "cacheReadTokens": 3808636,
+      "outputTokens": 11318,
+      "thinkingTokens": 2791,
+      "responses": 36,
+      "costUsd": 1.9122552
+    }
+  },
+  "warnings": [],
+  "compactions": [],
+  "telemetry": {
+    "events": 36,
+    "matched": 36,
+    "matchedTableUsd": 1.9122552,
+    "matchedEventUsd": 1.9122552,
+    "unseen": {}
+  }
+}
