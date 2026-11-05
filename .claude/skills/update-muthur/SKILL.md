@@ -305,6 +305,10 @@ attached** rather than as a bare "upstream added `/foo`, want it?".
 
 Either way the question does not come back.
 
+**A path the source's catalog marks `never` is not offered**: the entry has
+answered for every adopter, and what it says the sync does instead, if anything,
+is the whole verdict. Nothing goes in the record.
+
 **An opt-in entry is offered by its own path, the same way**, even when the
 directory around it was taken. The catalog marks such an entry `opt-in: ask`, as
 it does `.claude/costs/`, and a parent directory having been taken says nothing
