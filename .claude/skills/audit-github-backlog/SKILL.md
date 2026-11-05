@@ -16,7 +16,9 @@ runs `@.claude/skills/plan/SKILL.md` and the plan file is this skill's output â€
 there is one document, in the normal plan lifecycle, not an audit report some
 later session turns into a plan. Only _execution_ is separate, through `/go`,
 and that gate is the point: the output is a bulk close list, and the only thing
-worse than an unreviewed backlog is an unreviewed automated purge of one.
+worse than an unreviewed backlog is an unreviewed automated purge of one. That
+makes this run `@.claude/skills/task/repo-change.md`'s route with one deviation:
+`/task`'s call is made in advance, always plan and hand off.
 
 ## This is a living document
 
