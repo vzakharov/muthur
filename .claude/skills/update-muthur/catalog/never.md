@@ -22,7 +22,7 @@ someone else's work in progress, not the product.
   - **Disposition:** never
 - `LICENSE` — muthur's own license, MIT-0: MIT without the clause that keeps its
   notice in copies, so what you take, edited or verbatim, is yours under your
-  repo's own terms, with nothing to carry along.
+  repo's own terms.
   - **Disposition:** never
 - `ADOPTING.md` — The acquisition procedure. Read once, over the network, from
   the clone.
