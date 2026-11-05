@@ -84,6 +84,14 @@
       "cache_write_1h": 6.0,
       "cache_read": 0.3
     },
+    "claude-haiku-5-5/standard": {
+      "input": 0.1,
+      "output": 0.5,
+      "cache_write_5m": 0.125,
+      "cache_write_1h": 0.2,
+      "cache_read": 0.01,
+      "confidence": "The rate card for prompts of 100K tokens or fewer. Above that the model bills $0.50 / $2.50, five times as much, and this table has no way to say so — a long-prompt Haiku call is undercounted until it does."
+    },
     "claude-haiku-4-5/standard": {
       "input": 1.0,
       "output": 5.0,
