@@ -37,9 +37,17 @@ the working tree clean, and behaves the same everywhere.
   - **Requires:** `bash`, `jq`
   - **Disposition:** adopt — **with any hook that sources it**
 - `.claude/hooks/session_state.py` — Imported by G1's `file-tools-nudge.py` and
-  G2's `go-delegation.py`, `checkpoint-review.py` and `finalize-bash-gate.py`:
-  the project root, and the per-session state file `tmp/<hook>/<session_id>`,
-  refused for a session id that could name a path elsewhere.
+  G2's `go-delegation.py`, `checkpoint-review.py`, `finalize-bash-gate.py` and
+  `sticky-comment-nudge.py`: the project root, and the per-session state file
+  `tmp/<hook>/<session_id>`, refused for a session id that could name a path
+  elsewhere; and the record behind refusing a call once and letting the
+  identical retry through.
+  - **Requires:** `python3` ≥3.9
+  - **Disposition:** adopt — **with any hook that imports it**
+- `.claude/hooks/shell_words.py` — Imported by G1's `file-tools-nudge.py` and
+  G2's `sticky-comment-nudge.py`: a Bash command split into the simple commands
+  it runs — heredocs dropped, wrappers such as `timeout` and `env` seen through,
+  and whether each one's output feeds another command.
   - **Requires:** `python3` ≥3.9
   - **Disposition:** adopt — **with any hook that imports it**
 - `.claude/hooks/skill_entry.py` — Imported by G2's `go-delegation.py`,
@@ -59,9 +67,10 @@ the working tree clean, and behaves the same everywhere.
   - **Disposition:** adopt
 - `.claude/hooks/permission-denied-phrase.sh` — When auto mode denies a tool
   call, record it under `tmp/`; at the turn's end, unless the last reply already
-  holds a fenced block, block the stop once and have the agent hand the operator
-  a copy-pasteable message naming each still-needed action exactly, which the
-  classifier reads as explicit authorization on the retry. A
+  holds a fenced block, block the stop once and have the agent run the narrow
+  script `permissions.allow` covers for the action, or failing one, hand the
+  operator a copy-pasteable message naming each still-needed action exactly,
+  which the classifier reads as explicit authorization on the retry. A
   `PermissionDenied` + `Stop` pair, because `PermissionDenied` cannot speak to
   the agent.
   - **Requires:** `bash`, `jq`, `.claude/settings.json` wiring (G4)

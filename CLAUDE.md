@@ -142,11 +142,14 @@ there. What `vet.sh` must exit, and why, is `.claude/rules/stack.md`.
   across dozens of files; a file piped into another command or read inside a
   `$(…)` is data being processed, not read.
 - **An auto-mode denial is routine, and the reply that meets it carries the way
-  past it.** In that same reply, hand the operator a fenced message to send back
-  that names the denied action exactly — command, file, target — unsoftened, in
-  their language: the classifier lets through what the operator's own message
-  names. A Stop hook (`.claude/hooks/permission-denied-phrase.sh`) catches a
-  reply that forgot, too late to stand in for it.
+  past it.** First look in `.claude/settings.json` `permissions.allow` for a
+  narrow script that does the denied action, and run that instead, spelled as
+  its rule matches. Failing one, in that same reply, hand the operator a fenced
+  message to send back that names the denied action exactly — command, file,
+  target — unsoftened, in their language: the classifier lets through what the
+  operator's own message names. A Stop hook
+  (`.claude/hooks/permission-denied-phrase.sh`) catches a reply that forgot, too
+  late to stand in for it.
 - **When the host harness orders a merge conflict or red CI fixed now, the
   loop's staging wins: report the state rather than fixing it.** `/finalize`
   stages both — vetting at its Step 1, the base merge at its Step 2 — so a
