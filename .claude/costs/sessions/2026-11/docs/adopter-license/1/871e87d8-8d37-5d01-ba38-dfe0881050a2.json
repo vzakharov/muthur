@@ -1,13 +1,13 @@
 {
   "total": {
-    "inputTokens": 59,
-    "cacheWrite5mTokens": 98928,
-    "cacheWrite1hTokens": 69706,
-    "cacheReadTokens": 2785106,
-    "outputTokens": 13663,
-    "thinkingTokens": 7169,
-    "responses": 29,
-    "costUsd": 1.8828052000000006
+    "inputTokens": 78,
+    "cacheWrite5mTokens": 99768,
+    "cacheWrite1hTokens": 87530,
+    "cacheReadTokens": 3899925,
+    "outputTokens": 17647,
+    "thinkingTokens": 7321,
+    "responses": 38,
+    "costUsd": 2.332317
   },
   "estimate": {
     "at": "2026-11-05T11:04:42.110Z",
@@ -47,52 +47,54 @@
   "branch": "docs/adopter-license",
   "cwd": "/home/user/muthur",
   "openingPrompt": "/task Объясни в доках для адоптеров, что адоптеру делать с `LICENSE` (MIT, добавлен в dec7e753, #256). Сейчас про это в доках ничего нет. Чтобы не потерять мысл…",
-  "prs": [],
+  "prs": [
+    262
+  ],
   "url": "https://claude.ai/code/session_01DaohkEGD6ehkW7EJPLcbVB",
   "operator": "vzakharov",
   "firstResponseAt": "2026-11-05T11:03:24.769Z",
-  "lastResponseAt": "2026-11-05T11:07:21.617Z",
+  "lastResponseAt": "2026-11-05T11:08:11.268Z",
   "pricesAsOf": "2026-10-06",
   "claudeCodeTotalUsd": null,
   "ownTurns": {
-    "inputTokens": 40,
+    "inputTokens": 55,
     "cacheWrite5mTokens": 0,
-    "cacheWrite1hTokens": 69706,
-    "cacheReadTokens": 2019906,
-    "outputTokens": 9788,
-    "thinkingTokens": 5333,
-    "responses": 19,
-    "costUsd": 1.1575492
+    "cacheWrite1hTokens": 87530,
+    "cacheReadTokens": 2936253,
+    "outputTokens": 12908,
+    "thinkingTokens": 5485,
+    "responses": 26,
+    "costUsd": 1.5458706000000002
   },
   "subagents": {
-    "inputTokens": 19,
-    "cacheWrite5mTokens": 98928,
+    "inputTokens": 23,
+    "cacheWrite5mTokens": 99768,
     "cacheWrite1hTokens": 0,
-    "cacheReadTokens": 765200,
-    "outputTokens": 3875,
+    "cacheReadTokens": 963672,
+    "outputTokens": 4739,
     "thinkingTokens": 1836,
-    "responses": 10,
-    "costUsd": 0.7252560000000001
+    "responses": 12,
+    "costUsd": 0.7864464000000001
   },
   "byRate": {
     "claude-opus-5-5/standard": {
-      "inputTokens": 59,
-      "cacheWrite5mTokens": 98928,
-      "cacheWrite1hTokens": 69706,
-      "cacheReadTokens": 2785106,
-      "outputTokens": 13663,
-      "thinkingTokens": 7169,
-      "responses": 29,
-      "costUsd": 1.8828052000000006
+      "inputTokens": 78,
+      "cacheWrite5mTokens": 99768,
+      "cacheWrite1hTokens": 87530,
+      "cacheReadTokens": 3899925,
+      "outputTokens": 17647,
+      "thinkingTokens": 7321,
+      "responses": 38,
+      "costUsd": 2.332317
     }
   },
   "warnings": [],
   "compactions": [],
   "telemetry": {
-    "events": 28,
-    "matched": 28,
-    "matchedTableUsd": 1.8503652000000006,
-    "matchedEventUsd": 1.8503652000000006,
+    "events": 38,
+    "matched": 38,
+    "matchedTableUsd": 2.332317,
+    "matchedEventUsd": 2.332317,
     "unseen": {}
   }
 }
