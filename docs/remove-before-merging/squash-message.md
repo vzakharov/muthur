@@ -5,11 +5,13 @@ LICENSE (#256) sat in neither the catalog nor never.md, so every
 /update-muthur sync met it as an undecided path and asked its operator
 afresh; metkain/metka declined it as the template's own license.
 
-It is now a never entry: muthur's MIT license never becomes an
-adopter's root LICENSE. But MIT keeps its notice with every substantial
-copy, which a verbatim skill or script is, so the entry has adopters
-copy the text unchanged to .claude/LICENSE.muthur, one notice for every
-file taken, and carry later changes to LICENSE into that copy.
+It is now a never entry: MIT is permissive, covering only the files
+copied from here, so muthur's license never becomes an adopter's root
+LICENSE and their repo keeps its own terms. But MIT keeps its notice
+with every substantial copy, which a verbatim skill or script is, so
+the entry has adopters copy the text unchanged to
+.claude/LICENSE.muthur, one notice for every file taken, and carry
+later changes to LICENSE into that copy.
 ADOPTING.md Step 4 and /detemplate Step 5.2 (which moves the fork's
 LICENSE there instead of deleting it) send readers to the same answer,
 and /update-muthur Step 4a no longer offers a path the catalog marks
