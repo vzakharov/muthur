@@ -127,7 +127,9 @@ The sections, in this order:
    asking; then anything else asked and not yet done. "Wait for the operator"
    when nothing is pending. A draft plan's go-ahead given in this session is
    quoted here, since it is what the successor's `/go` records when it flips the
-   plan.
+   plan. A step whose action a skill owns names that skill, so the successor
+   loads it rather than rebuilding the action by hand: refreshing the squash
+   proposal is `/squash-message update-only`, a re-attestation `/finalize`.
 9. **Last agent turn** — the script's, never hand-written, interim messages
    included — chat text the operator already saw.
 
