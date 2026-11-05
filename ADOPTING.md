@@ -169,14 +169,13 @@ Copy the resolved set from the clone into your repo — but **not**
 or its `catalog/` parts
 ([the `never` entries](.claude/skills/update-muthur/catalog/never.md)), which
 taking `/update-muthur` otherwise brings along inside its directory. Root
-`LICENSE` stays out too, but copy its text to `.claude/LICENSE.muthur` — MIT
-asks for its notice beside what you copied, and
-[its `never` entry](.claude/skills/update-muthur/catalog/never.md) says why.
-Each `opt-in: ask` entry goes by its answer: on a yes, copy its path and merge
-the `.claude/settings.json` entries its catalog entry names — `.claude/costs/`,
-then [`docs/adopting/costs.md`](docs/adopting/costs.md); on a no, record a
-decline, and leave its path out even where a directory you copy holds it. Then
-continue to the shared tail.
+`LICENSE` stays out too, but copy its text to `.claude/LICENSE.muthur`, since
+MIT asks for its notice beside what you copied. Each `opt-in: ask` entry goes by
+its answer: on a yes, copy its path and merge the `.claude/settings.json`
+entries its catalog entry names — `.claude/costs/`, then
+[`docs/adopting/costs.md`](docs/adopting/costs.md); on a no, record a decline,
+and leave its path out even where a directory you copy holds it. Then continue
+to the shared tail.
 
 **Keep every decline with its reason** — G4's, each `opt-in: ask` no, any group
 you skip — written as a present-tense condition (_no CI yet_) rather than a
