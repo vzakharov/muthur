@@ -162,20 +162,10 @@ class AsAProcess(unittest.TestCase):
         self.assertEqual((result.returncode, result.stdout), (0, ""))
         self.assertIn("unreadable payload", result.stderr)
 
-    def test_check_passes_quietly_on_this_machine(self) -> None:
+    def test_any_argument_is_refused(self) -> None:
         result = self.run_script("check")
-        self.assertEqual((result.returncode, result.stdout), (0, ""), result.stderr)
-
-    def test_check_prints_the_handoff_where_bash_is_old(self) -> None:
-        out = io.StringIO()
-        with mock.patch.object(gate, "why_refused", return_value="old"), redirect_stdout(out):
-            self.assertEqual(gate.main(["check"]), 1)
-        self.assertIn('claude --cloud "/finalize', out.getvalue())
-
-    def test_an_unknown_argument(self) -> None:
-        result = self.run_script("nope")
         self.assertEqual(result.returncode, 2)
-        self.assertIn("check", result.stderr)
+        self.assertIn("takes none", result.stderr)
 
 
 if __name__ == "__main__":

@@ -73,9 +73,8 @@
 - `.claude/hooks/finalize-bash-gate.py` — Refuse `/finalize` where `/bin/bash`
   or the `bash` on `PATH` is older than 4 — a stock Mac — denying the `Skill`
   call or the `Read` of its `SKILL.md`, or adding context to a typed
-  `/finalize`, with the steps to run it in a new cloud session instead; `check`
-  runs it by hand under a harness with no hooks. Stdlib-only, tested by
-  `scripts/test_finalize_bash_gate.py`.
+  `/finalize`, with the steps to run it in a new cloud session of Claude
+  instead. Stdlib-only, tested by `scripts/test_finalize_bash_gate.py`.
   - **Requires:** `python3` ≥3.9, `.claude/settings.json` wiring (G4)
   - **Pulls in:** `/finalize`, `/relay`, `.claude/hooks/session_state.py`,
     `.claude/hooks/skill_entry.py` (G4)

@@ -12,9 +12,10 @@ so the skill's body never loads. A typed `/finalize` expands with no tool call
 to deny, so on `UserPromptSubmit` the same instruction goes in as context,
 telling the agent to set the body aside.
 
-`finalize-bash-gate.py check`, with no payload, runs the check alone for a
-harness without hooks: it prints the instruction and exits 1 where the run
-would be refused. Fails open on an unreadable payload: stderr and exit 0.
+The handoff lands in a Claude cloud session, so the gate is for an agent on
+Claude, and being a hook scopes it to exactly that: a harness that runs no hooks
+— Codex, Cursor — finalizes where it is. Fails open on an unreadable payload:
+stderr and exit 0.
 """
 
 from __future__ import annotations
@@ -111,19 +112,9 @@ def hook() -> int:
     return 0
 
 
-def check() -> int:
-    why = why_refused()
-    if why is None:
-        return 0
-    print(INSTRUCTION.format(why=why))
-    return 1
-
-
 def main(argv: Sequence[str]) -> int:
-    if list(argv) == ["check"]:
-        return check()
     if argv:
-        say(f"unknown arguments {list(argv)}; the one argument is `check`.")
+        say(f"unexpected arguments {list(argv)}; the hook takes none.")
         return 2
     return hook()
 

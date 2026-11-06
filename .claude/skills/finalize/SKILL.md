@@ -3,9 +3,8 @@ description: Finalize (a.k.a. "prep merge") — land prep: verify there's a draf
 ---
 
 **Where bash is older than 4, `.claude/hooks/finalize-bash-gate.py` refuses this
-skill** and says how to run it in a cloud session instead. Under a harness that
-runs no hooks, run `.claude/hooks/finalize-bash-gate.py check` before anything
-else: when it prints, what it prints replaces everything below.
+skill under Claude Code** and says how to run it in a cloud session of Claude
+instead. A harness that runs no hooks finalizes where it is.
 
 **Optional branch/PR target**: if the first token of the argument is a branch
 name, `#NNN` PR number, or PR URL, then `/finalize <target>` is shorthand for
