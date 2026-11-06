@@ -12,10 +12,10 @@ so the skill's body never loads. A typed `/finalize` expands with no tool call
 to deny, so on `UserPromptSubmit` the same instruction goes in as context,
 telling the agent to set the body aside.
 
-The handoff is to a cloud session of Claude, so it is for an agent running on
-Claude; only Claude Code runs the hooks in `.claude/settings.json`, and a
-harness that runs none — Codex, Cursor — finalizes where it is. Fails open on an
-unreadable payload: stderr and exit 0.
+The handoff lands in a Claude cloud session, so the gate is for an agent on
+Claude, and being a hook scopes it to exactly that: a harness that runs no hooks
+— Codex, Cursor — finalizes where it is. Fails open on an unreadable payload:
+stderr and exit 0.
 """
 
 from __future__ import annotations
