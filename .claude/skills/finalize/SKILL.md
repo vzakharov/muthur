@@ -2,6 +2,10 @@
 description: Finalize (a.k.a. "prep merge") — land prep: verify there's a draft PR, run the quality passes (`/polish`), run the vet suite, merge the base branch, mark ready for review, propose a squash body and settle the PR title it lands under, and post the attestation comment. Pass an optional branch/PR target first (`/finalize <branch|#PR|PR-url>`) to attach to that existing branch before finalizing. `/finalize no vet` is the docs-only mode; `/finalize revoke` withdraws an attestation; `/finalize and merge` squash-merges the PR as well, but only if the run turned up nothing to decide. An operator's ask to merge — "merge", "мерджи", in any words — is `/merge`, which sends a branch not yet finalized here.
 ---
 
+**Where bash is older than 4, `.claude/hooks/finalize-bash-gate.py` refuses this
+skill under Claude Code** and says how to run it in a cloud session of Claude
+instead. A harness that runs no hooks finalizes where it is.
+
 **Optional branch/PR target**: if the first token of the argument is a branch
 name, `#NNN` PR number, or PR URL, then `/finalize <target>` is shorthand for
 attaching to that branch first and then finalizing — equivalent to
@@ -89,6 +93,12 @@ and stay put; it runs before step 1 regardless. **`no vet` does not skip it** �
 a docs-only diff is squarely what both passes are for: `/tend-prose` by
 construction, and `/dry` because a constraint stated in two places is a
 duplication like any other.
+
+**When `.claude/hooks/checkpoint-review.py` delivered
+`@.claude/skills/go/checkpoint-review.md` this session, the checkpoint review
+runs right after them**, before step 1 for the same reason, and so the vet run
+covers the reviewer's commits; under a harness that runs no hooks, that file's §
+"Who runs it" says whether it runs. `no vet` does not skip it.
 
 Steps (stop on first unresolved failure):
 

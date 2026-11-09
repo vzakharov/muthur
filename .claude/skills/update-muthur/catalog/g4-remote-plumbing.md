@@ -37,9 +37,23 @@ the working tree clean, and behaves the same everywhere.
   - **Requires:** `bash`, `jq`
   - **Disposition:** adopt — **with any hook that sources it**
 - `.claude/hooks/session_state.py` — Imported by G1's `file-tools-nudge.py` and
-  G2's `go-delegation.py`: the project root, and the per-session state file
+  G2's `go-delegation.py`, `checkpoint-review.py`, `finalize-bash-gate.py` and
+  `sticky-comment-nudge.py`: the project root, and the per-session state file
   `tmp/<hook>/<session_id>`, refused for a session id that could name a path
-  elsewhere.
+  elsewhere; and the record behind refusing a call once and letting the
+  identical retry through.
+  - **Requires:** `python3` ≥3.9
+  - **Disposition:** adopt — **with any hook that imports it**
+- `.claude/hooks/shell_words.py` — Imported by G1's `file-tools-nudge.py` and
+  G2's `sticky-comment-nudge.py`: a Bash command split into the simple commands
+  it runs — heredocs dropped, wrappers such as `timeout` and `env` seen through,
+  and whether each one's output feeds another command.
+  - **Requires:** `python3` ≥3.9
+  - **Disposition:** adopt — **with any hook that imports it**
+- `.claude/hooks/skill_entry.py` — Imported by G2's `go-delegation.py`,
+  `checkpoint-review.py` and `finalize-bash-gate.py`: which skill a hook payload
+  enters or is about to, by a `Skill` call, a `Read` of its `SKILL.md`, or a
+  typed slash command.
   - **Requires:** `python3` ≥3.9
   - **Disposition:** adopt — **with any hook that imports it**
 - `.claude/hooks/operator-voice.sh` — On session start, name the operator —
@@ -53,9 +67,10 @@ the working tree clean, and behaves the same everywhere.
   - **Disposition:** adopt
 - `.claude/hooks/permission-denied-phrase.sh` — When auto mode denies a tool
   call, record it under `tmp/`; at the turn's end, unless the last reply already
-  holds a fenced block, block the stop once and have the agent hand the operator
-  a copy-pasteable message naming each still-needed action exactly, which the
-  classifier reads as explicit authorization on the retry. A
+  holds a fenced block, block the stop once and have the agent run the narrow
+  script `permissions.allow` covers for the action, or failing one, hand the
+  operator a copy-pasteable message naming each still-needed action exactly,
+  which the classifier reads as explicit authorization on the retry. A
   `PermissionDenied` + `Stop` pair, because `PermissionDenied` cannot speak to
   the agent.
   - **Requires:** `bash`, `jq`, `.claude/settings.json` wiring (G4)
@@ -75,8 +90,23 @@ the working tree clean, and behaves the same everywhere.
 - `scripts/extract-session-images.py` — Write the images the operator attached
   to a session out of the transcript into gitignored `tmp/session-images/`, with
   a manifest row carrying the prompt each arrived with. Stdlib-only, idempotent.
-  - **Requires:** `python3` ≥3.9, `scripts/lib/media.py` (G2)
+  - **Requires:** `python3` ≥3.9, `scripts/lib/media.py` (G2),
+    `scripts/lib/session_transcript.py`
   - **Disposition:** adopt
+- `scripts/lib/session_transcript.py` — Where a session's transcript is, the
+  text of a prompt, an operator message in either record shape, and a record
+  iterator that tolerates a half-written last line. Shared by
+  `extract-session-images.py`, `relay-last-reply.py` and `session-qa.py`, so a
+  change to the undocumented record shape is fixed once.
+  - **Requires:** `python3` ≥3.9
+  - **Disposition:** adopt — **with any script that imports it**
+- `scripts/session-qa.py` — Print a session's operator messages and the agent's
+  replies as `## Q` / `## A` text from its transcript, optionally from a
+  commit's time on, with a line per tool call under `--tools`. Read by G2's
+  checkpoint reviewer (`.claude/skills/go/review.md`) when the written record is
+  not enough. Stdlib-only, tested by `scripts/test_session_qa.py`.
+  - **Requires:** `python3` ≥3.9, `scripts/lib/session_transcript.py`
+  - **Disposition:** adopt — **with `checkpoint-review.md`**
 - `scripts/multi-repo-hooks.py` — In a cloud session with several repositories
   attached, which loads none of their hooks, write the parent's
   `.claude/settings.json` from every repository's own hooks, each run with

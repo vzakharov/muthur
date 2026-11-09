@@ -31,12 +31,18 @@ Stdlib only — no third-party deps. Python 3.9+.
 from __future__ import annotations
 
 import argparse
-import json
-import os
 import re
 import sys
 from pathlib import Path
 from typing import Dict, List, NoReturn, Optional, Tuple
+
+from lib.session_transcript import (
+    TranscriptError,
+    find_transcript,
+    is_human,
+    iter_records,
+    prompt_text,
+)
 
 HEADING = "## Last agent turn"
 # Wrapped as prettier wraps it, since the summary is tracked Markdown the vet
@@ -56,63 +62,36 @@ def _die(message: str) -> NoReturn:
     raise SystemExit(1)
 
 
-def find_transcript() -> Path:
-    session = os.environ.get("CLAUDE_CODE_SESSION_ID")
-    if not session:
-        _die("no CLAUDE_CODE_SESSION_ID; name the transcript with --transcript")
-    found = sorted((Path.home() / ".claude" / "projects").glob(f"*/{session}.jsonl"))
-    if len(found) != 1:
-        _die(f"expected one transcript for session {session}, found {len(found)}")
-    return found[0]
-
-
-def prompt_text(content: object) -> str:
-    if isinstance(content, str):
-        return content
-    if isinstance(content, list):
-        return "\n".join(
-            block["text"]
-            for block in content
-            if isinstance(block, dict) and isinstance(block.get("text"), str)
-        )
-    return ""
-
-
 def turn_texts(transcript: Path) -> List[Tuple[bool, List[str]]]:
     """Each turn's text blocks, turns in the order they opened, each with
     whether a keepalive wake opened it."""
     turns: Dict[str, Tuple[bool, List[str]]] = {}
     current: Optional[str] = None
-    with transcript.open(encoding="utf-8", errors="replace") as fh:
-        for line in fh:
-            try:
-                record = json.loads(line)
-            except json.JSONDecodeError:
-                # The transcript is appended to while this reads it, so the last
-                # line can be half-written; it belongs to the running turn.
+    # A half-written last line, which `iter_records` passes over, belongs to the
+    # running turn.
+    for record in iter_records(transcript):
+        if record.get("isSidechain"):
+            continue
+        if record.get("type") == "user":
+            prompt = record.get("promptId")
+            if isinstance(prompt, str) and prompt:
+                current = prompt
+                if prompt not in turns:
+                    opener = prompt_text((record.get("message") or {}).get("content"))
+                    human = is_human(record.get("origin"))
+                    turns[prompt] = (not human and KEEPALIVE_MARK in opener, [])
+        elif record.get("type") == "assistant" and current is not None:
+            content = (record.get("message") or {}).get("content")
+            if not isinstance(content, list):
                 continue
-            if not isinstance(record, dict) or record.get("isSidechain"):
-                continue
-            if record.get("type") == "user":
-                prompt = record.get("promptId")
-                if isinstance(prompt, str) and prompt:
-                    current = prompt
-                    if prompt not in turns:
-                        opener = prompt_text((record.get("message") or {}).get("content"))
-                        human = (record.get("origin") or {}).get("kind") == "human"
-                        turns[prompt] = (not human and KEEPALIVE_MARK in opener, [])
-            elif record.get("type") == "assistant" and current is not None:
-                content = (record.get("message") or {}).get("content")
-                if not isinstance(content, list):
-                    continue
-                turns[current][1].extend(
-                    block["text"].strip()
-                    for block in content
-                    if isinstance(block, dict)
-                    and block.get("type") == "text"
-                    and isinstance(block.get("text"), str)
-                    and block["text"].strip()
-                )
+            turns[current][1].extend(
+                block["text"].strip()
+                for block in content
+                if isinstance(block, dict)
+                and block.get("type") == "text"
+                and isinstance(block.get("text"), str)
+                and block["text"].strip()
+            )
     return list(turns.values())
 
 
@@ -149,7 +128,10 @@ def main() -> int:
     summary: Path = args.summary
     if not summary.is_file():
         _die(f"summary not found: {summary}")
-    transcript: Path = args.transcript or find_transcript()
+    try:
+        transcript: Path = args.transcript or find_transcript()
+    except TranscriptError as exc:
+        _die(str(exc))
     if not transcript.is_file():
         _die(f"transcript not found: {transcript}")
 

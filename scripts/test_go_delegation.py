@@ -33,7 +33,8 @@ class DelegationTestCase(unittest.TestCase):
         self.skill_dir.mkdir(parents=True)
         (self.skill_dir / "SKILL.md").write_text("SKILL-BODY")
         (self.skill_dir / "delegation.md").write_text(DELEGATION)
-        (self.skill_dir / "delegation-model-capabilities.md").write_text(MODELS)
+        self.models = self.root / ".claude" / "model-capabilities.md"
+        self.models.write_text(MODELS)
 
     def marker(self, session: str) -> Path:
         return self.root / "tmp" / "go-delegation" / session
@@ -108,7 +109,7 @@ class WhereTheBriefIsDelivered(DelegationTestCase):
     def test_the_brief_leads_with_the_names_of_both_files(self) -> None:
         result = self.send(self.skill_payload("go"))
         context = json.loads(result.stdout)["hookSpecificOutput"]["additionalContext"]
-        self.assertLess(context.index("delegation.md"), context.index("delegation-model-capabilities.md"))
+        self.assertLess(context.index("delegation.md"), context.index("model-capabilities.md"))
         self.assertLess(context.index(DELEGATION), context.index(MODELS))
 
 
@@ -132,7 +133,7 @@ class WhatStaysSilent(DelegationTestCase):
         (other / "SKILL.md").write_text("elsewhere")
         for path in (
             self.skill_dir / "delegation.md",
-            self.skill_dir / "delegation-model-capabilities.md",
+            self.models,
             other / "SKILL.md",
         ):
             with self.subTest(path=str(path)):
@@ -213,13 +214,12 @@ class OncePerSession(DelegationTestCase):
 
 class AMissingFile(DelegationTestCase):
     def test_no_brief_and_no_marker_until_the_file_exists(self) -> None:
-        models = self.skill_dir / "delegation-model-capabilities.md"
-        models.unlink()
+        self.models.unlink()
         result = self.send(self.skill_payload("go"))
         self.assertEqual(result.stdout, "")
-        self.assertIn("delegation-model-capabilities.md", result.stderr)
+        self.assertIn("model-capabilities.md", result.stderr)
         self.assertFalse(self.marker("sess").exists())
-        models.write_text(MODELS)
+        self.models.write_text(MODELS)
         self.assert_delivered(self.skill_payload("go"))
 
     def test_a_missing_delegation_file_is_the_same(self) -> None:

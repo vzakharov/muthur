@@ -305,6 +305,10 @@ attached** rather than as a bare "upstream added `/foo`, want it?".
 
 Either way the question does not come back.
 
+**A path the source's catalog marks `never` is not offered**: the entry has
+answered for every adopter, and what it says the sync does instead, if anything,
+is the whole verdict. Nothing goes in the record.
+
 **An opt-in entry is offered by its own path, the same way**, even when the
 directory around it was taken. The catalog marks such an entry `opt-in: ask`, as
 it does `.claude/costs/`, and a parent directory having been taken says nothing
@@ -318,14 +322,14 @@ de-vendored rewrites, not copies, so every hunk conflicts. Read the source's
 diff to understand what changed and why, then re-express it in this repo's
 vocabulary and file layout.
 
-**`.claude/skills/go/delegation-model-capabilities.md` is merged by lesson,
-never ported or skipped.** Each repo's copy holds what its own delegations
-taught, so it differs from the source's by design and the record never mentions
-it. Read the source's file whole — not the diff, since an entry the source
-folded away may still be news here — and fold in each lesson this file lacks
-that holds for the models and setup this repo runs, in its own words, keeping
-every lesson of its own. The result stays under its 100-line cap; where the two
-disagree, this repo's own runs win over the source's.
+**`.claude/model-capabilities.md` is merged by lesson, never ported or
+skipped.** Each repo's copy holds what its own delegations and reviews taught,
+so it differs from the source's by design and the record never mentions it. Read
+the source's file whole — not the diff, since an entry the source folded away
+may still be news here — and fold in each lesson this file lacks that holds for
+the models and setup this repo runs, in its own words, keeping every lesson of
+its own. The result stays under its 100-line cap; where the two disagree, this
+repo's own runs win over the source's.
 
 ### Step 6 — Consistency sweep
 

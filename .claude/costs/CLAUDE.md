@@ -162,6 +162,13 @@ is the cheaper way to shed context. `lib/orientation.py` holds the definitions.
   what is what comes before the first edit or answer — a session tracing callers
   before it changes anything is already working — and only the agent can tell
   when. A subagent's mark is its own bearings, not the session's.
+  - **A Haiku session is never asked** (`UNMARKED_MODELS`). Asked, it marks on
+    its first response, before anything is read, so the phase measures nothing:
+    a `/relay take` session then prices its own reorientation at $0 and the
+    context budget's warning line comes too early, as if a handoff were free.
+    The model is the session's latest `model` attachment or main-chain response,
+    so a compaction and a mid-session switch are read alike; a transcript with
+    neither is asked.
 - **Acting is a write into the repository or a handover to the operator**: an
   `Edit`, `Write` or `NotebookEdit` under the directory the session started in
   and outside its `tmp/`, an `AskUserQuestion` or `ExitPlanMode`, or the

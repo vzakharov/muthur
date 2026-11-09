@@ -22,6 +22,8 @@ KEEPALIVE = Path(__file__).resolve().parents[1] / ".claude" / "keepalive" / "hoo
 
 
 def load(name: str, path: Path) -> ModuleType:
+    # The script imports `lib.session_transcript`, which resolves from its own directory.
+    sys.path.insert(0, str(SCRIPT.parent))
     spec = importlib.util.spec_from_file_location(name, path)
     assert spec is not None and spec.loader is not None
     module = importlib.util.module_from_spec(spec)

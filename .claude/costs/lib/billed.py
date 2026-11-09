@@ -10,6 +10,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from datetime import datetime
+from pathlib import Path
 from typing import Any, Dict, List, Optional, Sequence
 
 from lib.shape import ShapeError, json_lines, read_count, read_number, read_string, required
@@ -34,6 +35,14 @@ class Event:
     query_source: str
     at: str
     tokens: Tally
+
+
+def events_at(path: Path) -> Optional[Dict[str, Event]]:
+    """`None` where the session has no telemetry file, to be priced from its
+    transcript alone."""
+    if not path.exists():
+        return None
+    return parse_events(path.read_text(encoding="utf-8"), str(path))
 
 
 def parse_events(text: str, where: str) -> Dict[str, Event]:

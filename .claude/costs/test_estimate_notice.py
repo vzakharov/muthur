@@ -31,6 +31,16 @@ def bash(command: str) -> Dict[str, Any]:
     return {"type": "assistant", "message": {"role": "assistant", "content": content}}
 
 
+def model_attachment(model_id: str) -> Dict[str, Any]:
+    return {"type": "attachment", "attachment": {"type": "model", "identity": {"modelId": model_id}}}
+
+
+def assistant_on(model_id: str) -> Dict[str, Any]:
+    return {"type": "assistant", "message": {"role": "assistant", "model": model_id, "content": []}}
+
+
+MODEL_HAIKU = model_attachment("claude-haiku-5-5")
+MODEL_OPUS = model_attachment("claude-opus-5-5")
 MARK = bash("python3 .claude/costs/oriented.py")
 BOUNDARY = {"type": "system", "subtype": "compact_boundary", "timestamp": "2026-03-04T05:00:00.000Z"}
 PROMPT = {"type": "user", "message": {"role": "user", "content": "do it"}}
@@ -146,6 +156,23 @@ class EstimateNoticeTest(unittest.TestCase):
 
     def test_asks_for_the_mark_on_the_compaction_itself_without_reading_the_transcript(self) -> None:
         self.assertIn(ASKS_FOR_THE_MARK, self.notice([PROMPT, MARK], source="compact"))
+
+    def test_a_haiku_session_is_never_asked_for_the_mark(self) -> None:
+        for records, source in (
+            ([MODEL_HAIKU, PROMPT], None),
+            ([MODEL_HAIKU, PROMPT, BOUNDARY, PROMPT], None),
+            ([MODEL_HAIKU, PROMPT, assistant_on("claude-haiku-5-5")], "compact"),
+        ):
+            with self.subTest(source=source, records=len(records)):
+                self.assertNotIn(ASKS_FOR_THE_MARK, self.notice(records, source=source))
+
+    def test_the_mark_is_asked_of_the_model_the_session_last_ran_on(self) -> None:
+        self.assertIn(ASKS_FOR_THE_MARK, self.notice([MODEL_HAIKU, PROMPT, assistant_on("claude-opus-5-5")]))
+        self.assertNotIn(ASKS_FOR_THE_MARK, self.notice([MODEL_OPUS, PROMPT, assistant_on("claude-haiku-5-5")]))
+
+    def test_a_subagents_model_does_not_exempt_the_session(self) -> None:
+        sidechain = {**assistant_on("claude-haiku-5-5"), "isSidechain": True}
+        self.assertIn(ASKS_FOR_THE_MARK, self.notice([MODEL_OPUS, PROMPT, sidechain]))
 
     def test_a_session_with_no_transcript_yet_is_asked_for_the_mark(self) -> None:
         self.assertIn(ASKS_FOR_THE_MARK, self.notice())

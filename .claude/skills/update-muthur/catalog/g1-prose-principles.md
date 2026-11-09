@@ -37,8 +37,15 @@ there is no condition under which it fails to apply.
 - `/polish` — Run `/dry` then `/tend-prose` over the branch's diff, committing
   what they change. `/go` runs it after implementing and `/finalize` ahead of
   its numbered steps; the operator runs it over work that reached neither.
-  - **Pulls in:** `/dry`, `/tend-prose` (this group)
+  - **Pulls in:** `/dry`, `/tend-prose`, `scripts/floor.py` (this group)
   - **Disposition:** adopt
+- `scripts/floor.py` — Print where a branch-local pass's scope starts: the
+  branch's own change since the newest commit whose subject opens with a given
+  type, a base merged in since kept below the line. `/polish` reads its scope
+  through it, and G2's checkpoint reviewer and its gate theirs. Stdlib-only,
+  tested by `scripts/test_floor.py`.
+  - **Requires:** `python3` ≥3.9, `git`; `gh` for the PR's base, optional
+  - **Disposition:** adopt — **with `/polish`**
 - `.claude/voice/` — The house rule for writing to a person, imported by
   CLAUDE.md § "Explaining things to people" and so resident in every session.
   `voice.md` is the rule, and the place a team edits if it wants a house manner
@@ -121,7 +128,8 @@ there is no condition under which it fails to apply.
   deliberate batch of edits. Records what it refused under `tmp/`, and fails
   open.
   - **Requires:** `python3` ≥3.9, `.claude/settings.json` wiring (G4)
-  - **Pulls in:** `.claude/hooks/session_state.py` (G4)
+  - **Pulls in:** `.claude/hooks/session_state.py`,
+    `.claude/hooks/shell_words.py` (G4)
   - **Disposition:** adopt
 
 `CLAUDE.md` is a **donor, not a replacement** — overwriting it is the one way to

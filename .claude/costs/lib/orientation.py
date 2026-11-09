@@ -222,6 +222,15 @@ REPEATABLE = {"Grep", "Glob", "Bash"}
 MARK = re.compile(r"(?:^|[;&|(\n])\s*python3\s+(?:\S*/)?\.claude/costs/oriented\.py\s*(?:$|[;&|)])")
 
 
+# Models not asked for the mark: asked, they mark before reading anything, so
+# the phase measures nothing.
+UNMARKED_MODELS = ("haiku",)
+
+
+def asked_for_mark(model: Optional[str]) -> bool:
+    return not any(name in (model or "").lower() for name in UNMARKED_MODELS)
+
+
 def is_mark(call: ToolCall) -> bool:
     command = call.input.get("command")
     return call.name == "Bash" and isinstance(command, str) and MARK.search(command) is not None

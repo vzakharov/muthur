@@ -49,7 +49,9 @@ Python ones are launched by their shebang, so native Windows runs almost none of
 them: adopting there means rewriting most of the shell layer. If your operator
 is on Windows, tell them before copying anything. If you port it, or find a
 cheaper way around it, we'd be grateful for the know-how in
-[an issue](https://github.com/vzakharov/muthur/issues/new).
+[an issue](https://github.com/vzakharov/muthur/issues/new). `/finalize` needs
+bash 4, so on a stock Mac, whose `/bin/bash` is 3.2, Claude Code refuses to run
+it locally and has the agent start it in a cloud session of Claude instead.
 
 ## Adopt into an existing repo
 

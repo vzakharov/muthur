@@ -35,23 +35,50 @@
   branch to attach to, or a task with no plan behind it. Carries
   `delegation.md`, handing sub-tasks that need no judgement to cheaper models in
   worktrees and reviewing them before they merge, and
-  `delegation-model-capabilities.md`, the ≤100-line summary of what each model
-  has handled, which `scripts/vet.sh` caps. `MUTHUR_DELEGATION=off` leaves `/go`
-  as if neither were there.
-  - **Pulls in:** `/polish` (G1); `/from-branch`, `/plan`, `/pr`, `/task`;
-    `.claude/hooks/go-delegation.py`; **conditionally** `/take-issue`,
-    `/propose-issue` (G3), `.claude/costs/` (G7) for the delegation's weighing
-  - **Disposition:** adopt — `delegation-model-capabilities.md` as it stands,
-    its lessons being general, then merged by lesson on every sync
-    (`/update-muthur` Step 5)
+  `.claude/model-capabilities.md`, the ≤100-line summary of what each model has
+  handled, which `scripts/vet.sh` caps. `MUTHUR_DELEGATION=off` leaves `/go` as
+  if neither were there. Also carries `checkpoint-review.md`, what a session
+  below Opus does at each cutoff of `/plan`, `/go` and `/finalize`: launch an
+  Opus reviewer that reads its procedure from `review.md` and commits a
+  `review:` mark, escalating through `/relay` to an Opus session when the work
+  is beyond it; `MUTHUR_CHECKPOINT_REVIEW=off` turns the gate off.
+  - **Pulls in:** `/polish`, `scripts/floor.py` (G1); `scripts/session-qa.py`
+    (G4); `/from-branch`, `/plan`, `/pr`, `/relay`, `/task`;
+    `.claude/hooks/go-delegation.py`, `.claude/hooks/checkpoint-review.py`;
+    **conditionally** `/take-issue`, `/propose-issue` (G3), `.claude/costs/`
+    (G7) for the delegation's weighing
+  - **Disposition:** adopt — `.claude/model-capabilities.md` as it stands, its
+    lessons being general, then merged by lesson on every sync (`/update-muthur`
+    Step 5)
 - `.claude/hooks/go-delegation.py` — Deliver `/go`'s two delegation files as
   context the first time `/go` enters a session — through the `Skill` tool, a
   `Read` of its `SKILL.md`, or a typed `/go` — so the agent spends no round trip
   on them; silent under `MUTHUR_DELEGATION=off`. Stdlib-only, tested by
   `scripts/test_go_delegation.py`.
   - **Requires:** `python3` ≥3.9, `.claude/settings.json` wiring (G4)
-  - **Pulls in:** `/go`, `.claude/hooks/session_state.py` (G4)
+  - **Pulls in:** `/go`, `.claude/hooks/session_state.py`,
+    `.claude/hooks/skill_entry.py` (G4)
   - **Disposition:** adopt — **with `/go`'s delegation files**
+- `.claude/hooks/checkpoint-review.py` — Hold a session whose serving model,
+  read off its transcript, is Sonnet or Haiku to `checkpoint-review.md`: deliver
+  it on entering `/plan`, `/go` or `/finalize`, and deny the command closing
+  that cutoff — the draft flip, the `*.completed.md` flip, `gh pr ready` — until
+  the branch carries a `review:` commit with only working artifacts after it;
+  silent under `MUTHUR_CHECKPOINT_REVIEW=off`. Stdlib-only, tested by
+  `scripts/test_checkpoint_review.py`.
+  - **Requires:** `python3` ≥3.9, `git`, `.claude/settings.json` wiring (G4)
+  - **Pulls in:** `/go`, `scripts/floor.py` (G1),
+    `.claude/hooks/session_state.py`, `.claude/hooks/skill_entry.py` (G4)
+  - **Disposition:** adopt — **with `checkpoint-review.md`**
+- `.claude/hooks/finalize-bash-gate.py` — Refuse `/finalize` where `/bin/bash`
+  or the `bash` on `PATH` is older than 4 — a stock Mac — denying the `Skill`
+  call or the `Read` of its `SKILL.md`, or adding context to a typed
+  `/finalize`, with the steps to run it in a new cloud session of Claude
+  instead. Stdlib-only, tested by `scripts/test_finalize_bash_gate.py`.
+  - **Requires:** `python3` ≥3.9, `.claude/settings.json` wiring (G4)
+  - **Pulls in:** `/finalize`, `/relay`, `.claude/hooks/session_state.py`,
+    `.claude/hooks/skill_entry.py` (G4)
+  - **Disposition:** adopt — **with `/finalize`**
 - `/implement` — Redirect to `/go`, for handoff blocks written before the
   rename.
   - **Pulls in:** `/go`
@@ -93,7 +120,7 @@
   - **Requires:** `python3`; `create_session` for the spawn on the web; a typed
     line locally
   - **Pulls in:** `/from-branch`, `/go`, `/finalize`,
-    `scripts/relay-last-reply.py`
+    `scripts/relay-last-reply.py`, `scripts/lib/session_transcript.py` (G4)
   - **Disposition:** adopt
 - `/handle` — Pick up a branch and do what it needs: attach, read off whether it
   carries an approved plan, a plan still under review, or feedback on shipped
@@ -184,6 +211,18 @@
   add (`docs/adopting/web-remote.md`).
   - **Requires:** `bash`, `gh`, `git`, `scripts/lib/gh-repo.sh`
   - **Disposition:** adopt
+- `.claude/hooks/sticky-comment-nudge.py` — Before a `Bash` call or a GitHub MCP
+  comment write, refuse the first hand-built write of the squash proposal or the
+  attestation — a `gh api`, `gh pr comment` or MCP write whose new body leads
+  with the comment's marker, or which edits a comment (fetched with `gh`) that
+  does — naming the `scripts/pr-comment.sh` line to run instead; the identical
+  call again goes through, and whatever it cannot prove sticky passes.
+  Stdlib-only, tested by `scripts/test_sticky_comment_nudge.py`, which also
+  keeps its markers equal to the script's.
+  - **Requires:** `python3` ≥3.9, `gh`, `.claude/settings.json` wiring (G4)
+  - **Pulls in:** `scripts/pr-comment.sh`, `.claude/hooks/session_state.py`,
+    `.claude/hooks/shell_words.py` (G4)
+  - **Disposition:** adopt — **with `scripts/pr-comment.sh`**
 - `scripts/staged.sh` — Stage an always-loaded file as a byte-identical copy at
   `.claude/staged/<path>.staged`, and swap it back at `/finalize` — merging in
   whatever the real file gained meanwhile. Also the check the vet run makes, and
