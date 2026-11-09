@@ -183,7 +183,7 @@ def context(data: Dict[str, Any], alive: bool, renewals: int, session: str, tran
     if spent > renewals:
         return (
             f"{MARK}, last wake ({renewals} renewals spent): the prompt cache is about to expire"
-            " on an idle session, so park it. Run `/relay park` per `.claude/skills/relay/SKILL.md`:"
+            f" on an idle session, so {RELAY_PARK}:"
             " commit the summary, start no session, and end the reply with the `/relay take <branch>`"
             " line. Do not start the watcher again."
         )

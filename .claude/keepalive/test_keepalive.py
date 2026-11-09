@@ -168,7 +168,7 @@ class WhenTheWatcherWakesTheSession(HookCase):
         self.wake()
         out, _ = self.prompt(self.notice())
         self.assertIn("last wake (0 renewals spent)", out)
-        self.assertIn("Run `/relay park`", out)
+        self.assertIn("so run `/relay park`", out)
         self.assertIn("Do not start the watcher again", out)
 
     def test_a_renewal_asks_for_one_line_with_the_way_out_and_a_new_watcher(self) -> None:
