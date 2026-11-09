@@ -202,10 +202,9 @@ def start_line(session: str, transcript: str) -> str:
 
 
 STOP = "the operator's message asks to stop the keepalive (\"стоп\", \"stop\", in any words)"
-PARK = (
-    "If the operator's message asks to park the session (\"запаркуй\", \"park it\", in any words),"
-    " run `/relay park` per `.claude/skills/relay/SKILL.md`."
-)
+PARK_ASK = "the operator's message asks to park the session (\"запаркуй\", \"park it\", in any words)"
+RELAY_PARK = "run `/relay park` per `.claude/skills/relay/SKILL.md`"
+PARK = f"If {PARK_ASK}, {RELAY_PARK}."
 
 
 def context(
@@ -228,13 +227,15 @@ def context(
     spent = int(data.get("wakes", 0))
     if not data.get("fired"):
         return (
-            f"As this turn's last action, {start_line(session, transcript)}"
-            f" Skip it when {STOP}."
+            f"As this turn's first action, {start_line(session, transcript)}"
+            " It reads the transcript as the turn writes it, so its deadline follows the turn's last"
+            f" response; carry on with the turn as usual once it has started. Skip it when {STOP},"
+            f" or when {PARK_ASK}: then {RELAY_PARK} instead."
         )
     if spent > renewals:
         return (
             f"{MARK}, last wake ({renewals} renewals spent): the prompt cache is about to expire"
-            " on an idle session, so park it. Run `/relay park` per `.claude/skills/relay/SKILL.md`:"
+            f" on an idle session, so {RELAY_PARK}:"
             " commit the summary, start no session, and end the reply with the `/relay take <branch>`"
             " line. Do not start the watcher again."
         )
