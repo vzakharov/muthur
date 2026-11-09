@@ -14,14 +14,15 @@ is below the usual tenth of input (`.claude/costs/prices.json`).
   the session's last reply verbatim, which the operator answers more easily than
   they dig the same points out of files, and hands them a `/relay take` line to
   paste. The `UserPromptSubmit` hook asks the agent to start it as a turn's
-  first action unless the operator asks to stop the keepalive: the watcher
-  re-reads the transcript on every write, so its deadline follows the turn's
-  last response, and the reply stays the turn's last text — a watcher started
-  after the reply leaves a tool result the agent answers by writing the reply
-  again. `TaskStop` ends a task without a completion notice, so stopping one
-  wakes nothing: `/relay` and `/relay park` stop it, and so does a merge, since
-  each decides mid-turn that the session has nothing left to keep warm.
-- **A turn over an hour long costs a wake early.** The watcher's lifetime runs
+  first action unless the operator asks to stop the keepalive or to park the
+  session: the watcher re-reads the transcript on every write, so its deadline
+  follows the turn's last response, and the reply stays the turn's last text — a
+  watcher started after the reply leaves a tool result the agent answers by
+  writing the reply again. `TaskStop` ends a task without a completion notice,
+  so stopping one wakes nothing: `/relay` and `/relay park` stop it, and so does
+  a merge, since each decides mid-turn that the session has nothing left to keep
+  warm.
+- **A turn over an hour long costs an early wake.** The watcher's lifetime runs
   from its start, under the Bash cap of two hours, so it exits before a deadline
   set more than about an hour later, and the hook asks for a new one.
 - **Every wake is one visible line.** The harness rejects a turn with no visible
