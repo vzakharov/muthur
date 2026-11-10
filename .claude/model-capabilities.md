@@ -39,7 +39,8 @@ model come first.
   3,000-line port of a checker suite to another toolchain, a framework's parts
   cut and its tests re-fixtured, each checker proved on planted violations. A
   lint rule ported from another repo onto the local alias, its findings fixed as
-  the rule asks.
+  the rule asks. A six-part UI plan in one session — a stored-doc migration, a
+  top-layer popover, a time-grouped scale — green and browser-checked.
 - **Misses:** planning a reader for an undocumented record format, it drew the
   shapes from the one existing reader it opened and missed those other readers
   in the tree already handle; and it scoped a new gate by a state that holds for
@@ -62,16 +63,18 @@ model come first.
   without the sections that make one, and chose a scale (log of each commit's
   age) that does the opposite of the operator's example. Moving code onto a
   shared helper, it passed its own callback where the helper calls back with the
-  arguments in the other order, on a path no test ran. Under strict index checks
-  it reaches for a cast rather than reshaping the code, keeps dead exports a
-  "port as is" brief covers, and runs its own typed output back through the
-  boundary schema. Ask it to list every reader of the format, and, for a gate,
-  every commit and session that reaches the guarded command, in the order the
-  skills make them; on a rewrite, to diff the plan against the analysis it
-  carries out; on dropping or renaming a part, to grep every place that
-  describes the change for it; on a refactor, to test each path it moved; on a
-  scale, to run the operator's own example through it; on a polish cut, to check
-  it against the review threads open on those lines.
+  arguments in the other order, on a path no test ran; turning one stored value
+  into a list, it missed the reverse of a state the old value reached by
+  carry-over, and browser-checked a toggle without pressing it twice. Under
+  strict index checks it reaches for a cast rather than reshaping the code,
+  keeps dead exports a "port as is" brief covers, and runs its own typed output
+  back through the boundary schema. Ask it to list every reader of the format,
+  and, for a gate, every commit and session that reaches the guarded command, in
+  the order the skills make them; on a rewrite, to diff the plan against the
+  analysis it carries out; on dropping or renaming a part, to grep every place
+  that describes the change for it; on a refactor, to test each path it moved;
+  on a scale, to run the operator's own example through it; on a polish cut, to
+  check it against the review threads open on those lines.
 - **Brief:** naming the style reference and the run-until-green command was
   enough; ask for "anything that surprised you" — it reports useful edges.
 - **Cost, by eye:** that suite, a few hundred lines, cost about twice as much
