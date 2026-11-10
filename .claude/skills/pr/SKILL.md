@@ -6,7 +6,8 @@ End state of this skill: a draft PR exists against `<base>`, targeting a
 semantically-named branch (`claude/<task-slug>-<hash>`), with a title and body
 describing what the branch delivers, and with the copy-ready squash proposal
 posted as a comment and tracked on the branch per
-`@.claude/skills/squash-message/SKILL.md`.
+`@.claude/skills/squash-message/SKILL.md` — and its review board current, where
+Step 7 says it has one.
 
 ## Modes
 
@@ -94,7 +95,7 @@ over from there.
 - `gh pr view --json number,url,baseRefName 2>/dev/null` — a PR already on this
   branch selects **refresh** mode rather than stopping: read `baseRefName` off
   it as `<base>` and continue. This is the expected state on any branch `/plan`
-  published. Say so in the Step 7 report, including for the operator who meant
+  published. Say so in the Step 8 report, including for the operator who meant
   `/finalize` and typed `/pr`.
 
 `gh pr create` refuses a second open PR for the same head→base anyway; refresh
@@ -249,11 +250,33 @@ anyone opening the PR page — it answers "what is this?" in a few lines,
 complementary to the body's detail and QA checklist rather than a duplicate of
 them.
 
-## Step 7 — Report
+## Step 7 — The review board
+
+The PR now shows what the branch holds, and the board is the operator's view of
+the same diff, so it follows the PR rather than waiting to be asked:
+
+- **The PR carries a `<!-- review-board` sticky comment** → rebuild and
+  republish it by `@.claude/skills/review-board/SKILL.md` Steps 1–2, the focus
+  file brought up to date with the diff on the way. Every run, whatever the
+  switch below says: a board showing an older diff takes line comments on code
+  the branch no longer holds.
+- **No such comment, and `MUTHUR_AUTO_REVIEW_BOARD` is set** (`printenv`; empty,
+  `0`, `off` and `false` read as unset) → build and publish the first one, the
+  same Steps 1–2, focus file included. **Not in plan-open mode**: its diff is
+  the plan alone, and a comment sent from the board is handled through `/go`,
+  which would build against a plan nobody approved.
+- **Neither** → nothing, and the report does not mention it.
+
+The focus file is the one commit this skill makes itself; push it before the
+build, which reads the branch as pushed.
+
+## Step 8 — Report
 
 Print the PR URL on its own line so it's easy to copy. One sentence summary of
 what the run did (mode — opened or refreshed — plus title, base and draft
-state), and note that the squash proposal is posted as a comment on it. Stop.
+state), and note that the squash proposal is posted as a comment on it. When
+Step 7 published, the board's link follows on its own line, with the watch state
+`@.claude/skills/review-board/SKILL.md` Step 2 asks for. Stop.
 
 **The turn that opened the PR offers nothing about watching it**: no
 subscription to its activity, no auto-fixing CI, no answering reviews as they
@@ -269,4 +292,4 @@ Do **not**:
 - Run the vet suite (also `/finalize`).
 - Dispatch any CI bucket (also `/finalize`, via `/test-on-gh` if the project has
   hydrated it).
-- Push further commits unless asked.
+- Push further commits unless asked, Step 7's focus file aside.

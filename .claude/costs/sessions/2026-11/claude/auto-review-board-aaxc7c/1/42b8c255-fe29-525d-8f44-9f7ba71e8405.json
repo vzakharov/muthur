@@ -1,0 +1,86 @@
+{
+  "total": {
+    "inputTokens": 40,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 81769,
+    "cacheReadTokens": 2224005,
+    "outputTokens": 11835,
+    "thinkingTokens": 5377,
+    "responses": 20,
+    "costUsd": 1.335813
+  },
+  "estimate": {
+    "at": "2026-11-10T12:22:54.368Z",
+    "parts": [
+      {
+        "hours": 1.5,
+        "grade": "senior",
+        "role": "prompter",
+        "comment": "Wiring a switch into /pr and /review-board means deciding where a republish belongs among skills that already call each other, without doubling a step; that is loop design, not copy"
+      }
+    ],
+    "comment": null
+  },
+  "orientation": {
+    "endedBy": "oriented",
+    "endedOn": null,
+    "endedAt": "2026-11-10T12:22:08.106Z",
+    "contextTokens": 95389,
+    "spend": {
+      "inputTokens": 6,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 37973,
+      "cacheReadTokens": 235938,
+      "outputTokens": 1306,
+      "thinkingTokens": 686,
+      "responses": 3,
+      "costUsd": 0.37711559999999994
+    }
+  },
+  "sessionId": "42b8c255-fe29-525d-8f44-9f7ba71e8405",
+  "branch": "claude/auto-review-board-aaxc7c",
+  "cwd": "/home/user/muthur",
+  "openingPrompt": "давай сделаем review board из последнего коммита автоматической после /pr, если включеён MUTHUR_AUTO_REVIEW_BOARD (здесь уже включен, так что делаем). разумеетс…",
+  "prs": [],
+  "url": "https://claude.ai/code/session_016Z4TKn4qbj3vxm9E7Uu5xy",
+  "operator": "vzakharov",
+  "firstResponseAt": "2026-11-10T12:21:54.071Z",
+  "lastResponseAt": "2026-11-10T12:24:02.299Z",
+  "pricesAsOf": "2026-10-06",
+  "claudeCodeTotalUsd": null,
+  "ownTurns": {
+    "inputTokens": 40,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 81769,
+    "cacheReadTokens": 2224005,
+    "outputTokens": 11835,
+    "thinkingTokens": 5377,
+    "responses": 20,
+    "costUsd": 1.335813
+  },
+  "subagents": {
+    "inputTokens": 0,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 0,
+    "cacheReadTokens": 0,
+    "outputTokens": 0,
+    "thinkingTokens": 0,
+    "responses": 0,
+    "costUsd": 0.0
+  },
+  "byRate": {
+    "claude-opus-5-5/standard": {
+      "inputTokens": 40,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 81769,
+      "cacheReadTokens": 2224005,
+      "outputTokens": 11835,
+      "thinkingTokens": 5377,
+      "responses": 20,
+      "costUsd": 1.335813
+    }
+  },
+  "warnings": [],
+  "compactions": [],
+  "telemetry": null
+}

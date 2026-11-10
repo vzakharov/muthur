@@ -22,7 +22,9 @@ two lines that key on the directory stay quiet.
 - `/review-board` — Builds a branch's changed files into the review board
   artifact, publishes it with its URL in a sticky PR comment, and handles the
   line comments sent to Claude from it as review feedback: fix, push, republish,
-  reply with the commit.
+  reply with the commit. `/pr` and `/finalize` republish a board the PR has;
+  `MUTHUR_AUTO_REVIEW_BOARD`, unset by default, has `/pr` publish the first one
+  too.
   - **Requires:** `gh`, the `comments`, `db` and `user` artifact capabilities
   - **Pulls in:** `.claude/artifacts/`, `scripts/pr-comment.sh` (G2), `/handle`
     (G2), whose feedback lane it follows; the watch hand-over across a relay is

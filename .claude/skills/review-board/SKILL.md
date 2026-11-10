@@ -13,6 +13,10 @@ The board is the app under `.claude/artifacts/src/review-board/`; its plan of
 record is the PR that added it. A run publishes the branch as it is pushed, so
 commit and push first.
 
+Steps 1–2 also run unasked: `@.claude/skills/pr/SKILL.md` Step 7 republishes a
+board the PR already has and, under `MUTHUR_AUTO_REVIEW_BOARD`, publishes the
+first one; `/finalize` republishes after its quality passes.
+
 ## Step 1 — Mark the focus, then build
 
 **The focus is the agent's own call on where review time goes**:
@@ -110,7 +114,8 @@ A wake for a comment on the board is review feedback, handled as
    `ArtifactData` — `get` it first and pin the write with `if_version` when it
    exists. `git rev-parse <to7>` gives the full SHA. The shift outlives
    republishes, so it needs none of its own.
-5. **Rebuild and republish** per Steps 1–2.
+5. **The republish is the `/pr` that ends `/go`'s run**: its Step 7 finds the
+   board's comment and rebuilds, so nothing here repeats it.
 6. **Reply** in the thread with `ArtifactComments` `reply`: one sentence and the
    commit SHA. A comment declined gets a reply saying why.
 
