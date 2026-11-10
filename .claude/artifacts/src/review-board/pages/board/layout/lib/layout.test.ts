@@ -123,11 +123,11 @@ describe("pack", () => {
         } else assert.ok(inside(rect, packed.bounds));
         return rect;
       });
-      kids.forEach((a, i) =>
+      kids.forEach((a, i) => {
         kids.slice(i + 1).forEach((b) => {
           assert.ok(!overlaps(a, b));
-        }),
-      );
+        });
+      });
       for (const child of folder.children)
         if (child.kind === "folder") check(child);
     };

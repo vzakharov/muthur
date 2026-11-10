@@ -1,41 +1,56 @@
 import type { Rect, Sized } from "#src/review-board/shared/lib/geometry.ts";
 import type { FolderNode, TreeNode } from "./tree.ts";
 
-export type PackOptions = {
+export interface PackOptions {
   /** Height of a folder's header strip. */
   headerHeight: number;
   /** Space between a folder's edge and its children. */
   padding: number;
   /** Space between siblings, in a row and between rows. */
   gap: number;
-};
+}
 
-export type PackedFolder = {
+export interface PackedFolder {
   kind: "folder";
   path: string;
   name: string;
   rect: Rect;
   header: Rect;
-};
-export type PackedFile = { kind: "file"; path: string; rect: Rect };
+}
+export interface PackedFile {
+  kind: "file";
+  path: string;
+  rect: Rect;
+}
 
-export type Packed = {
+export interface Packed {
   /** The box around everything; the root itself has no rectangle of its own. */
   bounds: Rect;
   /** Parents before their children. */
   folders: PackedFolder[];
   files: PackedFile[];
-};
+}
 
 /** Width over height of the frame the packing aims for. */
 const TARGET_ASPECT = 1.6;
 
-type Placed<T> = { item: T; x: number; y: number };
+interface Placed<T> {
+  item: T;
+  x: number;
+  y: number;
+}
 
 /** A node's size and, relative to its own origin, where its children sit. */
-type Block = { size: Sized; node: TreeNode; placed: Placed<Block>[] };
+interface Block {
+  size: Sized;
+  node: TreeNode;
+  placed: Placed<Block>[];
+}
 
-type Flow<T> = { size: Sized; placed: Placed<T>[] };
+interface Flow<T> {
+  size: Sized;
+  placed: Placed<T>[];
+}
 
 /** `items` filled into rows no wider than `rowWidth`, in order. */
 function flow<T extends { size: Sized }>(

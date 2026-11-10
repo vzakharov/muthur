@@ -1,29 +1,29 @@
 export type DiffLineKind = "context" | "add" | "del";
 
-export type DiffLine = {
+export interface DiffLine {
   kind: DiffLineKind;
   text: string;
   oldLine: number | null;
   newLine: number | null;
-};
+}
 
-export type DiffHunk = {
+export interface DiffHunk {
   oldStart: number;
   oldCount: number;
   newStart: number;
   newCount: number;
   lines: DiffLine[];
-};
+}
 
-export type DiffResult = {
+export interface DiffResult {
   hunks: DiffHunk[];
   added: number;
   removed: number;
-};
+}
 
-export type DiffOptions = {
+export interface DiffOptions {
   ignoreWhitespace: boolean;
-};
+}
 
 const CONTEXT = 3;
 const EQUAL = 0;

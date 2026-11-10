@@ -5,11 +5,11 @@ import type {
   ReviewFile,
 } from "#src/review-board/shared/review-data/index.ts";
 
-type CollectOptions = {
+interface CollectOptions {
   cwd: string;
   /** The branch the review is against; resolved from the PR, then the repo default, when omitted. */
   base?: string;
-};
+}
 
 const MAX_BUFFER = 1 << 30;
 const FIELD = "\x1f";
@@ -116,7 +116,11 @@ function readCommits(cwd: string, baseSha: string): ReviewData["commits"] {
     });
 }
 
-type Change = { path: string; oldPath: string | null; status: FileStatus };
+interface Change {
+  path: string;
+  oldPath: string | null;
+  status: FileStatus;
+}
 
 function statusOf(code: string): FileStatus {
   switch (code[0]) {
@@ -187,7 +191,10 @@ function readBinaryPaths(cwd: string, baseSha: string): Set<string> {
   return binary;
 }
 
-type Located = { blob: string | null; size: number | null };
+interface Located {
+  blob: string | null;
+  size: number | null;
+}
 
 /** Resolves `<commit>:<path>` specs to blob ids and sizes in one `cat-file` run. */
 function locate(cwd: string, specs: string[]): Located[] {

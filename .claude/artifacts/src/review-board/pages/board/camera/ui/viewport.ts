@@ -8,28 +8,32 @@ import {
 } from "../lib/camera.ts";
 import { scrollsInside } from "./scroll.ts";
 
-export type ViewportOptions = {
+export interface ViewportOptions {
   /** Whether a drag starting on `target` pans (background, card headers) rather than belonging to it (a diff body). */
   isPanSurface(target: EventTarget): boolean;
   onChange(camera: Zoomed): void;
-};
+}
 
-export type Viewport = {
+export interface Viewport {
   fit(bounds: Rect): void;
   zoomBy(factor: number): void;
   /** Centres a world rectangle in the viewport, keeping the zoom. */
   panTo(worldRect: Rect): void;
   camera(): Zoomed;
   destroy(): void;
-};
+}
 
-type Drag = {
+interface Drag {
   start: Point;
   camera: Zoomed;
   pointerId: number;
   active: boolean;
-};
-type Pinch = { distance: number; centre: Point; camera: Zoomed };
+}
+interface Pinch {
+  distance: number;
+  centre: Point;
+  camera: Zoomed;
+}
 
 const DRAG_THRESHOLD = 3;
 const LINE_HEIGHT = 16;
@@ -126,7 +130,7 @@ export function attachViewport(
         );
         return;
       }
-      if (drag === undefined || drag.pointerId !== event.pointerId) return;
+      if (drag?.pointerId !== event.pointerId) return;
       const dx = point.x - drag.start.x;
       const dy = point.y - drag.start.y;
       if (!drag.active) {

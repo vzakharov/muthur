@@ -1,5 +1,9 @@
-export type FileNode = { kind: "file"; name: string; path: string };
-export type FolderNode = {
+export interface FileNode {
+  kind: "file";
+  name: string;
+  path: string;
+}
+export interface FolderNode {
   kind: "folder";
   /** The folder's own name, or the joined names of a collapsed chain (`a/b/c`). */
   name: string;
@@ -7,10 +11,13 @@ export type FolderNode = {
   path: string;
   /** Folders first, then files, each group sorted by name. */
   children: TreeNode[];
-};
+}
 export type TreeNode = FileNode | FolderNode;
 
-type Draft = { folders: Map<string, Draft>; files: Set<string> };
+interface Draft {
+  folders: Map<string, Draft>;
+  files: Set<string>;
+}
 
 const compare = (a: string, b: string): number => (a < b ? -1 : a > b ? 1 : 0);
 

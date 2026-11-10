@@ -88,9 +88,10 @@ test("collects commits, files, revisions and deduplicated blobs", () => {
     );
 
     const added = byPath.get("added.txt");
-    assert.equal(added?.status, "added");
+    assert.ok(added);
+    assert.equal(added.status, "added");
     assert.deepEqual(
-      added?.revisions.map((r) => [r.commit, r.blob === null]),
+      added.revisions.map((r) => [r.commit, r.blob === null]),
       [
         [base, true],
         [first, false],
@@ -98,41 +99,45 @@ test("collects commits, files, revisions and deduplicated blobs", () => {
     );
 
     const mod = byPath.get("mod.txt");
-    assert.equal(mod?.status, "modified");
+    assert.ok(mod);
+    assert.equal(mod.status, "modified");
     assert.deepEqual(
-      mod?.revisions.map((r) => r.commit),
+      mod.revisions.map((r) => r.commit),
       [base, first, second],
     );
-    assert.equal(new Set(mod?.revisions.map((r) => r.blob)).size, 3);
-    assert.equal(mod?.revisions[0]?.size, "one\ntwo\n".length);
+    assert.equal(new Set(mod.revisions.map((r) => r.blob)).size, 3);
+    assert.equal(mod.revisions[0]?.size, "one\ntwo\n".length);
 
     const renamed = byPath.get("src/renamed.txt");
-    assert.equal(renamed?.status, "renamed");
-    assert.equal(renamed?.oldPath, "src/ren.txt");
+    assert.ok(renamed);
+    assert.equal(renamed.status, "renamed");
+    assert.equal(renamed.oldPath, "src/ren.txt");
     assert.deepEqual(
-      renamed?.revisions.map((r) => r.commit),
+      renamed.revisions.map((r) => r.commit),
       [base, second],
     );
-    assert.ok(renamed?.revisions.every((r) => r.blob !== null));
-    assert.notEqual(renamed?.revisions[0]?.blob, renamed?.revisions[1]?.blob);
+    assert.ok(renamed.revisions.every((r) => r.blob !== null));
+    assert.notEqual(renamed.revisions[0]?.blob, renamed.revisions[1]?.blob);
 
     const gone = byPath.get("gone.txt");
-    assert.equal(gone?.status, "deleted");
+    assert.ok(gone);
+    assert.equal(gone.status, "deleted");
     assert.deepEqual(
-      gone?.revisions.map((r) => r.blob === null),
+      gone.revisions.map((r) => r.blob === null),
       [false, true],
     );
-    assert.equal(gone?.revisions[1]?.size, null);
+    assert.equal(gone.revisions[1]?.size, null);
 
     const pic = byPath.get("pic.bin");
-    assert.equal(pic?.binary, true);
-    assert.equal(pic?.status, "added");
-    assert.equal(pic?.revisions[1]?.size, 6);
-    assert.equal(byPath.get("mod.txt")?.binary, false);
+    assert.ok(pic);
+    assert.equal(pic.binary, true);
+    assert.equal(pic.status, "added");
+    assert.equal(pic.revisions[1]?.size, 6);
+    assert.equal(mod.binary, false);
 
     // added.txt and copy.txt share one blob, stored once; binary content is not stored.
     assert.equal(
-      added?.revisions[1]?.blob,
+      added.revisions[1]?.blob,
       byPath.get("copy.txt")?.revisions[1]?.blob,
     );
     const textBlobIds = new Set(
@@ -143,8 +148,8 @@ test("collects commits, files, revisions and deduplicated blobs", () => {
         ),
     );
     assert.deepEqual(new Set(Object.keys(data.blobs)), textBlobIds);
-    assert.equal(data.blobs[added?.revisions[1]?.blob ?? ""], "fresh\n");
-    assert.equal(data.blobs[pic?.revisions[1]?.blob ?? ""], undefined);
+    assert.equal(data.blobs[added.revisions[1]?.blob ?? ""], "fresh\n");
+    assert.equal(data.blobs[pic.revisions[1].blob ?? ""], undefined);
   } finally {
     rmSync(dir, { recursive: true, force: true });
   }

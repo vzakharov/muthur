@@ -68,10 +68,11 @@ test("a hunk carries three lines of context and nearby changes merge", () => {
   const result = diffLines(old.join("\n"), next.join("\n"), strict);
   assert.equal(result.hunks.length, 1);
   const hunk = result.hunks[0];
-  assert.equal(hunk?.oldStart, 7);
-  assert.equal(hunk?.oldCount, 7);
-  assert.equal(hunk?.newStart, 7);
-  assert.equal(hunk?.newCount, 7);
+  assert.ok(hunk);
+  assert.equal(hunk.oldStart, 7);
+  assert.equal(hunk.oldCount, 7);
+  assert.equal(hunk.newStart, 7);
+  assert.equal(hunk.newCount, 7);
 
   const far = [...next];
   far[0] = "first";
