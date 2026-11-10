@@ -89,7 +89,6 @@ export function createFileStore(data: ReviewData): FileStore {
     notify();
   };
 
-  /** The connection when saved state may be written, else null. */
   async function writable(): Promise<Connection | null> {
     const conn = await connection;
     return (conn?.uid ?? null) === null || degraded ? null : conn;

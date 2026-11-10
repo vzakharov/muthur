@@ -1,4 +1,3 @@
-/** An element with a class list and, when given, text content. */
 export function el<K extends keyof HTMLElementTagNameMap>(
   tag: K,
   className: string,
@@ -10,7 +9,7 @@ export function el<K extends keyof HTMLElementTagNameMap>(
   return node;
 }
 
-/** The `<option>` list of a `<select>`, replacing its options and keeping `value` selected. */
+/** Sets a `<select>`'s options and selected `value`, leaving the option nodes in place when they are unchanged. */
 export function setOptions(
   select: HTMLSelectElement,
   options: readonly { value: string; label: string }[],
