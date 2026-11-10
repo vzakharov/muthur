@@ -4,3 +4,6 @@ docs/pr/
 docs/issue/
 docs/remove-before-merging/squash-message.md
 tmp/
+
+# Written by pnpm, which owns its format.
+.claude/artifacts/pnpm-lock.yaml
