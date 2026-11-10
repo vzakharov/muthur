@@ -4,6 +4,7 @@ import type {
   ReviewData,
   ReviewFile,
 } from "#src/review-board/shared/review-data/index.ts";
+import { FOCUS_PATH, lineCount, parseFocus } from "./focus.ts";
 
 interface CollectOptions {
   cwd: string;
@@ -302,10 +303,37 @@ function readBlobs(cwd: string, ids: string[]): Record<string, string> {
   return blobs;
 }
 
+/** The focus file as committed at HEAD, checked against the files' text there; empty when there is none. */
+function readFocus(
+  cwd: string,
+  files: ReviewFile[],
+  blobs: Record<string, string>,
+): ReviewData["focus"] {
+  const listed = gitText(cwd, [
+    "ls-tree",
+    "--name-only",
+    "HEAD",
+    "--",
+    FOCUS_PATH,
+  ]);
+  if (listed.trim() === "") return [];
+  const counts = new Map(
+    files.map((file) => {
+      const blob = file.binary ? null : (file.revisions.at(-1)?.blob ?? null);
+      const text = blob === null ? undefined : blobs[blob];
+      return [file.path, text === undefined ? null : lineCount(text)];
+    }),
+  );
+  return parseFocus(gitText(cwd, ["show", `HEAD:${FOCUS_PATH}`]), counts);
+}
+
 export function collect({ cwd, base }: CollectOptions): ReviewData {
   const baseRef = resolveBaseRef(cwd, base);
   const baseSha = resolveBaseSha(cwd, baseRef);
-  const changes = readChanges(cwd, baseSha);
+  // The focus file is about the review, not part of it.
+  const changes = readChanges(cwd, baseSha).filter(
+    (change) => change.path !== FOCUS_PATH,
+  );
   const binary = readBinaryPaths(cwd, baseSha);
   const revisions = readRevisions(cwd, baseSha, changes);
 
@@ -325,6 +353,7 @@ export function collect({ cwd, base }: CollectOptions): ReviewData {
     }
   }
 
+  const blobs = readBlobs(cwd, [...textBlobs]);
   return {
     repo: parseRepo(tryText(cwd, "git", ["remote", "get-url", "origin"])),
     branch: gitText(cwd, ["branch", "--show-current"]).trim(),
@@ -333,6 +362,7 @@ export function collect({ cwd, base }: CollectOptions): ReviewData {
     collectedAt: new Date().toISOString(),
     commits: readCommits(cwd, baseSha),
     files,
-    blobs: readBlobs(cwd, [...textBlobs]),
+    focus: readFocus(cwd, files, blobs),
+    blobs,
   };
 }

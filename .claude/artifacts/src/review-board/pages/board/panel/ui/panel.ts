@@ -1,10 +1,12 @@
 import {
+  markLines,
   renderDiff,
   type CommentTarget,
   type DiffSyntax,
 } from "#src/review-board/entities/file/index.ts";
 import type { DiffResult } from "#src/review-board/shared/lib/diff.ts";
 import { el } from "#src/review-board/shared/lib/dom.ts";
+import type { LineSpan } from "#src/review-board/shared/review-data/index.ts";
 
 export interface PanelContent {
   path: string;
@@ -14,6 +16,8 @@ export interface PanelContent {
   /** The range shown, as labels ("abc1234 subject"). */
   fromLabel: string;
   toLabel: string;
+  /** New-side lines to mark as the review's focus. */
+  marks: readonly LineSpan[];
 }
 
 export interface PanelOptions {
@@ -59,20 +63,22 @@ export function createPanel(options: PanelOptions): Panel {
       title.title = content.path;
       counts.textContent = `+${content.diff.added} −${content.diff.removed}`;
       range.textContent = `${content.fromLabel}  →  ${content.toLabel}`;
-      if (shown?.path === content.path && shown.diff === content.diff) return;
-      const sameFile = shown?.path === content.path;
-      const scroll = sameFile ? body.scrollTop : 0;
-      shown = { path: content.path, diff: content.diff };
-      body.replaceChildren(
-        renderDiff(content.diff, {
-          path: content.path,
-          syntax: content.syntax(),
-          onComment: (target, at) => {
-            options.onComment(target, at);
-          },
-        }),
-      );
-      body.scrollTop = scroll;
+      if (shown?.path !== content.path || shown.diff !== content.diff) {
+        const sameFile = shown?.path === content.path;
+        const scroll = sameFile ? body.scrollTop : 0;
+        shown = { path: content.path, diff: content.diff };
+        body.replaceChildren(
+          renderDiff(content.diff, {
+            path: content.path,
+            syntax: content.syntax(),
+            onComment: (target, at) => {
+              options.onComment(target, at);
+            },
+          }),
+        );
+        body.scrollTop = scroll;
+      }
+      markLines(body, content.marks);
     },
     close() {
       element.hidden = true;

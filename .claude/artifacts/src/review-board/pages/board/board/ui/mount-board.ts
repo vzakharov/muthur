@@ -1,6 +1,7 @@
 import {
   createFileStore,
   fileDiff,
+  type EffectiveRange,
 } from "#src/review-board/entities/file/index.ts";
 import { attachViewport } from "#src/review-board/pages/board/camera/index.ts";
 import { createCard } from "#src/review-board/pages/board/card/index.ts";
@@ -10,6 +11,10 @@ import { createToolbar } from "#src/review-board/pages/board/toolbar/index.ts";
 import { el } from "#src/review-board/shared/lib/dom.ts";
 import { perFrame } from "#src/review-board/shared/lib/frame.ts";
 import type { Rect } from "#src/review-board/shared/lib/geometry.ts";
+import type {
+  LineSpan,
+  ReviewFile,
+} from "#src/review-board/shared/review-data/index.ts";
 import { commitLabels } from "../lib/labels.ts";
 import type {
   BoardHandle,
@@ -18,6 +23,7 @@ import type {
 } from "../model/types.ts";
 import { createFolderLayer } from "./folders.ts";
 import { loadReviewData } from "./load-data.ts";
+import { revealFocus } from "./reveal-focus.ts";
 
 const PACK = { headerHeight: 28, padding: 12, gap: 16 };
 
@@ -48,6 +54,15 @@ export function mountBoard(
   let bounds: Rect | undefined;
   let fitted = false;
   let panelPath: string | undefined;
+  const focusByPath = new Map(data.focus.map((item) => [item.path, item]));
+  let focusAt: number | null = null;
+
+  /** Focus lines are numbered in the file at HEAD, so they mark only a diff ending on that content. */
+  const marksFor = (file: ReviewFile, range: EffectiveRange): LineSpan[] => {
+    const lines = focusByPath.get(file.path)?.lines;
+    const head = file.revisions[file.revisions.length - 1];
+    return lines !== undefined && range.toBlob === head?.blob ? lines : [];
+  };
 
   const notifyVisible = perFrame(() => comments?.visibleChanged());
   const onComment: CommentsHook["onComment"] = (target, at) =>
@@ -78,7 +93,7 @@ export function mountBoard(
   const cards = new Map(
     data.files.map((file) => [
       file.path,
-      createCard(file, labelOf, {
+      createCard(file, focusByPath.get(file.path), labelOf, {
         onViewed: (viewed) => {
           store.setViewed(file.path, viewed);
         },
@@ -101,8 +116,15 @@ export function mountBoard(
     data.branch === "" ? "Review board" : `Review · ${data.branch}`,
     data.commits,
     data.base.sha,
+    data.focus.length,
     labelOf,
     {
+      onFocus() {
+        focusAt = focusAt === null ? 0 : (focusAt + 1) % data.focus.length;
+        const item = data.focus[focusAt];
+        if (item !== undefined) stepTo(item.path);
+        renderSoon();
+      },
       onFit() {
         if (bounds !== undefined) viewport.fit(bounds);
       },
@@ -146,6 +168,7 @@ export function mountBoard(
         range,
         viewed: isViewed,
         diff: fileDiff(data, file, range, board.whitespace),
+        marks: marksFor(file, range),
       });
     }
     toolbar.update({
@@ -155,6 +178,7 @@ export function mountBoard(
       viewed,
       total: data.files.length,
       status: store.status(),
+      focusAt,
     });
     renderPanel();
     layoutSoon();
@@ -174,7 +198,29 @@ export function mountBoard(
       syntax: diff.syntax,
       fromLabel: labelOf(range.from),
       toLabel: labelOf(range.to),
+      marks: marksFor(file, range),
     });
+  }
+
+  /**
+   * Pans to a focus file and brings its first marked line into view — in the
+   * card, or in the panel when the card shows only a stub.
+   */
+  function stepTo(path: string): void {
+    const rect = rects.get(path);
+    if (rect !== undefined) viewport.panTo(rect);
+    const body = cards
+      .get(path)
+      ?.element.querySelector<HTMLElement>(".card-body");
+    if (body === null || body === undefined || body.hidden) return;
+    if (body.querySelector(".row") !== null) {
+      revealFocus(body);
+      return;
+    }
+    if (focusByPath.get(path)?.lines === undefined) return;
+    openPanel(path);
+    const panelBody = panel.element.querySelector<HTMLElement>(".panel-body");
+    if (panelBody !== null) revealFocus(panelBody);
   }
 
   function layout(): void {

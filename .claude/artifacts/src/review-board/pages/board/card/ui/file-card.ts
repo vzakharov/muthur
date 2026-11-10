@@ -1,4 +1,5 @@
 import {
+  markLines,
   renderDiff,
   type CommentTarget,
   type EffectiveRange,
@@ -6,7 +7,11 @@ import {
 } from "#src/review-board/entities/file/index.ts";
 import type { DiffResult } from "#src/review-board/shared/lib/diff.ts";
 import { el, setOptions } from "#src/review-board/shared/lib/dom.ts";
-import type { ReviewFile } from "#src/review-board/shared/review-data/index.ts";
+import type {
+  Focus,
+  LineSpan,
+  ReviewFile,
+} from "#src/review-board/shared/review-data/index.ts";
 
 /** Above this many added plus removed lines a card shows a stub and the diff opens in the panel. */
 const CHANGED_LINES_CAP = 200;
@@ -15,6 +20,8 @@ export interface CardState {
   range: EffectiveRange;
   viewed: boolean;
   diff: FileDiff;
+  /** New-side lines to mark as the review's focus; empty while the diff does not end at HEAD. */
+  marks: readonly LineSpan[];
 }
 
 export interface CardHandlers {
@@ -71,15 +78,18 @@ function select(label: string, onChange: (value: string) => void) {
  * A file's rectangle on the board: a header (path, status, counts, viewed,
  * range selectors, comment) over a diff body capped in height and scrolling
  * inside. Past the line cap the body is a stub that opens the panel; viewed
- * collapses the card to its header.
+ * collapses the card to its header. A file in the review's focus carries a
+ * badge and its reason under the header.
  */
 export function createCard(
   file: ReviewFile,
+  focus: Focus | undefined,
   labelOf: (sha: string) => string,
   handlers: CardHandlers,
 ): Card {
   const element = el("article", `card status-${file.status}`);
   element.dataset["path"] = file.path;
+  element.classList.toggle("is-focus", focus !== undefined);
 
   const header = el("header", "card-head");
   const viewedBox = el("input", "viewed-box");
@@ -120,16 +130,21 @@ export function createCard(
   const range = el("span", "range");
   range.append(from, el("span", "arrow", "→"), to);
 
+  const focusBadge =
+    focus === undefined ? [] : [el("span", "badge focus", "focus")];
   header.append(
     viewedLabel,
     pathParts(file.path),
     badge,
+    ...focusBadge,
     counts,
     range,
     comment,
   );
   const body = el("div", "card-body");
-  element.append(header, body);
+  element.append(header);
+  if (focus !== undefined) element.append(el("p", "focus-why", focus.why));
+  element.append(body);
 
   let rendered: DiffResult | string | undefined;
 
@@ -193,6 +208,7 @@ export function createCard(
       );
       setOptions(to, options, current.toExplicit ? current.to : BOARD_RANGE);
       renderBody(state);
+      markLines(body, state.marks);
     },
   };
 }

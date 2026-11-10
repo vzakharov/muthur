@@ -23,6 +23,7 @@
   --badge-modified: #9a6700;
   --badge-renamed: #8250df;
   --badge-deleted: #cf222e;
+  --focus: #bf8700;
   --syn-keyword: #cf222e;
   --syn-string: #0a3069;
   --syn-comment: #59636e;
@@ -67,6 +68,7 @@
     --badge-modified: #d29922;
     --badge-renamed: #a371f7;
     --badge-deleted: #f85149;
+    --focus: #e3b341;
     --syn-keyword: #ff7b72;
     --syn-string: #a5d6ff;
     --syn-comment: #9198a1;
@@ -103,6 +105,7 @@
   --badge-modified: #d29922;
   --badge-renamed: #a371f7;
   --badge-deleted: #f85149;
+  --focus: #e3b341;
   --syn-keyword: #ff7b72;
   --syn-string: #a5d6ff;
   --syn-comment: #9198a1;
@@ -203,6 +206,11 @@ input {
 .panel-close:hover,
 .comment-btn:hover {
   border-color: var(--accent);
+}
+
+.tool-btn.focus-step {
+  border-color: var(--focus);
+  white-space: nowrap;
 }
 
 .tool-check {
@@ -358,6 +366,31 @@ input {
 }
 .badge.deleted {
   color: var(--badge-deleted);
+}
+.badge.focus {
+  color: var(--focus);
+  font-weight: 600;
+}
+
+/* A file the author marked for focus: its frame, its reason and its marked lines. */
+.card.is-focus {
+  border-color: var(--focus);
+  box-shadow:
+    0 0 0 1px var(--focus),
+    var(--shadow);
+}
+
+.focus-why {
+  margin: 0;
+  padding: 4px 10px 6px;
+  border-top: 1px solid var(--border);
+  background: color-mix(in srgb, var(--focus) 8%, var(--surface));
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.row.focus {
+  box-shadow: inset 3px 0 0 var(--focus);
 }
 
 .counts {

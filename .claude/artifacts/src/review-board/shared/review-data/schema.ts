@@ -31,6 +31,16 @@ const fileSchema = z.object({
   revisions: z.array(revisionSchema),
 });
 
+const lineSpanSchema = z.tuple([z.number(), z.number()]);
+
+// A file the branch's author marked as where review matters most, with why;
+// `lines` are spans of the file at HEAD, first and last line inclusive.
+export const focusSchema = z.object({
+  path: z.string(),
+  why: z.string(),
+  lines: z.optional(z.array(lineSpanSchema)),
+});
+
 export const reviewDataSchema = z.object({
   repo: z.nullable(z.string()),
   branch: z.string(),
@@ -39,10 +49,13 @@ export const reviewDataSchema = z.object({
   collectedAt: z.string(),
   commits: z.array(commitSchema),
   files: z.array(fileSchema),
+  focus: z.array(focusSchema),
   blobs: z.record(z.string(), z.string()),
 });
 
 export type ReviewData = z.infer<typeof reviewDataSchema>;
+export type Focus = z.infer<typeof focusSchema>;
+export type LineSpan = z.infer<typeof lineSpanSchema>;
 export type ReviewFile = ReviewData["files"][number];
 export type ReviewCommit = ReviewData["commits"][number];
 export type FileStatus = (typeof FILE_STATUSES)[number];

@@ -4,6 +4,7 @@ import type {
   DiffResult,
 } from "#src/review-board/shared/lib/diff.ts";
 import { el } from "#src/review-board/shared/lib/dom.ts";
+import type { LineSpan } from "#src/review-board/shared/review-data/index.ts";
 import type { CommentTarget } from "../model/comment-target.ts";
 import type { DiffSyntax } from "../model/file-diff.ts";
 
@@ -62,6 +63,18 @@ function renderRow(
   );
   row.append(plus, code);
   return row;
+}
+
+/**
+ * Marks the new-side rows under `root` whose line falls in one of `spans`
+ * (first and last line inclusive) with `focus`, and clears the mark elsewhere.
+ */
+export function markLines(root: Element, spans: readonly LineSpan[]): void {
+  for (const row of root.querySelectorAll<HTMLElement>('.row[data-side="R"]')) {
+    const line = Number(row.dataset["line"]);
+    const marked = spans.some(([first, last]) => line >= first && line <= last);
+    row.classList.toggle("focus", marked);
+  }
 }
 
 const hunkLabel = (hunk: DiffHunk): string =>

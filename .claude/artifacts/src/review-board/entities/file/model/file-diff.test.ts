@@ -15,6 +15,7 @@ const data: ReviewData = {
   collectedAt: "t",
   commits: [],
   files: [],
+  focus: [],
   blobs: { old: "a\nb\n", next: "a\nc\n" },
 };
 const file: ReviewFile = {

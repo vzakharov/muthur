@@ -5,6 +5,7 @@ import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { test } from "node:test";
 import { collect } from "./collect.ts";
+import { FOCUS_PATH } from "./focus.ts";
 
 const IDENTITY = {
   GIT_AUTHOR_NAME: "Ada Reviewer",
@@ -150,6 +151,60 @@ test("collects commits, files, revisions and deduplicated blobs", () => {
     assert.deepEqual(new Set(Object.keys(data.blobs)), textBlobIds);
     assert.equal(data.blobs[added.revisions[1]?.blob ?? ""], "fresh\n");
     assert.equal(data.blobs[pic.revisions[1].blob ?? ""], undefined);
+    assert.deepEqual(data.focus, []);
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+test("reads the focus file from HEAD and leaves it off the board", () => {
+  const { dir } = makeRepo();
+  try {
+    const focus = [
+      { path: "src/renamed.txt", why: "the story's turn", lines: [[3, 5]] },
+      { path: "pic.bin", why: "the new picture" },
+    ];
+    const file = join(dir, FOCUS_PATH);
+    mkdirSync(dirname(file), { recursive: true });
+    writeFileSync(file, JSON.stringify(focus));
+    const git = (...args: string[]) =>
+      execFileSync("git", args, {
+        cwd: dir,
+        env: { ...process.env, ...IDENTITY },
+      });
+    git("add", "-A");
+    git("commit", "-q", "-m", "focus");
+    // An uncommitted edit is not what the board shows.
+    writeFileSync(file, "[]");
+
+    const data = collect({ cwd: dir, base: "main" });
+    assert.deepEqual(data.focus, focus);
+    assert.ok(data.files.every((entry) => entry.path !== FOCUS_PATH));
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+test("a focus line past the file's end fails the collection", () => {
+  const { dir } = makeRepo();
+  try {
+    const file = join(dir, FOCUS_PATH);
+    mkdirSync(dirname(file), { recursive: true });
+    writeFileSync(
+      file,
+      JSON.stringify([{ path: "mod.txt", why: "x", lines: [[2, 4]] }]),
+    );
+    const git = (...args: string[]) =>
+      execFileSync("git", args, {
+        cwd: dir,
+        env: { ...process.env, ...IDENTITY },
+      });
+    git("add", "-A");
+    git("commit", "-q", "-m", "focus");
+    assert.throws(
+      () => collect({ cwd: dir, base: "main" }),
+      /not within its 3 lines/,
+    );
   } finally {
     rmSync(dir, { recursive: true, force: true });
   }

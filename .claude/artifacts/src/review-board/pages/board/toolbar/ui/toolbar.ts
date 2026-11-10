@@ -10,9 +10,13 @@ export interface ToolbarState {
   viewed: number;
   total: number;
   status: StoreStatus;
+  /** The focus item last stepped to, or null before the first step. */
+  focusAt: number | null;
 }
 
 export interface ToolbarHandlers {
+  /** Steps to the next of the review's focus items. */
+  onFocus(): void;
   onFit(): void;
   onZoom(factor: number): void;
   onRange(end: "from" | "to", commit: string | null): void;
@@ -45,13 +49,14 @@ function button(text: string, title: string, onClick: () => void) {
 }
 
 /**
- * Fit / zoom, the board's commit range, the whitespace toggle and the viewed
- * tally.
+ * Fit / zoom, the step through the review's focus items (absent when it has
+ * none), the board's commit range, the whitespace toggle and the viewed tally.
  */
 export function createToolbar(
   title: string,
   commits: readonly ReviewCommit[],
   baseSha: string,
+  focusTotal: number,
   labelOf: (sha: string) => string,
   handlers: ToolbarHandlers,
 ): Toolbar {
@@ -95,9 +100,19 @@ export function createToolbar(
   const whitespace = el("label", "tool-check");
   whitespace.append(whitespaceBox, "Hide whitespace");
 
+  const focus = button(
+    "",
+    "Go to the next file the author marked for focus",
+    () => {
+      handlers.onFocus();
+    },
+  );
+  focus.classList.add("focus-step");
+  focus.hidden = focusTotal === 0;
+
   const tally = el("span", "tally");
   const note = el("span", "note");
-  element.append(heading, zoom, range, whitespace, tally, note);
+  element.append(heading, zoom, focus, range, whitespace, tally, note);
 
   return {
     element,
@@ -130,6 +145,10 @@ export function createToolbar(
         state.to === null || state.to === lastSha ? DEFAULT_END : state.to,
       );
       whitespaceBox.checked = state.whitespace;
+      focus.textContent =
+        state.focusAt === null
+          ? `Focus · ${focusTotal}`
+          : `Focus ${state.focusAt + 1}/${focusTotal}`;
       tally.textContent = `${state.viewed} / ${state.total} viewed`;
       note.textContent = NOTES[state.status];
     },

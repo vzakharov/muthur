@@ -10,5 +10,5 @@ export type {
   Shift,
 } from "./model/range.ts";
 export type { CommentTarget } from "./model/comment-target.ts";
-export { renderDiff } from "./ui/diff-view.ts";
+export { markLines, renderDiff } from "./ui/diff-view.ts";
 export type { DiffViewOptions } from "./ui/diff-view.ts";
