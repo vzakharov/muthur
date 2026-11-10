@@ -1,0 +1,124 @@
+{
+  "total": {
+    "inputTokens": 156,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 269560,
+    "cacheReadTokens": 13415344,
+    "outputTokens": 64467,
+    "thinkingTokens": 24590,
+    "responses": 82,
+    "costUsd": 6.1295128000000005
+  },
+  "estimate": {
+    "at": "2026-11-10T08:48:09.765Z",
+    "parts": [
+      {
+        "hours": 3.0,
+        "grade": "senior",
+        "role": "developer",
+        "comment": "highlighting tokenizes whole files per side so multi-line constructs survive the diff's line split, with a theme in light and dark; the DRY pass and the line-range anchor grammar sit beside it"
+      },
+      {
+        "hours": 1.0,
+        "grade": "middle",
+        "role": "qa",
+        "comment": "the highlighted board was checked in light and dark against the published artifact"
+      }
+    ],
+    "comment": null
+  },
+  "orientation": {
+    "endedBy": "end_turn",
+    "endedOn": null,
+    "endedAt": "2026-11-10T08:23:27.105Z",
+    "contextTokens": 120732,
+    "spend": {
+      "inputTokens": 19,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 66469,
+      "cacheReadTokens": 927545,
+      "outputTokens": 3361,
+      "thinkingTokens": 1374,
+      "responses": 9,
+      "costUsd": 0.784557
+    }
+  },
+  "sessionId": "345d87dd-e925-55dc-bf82-f321e8be804d",
+  "branch": "claude/review-board-st7qsi",
+  "cwd": "/home/user/muthur",
+  "openingPrompt": "/relay take claude/review-board-st7qsi",
+  "prs": [
+    265
+  ],
+  "url": "https://claude.ai/code/session_016Z4TKnCFaYMzFJ8mgMUNH1",
+  "operator": "vzakharov",
+  "firstResponseAt": "2026-11-10T08:22:34.514Z",
+  "lastResponseAt": "2026-11-10T08:48:50.361Z",
+  "pricesAsOf": "2026-10-06",
+  "claudeCodeTotalUsd": null,
+  "ownTurns": {
+    "inputTokens": 156,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 269560,
+    "cacheReadTokens": 13415344,
+    "outputTokens": 64467,
+    "thinkingTokens": 24590,
+    "responses": 82,
+    "costUsd": 6.1295128000000005
+  },
+  "subagents": {
+    "inputTokens": 0,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 0,
+    "cacheReadTokens": 0,
+    "outputTokens": 0,
+    "thinkingTokens": 0,
+    "responses": 0,
+    "costUsd": 0.0
+  },
+  "byRate": {
+    "claude-opus-5-5/standard": {
+      "inputTokens": 156,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 269560,
+      "cacheReadTokens": 13415344,
+      "outputTokens": 64467,
+      "thinkingTokens": 24590,
+      "responses": 82,
+      "costUsd": 6.1295128000000005
+    }
+  },
+  "warnings": [],
+  "compactions": [
+    {
+      "at": "2026-11-10T08:47:36.441Z",
+      "trigger": "auto",
+      "compactedFrom": 261890,
+      "summaryChars": 17532,
+      "reorientation": {
+        "endedBy": "Edit",
+        "endedOn": ".claude/artifacts/src/review-board/pages/board/comments/ui/board-comments.ts",
+        "endedAt": "2026-11-10T08:47:44.090Z",
+        "contextTokens": 119427,
+        "spend": {
+          "inputTokens": 4,
+          "cacheWrite5mTokens": 0,
+          "cacheWrite1hTokens": 58851,
+          "cacheReadTokens": 176240,
+          "outputTokens": 529,
+          "thinkingTokens": 267,
+          "responses": 2,
+          "costUsd": 0.516652
+        }
+      },
+      "rereads": {
+        "calls": 0,
+        "byTool": {},
+        "estimatedTokens": 0,
+        "estimatedUsd": 0.0
+      },
+      "billedUsd": null
+    }
+  ],
+  "telemetry": null
+}

@@ -1,0 +1,130 @@
+{
+  "total": {
+    "inputTokens": 208,
+    "cacheWrite5mTokens": 187947,
+    "cacheWrite1hTokens": 281616,
+    "cacheReadTokens": 16214143,
+    "outputTokens": 55475,
+    "thinkingTokens": 14184,
+    "responses": 103,
+    "costUsd": 7.5458236
+  },
+  "estimate": {
+    "at": "2026-11-10T08:03:16.943Z",
+    "parts": [
+      {
+        "hours": 8.0,
+        "grade": "senior",
+        "role": "developer",
+        "comment": "comments UI and anchor wiring on an unfamiliar runtime API, plus dogfood fixes, need someone fluent in the board's layering"
+      },
+      {
+        "hours": 1.0,
+        "grade": "staff",
+        "role": "architect",
+        "comment": "the MASD promotion call shapes the slice layout every later artifact copies"
+      },
+      {
+        "hours": 4.0,
+        "grade": "senior",
+        "role": "prompter",
+        "comment": "a new loop skill must fit the catalog and the handle lane without overlapping them"
+      }
+    ],
+    "comment": null
+  },
+  "orientation": {
+    "endedBy": "Edit",
+    "endedOn": ".claude/artifacts/src/review-board/pages/board/board/model/types.ts",
+    "endedAt": "2026-11-10T06:51:24.221Z",
+    "contextTokens": 165973,
+    "spend": {
+      "inputTokens": 33,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 111940,
+      "cacheReadTokens": 1847105,
+      "outputTokens": 7363,
+      "thinkingTokens": 3573,
+      "responses": 15,
+      "costUsd": 1.412333
+    }
+  },
+  "sessionId": "c6551233-d56b-527c-8fe8-3665699ddcb5",
+  "branch": "claude/review-board-st7qsi",
+  "cwd": "/home/user/muthur",
+  "openingPrompt": "/relay take claude/review-board-st7qsi — доска собрана и проверки в основном зелёные, осталось подключить комментарии, написать скилл, опубликовать и обновить P…",
+  "prs": [
+    265
+  ],
+  "url": "https://claude.ai/code/session_016Z4TKoEt7oLXtyyZnhFbdV",
+  "operator": "vzakharov",
+  "firstResponseAt": "2026-11-10T06:49:57.298Z",
+  "lastResponseAt": "2026-11-10T08:03:36.789Z",
+  "pricesAsOf": "2026-10-06",
+  "claudeCodeTotalUsd": null,
+  "ownTurns": {
+    "inputTokens": 164,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 281616,
+    "cacheReadTokens": 12668030,
+    "outputTokens": 37161,
+    "thinkingTokens": 7268,
+    "responses": 78,
+    "costUsd": 5.530409999999999
+  },
+  "subagents": {
+    "inputTokens": 44,
+    "cacheWrite5mTokens": 187947,
+    "cacheWrite1hTokens": 0,
+    "cacheReadTokens": 3546113,
+    "outputTokens": 18314,
+    "thinkingTokens": 6916,
+    "responses": 25,
+    "costUsd": 2.0154136000000005
+  },
+  "byRate": {
+    "claude-opus-5-5/standard": {
+      "inputTokens": 208,
+      "cacheWrite5mTokens": 187947,
+      "cacheWrite1hTokens": 281616,
+      "cacheReadTokens": 16214143,
+      "outputTokens": 55475,
+      "thinkingTokens": 14184,
+      "responses": 103,
+      "costUsd": 7.5458236
+    }
+  },
+  "warnings": [],
+  "compactions": [
+    {
+      "at": "2026-11-10T06:56:41.271Z",
+      "trigger": "auto",
+      "compactedFrom": 220172,
+      "summaryChars": 13157,
+      "reorientation": {
+        "endedBy": "Edit",
+        "endedOn": "docs/plans/review-board.in-progress.md",
+        "endedAt": "2026-11-10T06:57:25.656Z",
+        "contextTokens": 158294,
+        "spend": {
+          "inputTokens": 17,
+          "cacheWrite5mTokens": 0,
+          "cacheWrite1hTokens": 98514,
+          "cacheReadTokens": 1116444,
+          "outputTokens": 1865,
+          "thinkingTokens": 438,
+          "responses": 8,
+          "costUsd": 1.0487688
+        }
+      },
+      "rereads": {
+        "calls": 0,
+        "byTool": {},
+        "estimatedTokens": 0,
+        "estimatedUsd": 0.0
+      },
+      "billedUsd": null
+    }
+  ],
+  "telemetry": null
+}

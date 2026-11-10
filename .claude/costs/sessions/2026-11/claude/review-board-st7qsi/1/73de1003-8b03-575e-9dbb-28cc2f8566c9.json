@@ -1,0 +1,100 @@
+{
+  "total": {
+    "inputTokens": 86,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 170943,
+    "cacheReadTokens": 6670095,
+    "outputTokens": 37469,
+    "thinkingTokens": 14889,
+    "responses": 39,
+    "costUsd": 3.4512870000000007
+  },
+  "estimate": {
+    "at": "2026-11-10T03:37:13.703Z",
+    "parts": [
+      {
+        "hours": 20.0,
+        "grade": "senior",
+        "role": "developer",
+        "comment": "a framework-free infinite canvas, an in-page diff engine with whitespace folding, a git collector and custom comment anchoring against a young platform API are each senior work, not routine slots"
+      },
+      {
+        "hours": 4.0,
+        "grade": "middle",
+        "role": "designer",
+        "comment": "a dense code-review surface on a zoomable board needs layout and legibility calls a developer would guess at"
+      },
+      {
+        "hours": 3.0,
+        "grade": "senior",
+        "role": "prompter",
+        "comment": "the skill decides when an agent builds, publishes and answers comments, and its wording is what makes that reliable"
+      }
+    ],
+    "comment": null
+  },
+  "orientation": {
+    "endedBy": "oriented",
+    "endedOn": null,
+    "endedAt": "2026-11-10T03:37:01.051Z",
+    "contextTokens": 165828,
+    "spend": {
+      "inputTokens": 34,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 110317,
+      "cacheReadTokens": 1544533,
+      "outputTokens": 6089,
+      "thinkingTokens": 2627,
+      "responses": 13,
+      "costUsd": 1.3133586
+    }
+  },
+  "sessionId": "73de1003-8b03-575e-9dbb-28cc2f8566c9",
+  "branch": "claude/review-board-st7qsi",
+  "cwd": "/home/user/muthur",
+  "openingPrompt": "давай создадим реюзабильный (т.е. хранимый в репе и адоптируемый) артефакт для code review: 1- работает +- как code review на гитхабе, но на бесконечной доске (…",
+  "prs": [
+    265
+  ],
+  "url": "https://claude.ai/code/session_016Z4TKo1xVkppWs9xP4853k",
+  "operator": "vzakharov",
+  "firstResponseAt": "2026-11-10T03:35:05.774Z",
+  "lastResponseAt": "2026-11-10T03:49:13.778Z",
+  "pricesAsOf": "2026-10-06",
+  "claudeCodeTotalUsd": null,
+  "ownTurns": {
+    "inputTokens": 86,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 170943,
+    "cacheReadTokens": 6670095,
+    "outputTokens": 37469,
+    "thinkingTokens": 14889,
+    "responses": 39,
+    "costUsd": 3.4512870000000007
+  },
+  "subagents": {
+    "inputTokens": 0,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 0,
+    "cacheReadTokens": 0,
+    "outputTokens": 0,
+    "thinkingTokens": 0,
+    "responses": 0,
+    "costUsd": 0.0
+  },
+  "byRate": {
+    "claude-opus-5-5/standard": {
+      "inputTokens": 86,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 170943,
+      "cacheReadTokens": 6670095,
+      "outputTokens": 37469,
+      "thinkingTokens": 14889,
+      "responses": 39,
+      "costUsd": 3.4512870000000007
+    }
+  },
+  "warnings": [],
+  "compactions": [],
+  "telemetry": null
+}
