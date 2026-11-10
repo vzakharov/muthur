@@ -286,6 +286,8 @@ input {
   max-height: calc(40 * var(--line-h));
   overflow: auto;
   cursor: auto;
+  /* The camera's `touch-action: none` would otherwise block scrolling a diff by touch. */
+  touch-action: pan-x pan-y;
 }
 
 .card.is-viewed .card-head {
@@ -467,6 +469,10 @@ input {
 .no-comments .comment-btn,
 .no-comments .plus {
   display: none;
+}
+
+.comment-mode .row[data-line] {
+  cursor: crosshair;
 }
 
 /* Side panel */

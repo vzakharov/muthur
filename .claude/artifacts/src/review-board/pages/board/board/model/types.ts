@@ -1,6 +1,9 @@
 import type { CommentTarget } from "#src/review-board/entities/file/index.ts";
 
-/** What a comments module hands the board; without one the board hides its comment controls. */
+/**
+ * What a comments module hands the board. The board's comment controls stay
+ * hidden until {@link BoardHandle.setCommentsEnabled} turns them on.
+ */
 export interface CommentsHook {
   /** A comment control was used: `at` is the control's row or button, `target` what it addresses. */
   onComment(target: CommentTarget, at: Element): void;
@@ -18,6 +21,12 @@ export interface BoardOptions {
 
 /** What a comments module needs to place pins and reveal a comment. */
 export interface BoardHandle {
+  /** The board's element, the root it was mounted into. */
+  element: HTMLElement;
+  /** Every file path the review shows. */
+  paths: readonly string[];
+  /** Shows or hides the comment controls on cards and diff lines. */
+  setCommentsEnabled(enabled: boolean): void;
   /** The card showing `path`, or undefined for a path that is not in the review. */
   cardElement(path: string): HTMLElement | undefined;
   /** The commits (SHAs among the file's revisions) the file's diff currently spans. */
@@ -26,7 +35,7 @@ export interface BoardHandle {
   panTo(path: string): void;
   /** Shows the file's full diff in the side panel. */
   openPanel(path: string): void;
-  /** The side panel while it is open, else undefined. */
-  panelElement(): HTMLElement | undefined;
+  /** The side panel and the file it shows while it is open, else undefined. */
+  panel(): { path: string; element: HTMLElement } | undefined;
   destroy(): void;
 }

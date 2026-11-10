@@ -36,7 +36,10 @@ export function mountBoard(
 ): BoardHandle {
   const data = loadReviewData(root);
   const { comments } = options;
-  root.classList.toggle("no-comments", comments === undefined);
+  const setCommentsEnabled = (enabled: boolean): void => {
+    root.classList.toggle("no-comments", !enabled);
+  };
+  setCommentsEnabled(false);
 
   const store = createFileStore(data);
   const labels = commitLabels(data);
@@ -222,6 +225,9 @@ export function mountBoard(
   layout();
 
   return {
+    element: root,
+    paths: data.files.map((file) => file.path),
+    setCommentsEnabled,
     cardElement: (path) => cards.get(path)?.element,
     effectiveRange(path) {
       if (!filesByPath.has(path)) return undefined;
@@ -233,8 +239,10 @@ export function mountBoard(
       if (rect !== undefined) viewport.panTo(rect);
     },
     openPanel,
-    panelElement: () =>
-      panel.path() === undefined ? undefined : panel.element,
+    panel() {
+      const path = panel.path();
+      return path === undefined ? undefined : { path, element: panel.element };
+    },
     destroy() {
       unsubscribe();
       store.destroy();

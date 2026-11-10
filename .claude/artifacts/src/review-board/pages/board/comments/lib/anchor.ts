@@ -4,14 +4,12 @@
 // The platform keeps at most 128 bytes of it, so a long path loses whole
 // segments from the left, behind `…/`.
 
-export type Side = "R" | "L";
+import type { CommentTarget } from "#src/review-board/entities/file/index.ts";
 
-export interface LineAnchor {
-  path: string;
+/** A comment target and the commits its file's diff spanned when it was written. */
+export interface LineAnchor extends CommentTarget {
   from: string;
   to: string;
-  side: Side | null;
-  line: number | null;
 }
 
 export const ANCHOR_BYTES = 128;
