@@ -13,6 +13,9 @@ The board is the app under `.claude/artifacts/src/review-board/`; its plan of
 record is the PR that added it. A run publishes the branch as it is pushed, so
 commit and push first.
 
+Steps 1–2 also run unasked, from `@.claude/skills/pr/SKILL.md` Step 7 and from
+`/finalize`, which own when.
+
 ## Step 1 — Mark the focus, then build
 
 **The focus is the agent's own call on where review time goes**:
@@ -30,9 +33,9 @@ button.
   later change; mark it and say so in its `why`.
 - **`why` says what the decision is and what rides on it**, in a sentence or
   two, not what the file does.
-- **`lines` are `[first, last]` spans in the file at HEAD**, inclusive; leave
-  them out when the whole file is the point. A span marks rows only while a
-  card's diff ends on HEAD's content.
+- **`lines` is a list of `[first, last]` spans in the file at HEAD** —
+  `[[12, 30]]` for one — inclusive; leave them out when the whole file is the
+  point. A span marks rows only while a card's diff ends on HEAD's content.
 - **Few items, in reading order** — the list is the reviewer's route.
 - **The collector fails the build** on a path the branch did not change, a path
   listed twice, an empty `why`, or a span outside the file. It reads the file
@@ -110,7 +113,8 @@ A wake for a comment on the board is review feedback, handled as
    `ArtifactData` — `get` it first and pin the write with `if_version` when it
    exists. `git rev-parse <to7>` gives the full SHA. The shift outlives
    republishes, so it needs none of its own.
-5. **Rebuild and republish** per Steps 1–2.
+5. **The republish is the `/pr` that ends `/go`'s run**: its Step 7 finds the
+   board's comment and rebuilds, so nothing here repeats it.
 6. **Reply** in the thread with `ArtifactComments` `reply`: one sentence and the
    commit SHA. A comment declined gets a reply saying why.
 
