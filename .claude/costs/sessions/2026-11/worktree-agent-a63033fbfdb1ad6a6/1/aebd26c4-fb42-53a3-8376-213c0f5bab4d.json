@@ -1,13 +1,13 @@
 {
   "total": {
-    "inputTokens": 162,
-    "cacheWrite5mTokens": 412866,
-    "cacheWrite1hTokens": 197390,
-    "cacheReadTokens": 9816367,
-    "outputTokens": 50580,
-    "thinkingTokens": 13236,
-    "responses": 78,
-    "costUsd": 5.457744400000003
+    "inputTokens": 225,
+    "cacheWrite5mTokens": 482874,
+    "cacheWrite1hTokens": 265840,
+    "cacheReadTokens": 13765098,
+    "outputTokens": 112191,
+    "thinkingTokens": 24816,
+    "responses": 109,
+    "costUsd": 7.613182600000002
   },
   "estimate": {
     "at": "2026-11-10T06:21:51.542Z",
@@ -56,7 +56,7 @@
     }
   },
   "sessionId": "aebd26c4-fb42-53a3-8376-213c0f5bab4d",
-  "branch": "claude/review-board-st7qsi",
+  "branch": "worktree-agent-a63033fbfdb1ad6a6",
   "cwd": "/home/user/muthur",
   "openingPrompt": "/go claude/review-board-st7qsi",
   "prs": [
@@ -65,52 +65,82 @@
   "url": "https://claude.ai/code/session_016Z4TKnuMNUvBoNs7n7T1H2",
   "operator": "vzakharov",
   "firstResponseAt": "2026-11-10T06:20:26.889Z",
-  "lastResponseAt": "2026-11-10T06:27:19.184Z",
+  "lastResponseAt": "2026-11-10T06:29:12.842Z",
   "pricesAsOf": "2026-10-06",
   "claudeCodeTotalUsd": null,
   "ownTurns": {
-    "inputTokens": 86,
+    "inputTokens": 99,
     "cacheWrite5mTokens": 0,
-    "cacheWrite1hTokens": 197390,
-    "cacheReadTokens": 7453432,
-    "outputTokens": 37689,
-    "thinkingTokens": 10093,
-    "responses": 44,
-    "costUsd": 3.8239304000000005
+    "cacheWrite1hTokens": 265840,
+    "cacheReadTokens": 8643697,
+    "outputTokens": 40370,
+    "thinkingTokens": 11115,
+    "responses": 50,
+    "costUsd": 4.6632554
   },
   "subagents": {
-    "inputTokens": 76,
-    "cacheWrite5mTokens": 412866,
+    "inputTokens": 126,
+    "cacheWrite5mTokens": 482874,
     "cacheWrite1hTokens": 0,
-    "cacheReadTokens": 2362935,
-    "outputTokens": 12891,
-    "thinkingTokens": 3143,
-    "responses": 34,
-    "costUsd": 1.6338140000000003
+    "cacheReadTokens": 5121401,
+    "outputTokens": 71821,
+    "thinkingTokens": 13701,
+    "responses": 59,
+    "costUsd": 2.9499272000000003
   },
   "byRate": {
     "claude-opus-5-5/standard": {
-      "inputTokens": 86,
+      "inputTokens": 99,
       "cacheWrite5mTokens": 0,
-      "cacheWrite1hTokens": 197390,
-      "cacheReadTokens": 7453432,
-      "outputTokens": 37689,
-      "thinkingTokens": 10093,
-      "responses": 44,
-      "costUsd": 3.8239304000000005
+      "cacheWrite1hTokens": 265840,
+      "cacheReadTokens": 8643697,
+      "outputTokens": 40370,
+      "thinkingTokens": 11115,
+      "responses": 50,
+      "costUsd": 4.6632554
     },
     "claude-sonnet-5-5/standard": {
-      "inputTokens": 76,
-      "cacheWrite5mTokens": 412866,
+      "inputTokens": 126,
+      "cacheWrite5mTokens": 482874,
       "cacheWrite1hTokens": 0,
-      "cacheReadTokens": 2362935,
-      "outputTokens": 12891,
-      "thinkingTokens": 3143,
-      "responses": 34,
-      "costUsd": 1.6338140000000003
+      "cacheReadTokens": 5121401,
+      "outputTokens": 71821,
+      "thinkingTokens": 13701,
+      "responses": 59,
+      "costUsd": 2.9499272000000003
     }
   },
   "warnings": [],
-  "compactions": [],
+  "compactions": [
+    {
+      "at": "2026-11-10T06:28:54.886Z",
+      "trigger": "auto",
+      "compactedFrom": 259201,
+      "summaryChars": 15710,
+      "reorientation": {
+        "endedBy": "Edit",
+        "endedOn": ".claude/worktrees/agent-ae1ad30d75b6ddd64/.claude/artifacts/src/review-board/scripts/collect.test.ts",
+        "endedAt": "2026-11-10T06:29:03.684Z",
+        "contextTokens": 104681,
+        "spend": {
+          "inputTokens": 4,
+          "cacheWrite5mTokens": 558,
+          "cacheWrite1hTokens": 57118,
+          "cacheReadTokens": 167007,
+          "outputTokens": 1894,
+          "thinkingTokens": 58,
+          "responses": 2,
+          "costUsd": 0.5124424000000001
+        }
+      },
+      "rereads": {
+        "calls": 0,
+        "byTool": {},
+        "estimatedTokens": 0,
+        "estimatedUsd": 0.0
+      },
+      "billedUsd": null
+    }
+  ],
   "telemetry": null
 }
