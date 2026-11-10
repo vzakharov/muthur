@@ -1,13 +1,13 @@
 {
   "total": {
-    "inputTokens": 491,
-    "cacheWrite5mTokens": 528652,
+    "inputTokens": 494,
+    "cacheWrite5mTokens": 530466,
     "cacheWrite1hTokens": 515016,
-    "cacheReadTokens": 39705922,
-    "outputTokens": 156504,
-    "thinkingTokens": 48538,
-    "responses": 252,
-    "costUsd": 13.982329400000008
+    "cacheReadTokens": 40005999,
+    "outputTokens": 158149,
+    "thinkingTokens": 48591,
+    "responses": 254,
+    "costUsd": 14.084326800000008
   },
   "estimate": {
     "at": "2026-11-10T19:17:04.934Z",
@@ -47,7 +47,7 @@
   "url": "https://claude.ai/code/session_016Z4TKq7vE5xSAuWyBP8hPt",
   "operator": "vzakharov",
   "firstResponseAt": "2026-11-10T17:52:15.937Z",
-  "lastResponseAt": "2026-11-10T19:37:22.721Z",
+  "lastResponseAt": "2026-11-10T19:37:48.389Z",
   "pricesAsOf": "2026-10-06",
   "claudeCodeTotalUsd": null,
   "ownTurns": {
@@ -61,14 +61,14 @@
     "costUsd": 9.411678600000004
   },
   "subagents": {
-    "inputTokens": 151,
-    "cacheWrite5mTokens": 528652,
+    "inputTokens": 154,
+    "cacheWrite5mTokens": 530466,
     "cacheWrite1hTokens": 0,
-    "cacheReadTokens": 8757499,
-    "outputTokens": 40379,
-    "thinkingTokens": 16572,
-    "responses": 79,
-    "costUsd": 4.5706508
+    "cacheReadTokens": 9057576,
+    "outputTokens": 42024,
+    "thinkingTokens": 16625,
+    "responses": 81,
+    "costUsd": 4.6726482
   },
   "byRate": {
     "claude-sonnet-5-5/standard": {
@@ -82,14 +82,14 @@
       "costUsd": 10.355391800000003
     },
     "claude-opus-5-5/standard": {
-      "inputTokens": 117,
-      "cacheWrite5mTokens": 302998,
+      "inputTokens": 120,
+      "cacheWrite5mTokens": 304812,
       "cacheWrite1hTokens": 0,
-      "cacheReadTokens": 7200398,
-      "outputTokens": 33570,
-      "thinkingTokens": 15109,
-      "responses": 61,
-      "costUsd": 3.626937599999999
+      "cacheReadTokens": 7500475,
+      "outputTokens": 35215,
+      "thinkingTokens": 15162,
+      "responses": 63,
+      "costUsd": 3.728934999999999
     }
   },
   "warnings": [],
