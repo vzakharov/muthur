@@ -51,6 +51,10 @@
 #     repo-identity check and every `scripts/test_*.py`. One line because an
 #     adopting repo drops them together; it keys on the catalog and exits 0
 #     downstream, so the line is harmless if a rewrite leaves it.
+#   the artifacts line — `.claude/artifacts/vet.sh`, the type check, lint, MASD
+#     checks and tests of the reusable artifact apps. An opt-in like the loop
+#     below, keyed on its directory; it is agent infrastructure, not the
+#     project's stack, so the exit below stands either way.
 #   the opt-in loop — the tests of the session cost ledger (`.claude/costs/`),
 #     the context budget hook (`.claude/context-budget/`), the cold-cache
 #     guard (`.claude/cold-cache/`), the cache keepalive (`.claude/keepalive/`)
@@ -77,6 +81,7 @@ if [ -f "$notes" ] && [ "$(wc -l < "$notes")" -gt 100 ]; then
   exit 1
 fi
 "$(dirname "$0")/check-muthur.sh"
+[ ! -d "$(dirname "$0")/../.claude/artifacts" ] || "$(dirname "$0")/../.claude/artifacts/vet.sh"
 for check in "$(dirname "$0")"/../.claude/{costs,context-budget,cold-cache,keepalive,merge-gate}/{test,check}_*.py; do
   [ ! -f "$check" ] || python3 "$check"
 done
