@@ -37,6 +37,7 @@ const range = (
   fromExplicit: false,
   toExplicit: false,
   viewed: false,
+  viewedMark: null,
 });
 
 test("links the file at the range's to commit, path encoded per segment", () => {

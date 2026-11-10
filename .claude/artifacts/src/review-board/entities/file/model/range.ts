@@ -34,6 +34,8 @@ export interface EffectiveRange {
   toExplicit: boolean;
   /** Whether what `to` shows is what the viewer marked viewed, base merges since aside. */
   viewed: boolean;
+  /** The marked blob token that makes the file read as viewed — `to`'s own, or one base merges carried forward; null when not viewed. */
+  viewedMark: string | null;
 }
 
 export function commitOrder(data: ReviewBranch): CommitOrder {
@@ -139,7 +141,8 @@ export function effectiveRange(input: {
 
   const position = (revision: Revision): number =>
     order.get(revision.commit) ?? -1;
-  const seen = seenRevision(file, position, merges, to, viewedBlobs);
+  const seenMark = seenRevision(file, position, merges, to, viewedBlobs);
+  const seen = seenMark?.revision;
   const viewed = seen === to;
   if (
     !fromChosen &&
@@ -160,13 +163,14 @@ export function effectiveRange(input: {
     fromExplicit,
     toExplicit,
     viewed,
+    viewedMark: viewed ? (seenMark?.mark ?? null) : null,
   };
 }
 
 /**
  * The latest revision up to `to` holding a blob the viewer marked viewed,
- * carried past the base merges that follow it; `to` itself when `to` shows
- * a marked blob.
+ * carried past the base merges that follow it, with the marked blob's token;
+ * `to` itself when `to` shows a marked blob.
  */
 function seenRevision(
   file: ReviewFile,
@@ -174,15 +178,18 @@ function seenRevision(
   merges: ReadonlySet<string>,
   to: Revision,
   viewedBlobs: ReadonlySet<string>,
-): Revision | undefined {
-  if (viewedBlobs.has(viewedToken(to.blob))) return to;
+): { revision: Revision; mark: string } | undefined {
+  const toMark = viewedToken(to.blob);
+  if (viewedBlobs.has(toMark)) return { revision: to, mark: toMark };
   const { revisions } = file;
   let at = revisions.findLastIndex(
     (revision) =>
       viewedBlobs.has(viewedToken(revision.blob)) &&
       position(revision) < position(to),
   );
-  if (at < 0) return undefined;
+  const marked = revisions[at];
+  if (marked === undefined) return undefined;
+  let revision = marked;
   for (;;) {
     const next = revisions[at + 1];
     if (
@@ -191,9 +198,10 @@ function seenRevision(
       !merges.has(next.commit)
     )
       break;
+    revision = next;
     at++;
   }
-  return revisions[at];
+  return { revision, mark: viewedToken(marked.blob) };
 }
 
 /** The blob a viewed mark holds for a file that is absent at its "to" commit. */

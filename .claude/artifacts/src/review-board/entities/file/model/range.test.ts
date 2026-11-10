@@ -45,6 +45,7 @@ test("the default is base to the file's last revision", () => {
     fromExplicit: false,
     toExplicit: false,
     viewed: false,
+    viewedMark: null,
   });
 });
 
@@ -222,11 +223,13 @@ test("a file only base merges changed since it was viewed stays viewed", () => {
   const range = acrossMerges("m0", "c1");
   assert.equal(range.viewed, true);
   assert.equal(range.fromExplicit, false);
+  assert.equal(range.viewedMark, "m0");
 });
 
 test("a file changed after a base merge diffs from the merge", () => {
   const range = acrossMerges("m0", "c2");
   assert.equal(range.viewed, false);
+  assert.equal(range.viewedMark, null);
   assert.deepEqual([range.from, range.to], ["c1", "c2"]);
 });
 

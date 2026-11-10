@@ -37,7 +37,7 @@ export interface FileStore {
   setBoard(patch: Partial<BoardPrefs>): void;
   effective(path: string): EffectiveRange;
   isViewed(path: string): boolean;
-  /** Marks or unmarks the blob the file's `to` shows; other revisions' marks stay. */
+  /** Marks or unmarks the blob the file's `to` shows, unmarking a mark base merges carried to it too; other revisions' marks stay. */
   setViewed(path: string, viewed: boolean): void;
   /** When each blob of the file was marked viewed, by blob token. */
   viewedAt(path: string): ReadonlyMap<string, string>;
@@ -315,8 +315,14 @@ export function createFileStore(data: ReviewData): FileStore {
     },
     setViewed(path, viewed) {
       const own = fileValue(path);
-      const blob = viewedToken(effective(path).toBlob);
-      const others = own.get().viewed.filter((mark) => mark.blob !== blob);
+      const range = effective(path);
+      const blob = viewedToken(range.toBlob);
+      // Unticking drops the mark base merges carried forward too, or the file would stay viewed.
+      const others = own
+        .get()
+        .viewed.filter(
+          (mark) => mark.blob !== blob && mark.blob !== range.viewedMark,
+        );
       const marks = viewed ? [...others, { blob, at: now() }] : others;
       own.set({ ...own.get(), viewed: marks }, own.at() || now());
     },
