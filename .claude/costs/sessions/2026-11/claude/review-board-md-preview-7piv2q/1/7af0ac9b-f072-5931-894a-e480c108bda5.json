@@ -1,13 +1,13 @@
 {
   "total": {
-    "inputTokens": 155,
+    "inputTokens": 180,
     "cacheWrite5mTokens": 103393,
-    "cacheWrite1hTokens": 268362,
-    "cacheReadTokens": 12020959,
-    "outputTokens": 56088,
-    "thinkingTokens": 18906,
-    "responses": 74,
-    "costUsd": 4.2973123000000015
+    "cacheWrite1hTokens": 277780,
+    "cacheReadTokens": 13671825,
+    "outputTokens": 59327,
+    "thinkingTokens": 19344,
+    "responses": 86,
+    "costUsd": 4.697597500000001
   },
   "estimate": {
     "at": "2026-11-10T17:53:05.097Z",
@@ -47,18 +47,18 @@
   "url": "https://claude.ai/code/session_016Z4TKq7vE5xSAuWyBP8hPt",
   "operator": "vzakharov",
   "firstResponseAt": "2026-11-10T17:52:15.937Z",
-  "lastResponseAt": "2026-11-10T18:34:28.827Z",
+  "lastResponseAt": "2026-11-10T19:16:54.835Z",
   "pricesAsOf": "2026-10-06",
   "claudeCodeTotalUsd": null,
   "ownTurns": {
-    "inputTokens": 143,
+    "inputTokens": 168,
     "cacheWrite5mTokens": 0,
-    "cacheWrite1hTokens": 268362,
-    "cacheReadTokens": 11575127,
-    "outputTokens": 54318,
-    "thinkingTokens": 18512,
-    "responses": 68,
-    "costUsd": 3.931939400000001
+    "cacheWrite1hTokens": 277780,
+    "cacheReadTokens": 13225993,
+    "outputTokens": 57557,
+    "thinkingTokens": 18950,
+    "responses": 80,
+    "costUsd": 4.332224600000001
   },
   "subagents": {
     "inputTokens": 12,
@@ -72,14 +72,14 @@
   },
   "byRate": {
     "claude-sonnet-5-5/standard": {
-      "inputTokens": 155,
+      "inputTokens": 180,
       "cacheWrite5mTokens": 103393,
-      "cacheWrite1hTokens": 268362,
-      "cacheReadTokens": 12020959,
-      "outputTokens": 56088,
-      "thinkingTokens": 18906,
-      "responses": 74,
-      "costUsd": 4.2973123000000015
+      "cacheWrite1hTokens": 277780,
+      "cacheReadTokens": 13671825,
+      "outputTokens": 59327,
+      "thinkingTokens": 19344,
+      "responses": 86,
+      "costUsd": 4.697597500000001
     }
   },
   "warnings": [],
@@ -106,10 +106,12 @@
         }
       },
       "rereads": {
-        "calls": 0,
-        "byTool": {},
-        "estimatedTokens": 0,
-        "estimatedUsd": 0.0
+        "calls": 1,
+        "byTool": {
+          "Read": 1
+        },
+        "estimatedTokens": 4433,
+        "estimatedUsd": 0.024824799999999998
       },
       "billedUsd": null
     }

@@ -7,7 +7,7 @@
 # Review board: Viewed history, popovers, age shading
 
 Rides on PR 269 (Vova: "нене, давай всё сюда, большой PR, адоптеры возьмут сразу
-всё, плюс задогфудим раскраску"). One PR, five parts, in this order.
+всё, плюс задогфудим раскраску"). One PR, six parts, in this order.
 
 ## Parts
 
@@ -35,6 +35,11 @@ Rides on PR 269 (Vova: "нене, давай всё сюда, большой PR,
    minutes apart share a shade; base-merge commits ignored; tooltip names the
    commit and time; the yellow focus border is not overridden; both themes
    checked.
+6. **File-name filter.** A text field in the toolbar narrows the board as you
+   type, like GitHub's "Filter changed files": a case-insensitive substring
+   match against the file's full path, folders included (the old path too for a
+   rename). It combines with "Show viewed" and "Focus only" as one more reason
+   to hide a card, and the tally keeps counting the whole board.
 
 ## Out of scope
 
@@ -71,3 +76,6 @@ and shading in light and dark themes with Playwright.
   `commitOrder`/`baseMerges`, reusing them for the base-merge filter; no new
   commit-walk helper.
 - `synced()` is fixed in place; no wrapper store is added.
+- The filter joins the `hidden` set `mount-board.ts` already builds for "Show
+  viewed" and "Focus only"; it is one more predicate there, not a second hiding
+  path. The path match is a pure function beside `viewFileUrl`, tested alone.
