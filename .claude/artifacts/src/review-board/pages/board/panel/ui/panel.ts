@@ -1,6 +1,7 @@
 import {
   renderDiff,
   type CommentTarget,
+  type DiffSyntax,
 } from "#src/review-board/entities/file/index.ts";
 import type { DiffResult } from "#src/review-board/shared/lib/diff.ts";
 import { el } from "#src/review-board/shared/lib/dom.ts";
@@ -8,6 +9,8 @@ import { el } from "#src/review-board/shared/lib/dom.ts";
 export interface PanelContent {
   path: string;
   diff: DiffResult;
+  /** Read only when the diff is redrawn. */
+  syntax: () => DiffSyntax | null;
   /** The range shown, as labels ("abc1234 subject"). */
   fromLabel: string;
   toLabel: string;
@@ -63,6 +66,7 @@ export function createPanel(options: PanelOptions): Panel {
       body.replaceChildren(
         renderDiff(content.diff, {
           path: content.path,
+          syntax: content.syntax(),
           onComment: (target, at) => {
             options.onComment(target, at);
           },

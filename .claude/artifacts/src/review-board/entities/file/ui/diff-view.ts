@@ -5,16 +5,42 @@ import type {
 } from "#src/review-board/shared/lib/diff.ts";
 import { el } from "#src/review-board/shared/lib/dom.ts";
 import type { CommentTarget } from "../model/comment-target.ts";
+import type { DiffSyntax } from "../model/file-diff.ts";
 
 export interface DiffViewOptions {
   path: string;
+  /** Null shows every line as plain text. */
+  syntax: DiffSyntax | null;
   onComment(target: CommentTarget, at: Element): void;
 }
 
 const SIGNS = { context: " ", add: "+", del: "−" } as const;
 const CLASSES = { context: "ctx", add: "add", del: "del" } as const;
 
-function renderRow(line: DiffLine): HTMLElement {
+function codeOf(
+  line: DiffLine,
+  syntax: DiffSyntax | null,
+  path: string,
+): (string | HTMLElement)[] {
+  if (syntax === null) return [line.text];
+  // A deleted line exists only on the old side; every other line is read from the new one.
+  const [lines, number] =
+    line.kind === "del"
+      ? [syntax.old, line.oldLine]
+      : [syntax.new, line.newLine];
+  const tokens = number === null ? undefined : lines[number - 1];
+  if (tokens === undefined)
+    throw new Error(`no highlighted line ${number} for ${path}`);
+  return tokens.map((token) =>
+    token.scope === null ? token.text : el("span", token.scope, token.text),
+  );
+}
+
+function renderRow(
+  line: DiffLine,
+  syntax: DiffSyntax | null,
+  path: string,
+): HTMLElement {
   const row = el("div", `row ${CLASSES[line.kind]}`);
   // A deleted line is addressed on the old side, every other on the new one.
   const side = line.kind === "del" ? "L" : "R";
@@ -32,7 +58,10 @@ function renderRow(line: DiffLine): HTMLElement {
   plus.title = "Comment on this line";
   plus.ariaLabel = "Comment on this line";
   const code = el("span", "code");
-  code.append(el("span", "sign", SIGNS[line.kind]), line.text);
+  code.append(
+    el("span", "sign", SIGNS[line.kind]),
+    ...codeOf(line, syntax, path),
+  );
   row.append(plus, code);
   return row;
 }
@@ -57,7 +86,8 @@ export function renderDiff(
   }
   for (const hunk of diff.hunks) {
     root.append(el("div", "hunk", hunkLabel(hunk)));
-    for (const line of hunk.lines) root.append(renderRow(line));
+    for (const line of hunk.lines)
+      root.append(renderRow(line, options.syntax, options.path));
   }
   root.addEventListener("click", (event) => {
     const target = event.target;

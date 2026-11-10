@@ -67,6 +67,25 @@ test("a binary file reports its sizes", () => {
   });
 });
 
+test("a file with no known grammar has no syntax", () => {
+  const result = fileDiff(data, file, range("old", "next"), false);
+  assert.equal(result.kind, "text");
+  assert.equal(result.syntax(), null);
+});
+
+test("a known grammar highlights each side, an absent one as no lines", () => {
+  const code: ReviewFile = { ...file, path: "x.ts" };
+  const blobs = { ...data.blobs, ts: "const a = 1;\n" };
+  const result = fileDiff({ ...data, blobs }, code, range(null, "ts"), false);
+  assert.equal(result.kind, "text");
+  const syntax = result.syntax();
+  assert.ok(syntax !== null);
+  assert.deepEqual(syntax.old, []);
+  const first = syntax.new[0] ?? [];
+  assert.equal(first.map((token) => token.text).join(""), "const a = 1;");
+  assert.ok(first.some((token) => token.scope === "hljs-keyword"));
+});
+
 test("a blob missing from the payload is an error", () => {
   assert.throws(() => fileDiff(data, file, range("old", "ghost"), false));
 });

@@ -170,6 +170,7 @@ export function createCard(
     body.replaceChildren(
       renderDiff(diff, {
         path: file.path,
+        syntax: state.diff.syntax(),
         onComment: (target, at) => {
           handlers.onComment(target, at);
         },

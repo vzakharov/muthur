@@ -171,6 +171,7 @@ export function mountBoard(
     panel.show({
       path: file.path,
       diff: diff.diff,
+      syntax: diff.syntax,
       fromLabel: labelOf(range.from),
       toLabel: labelOf(range.to),
     });

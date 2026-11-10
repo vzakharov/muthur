@@ -23,6 +23,14 @@
   --badge-modified: #9a6700;
   --badge-renamed: #8250df;
   --badge-deleted: #cf222e;
+  --syn-keyword: #cf222e;
+  --syn-string: #0a3069;
+  --syn-comment: #59636e;
+  --syn-constant: #0550ae;
+  --syn-entity: #6639ba;
+  --syn-variable: #953800;
+  --syn-tag: #116329;
+  --syn-bullet: #9a6700;
   --font-ui:
     system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial,
     sans-serif;
@@ -59,6 +67,14 @@
     --badge-modified: #d29922;
     --badge-renamed: #a371f7;
     --badge-deleted: #f85149;
+    --syn-keyword: #ff7b72;
+    --syn-string: #a5d6ff;
+    --syn-comment: #9198a1;
+    --syn-constant: #79c0ff;
+    --syn-entity: #d2a8ff;
+    --syn-variable: #ffa657;
+    --syn-tag: #7ee787;
+    --syn-bullet: #f2cc60;
   }
 }
 
@@ -87,6 +103,14 @@
   --badge-modified: #d29922;
   --badge-renamed: #a371f7;
   --badge-deleted: #f85149;
+  --syn-keyword: #ff7b72;
+  --syn-string: #a5d6ff;
+  --syn-comment: #9198a1;
+  --syn-constant: #79c0ff;
+  --syn-entity: #d2a8ff;
+  --syn-variable: #ffa657;
+  --syn-tag: #7ee787;
+  --syn-bullet: #f2cc60;
 }
 
 * {
@@ -463,6 +487,72 @@ input {
   color: var(--add-text);
 }
 .row.del .sign {
+  color: var(--del-text);
+}
+
+/* Syntax: highlight.js scopes, each token span carrying its innermost one. */
+
+.code .hljs-keyword,
+.code .hljs-doctag,
+.code .hljs-template-tag,
+.code .hljs-template-variable,
+.code .hljs-type,
+.code .hljs-variable.language_ {
+  color: var(--syn-keyword);
+}
+.code .hljs-string,
+.code .hljs-regexp {
+  color: var(--syn-string);
+}
+.code .hljs-comment,
+.code .hljs-code,
+.code .hljs-formula,
+.code .hljs-quote {
+  color: var(--syn-comment);
+}
+.code .hljs-comment,
+.code .hljs-emphasis {
+  font-style: italic;
+}
+.code .hljs-number,
+.code .hljs-literal,
+.code .hljs-attr,
+.code .hljs-attribute,
+.code .hljs-meta,
+.code .hljs-operator,
+.code .hljs-variable,
+.code .hljs-selector-attr,
+.code .hljs-selector-class,
+.code .hljs-selector-id,
+.code .hljs-section,
+.code .hljs-link {
+  color: var(--syn-constant);
+}
+.code .hljs-title,
+.code .hljs-title.function_,
+.code .hljs-title.class_ {
+  color: var(--syn-entity);
+}
+.code .hljs-built_in,
+.code .hljs-symbol {
+  color: var(--syn-variable);
+}
+.code .hljs-name,
+.code .hljs-selector-tag,
+.code .hljs-selector-pseudo {
+  color: var(--syn-tag);
+}
+.code .hljs-bullet {
+  color: var(--syn-bullet);
+}
+.code .hljs-section,
+.code .hljs-strong {
+  font-weight: 600;
+}
+.code .hljs-addition {
+  color: var(--add-text);
+}
+.code .hljs-deletion {
   color: var(--del-text);
 }
 

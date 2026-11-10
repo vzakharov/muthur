@@ -1,0 +1,92 @@
+{
+  "total": {
+    "inputTokens": 84,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 132627,
+    "cacheReadTokens": 6412988,
+    "outputTokens": 34404,
+    "thinkingTokens": 12489,
+    "responses": 44,
+    "costUsd": 3.032029600000001
+  },
+  "estimate": {
+    "at": "2026-11-10T08:27:36.442Z",
+    "parts": [
+      {
+        "hours": 4.0,
+        "grade": "middle",
+        "role": "qa",
+        "comment": "pan, zoom, comment pins and the comment round trip only show up in the live claude.ai artifact, so a tester has to drive the real board"
+      },
+      {
+        "hours": 4.0,
+        "grade": "senior",
+        "role": "developer",
+        "comment": "highlighting has to tokenize whole files so multi-line constructs survive the diff's line split, and the theme must hold in light and dark"
+      }
+    ],
+    "comment": null
+  },
+  "orientation": {
+    "endedBy": "end_turn",
+    "endedOn": null,
+    "endedAt": "2026-11-10T08:23:27.105Z",
+    "contextTokens": 120732,
+    "spend": {
+      "inputTokens": 19,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 66469,
+      "cacheReadTokens": 927545,
+      "outputTokens": 3361,
+      "thinkingTokens": 1374,
+      "responses": 9,
+      "costUsd": 0.784557
+    }
+  },
+  "sessionId": "345d87dd-e925-55dc-bf82-f321e8be804d",
+  "branch": "claude/review-board-st7qsi",
+  "cwd": "/home/user/muthur",
+  "openingPrompt": "/relay take claude/review-board-st7qsi",
+  "prs": [],
+  "url": "https://claude.ai/code/session_016Z4TKnCFaYMzFJ8mgMUNH1",
+  "operator": "vzakharov",
+  "firstResponseAt": "2026-11-10T08:22:34.514Z",
+  "lastResponseAt": "2026-11-10T08:35:15.253Z",
+  "pricesAsOf": "2026-10-06",
+  "claudeCodeTotalUsd": null,
+  "ownTurns": {
+    "inputTokens": 84,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 132627,
+    "cacheReadTokens": 6412988,
+    "outputTokens": 34404,
+    "thinkingTokens": 12489,
+    "responses": 44,
+    "costUsd": 3.032029600000001
+  },
+  "subagents": {
+    "inputTokens": 0,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 0,
+    "cacheReadTokens": 0,
+    "outputTokens": 0,
+    "thinkingTokens": 0,
+    "responses": 0,
+    "costUsd": 0.0
+  },
+  "byRate": {
+    "claude-opus-5-5/standard": {
+      "inputTokens": 84,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 132627,
+      "cacheReadTokens": 6412988,
+      "outputTokens": 34404,
+      "thinkingTokens": 12489,
+      "responses": 44,
+      "costUsd": 3.032029600000001
+    }
+  },
+  "warnings": [],
+  "compactions": [],
+  "telemetry": null
+}
