@@ -1,6 +1,9 @@
 import type { CommentTarget } from "#src/review-board/entities/file/index.ts";
 import type { BoardHandle } from "#src/review-board/pages/board/board/index.ts";
 
+/** A diff row with a line number on its side. */
+export const ROW = ".row[data-line]";
+
 /** The file whose diff `element` sits in: its card's, or the panel's. */
 function pathOf(board: BoardHandle, element: Element): string | undefined {
   const card = element.closest<HTMLElement>(".card");

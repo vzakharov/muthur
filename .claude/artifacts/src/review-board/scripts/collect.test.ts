@@ -57,6 +57,16 @@ function makeRepo(): { dir: string; commits: string[] } {
   return { dir, commits: [base, first, second] };
 }
 
+function commitFocus(dir: string, entries: unknown): string {
+  const file = join(dir, FOCUS_PATH);
+  mkdirSync(dirname(file), { recursive: true });
+  writeFileSync(file, JSON.stringify(entries));
+  const options = { cwd: dir, env: { ...process.env, ...IDENTITY } };
+  execFileSync("git", ["add", "-A"], options);
+  execFileSync("git", ["commit", "-q", "-m", "focus"], options);
+  return file;
+}
+
 test("collects commits, files, revisions and deduplicated blobs", () => {
   const { dir, commits } = makeRepo();
   try {
@@ -164,16 +174,7 @@ test("reads the focus file from HEAD and leaves it off the board", () => {
       { path: "src/renamed.txt", why: "the story's turn", lines: [[3, 5]] },
       { path: "pic.bin", why: "the new picture" },
     ];
-    const file = join(dir, FOCUS_PATH);
-    mkdirSync(dirname(file), { recursive: true });
-    writeFileSync(file, JSON.stringify(focus));
-    const git = (...args: string[]) =>
-      execFileSync("git", args, {
-        cwd: dir,
-        env: { ...process.env, ...IDENTITY },
-      });
-    git("add", "-A");
-    git("commit", "-q", "-m", "focus");
+    const file = commitFocus(dir, focus);
     // An uncommitted edit is not what the board shows.
     writeFileSync(file, "[]");
 
@@ -188,19 +189,7 @@ test("reads the focus file from HEAD and leaves it off the board", () => {
 test("a focus line past the file's end fails the collection", () => {
   const { dir } = makeRepo();
   try {
-    const file = join(dir, FOCUS_PATH);
-    mkdirSync(dirname(file), { recursive: true });
-    writeFileSync(
-      file,
-      JSON.stringify([{ path: "mod.txt", why: "x", lines: [[2, 4]] }]),
-    );
-    const git = (...args: string[]) =>
-      execFileSync("git", args, {
-        cwd: dir,
-        env: { ...process.env, ...IDENTITY },
-      });
-    git("add", "-A");
-    git("commit", "-q", "-m", "focus");
+    commitFocus(dir, [{ path: "mod.txt", why: "x", lines: [[2, 4]] }]);
     assert.throws(
       () => collect({ cwd: dir, base: "main" }),
       /not within its 3 lines/,

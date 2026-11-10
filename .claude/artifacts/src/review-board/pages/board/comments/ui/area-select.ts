@@ -1,4 +1,5 @@
-const ROW = ".row[data-line]";
+import { ROW } from "./targets.ts";
+
 const DRAG_THRESHOLD = 3;
 
 export interface AreaHandlers {

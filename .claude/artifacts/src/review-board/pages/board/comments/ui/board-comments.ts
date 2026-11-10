@@ -7,7 +7,7 @@ import { claudeRuntime } from "#src/review-board/shared/lib/runtime.ts";
 import { decodeAnchor, encodeAnchor } from "../lib/anchor.ts";
 import { attachAreaSelect, type AreaSelect } from "./area-select.ts";
 import { locate, pinPoint } from "./locate.ts";
-import { fileTarget, rowTarget } from "./targets.ts";
+import { fileTarget, ROW, rowTarget } from "./targets.ts";
 
 type Controller = Claude.comments.CustomAnchors;
 type Thread = Claude.comments.OverrideThread;
@@ -263,7 +263,7 @@ export function boardComments(): BoardComments {
     event.preventDefault();
     event.stopPropagation();
     if (afterDrag) return;
-    const row = target.closest<HTMLElement>(".row[data-line]");
+    const row = target.closest<HTMLElement>(ROW);
     const line = row === null ? undefined : rowTarget(board, row);
     if (row !== null && line !== undefined) {
       compose(line, row);
