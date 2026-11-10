@@ -1,11 +1,12 @@
 import * as z from "zod/mini";
 
 // The viewer's board settings, at `data/users/<uid>/<branchKey>`. `from` / `to`
-// are commit SHAs; null is the base / the head. `hideViewed` defaults for docs
-// saved before it existed.
+// are commit SHAs; null is the base / the head. The filters default for docs
+// saved before they existed.
 export const boardDocSchema = z.object({
   whitespace: z.boolean(),
   hideViewed: z._default(z.boolean(), false),
+  focusOnly: z._default(z.boolean(), false),
   from: z.nullable(z.string()),
   to: z.nullable(z.string()),
   at: z.string(),

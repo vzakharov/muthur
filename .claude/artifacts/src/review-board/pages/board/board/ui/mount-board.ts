@@ -21,7 +21,7 @@ import type {
   BoardOptions,
   CommentsHook,
 } from "../model/types.ts";
-import { createFolderLayer } from "./folders.ts";
+import { createFolderLayer, type FolderViewed } from "./folders.ts";
 import { loadReviewData } from "./load-data.ts";
 import { revealFocus } from "./reveal-focus.ts";
 
@@ -51,7 +51,7 @@ export function mountBoard(
   let bounds: Rect | undefined;
   let fitted = false;
   let panelPath: string | undefined;
-  /** Files left off the board while "Hide viewed" is on. */
+  /** Files left off the board by "Hide viewed" or "Focus only". */
   const hidden = new Set<string>();
   const focusByPath = new Map(data.focus.map((item) => [item.path, item]));
   let focusAt: number | null = null;
@@ -67,8 +67,26 @@ export function mountBoard(
   const onComment: CommentsHook["onComment"] = (target, at) =>
     comments?.onComment(target, at);
 
+  /** The files a folder's Viewed box marks: all under it but the focus files, which are viewed one by one. */
+  const governed = (folder: string): ReviewFile[] =>
+    data.files.filter(
+      (file) =>
+        file.path.startsWith(`${folder}/`) && !focusByPath.has(file.path),
+    );
+  const folderViewed = (folder: string): FolderViewed => {
+    const files = governed(folder);
+    if (files.length === 0) return null;
+    const viewed = files.filter((file) => store.isViewed(file.path)).length;
+    return {
+      checked: viewed === files.length,
+      mixed: viewed > 0 && viewed < files.length,
+    };
+  };
+
   const world = el("div", "world");
-  const folders = createFolderLayer();
+  const folders = createFolderLayer((folder, viewed) => {
+    for (const file of governed(folder)) store.setViewed(file.path, viewed);
+  });
   const cardLayer = el("div", "cards");
   world.append(folders.element, cardLayer);
   const viewportEl = el("div", "viewport");
@@ -141,8 +159,14 @@ export function mountBoard(
       onWhitespace: (hide) => {
         store.setBoard({ whitespace: hide });
       },
+      // A filter changes which files are packed, so the next layout fits them anew.
       onHideViewed: (hide) => {
+        fitted = false;
         store.setBoard({ hideViewed: hide });
+      },
+      onFocusOnly: (only) => {
+        fitted = false;
+        store.setBoard({ focusOnly: only });
       },
     },
   );
@@ -163,7 +187,9 @@ export function mountBoard(
       const range = store.effective(file.path);
       const isViewed = store.isViewed(file.path);
       if (isViewed) viewed++;
-      if (isViewed && board.hideViewed) hidden.add(file.path);
+      const offFocus =
+        board.focusOnly && data.focus.length > 0 && !focusByPath.has(file.path);
+      if ((isViewed && board.hideViewed) || offFocus) hidden.add(file.path);
       const card = cards.get(file.path);
       if (card === undefined) continue;
       card.element.hidden = hidden.has(file.path);
@@ -179,6 +205,7 @@ export function mountBoard(
       to: board.to,
       whitespace: board.whitespace,
       hideViewed: board.hideViewed,
+      focusOnly: board.focusOnly,
       viewed,
       total: data.files.length,
       status: store.status(),
@@ -247,7 +274,7 @@ export function mountBoard(
       },
       PACK,
     );
-    folders.sync(packed.folders);
+    folders.sync(packed.folders, folderViewed);
     rects.clear();
     for (const placed of packed.files) {
       rects.set(placed.path, placed.rect);

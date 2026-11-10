@@ -8,6 +8,7 @@ export interface ToolbarState {
   to: string | null;
   whitespace: boolean;
   hideViewed: boolean;
+  focusOnly: boolean;
   viewed: number;
   total: number;
   status: StoreStatus;
@@ -23,6 +24,8 @@ export interface ToolbarHandlers {
   onRange(end: "from" | "to", commit: string | null): void;
   onWhitespace(hide: boolean): void;
   onHideViewed(hide: boolean): void;
+  /** Leaves on the board only the files the author marked for focus. */
+  onFocusOnly(only: boolean): void;
 }
 
 export interface Toolbar {
@@ -106,8 +109,12 @@ export function createToolbar(
   const range = el("span", "tool-group range");
   range.append(el("span", "tool-label", "Range"), from, "→", to);
 
-  const whitespace = checkbox("Hide whitespace", handlers.onWhitespace);
-  const hideViewed = checkbox("Hide viewed", handlers.onHideViewed);
+  const whitespace = checkbox("Hide whitespace", (hide) => {
+    handlers.onWhitespace(hide);
+  });
+  const hideViewed = checkbox("Hide viewed", (hide) => {
+    handlers.onHideViewed(hide);
+  });
 
   const focus = button(
     "",
@@ -117,14 +124,20 @@ export function createToolbar(
     },
   );
   focus.classList.add("focus-step");
-  focus.hidden = focusTotal === 0;
+  const focusOnly = checkbox("Focus only", (only) => {
+    handlers.onFocusOnly(only);
+  });
+  focusOnly.label.title = "Show only the files the author marked for focus";
+  const focusGroup = el("span", "tool-group");
+  focusGroup.append(focus, focusOnly.label);
+  focusGroup.hidden = focusTotal === 0;
 
   const tally = el("span", "tally");
   const note = el("span", "note");
   element.append(
     heading,
     zoom,
-    focus,
+    focusGroup,
     range,
     whitespace.label,
     hideViewed.label,
@@ -164,6 +177,7 @@ export function createToolbar(
       );
       whitespace.box.checked = state.whitespace;
       hideViewed.box.checked = state.hideViewed;
+      focusOnly.box.checked = state.focusOnly;
       focus.textContent =
         state.focusAt === null
           ? `Focus · ${focusTotal}`

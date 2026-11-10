@@ -51,6 +51,7 @@ const LOAD_TIMEOUT_MS = 10_000;
 const sameBoard = (a: BoardPrefs, b: BoardPrefs): boolean =>
   a.whitespace === b.whitespace &&
   a.hideViewed === b.hideViewed &&
+  a.focusOnly === b.focusOnly &&
   a.from === b.from &&
   a.to === b.to;
 const sameFile = (a: FilePrefs, b: FilePrefs): boolean =>
@@ -101,7 +102,13 @@ export function createFileStore(data: ReviewData): FileStore {
   }
 
   const boardValue = synced<BoardPrefs>({
-    initial: { whitespace: true, hideViewed: false, from: null, to: null },
+    initial: {
+      whitespace: true,
+      hideViewed: false,
+      focusOnly: false,
+      from: null,
+      to: null,
+    },
     equals: sameBoard,
     changed: notify,
     failed,
