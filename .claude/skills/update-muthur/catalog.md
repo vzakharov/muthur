@@ -102,6 +102,8 @@ Each group, with when to adopt it:
   yes when asked**, as G7 — and **G7 is a prerequisite**, not a recommendation.
 - [G11 — Merge gate](catalog/g11-merge-gate.md) — **the operator says yes when
   asked**, as G7 — and **G2, G3 and G7 are prerequisites**.
+- [G12 — Artifacts](catalog/g12-artifacts.md) — **the operator says yes when
+  asked**, as G7 — and **G2 is a prerequisite** of `/review-board`.
 - [Never](catalog/never.md) — under no condition.
 
 ## Closure is not optional

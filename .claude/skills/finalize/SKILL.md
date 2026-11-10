@@ -100,6 +100,13 @@ runs right after them**, before step 1 for the same reason, and so the vet run
 covers the reviewer's commits; under a harness that runs no hooks, that file's §
 "Who runs it" says whether it runs. `no vet` does not skip it.
 
+**A branch with a review board gets it rebuilt and republished next**, by
+`@.claude/skills/review-board/SKILL.md` Steps 1–2 — found by its sticky
+`<!-- review-board` PR comment. The passes just changed the diff the board
+shows, and the board is the operator's view of what is about to land; its focus
+file lives under `docs/remove-before-merging/`, so this runs while that tree is
+still on the branch. `no vet` does not skip it.
+
 Steps (stop on first unresolved failure):
 
 1. **Vet**: `./scripts/vet.sh`. Fix and rerun until green.

@@ -1,0 +1,62 @@
+.panel {
+  display: flex;
+  flex-direction: column;
+  flex: none;
+  width: min(52vw, 900px);
+  min-width: 320px;
+  background: var(--surface);
+  border-left: 1px solid var(--border);
+}
+
+.panel-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  background: var(--surface-2);
+  border-bottom: 1px solid var(--border);
+}
+
+.panel-title {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font: 600 12px var(--font-mono);
+}
+
+.panel-range {
+  padding: 4px 12px;
+  color: var(--muted);
+  font: 12px var(--font-mono);
+  border-bottom: 1px solid var(--border);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.panel-body {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+}
+
+@media (max-width: 720px) {
+  .panel {
+    position: absolute;
+    inset: 0;
+    width: auto;
+    min-width: 0;
+    z-index: 2;
+  }
+
+  .toolbar {
+    gap: 6px 10px;
+  }
+
+  .toolbar-title {
+    flex-basis: 100%;
+    max-width: none;
+  }
+}

@@ -1,0 +1,99 @@
+.diff {
+  font: 12px/var(--line-h) var(--font-mono);
+}
+
+.hunk {
+  padding: 0 10px;
+  background: var(--hunk-bg);
+  color: var(--hunk-text);
+}
+
+.empty {
+  padding: 10px;
+  color: var(--muted);
+  font-family: var(--font-ui);
+}
+
+.row {
+  display: grid;
+  grid-template-columns: 44px 44px 20px minmax(0, 1fr);
+  min-height: var(--line-h);
+
+  &.add {
+    background: var(--add-bg);
+
+    .num {
+      background: var(--add-num);
+    }
+    .sign {
+      color: var(--add-text);
+    }
+  }
+
+  &.del {
+    background: var(--del-bg);
+
+    .num {
+      background: var(--del-num);
+    }
+    .sign {
+      color: var(--del-text);
+    }
+  }
+
+  // A line the author marked for focus; its selectors outrank the add/del gutters.
+  &.focus > .num {
+    background: color-mix(in srgb, var(--focus) 35%, var(--surface));
+    color: var(--text);
+
+    &:first-child {
+      box-shadow: inset 4px 0 0 var(--focus);
+    }
+  }
+}
+
+.num {
+  padding: 0 6px;
+  text-align: right;
+  color: var(--muted);
+  user-select: none;
+}
+
+.plus {
+  align-self: center;
+  width: 16px;
+  height: 16px;
+  padding: 0;
+  margin: 0 2px;
+  line-height: 14px;
+  text-align: center;
+  background: var(--accent);
+  color: var(--accent-contrast);
+  border: 0;
+  border-radius: 4px;
+  cursor: pointer;
+  opacity: 0;
+
+  .row:hover &,
+  &:focus-visible {
+    opacity: 1;
+  }
+
+  @media (hover: none) {
+    opacity: 0.45;
+  }
+}
+
+// A long line wraps inside the card, as GitHub's diff view does.
+.code {
+  padding-right: 12px;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.sign {
+  display: inline-block;
+  width: 1.4ch;
+  color: var(--muted);
+  user-select: none;
+}

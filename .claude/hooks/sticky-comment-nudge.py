@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """`PreToolUse` hook on `Bash` and the GitHub MCP comment tools: deny, once, a
-hand-built write of one of the loop's sticky PR comments — the squash proposal
-or the finalize attestation — naming the `scripts/pr-comment.sh` line that makes
-it instead.
+hand-built write of one of the loop's sticky PR comments — the squash proposal,
+the finalize attestation or the review board's link — naming the
+`scripts/pr-comment.sh` line that makes it instead.
 
 The script is the one write of those comments that auto mode's approvals cover,
 and the skills that name it are not the only way a session comes to touch them:
@@ -38,8 +38,16 @@ from shell_words import WRAPPERS, program, simple_commands, tokens, unwrap
 
 # The home of these markers is `scripts/pr-comment.sh`'s `case`, and
 # `scripts/test_sticky_comment_nudge.py` keeps the two equal.
-MARKERS = {"squash": "Proposed squash", "attestation": "<!-- finalize-attestation"}
-WHAT = {"squash": "the squash proposal", "attestation": "the finalize attestation"}
+MARKERS = {
+    "squash": "Proposed squash",
+    "attestation": "<!-- finalize-attestation",
+    "review-board": "<!-- review-board",
+}
+WHAT = {
+    "squash": "the squash proposal",
+    "attestation": "the finalize attestation",
+    "review-board": "the review board's link",
+}
 LEAD_BYTES = 256
 FETCH_SECONDS = 5
 

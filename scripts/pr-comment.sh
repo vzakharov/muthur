@@ -25,6 +25,7 @@
 # Kinds, each keyed on the marker its body leads with:
 #   squash       - `Proposed squash`, the squash proposal.
 #   attestation  - `<!-- finalize-attestation`, the finalize attestation.
+#   review-board - `<!-- review-board`, the review board artifact's link.
 #
 # The comment is the newest one whose body leads with the marker, whoever
 # posted it — a session picking up someone else's PR takes over the comment
@@ -48,13 +49,14 @@ die() {
 }
 
 usage() {
-  printf 'usage: scripts/pr-comment.sh <squash|attestation> [--update-only] <pr-number> <file>\n' >&2
+  printf 'usage: scripts/pr-comment.sh <squash|attestation|review-board> [--update-only] <pr-number> <file>\n' >&2
   exit 1
 }
 
 case "${1:-}" in
   squash) MARKER="Proposed squash" ;;
   attestation) MARKER="<!-- finalize-attestation" ;;
+  review-board) MARKER="<!-- review-board" ;;
   *) usage ;;
 esac
 shift

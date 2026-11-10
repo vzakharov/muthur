@@ -1,0 +1,69 @@
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 14px;
+  padding: 8px 12px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+}
+
+.toolbar-title {
+  font-weight: 600;
+  max-width: 28ch;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tool-group {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.tool-label {
+  color: var(--muted);
+}
+
+.tool-btn,
+.range-select,
+.stub-open,
+.panel-close,
+.comment-btn {
+  padding: 3px 9px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.tool-btn,
+.stub-open,
+.panel-close,
+.comment-btn {
+  &:hover {
+    border-color: var(--accent);
+  }
+}
+
+.tool-btn.focus-step {
+  border-color: var(--focus);
+  white-space: nowrap;
+}
+
+.tally {
+  font-variant-numeric: tabular-nums;
+  color: var(--muted);
+}
+
+.note {
+  color: var(--muted);
+  font-style: italic;
+}
+
+.range-select {
+  max-width: 220px;
+  min-width: 0;
+  text-overflow: ellipsis;
+}

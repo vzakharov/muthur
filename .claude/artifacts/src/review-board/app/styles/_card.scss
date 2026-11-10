@@ -1,0 +1,136 @@
+.card {
+  position: absolute;
+  width: var(--card-w);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  box-shadow: var(--shadow);
+  overflow: hidden;
+
+  &.is-viewed .card-head {
+    opacity: 0.7;
+  }
+
+  // A file the author marked for focus: its frame, its reason and its marked lines.
+  &.is-focus {
+    border-color: var(--focus);
+    box-shadow:
+      0 0 0 1px var(--focus),
+      var(--shadow);
+  }
+}
+
+.card-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 10px;
+  padding: 6px 10px;
+  background: var(--surface-2);
+  user-select: none;
+}
+
+.card-body {
+  border-top: 1px solid var(--border);
+
+  &.has-diff {
+    max-height: calc(40 * var(--line-h));
+    overflow: auto;
+    cursor: auto;
+    // The camera's `touch-action: none` would otherwise block scrolling a diff by touch.
+    touch-action: pan-x pan-y;
+  }
+}
+
+.viewed {
+  color: var(--muted);
+}
+
+.path {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font: 12px var(--font-mono);
+}
+
+.copy-path {
+  margin-right: auto;
+  padding: 0 4px;
+  background: none;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  color: var(--muted);
+  cursor: pointer;
+
+  &:hover {
+    border-color: var(--accent);
+    color: inherit;
+  }
+}
+
+.badge {
+  padding: 0 7px;
+  border: 1px solid currentColor;
+  border-radius: 999px;
+  font-size: 11px;
+  text-transform: capitalize;
+
+  @each $status in added, modified, renamed, deleted {
+    &.#{$status} {
+      color: var(--badge-#{$status});
+    }
+  }
+
+  &.focus {
+    color: var(--focus);
+    font-weight: 600;
+  }
+}
+
+.focus-why {
+  margin: 0;
+  padding: 4px 10px 6px;
+  border-top: 1px solid var(--border);
+  background: color-mix(in srgb, var(--focus) 8%, var(--surface));
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.counts {
+  font: 12px var(--font-mono);
+  white-space: nowrap;
+
+  .removed {
+    color: var(--del-text);
+  }
+}
+
+.counts .added,
+.panel-head .counts {
+  color: var(--add-text);
+}
+
+.range {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: auto;
+  min-width: 0;
+
+  .range-select {
+    max-width: 150px;
+    padding: 1px 4px;
+    font-size: 12px;
+  }
+}
+
+.arrow {
+  color: var(--muted);
+}
+
+.stub {
+  padding: 14px;
+  color: var(--muted);
+  text-align: center;
+}

@@ -32,4 +32,8 @@ cd "${CLAUDE_PROJECT_DIR:-$(pwd)}"
 # install below is filled in. Keyed on `.prettierrc.json`, as in `vet.sh`.
 [ ! -f .prettierrc.json ] || scripts/prettier.sh --version >/dev/null
 
+# The artifact apps' scoped toolchain (G12, opt-in), keyed on its directory so a
+# repo that declined it has nothing to install.
+[ ! -d .claude/artifacts ] || pnpm --dir .claude/artifacts install --frozen-lockfile >/dev/null
+
 # TODO: install dependencies for your stack
