@@ -12,7 +12,6 @@ export interface ToolbarState {
   viewed: number;
   total: number;
   status: StoreStatus;
-  /** How many of the review's focus items are not viewed yet. */
   focusUnviewed: number;
 }
 

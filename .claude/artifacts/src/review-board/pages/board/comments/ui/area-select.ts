@@ -44,7 +44,8 @@ function rowsBetween(start: HTMLElement, end: HTMLElement): HTMLElement[] {
 /**
  * Lets the viewer draw a comment area in comment mode: a drag across diff rows
  * selects a line range, and a drag over the board's chrome (toolbar, panel
- * head) draws a rectangle. A drag starting on the canvas still pans.
+ * head) draws a rectangle. Off the rows, a drag on the canvas or in the panel's
+ * diff draws nothing.
  */
 export function attachAreaSelect(
   root: HTMLElement,
@@ -84,7 +85,6 @@ export function attachAreaSelect(
       };
       return;
     }
-    // The canvas pans, and the panel's diff scrolls; neither draws.
     if (target.closest(".viewport, .panel-body") !== null) return;
     drawing = {
       kind: "rect",
