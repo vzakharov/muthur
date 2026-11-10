@@ -9,19 +9,23 @@ Review feedback reached a session only through GitHub, where the agent
 learns of a comment late and answers it out of band. The review board
 is a code-review artifact whose line comments go through the artifact's
 own comment store, so "Send to Claude" wakes the session that published
-it, which fixes, pushes, republishes and replies with the commit.
+it, which fixes, pushes, republishes and replies with the commit, moving
+the fixed file's "from" to what the reviewer last saw so the board shows
+the fix alone.
 
 The board lays a branch's changed files out as nested folder and file
 rectangles on a pannable, zoomable canvas. Each file carries a capped,
 scrolling diff that opens in a side panel past the cap, its own from/to
 commit range over the board's, a "viewed" box, and the board-wide
-hide-whitespace toggle. Threads are anchored by the page as
-<path>:R<line>@<sha>, the location Claude reads off a thread.
+hide-whitespace toggle, all kept per viewer across devices. Threads
+are anchored by the page as <path>@<from>..<to>[:R<line>], the
+location Claude reads off a thread.
 
 One script collects file contents per commit from git, with no agent
 judgement in it, and the page diffs any pair itself. The code is bare
-DOM in a one-app MASD tree under .claude/artifacts/, with its own
-scoped package.json and checks wired into vet.sh and install-deps.sh,
+DOM in a MASD tree under .claude/artifacts/, home to further artifact
+apps, with vovazakharov.com's MASD checkers ported, its own scoped
+package.json, and checks wired into vet.sh and install-deps.sh,
 offered to adopters as an opt-in catalog group. /review-board builds,
 publishes and handles the comments; /relay hands every artifact watch
 to the successor session.

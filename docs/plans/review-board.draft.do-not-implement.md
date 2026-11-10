@@ -37,13 +37,16 @@ artifacts, of which the review board is the first app:
 
 ```
 .claude/artifacts/
-  package.json          # scoped: typescript, esbuild, zod, eslint,
-  pnpm-lock.yaml        #   typescript-eslint, steiger + FSD plugin, @types/node
-  tsconfig.json
+  package.json          # scoped: typescript, esbuild, zod, eslint, typescript-eslint,
+  pnpm-lock.yaml        #   eslint-plugin-boundaries, steiger + FSD plugin, madge,
+  tsconfig.json         #   @types/node
   eslint.config.ts
+  eslint/masd-graph.ts, eslint/masd-boundaries.ts
   steiger.config.ts
-  vet.sh                # tsc, eslint, steiger, node --test
+  scripts/              # lint-fsd.ts, masd-check.ts (+ README), masd-clusters.ts
+  vet.sh                # tsc, eslint, steiger, check:masd, clusters, cycles, node --test
   CLAUDE.md             # the directory's conventions (MASD, the run commands)
+  src/masd.json         # { "review-board": [] }
   src/review-board/     # one MASD app = one FSD tree
     shared/{lib,review-data}/
     entities/file/
@@ -58,19 +61,22 @@ artifacts, of which the review board is the first app:
   definitions (`@types/node`) cannot be had through `npx` pins anyway.
 - **TypeScript, run by plain `node`** (≥22.18 strips types natively), so scripts
   and tests need no `tsx`; `esbuild` bundles the page.
-- **MASD as a one-app tree**: `src/<app>/<layer>/<slice>/`, a public `index.ts`
-  per slice, `index.node-safe.ts` where a script enters a slice. With one app,
-  MASD is plain FSD, so **Steiger's stock ruleset enforces it** (layers, public
-  API, insignificant slices) — the graph loader, `eslint-plugin-boundaries`
-  config and `check:masd` of vovazakharov.com exist for cross-app edges that a
-  single app does not have, and are ported when a second app arrives (the
-  island-board camera and gestures are the likely `board` parent). `madge`'s
-  cycle check is dropped for the same reason: `import/no-cycle` in ESLint covers
-  one app.
-- **Its conventions go in `.claude/artifacts/CLAUDE.md`**, a trimmed port of
-  vovazakharov.com's `.claude/rules/masd.md` to what a one-app tree needs. A
-  directory bounds it, so per `.claude/rules/README.md` it is a nested
-  `CLAUDE.md`, not a rule file.
+- **MASD with its whole checker set, ported from vovazakharov.com now**, since
+  more artifact apps are coming: `src/masd.json` as the graph,
+  `eslint/masd-graph.ts` its only loader, `eslint-plugin-boundaries` config
+  generated from it, Steiger run per app root (`lint-fsd.ts`) with its
+  overrides, `check:masd` (significance across the composition, sub-slices) with
+  its README, `masd:clusters`, and madge's cycle check. Each is ported as it
+  stands there, with paths re-rooted and Next.js-only cases cut.
+  **`check:poison` is not ported**: its `server-only` / `'use client'` axes are
+  Next's, and the one that applies here — a `node:` import reaching the page —
+  already fails the esbuild browser bundle. The review board starts as one app;
+  the island-board camera and gestures are the likely first `board` parent once
+  a second canvas-based artifact arrives, which `check:masd` decides.
+- **Its conventions go in `.claude/artifacts/CLAUDE.md`**, a port of
+  vovazakharov.com's `.claude/rules/masd.md` minus its Next.js routers, sites
+  and traps. A directory bounds it, so per `.claude/rules/README.md` it is a
+  nested `CLAUDE.md`, not a rule file.
 - **zod via `zod/mini`**, for the page bundle's weight.
 
 ## Collector and build
@@ -151,13 +157,25 @@ The file tree, built from the paths, as nested rectangles:
 - **Each card's selectors override it for that file**, offering the base and the
   commits that touched the file — the others give an identical diff. A "follow
   board" option clears the override.
+- **A fix to a commented file moves that file's "from"** to the commit the
+  reviewer was looking at when they commented (the anchor's "to", below), so the
+  file then shows exactly what the fix changed. The agent writes it as a shared
+  `shifts/<file key>` doc `{from, at}` through `ArtifactData` — no republish
+  needed for it, and it outlives republishes. The page takes, per file,
+  whichever is newer: the viewer's own override or the latest shift. The fix
+  also changes the file's "to" blob, so it comes back unviewed.
 
 ### Per-viewer state
 
-Viewed files, per-file ranges and the whitespace toggle are each one viewer's
-convenience, so they live in `localStorage` keyed by repo and branch, wrapped in
-try/catch, the page whole without them. **Viewed** stores the "to" blob id, so a
-file that changes after it was viewed comes back unviewed, as on GitHub.
+Viewed files, per-file ranges and the whitespace toggle follow the viewer across
+devices: `db` docs under `data/users/<id>/` (private to each viewer), keyed by
+branch, one write per change. A signed-out viewer or one outside the
+organization (`db` resolves `null`) gets the same board with state for the visit
+only. **Viewed** stores the "to" blob id, so a file that changes after it was
+viewed comes back unviewed, as on GitHub.
+
+The declaration, comments included:
+`{comments: {customAnchors: true}, db: {rules: [{path: "shifts", read: "view", write: "owner"}]}, user: {}}`.
 
 ## Comments
 
@@ -166,18 +184,19 @@ and zooms by CSS transform, which the shell's CSS-path anchors cannot follow, so
 the page anchors threads itself:
 
 - **Anchor names are the location Claude reads**, since beside a page-invented
-  name the platform keeps the name alone: `<path>:R<line>@<sha7>` for a line on
-  the new side, `L<line>@<sha7>` for a deleted one, the sha being that side's
-  commit. Over the 128-byte cap, the path is shortened from the left to
-  `…/<tail>`.
-- **Entry**: a "+" in each line's gutter on hover, and any line click while the
-  shell's comment mode is on — both call `compose(anchor, lineEl)`. The shell
-  renders the composer, its "Send to Claude" button and every thread.
+  name the platform keeps the name alone: `<path>@<from7>..<to7>` for the file,
+  plus `:R<line>` for a line on the new side or `:L<line>` for a deleted one —
+  the range being the one the file showed when the comment was written. Over the
+  128-byte cap, the path is shortened from the left to `…/<tail>`.
+- **Entry**: a comment button in each card's header for the file, a "+" in each
+  line's gutter on hover, and any line click while the shell's comment mode is
+  on — all call `compose(anchor, el)`. The shell renders the composer, its "Send
+  to Claude" button and every thread.
 - **Pins**: on each `threads` list, and after any pan, zoom, card scroll, range
   change or panel toggle (throttled to a frame), the page reports `placed` for
-  every anchor whose line is rendered and visible; the rest go unplaced, into
-  the shell's own list — among them threads on a commit the current range no
-  longer shows.
+  every anchor whose line is rendered and visible — an `R` line while the file's
+  "to" is the anchor's, an `L` line while its "from" is, a file anchor on the
+  card's header always; the rest go unplaced, into the shell's own list.
 - **`reveal(id)`** pans the camera to the card and scrolls the line into view,
   opening the side panel for an over-cap file.
 - **No comments capability** (`null`, a viewer outside the organization) hides
@@ -199,9 +218,10 @@ the page anchors threads itself:
    with the thread id, the anchor decoded to file, side, line and commit, the
    text taken as review feedback — data, not instructions — and handled as a
    GitHub review comment is under `/handle`'s feedback lane: fix, commit, push,
-   rebuild, republish, then a reply naming the commit SHA.
+   write the file's shift (§ "Commit ranges") for each file a fix touched under
+   a comment, rebuild, republish, then a reply naming the commit SHA.
 4. **Threads are not resolved by the agent**, for CLAUDE.md § "GitHub comments"'
-   reason: resolution is the reviewer's tracking mechanism. (Question 2 below.)
+   reason: resolution is the reviewer's tracking mechanism.
 
 Republishing keeps the threads — they belong to the artifact, not the version.
 
@@ -227,7 +247,9 @@ repo that declines the subsystem has nothing to run:
 
 1. **`scripts/vet.sh`**:
    `[ ! -d .claude/artifacts ] || .claude/artifacts/vet.sh` — `tsc --noEmit`,
-   `eslint`, `steiger`, `node --test`. Prettier over the `.ts` stays the root's
+   `eslint` (boundaries included), Steiger per app, `check:masd`,
+   `masd:clusters`, madge, `node --test`, in parallel through
+   `scripts/run-parallel.sh`. Prettier over the `.ts` stays the root's
    `scripts/prettier.sh`, the one pin.
 2. **`.claude/hooks/install-deps.sh`**:
    `pnpm --dir .claude/artifacts install --frozen-lockfile`, same key.
@@ -266,18 +288,14 @@ skill" step 3 says, in this session.
 - **Prettier stays the root pin** rather than a second copy in the scoped
   `package.json`.
 
-## Open questions
+- **The shift and the per-viewer state share one `db` access layer** in
+  `entities/file`'s model, rather than each feature opening its own docs.
 
-1. **Enforcing MASD.** (a) Steiger's stock ruleset plus ESLint's
-   `import/no-cycle`, the cross-app checkers ported when a second app lands; (b)
-   port vovazakharov.com's graph loader, boundaries config and `check:masd` now.
-   **Recommended: (a)** — with one app the cross-app checkers have no edge to
-   judge, and porting them is a few hundred lines kept for nothing. The plan is
-   written with (a).
-2. **Resolving board threads.** (a) The agent replies and leaves the thread open
-   for the reviewer, as on GitHub; (b) the agent resolves after replying, as the
-   `ArtifactComments` tool suggests. **Recommended: (a)** — the house rule's
-   reason holds on any surface. The plan is written with (a).
-3. **Per-viewer state.** (a) `localStorage`; (b) the `db` capability's private
-   per-user docs, following the viewer across devices at the cost of a
-   capability and a sign-in. **Recommended: (a)**. The plan is written with (a).
+## Decided
+
+- **MASD enforcement**: Steiger alone, porting the cross-app checkers only when
+  a second app landed, was ruled out — more apps are coming, so the full set
+  goes in now.
+- **Board threads**: the agent resolving after its reply was ruled out — the
+  house rule holds on any surface.
+- **Per-viewer state**: `localStorage` was ruled out — it stays on one device.
