@@ -183,7 +183,14 @@ export function mountBoard(
   if (data.files.length === 0)
     viewportEl.append(el("div", "empty-board", "No changed files"));
 
+  /** Until the viewer's saved state arrives, or the store is given up on, the board would show defaults it is about to replace. */
+  const settled = (): boolean => {
+    const status = store.status();
+    return status !== "connecting" && status !== "loading";
+  };
+
   function render(): void {
+    viewportEl.classList.toggle("is-loading", !settled());
     const board = store.board();
     let viewed = 0;
     hidden.clear();
@@ -289,7 +296,7 @@ export function mountBoard(
       element.style.top = `${placed.rect.y}px`;
     }
     bounds = packed.bounds;
-    if (!fitted && data.files.length > 0) {
+    if (!fitted && settled() && data.files.length > 0) {
       fitted = true;
       viewport.fit(packed.bounds);
     }
