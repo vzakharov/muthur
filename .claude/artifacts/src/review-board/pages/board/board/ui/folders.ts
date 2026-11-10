@@ -29,6 +29,7 @@ export function createFolderLayer(
   function create(folder: PackedFolder): FolderNode {
     const node = el("div", "folder");
     const head = el("div", "folder-head");
+    head.dataset["path"] = folder.path;
     head.style.height = `${folder.header.height}px`;
     const box = el("input", "");
     box.type = "checkbox";
@@ -39,7 +40,7 @@ export function createFolderLayer(
     check.title =
       "Mark every file here viewed, except those the author marked for focus";
     check.append(box, "Viewed");
-    head.append(el("span", "folder-name", `${folder.name}/`), check);
+    head.append(check, el("span", "folder-name", `${folder.name}/`));
     node.append(head);
     element.append(node);
     return { node, box, check };

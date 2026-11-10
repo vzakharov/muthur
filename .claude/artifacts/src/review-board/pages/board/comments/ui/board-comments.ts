@@ -252,8 +252,8 @@ export function boardComments(): BoardComments {
 
   /**
    * In comment mode a click comments on what it lands on — a line, else the
-   * file whose card or diff it is in, else the control — and never activates
-   * it. The board's own comment buttons keep their handlers.
+   * file whose card or diff it is in, else a folder's head, else the control
+   * — and never activates it. The board's own comment buttons keep their handlers.
    */
   function onModeClick(event: MouseEvent): void {
     const target = event.target;
@@ -274,7 +274,14 @@ export function boardComments(): BoardComments {
       compose(file, target);
       return;
     }
-    // The canvas between the cards is no subject.
+    const folder = target.closest<HTMLElement>(".folder-head");
+    if (folder !== null) {
+      composeOnChrome(folder, event, {
+        label: clip(`${folder.dataset["path"] ?? ""}/ folder`),
+      });
+      return;
+    }
+    // The canvas between the cards and folder heads is no subject.
     if (target.closest(".viewport") !== null) return;
     const control = target.closest(CONTROLS) ?? target;
     composeOnChrome(target, event, { label: clip(nameOf(control)) });

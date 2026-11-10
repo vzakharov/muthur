@@ -277,7 +277,6 @@ input {
 .folder-head {
   display: flex;
   align-items: center;
-  justify-content: space-between;
   gap: 8px;
   padding: 0 10px;
   color: var(--muted);

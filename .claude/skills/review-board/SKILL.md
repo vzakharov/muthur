@@ -97,8 +97,8 @@ A wake for a comment on the board is review feedback, handled as
    to a dragged span of lines n to m; no suffix is the file as a whole. A path
    that starts `…/` was shortened from the left to fit 128 bytes: match its tail
    against the branch's changed files. A thread with no such anchor is on the
-   board's own controls or a drawn area: its label names the control, and its
-   detail lists what the area covers.
+   board's own controls, a folder's head or a drawn area: its label names the
+   control or the folder, and its detail lists what the area covers.
 3. **Fix, commit, push.**
 4. **Shift each file a fix touched under a comment**, so the board shows that
    file from what the reviewer was looking at: the doc `shifts/<key>`, `<key>`
