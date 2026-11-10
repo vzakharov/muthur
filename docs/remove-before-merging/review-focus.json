@@ -11,8 +11,8 @@
     "path": ".claude/artifacts/src/review-board/scripts/collect.ts",
     "why": "The revision model: a file's history is its first-parent commits on the branch, renames followed by asking for both paths; a merge whose other parents the base already holds is a base merge. Every range a reviewer can pick comes from here.",
     "lines": [
-      [91, 135],
-      [241, 301]
+      [98, 137],
+      [243, 303]
     ]
   },
   {
