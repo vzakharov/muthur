@@ -1,0 +1,10 @@
+// Order is the cascade: a later partial wins a tie in specificity.
+@use "theme";
+@use "base";
+@use "toolbar";
+@use "canvas";
+@use "card";
+@use "diff";
+@use "syntax";
+@use "comments";
+@use "panel";

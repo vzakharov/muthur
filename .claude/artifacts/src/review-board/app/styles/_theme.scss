@@ -1,0 +1,89 @@
+@mixin dark {
+  color-scheme: dark;
+  --bg: #0d1117;
+  --surface: #161b22;
+  --surface-2: #1c2128;
+  --border: #30363d;
+  --text: #e6edf3;
+  --muted: #8d96a0;
+  --accent: #4493f8;
+  --accent-contrast: #0d1117;
+  --add-bg: rgba(46, 160, 67, 0.15);
+  --add-num: rgba(46, 160, 67, 0.3);
+  --add-text: #3fb950;
+  --del-bg: rgba(248, 81, 73, 0.15);
+  --del-num: rgba(248, 81, 73, 0.3);
+  --del-text: #f85149;
+  --hunk-bg: rgba(56, 139, 253, 0.15);
+  --hunk-text: #79c0ff;
+  --folder-bg: rgba(255, 255, 255, 0.03);
+  --folder-border: #3d444d;
+  --shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+  --badge-added: #3fb950;
+  --badge-modified: #d29922;
+  --badge-renamed: #a371f7;
+  --badge-deleted: #f85149;
+  --focus: #e3b341;
+  --syn-keyword: #ff7b72;
+  --syn-string: #a5d6ff;
+  --syn-comment: #9198a1;
+  --syn-constant: #79c0ff;
+  --syn-entity: #d2a8ff;
+  --syn-variable: #ffa657;
+  --syn-tag: #7ee787;
+  --syn-bullet: #f2cc60;
+}
+
+:root {
+  color-scheme: light;
+  --bg: #f4f5f7;
+  --surface: #ffffff;
+  --surface-2: #f6f8fa;
+  --border: #d0d7de;
+  --text: #1f2328;
+  --muted: #656d76;
+  --accent: #0969da;
+  --accent-contrast: #ffffff;
+  --add-bg: #e6ffec;
+  --add-num: #ccffd8;
+  --add-text: #1a7f37;
+  --del-bg: #ffebe9;
+  --del-num: #ffd7d5;
+  --del-text: #cf222e;
+  --hunk-bg: #ddf4ff;
+  --hunk-text: #0550ae;
+  --folder-bg: rgba(31, 35, 40, 0.04);
+  --folder-border: #c4ccd4;
+  --shadow: 0 1px 3px rgba(31, 35, 40, 0.12);
+  --badge-added: #1a7f37;
+  --badge-modified: #9a6700;
+  --badge-renamed: #8250df;
+  --badge-deleted: #cf222e;
+  --focus: #bf8700;
+  --syn-keyword: #cf222e;
+  --syn-string: #0a3069;
+  --syn-comment: #59636e;
+  --syn-constant: #0550ae;
+  --syn-entity: #6639ba;
+  --syn-variable: #953800;
+  --syn-tag: #116329;
+  --syn-bullet: #9a6700;
+  --font-ui:
+    system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial,
+    sans-serif;
+  --font-mono:
+    ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono",
+    monospace;
+  --line-h: 18px;
+  --card-w: 640px;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    @include dark;
+  }
+}
+
+:root[data-theme="dark"] {
+  @include dark;
+}

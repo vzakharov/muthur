@@ -1,0 +1,66 @@
+.viewport {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  background-color: var(--bg);
+  background-image: radial-gradient(var(--border) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+.world,
+.folders,
+.cards {
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+
+.folder {
+  position: absolute;
+  background: var(--folder-bg);
+  border: 1px solid var(--folder-border);
+  border-radius: 8px;
+
+  &[hidden] {
+    display: none;
+  }
+}
+
+.folder-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 10px;
+  color: var(--muted);
+  font: 600 12px var(--font-mono);
+  user-select: none;
+  white-space: nowrap;
+}
+
+.folder-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.folder-viewed {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  gap: 4px;
+  font: 12px var(--font-ui);
+  cursor: pointer;
+
+  &[hidden] {
+    display: none;
+  }
+}
+
+.empty-board {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  color: var(--muted);
+  pointer-events: none;
+}

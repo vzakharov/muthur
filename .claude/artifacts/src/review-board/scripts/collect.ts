@@ -153,7 +153,7 @@ function diffTokens(
 function readChanges(cwd: string, baseSha: string): Change[] {
   const tokens = diffTokens(cwd, baseSha, "--name-status");
   const changes: Change[] = [];
-  for (let i = 0; i < tokens.length - 1; ) {
+  for (let i = 0; i < tokens.length - 1;) {
     const code = tokens[i++] ?? "";
     const status = statusOf(code);
     if (status === "renamed") {
@@ -175,7 +175,7 @@ function readChanges(cwd: string, baseSha: string): Change[] {
 function readBinaryPaths(cwd: string, baseSha: string): Set<string> {
   const tokens = diffTokens(cwd, baseSha, "--numstat");
   const binary = new Set<string>();
-  for (let i = 0; i < tokens.length - 1; ) {
+  for (let i = 0; i < tokens.length - 1;) {
     const entry = tokens[i++] ?? "";
     const [added, , inlinePath] = entry.split("\t");
     let path = inlinePath;

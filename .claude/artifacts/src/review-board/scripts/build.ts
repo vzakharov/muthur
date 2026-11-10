@@ -5,6 +5,7 @@ import { fileURLToPath } from "node:url";
 import { build } from "esbuild";
 import { collect } from "./collect.ts";
 import { renderPage } from "./page.ts";
+import { scss } from "./scss.ts";
 
 const MB = 1024 * 1024;
 const MAX_PAGE_BYTES = 8 * MB;
@@ -28,6 +29,7 @@ async function bundle(): Promise<{ js: string; css: string }> {
     target: "es2022",
     minify: true,
     legalComments: "none",
+    plugins: [scss],
   });
   let js = "";
   let css = "";

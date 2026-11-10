@@ -3,7 +3,7 @@ import {
   mountBoard,
 } from "#src/review-board/pages/board/index.ts";
 import { ROOT_ID } from "#src/review-board/shared/lib/page-ids.ts";
-import "../styles/board.css";
+import "../styles/board.scss";
 
 const root = document.getElementById(ROOT_ID);
 if (root === null) throw new Error(`the page has no #${ROOT_ID}`);
