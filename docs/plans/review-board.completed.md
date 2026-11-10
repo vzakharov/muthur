@@ -321,7 +321,6 @@ skill" step 3 says, in this session.
 
 ### Left
 
-- `/polish`, the flip to `*.completed.md`, `/pr`.
 - Live QA of pan, zoom, pins and a comment's round trip on the published board.
 - Report to the operator: the environment setup script needs node ≥22.18 and
   pnpm; the autoMode "Sticky PR Comments" entry in their settings should name
