@@ -20,7 +20,7 @@ entry is `opt-in: ask`.
   tokens of work and where it saves $0.80, capped at 300k and 400k, and the
   notice gives the dollars; without them, or under
   `MUTHUR_CONTEXT_BUDGET_LINES=fixed`, they are those caps. Under a
-  `CLAUDE_CODE_AUTO_COMPACT_WINDOW` below 350k it is silent unless
+  `CLAUDE_CODE_AUTO_COMPACT_WINDOW` below 350k the hook is silent unless
   `MUTHUR_CONTEXT_BUDGET_RELAY_DESPITE_AUTOCOMPACT` says `true`. **The cost,
   which is why it is asked:** a `PostToolUse` hook on every tool call, and a
   session that can end its own turn with the work paused, or hand itself to a
