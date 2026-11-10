@@ -35,7 +35,9 @@ model come first.
   followed through every hook, test, catalog entry and skill naming it. New
   TypeScript modules from a brief in parallel worktrees: a DOM pan/zoom port, a
   packing algorithm, a Myers line diff tested against `git diff`, a git-plumbing
-  collector — each green on its acceptance commands, its surprises reported.
+  collector — each green on its acceptance commands, its surprises reported. A
+  3,000-line port of a checker suite to another toolchain, a framework's parts
+  cut and its tests re-fixtured, each checker proved on planted violations.
 - **Misses:** planning a reader for an undocumented record format, it drew the
   shapes from the one existing reader it opened and missed those other readers
   in the tree already handle; and it scoped a new gate by a state that holds for
@@ -69,7 +71,8 @@ model come first.
 - **Cost, by eye:** that suite, a few hundred lines, cost about twice as much
   delegated as written in-session; the rework ran to about 137k subagent tokens.
   New modules of 500–1,000 lines with tests, from a cold brief, cost about
-  two-thirds of in-session (8–10 turns assumed), the review included by eye.
+  two-thirds of in-session (8–10 turns assumed), the review included by eye; the
+  3,000-line port, about four-fifths (25 turns assumed).
 
 ## haiku
 
