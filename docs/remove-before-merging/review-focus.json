@@ -1,12 +1,12 @@
 [
   {
     "path": ".claude/context-budget/hooks/post-tool-context-budget.sh",
-    "why": "The gate silences the whole hook, warning and pause alike, rather than only the pause's relay; the 350k cutoff and the override's name are the contract an environment sets against. A hook that cannot see the variable falls back to the old behaviour.",
+    "why": "Гейт глушит весь хук — и предупреждение, и паузу, а не только релей в конце паузы. Порог 350k и имя переключателя — контракт, который выставляет среда. Если хук не видит переменную, он работает по-старому.",
     "lines": [[45, 51]]
   },
   {
     "path": ".claude/context-budget/CLAUDE.md",
-    "why": "The stated reason for the cutoff: a small window is read as the environment choosing the compact over the relay, not as a claim about where the compact lands relative to the lines.",
+    "why": "Обоснование порога: маленькое окно читается как выбор среды в пользу компакта, а не как утверждение о том, где компакт ложится относительно линий.",
     "lines": [[70, 73]]
   }
 ]
