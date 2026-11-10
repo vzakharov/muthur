@@ -38,8 +38,12 @@ export function createPicker(
   const list = el("div", "picker-list");
   list.popover = "auto";
   element.append(button, list);
+  // Linking the button as the list's invoker keeps a press on it from light-dismissing the list,
+  // so a second click closes rather than reopens it; the click handler toggles instead, to place it.
+  button.popoverTargetElement = list;
 
-  button.addEventListener("click", () => {
+  button.addEventListener("click", (event) => {
+    event.preventDefault();
     if (list.matches(":popover-open")) {
       list.hidePopover();
       return;
