@@ -14,8 +14,9 @@ board would be handled through /go against an unapproved plan.
 
 A comment sent to Claude from the board already ends in /go and so in
 /pr, which republishes, so /review-board no longer builds a second time
-after a fix. The catalog lists /review-board as a conditional pull of
-/pr and /finalize, and names the switch.
+after a fix, and it now says the focus file's `lines` is a list of
+spans, as the collector parses it. The catalog lists /review-board as a
+conditional pull of /pr and /finalize, and names the switch.
 
 Co-authored-by: Claude <noreply@anthropic.com>
 ```
