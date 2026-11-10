@@ -81,14 +81,12 @@ export function mountBoard(
     onChange: notifyVisible,
   });
 
-  const panel = createPanel({
-    onClose() {
-      panelPath = undefined;
-      panel.close();
-      notifyVisible();
-    },
-    onComment,
-  });
+  const closePanel = (): void => {
+    panelPath = undefined;
+    panel.close();
+    notifyVisible();
+  };
+  const panel = createPanel({ onClose: closePanel, onComment });
 
   const cards = new Map(
     data.files.map((file) => [
@@ -203,22 +201,28 @@ export function mountBoard(
   }
 
   /**
-   * Pans to a focus file and brings its first marked line into view — in the
-   * card, or in the panel when the card shows only a stub.
+   * Zooms to a focus file and brings its first marked line into view — in the
+   * card, or in the panel when the card shows only a stub. A panel left open on
+   * another file closes, so it never stands in for the file stepped to.
    */
   function stepTo(path: string): void {
-    const rect = rects.get(path);
-    if (rect !== undefined) viewport.panTo(rect);
-    const body = cards
-      .get(path)
-      ?.element.querySelector<HTMLElement>(".card-body");
-    if (body === null || body === undefined || body.hidden) return;
-    if (body.querySelector(".row") !== null) {
-      revealFocus(body);
+    // The panel narrows the viewport, so the camera fits only once it is open or closed.
+    const fit = (): void => {
+      const rect = rects.get(path);
+      if (rect !== undefined) viewport.fit(rect);
+    };
+    const body =
+      cards.get(path)?.element.querySelector<HTMLElement>(".card-body") ?? null;
+    const shown = body !== null && !body.hidden ? body : null;
+    const stub = shown !== null && shown.querySelector(".row") === null;
+    if (!stub || focusByPath.get(path)?.lines === undefined) {
+      if (panelPath !== undefined && panelPath !== path) closePanel();
+      fit();
+      if (shown !== null) revealFocus(shown);
       return;
     }
-    if (focusByPath.get(path)?.lines === undefined) return;
     openPanel(path);
+    fit();
     const panelBody = panel.element.querySelector<HTMLElement>(".panel-body");
     if (panelBody !== null) revealFocus(panelBody);
   }

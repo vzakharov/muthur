@@ -33,7 +33,7 @@
   {
     "path": ".claude/artifacts/src/review-board/pages/board/comments/ui/board-comments.ts",
     "why": "The board takes over the claude.ai shell's comment mode: a click comments instead of acting, and resolves to a line, a file, or the control under it. This is the riskiest bet — an undocumented contract with the host.",
-    "lines": [[250, 343]]
+    "lines": [[253, 343]]
   },
   {
     "path": ".claude/artifacts/src/review-board/pages/board/comments/ui/area-select.ts",

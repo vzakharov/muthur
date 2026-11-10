@@ -389,10 +389,6 @@ input {
   line-height: 1.4;
 }
 
-.row.focus {
-  box-shadow: inset 3px 0 0 var(--focus);
-}
-
 .counts {
   font: 12px var(--font-mono);
   white-space: nowrap;
@@ -475,6 +471,15 @@ input {
 }
 .row.del .num {
   background: var(--del-num);
+}
+
+/* A line the author marked for focus; after the add/del gutters so it wins over them. */
+.row.focus > .num {
+  background: color-mix(in srgb, var(--focus) 35%, var(--surface));
+  color: var(--text);
+}
+.row.focus > .num:first-child {
+  box-shadow: inset 4px 0 0 var(--focus);
 }
 
 .plus {
