@@ -1,13 +1,13 @@
 {
   "total": {
-    "inputTokens": 697,
+    "inputTokens": 703,
     "cacheWrite5mTokens": 181565,
-    "cacheWrite1hTokens": 911801,
-    "cacheReadTokens": 58088049,
-    "outputTokens": 209600,
+    "cacheWrite1hTokens": 912687,
+    "cacheReadTokens": 58568069,
+    "outputTokens": 210042,
     "thinkingTokens": 53820,
-    "responses": 361,
-    "costUsd": 24.014630799999985
+    "responses": 364,
+    "costUsd": 24.126586799999988
   },
   "estimate": {
     "at": "2026-11-10T08:49:43.712Z",
@@ -53,18 +53,18 @@
   "url": "https://claude.ai/code/session_016Z4TKoWhP49B6JEWR7wwdd",
   "operator": "vzakharov",
   "firstResponseAt": "2026-11-10T08:49:22.672Z",
-  "lastResponseAt": "2026-11-10T11:10:08.422Z",
+  "lastResponseAt": "2026-11-10T11:15:29.112Z",
   "pricesAsOf": "2026-10-06",
   "claudeCodeTotalUsd": null,
   "ownTurns": {
-    "inputTokens": 637,
+    "inputTokens": 643,
     "cacheWrite5mTokens": 0,
-    "cacheWrite1hTokens": 911801,
-    "cacheReadTokens": 53822070,
-    "outputTokens": 194193,
+    "cacheWrite1hTokens": 912687,
+    "cacheReadTokens": 54302090,
+    "outputTokens": 194635,
     "thinkingTokens": 47318,
-    "responses": 330,
-    "costUsd": 21.945229999999995
+    "responses": 333,
+    "costUsd": 22.057185999999998
   },
   "subagents": {
     "inputTokens": 60,
@@ -78,14 +78,14 @@
   },
   "byRate": {
     "claude-opus-5-5/standard": {
-      "inputTokens": 697,
+      "inputTokens": 703,
       "cacheWrite5mTokens": 181565,
-      "cacheWrite1hTokens": 911801,
-      "cacheReadTokens": 58088049,
-      "outputTokens": 209600,
+      "cacheWrite1hTokens": 912687,
+      "cacheReadTokens": 58568069,
+      "outputTokens": 210042,
       "thinkingTokens": 53820,
-      "responses": 361,
-      "costUsd": 24.014630799999985
+      "responses": 364,
+      "costUsd": 24.126586799999988
     }
   },
   "warnings": [],
@@ -239,7 +239,7 @@
           "Read": 1
         },
         "estimatedTokens": 1708,
-        "estimatedUsd": 0.0194712
+        "estimatedUsd": 0.020496
       },
       "billedUsd": null
     }
