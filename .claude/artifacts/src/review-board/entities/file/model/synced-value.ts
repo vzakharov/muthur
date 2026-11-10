@@ -11,7 +11,7 @@ export interface Synced<V> {
   unsaved(): boolean;
   /** A change made here: applied at once, persisted by a write that is queued. */
   set(next: V, at: string): void;
-  /** What the store holds, or null for no document; ignored while a local change is unwritten, which a refused write leaves it. */
+  /** What the store holds, or null for no document; ignored while a local change is unsaved, a refused write included. */
   receive(remote: Stamped<V> | null): void;
 }
 

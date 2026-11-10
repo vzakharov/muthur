@@ -79,8 +79,8 @@ const isLive = (override: RangeOverride | undefined): boolean =>
  * is the default. The viewer's override or the agent's shift replaces it for
  * this file, whichever is newer by `at`; a shift sets only `from`, so the
  * file's `to` then follows the board. Unless the override chose `from`, a file
- * the viewer marked viewed at one or more earlier revisions than its `to` shows
- * only what changed since the latest of them. Base merges right after the viewed revision
+ * the viewer marked viewed at earlier revisions than its `to` shows only what
+ * changed since the latest of them. Base merges right after the viewed revision
  * count as viewed too: what they change is the base's, reviewed there, so a
  * file they alone changed stays viewed, and one changed after them shows only
  * what came after.

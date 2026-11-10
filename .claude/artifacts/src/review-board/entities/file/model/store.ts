@@ -111,7 +111,7 @@ export function createFileStore(data: ReviewData): FileStore {
     notify();
   };
 
-  /** The connection to write through; null when nothing is saved by design (no `db`, no id), and a refusal once the store has failed, so a change stays unsaved instead of passing for written. */
+  /** Null when nothing is saved by design (no `db`, no id); throws once the store has failed, so a change stays unsaved rather than passing for written. */
   async function writable(): Promise<Connection | null> {
     const conn = await connection;
     if ((conn?.uid ?? null) === null) return null;
