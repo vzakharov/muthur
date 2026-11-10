@@ -561,8 +561,36 @@ input {
   display: none;
 }
 
-.comment-mode .row[data-line] {
+.comment-mode .row[data-line],
+.comment-mode .toolbar,
+.comment-mode .toolbar *,
+.comment-mode .panel-head,
+.comment-mode .panel-head *,
+.comment-mode .card,
+.comment-mode .card * {
   cursor: crosshair;
+}
+
+.comment-mode .plus,
+.comment-mode .comment-btn {
+  cursor: pointer;
+}
+
+.row.area-selected {
+  box-shadow: inset 3px 0 0 var(--accent);
+  background-image: linear-gradient(
+    color-mix(in srgb, var(--accent) 14%, transparent),
+    color-mix(in srgb, var(--accent) 14%, transparent)
+  );
+}
+
+.area-rect {
+  position: fixed;
+  z-index: 50;
+  pointer-events: none;
+  border: 1.5px dashed var(--accent);
+  border-radius: 4px;
+  background: color-mix(in srgb, var(--accent) 10%, transparent);
 }
 
 /* Side panel */
