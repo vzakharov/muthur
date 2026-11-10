@@ -1,14 +1,42 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
+import type {
+  ReviewData,
+  ReviewFile,
+} from "#src/review-board/shared/review-data/index.ts";
+import type { EffectiveRange } from "./range.ts";
 import { viewFileUrl } from "./view-file-url.ts";
 
-const data = { repo: "o/r", base: { ref: "main", sha: "B" } };
-const file = { path: "docs/a b.md", oldPath: null };
-const range = (to: string, fromBlob: string | null, toBlob: string | null) => ({
+const data: ReviewData = {
+  repo: "o/r",
+  branch: "b",
+  head: "c1",
+  base: { ref: "main", sha: "B" },
+  collectedAt: "t",
+  commits: [],
+  files: [],
+  focus: [],
+  blobs: {},
+};
+const file: ReviewFile = {
+  path: "docs/a b.md",
+  oldPath: null,
+  status: "modified",
+  binary: false,
+  revisions: [],
+};
+const range = (
+  to: string,
+  fromBlob: string | null,
+  toBlob: string | null,
+): EffectiveRange => ({
   from: "B",
   to,
   fromBlob,
   toBlob,
+  fromExplicit: false,
+  toExplicit: false,
+  viewed: false,
 });
 
 test("links the file at the range's to commit, path encoded per segment", () => {
@@ -29,7 +57,7 @@ test("a rename's base version is under the old path", () => {
   assert.equal(
     viewFileUrl(
       data,
-      { path: "n.md", oldPath: "o.md" },
+      { ...file, path: "n.md", oldPath: "o.md" },
       range("c1", "x", null),
     ),
     "https://github.com/o/r/blob/B/o.md",

@@ -11,9 +11,9 @@ import type { EffectiveRange } from "./range.ts";
  * under its old path.
  */
 export function viewFileUrl(
-  data: Pick<ReviewData, "repo" | "base">,
-  file: Pick<ReviewFile, "path" | "oldPath">,
-  range: Pick<EffectiveRange, "from" | "to" | "fromBlob" | "toBlob">,
+  data: ReviewData,
+  file: ReviewFile,
+  range: EffectiveRange,
 ): string | null {
   if (data.repo === null) return null;
   const [commit, present] =

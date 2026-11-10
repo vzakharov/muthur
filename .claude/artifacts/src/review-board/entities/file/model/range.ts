@@ -1,5 +1,5 @@
 import type {
-  ReviewData,
+  ReviewBranch,
   ReviewFile,
 } from "#src/review-board/shared/review-data/index.ts";
 
@@ -36,17 +36,13 @@ export interface EffectiveRange {
   viewed: boolean;
 }
 
-export function commitOrder(
-  data: Pick<ReviewData, "base" | "commits">,
-): CommitOrder {
+export function commitOrder(data: ReviewBranch): CommitOrder {
   const order = new Map<string, number>([[data.base.sha, -1]]);
   data.commits.forEach((commit, index) => order.set(commit.sha, index));
   return order;
 }
 
-export const baseMerges = (
-  data: Pick<ReviewData, "commits">,
-): ReadonlySet<string> =>
+export const baseMerges = (data: ReviewBranch): ReadonlySet<string> =>
   new Set(data.commits.filter((c) => c.baseMerge).map((c) => c.sha));
 
 const NO_MERGES: ReadonlySet<string> = new Set();

@@ -43,18 +43,23 @@ export const focusSchema = z.object({
   lines: z.optional(z.array(lineSpanSchema)),
 });
 
-export const reviewDataSchema = z.object({
+// What the commit order is read from: the base and the commits since it.
+const branchSchema = z.object({
+  base: z.object({ ref: z.string(), sha: z.string() }),
+  commits: z.array(commitSchema),
+});
+
+export const reviewDataSchema = z.extend(branchSchema, {
   repo: z.nullable(z.string()),
   branch: z.string(),
   head: z.string(),
-  base: z.object({ ref: z.string(), sha: z.string() }),
   collectedAt: z.string(),
-  commits: z.array(commitSchema),
   files: z.array(fileSchema),
   focus: z.array(focusSchema),
   blobs: z.record(z.string(), z.string()),
 });
 
+export type ReviewBranch = z.infer<typeof branchSchema>;
 export type ReviewData = z.infer<typeof reviewDataSchema>;
 export type Focus = z.infer<typeof focusSchema>;
 export type LineSpan = z.infer<typeof lineSpanSchema>;
