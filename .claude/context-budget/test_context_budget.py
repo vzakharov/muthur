@@ -65,6 +65,35 @@ class WhenTheNoticesFire(BudgetTestCase):
         assert notice is not None
         self.assertIn("50k warning line", notice)
 
+    def test_a_small_auto_compact_window_silences_both_notices(self) -> None:
+        compact = {"CLAUDE_CODE_AUTO_COMPACT_WINDOW": "300000"}
+        self.session.append(assistant(WARN + 1))
+        self.assertIsNone(self.session.notice(compact))
+        self.session.append(assistant(PAUSE + 1))
+        self.assertIsNone(self.session.notice(compact))
+
+    def test_an_auto_compact_window_at_the_cutoff_leaves_the_notices(self) -> None:
+        self.session.append(assistant(WARN + 1))
+        self.assertIsNotNone(self.session.notice({"CLAUDE_CODE_AUTO_COMPACT_WINDOW": "350000"}))
+
+    def test_the_despite_switch_keeps_the_notices_under_auto_compact(self) -> None:
+        env = {
+            "CLAUDE_CODE_AUTO_COMPACT_WINDOW": "300000",
+            "MUTHUR_CONTEXT_BUDGET_RELAY_DESPITE_AUTOCOMPACT": "true",
+        }
+        self.session.append(assistant(WARN + 1))
+        self.assertIsNotNone(self.session.notice(env))
+
+    def test_an_unknown_despite_value_is_named_and_stays_silent(self) -> None:
+        env = {
+            "CLAUDE_CODE_AUTO_COMPACT_WINDOW": "300000",
+            "MUTHUR_CONTEXT_BUDGET_RELAY_DESPITE_AUTOCOMPACT": "ture",
+        }
+        self.session.append(assistant(WARN + 1))
+        result = self.session.tool_call(env)
+        self.assertEqual(result.stdout.strip(), "")
+        self.assertIn("MUTHUR_CONTEXT_BUDGET_RELAY_DESPITE_AUTOCOMPACT", result.stderr)
+
     def test_the_warning_gives_the_work_the_room_up_to_the_pause_line(self) -> None:
         # The half-of-the-session gauge matches that room only at the default
         # lines, which is all it claims: "roughly".

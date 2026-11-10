@@ -1,0 +1,86 @@
+{
+  "total": {
+    "inputTokens": 40,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 81507,
+    "cacheReadTokens": 2003196,
+    "outputTokens": 7986,
+    "thinkingTokens": 2052,
+    "responses": 18,
+    "costUsd": 1.2125752000000003
+  },
+  "estimate": {
+    "at": "2026-11-10T12:43:54.559Z",
+    "parts": [
+      {
+        "hours": 1.5,
+        "grade": "middle",
+        "role": "developer",
+        "comment": "a bash hook gate with an env override and tests in the existing harness; routine once the hook's switch idiom is read"
+      }
+    ],
+    "comment": null
+  },
+  "orientation": {
+    "endedBy": "oriented",
+    "endedOn": null,
+    "endedAt": "2026-11-10T12:42:49.276Z",
+    "contextTokens": 94758,
+    "spend": {
+      "inputTokens": 4,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 38035,
+      "cacheReadTokens": 144817,
+      "outputTokens": 708,
+      "thinkingTokens": 135,
+      "responses": 2,
+      "costUsd": 0.34741940000000004
+    }
+  },
+  "sessionId": "c3a2524c-f13e-56a5-9244-9532a1088221",
+  "branch": "claude/context-budget-autocompact-silence-3fdkri",
+  "cwd": "/home/user/muthur",
+  "openingPrompt": "давай если CLAUDE_CODE_AUTO_COMPACT_WINDOW стоит и <350000, релей не применяется, если только не стоит специальный MUTHUR_ энв а ля \"релей несмотря на автокомпа…",
+  "prs": [],
+  "url": "https://claude.ai/code/session_016Z4TKmHcGCbs9akXSgrjdM",
+  "operator": "vzakharov",
+  "firstResponseAt": "2026-11-10T12:42:41.572Z",
+  "lastResponseAt": "2026-11-10T12:44:17.995Z",
+  "pricesAsOf": "2026-10-06",
+  "claudeCodeTotalUsd": null,
+  "ownTurns": {
+    "inputTokens": 40,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 81507,
+    "cacheReadTokens": 2003196,
+    "outputTokens": 7986,
+    "thinkingTokens": 2052,
+    "responses": 18,
+    "costUsd": 1.2125752000000003
+  },
+  "subagents": {
+    "inputTokens": 0,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 0,
+    "cacheReadTokens": 0,
+    "outputTokens": 0,
+    "thinkingTokens": 0,
+    "responses": 0,
+    "costUsd": 0.0
+  },
+  "byRate": {
+    "claude-opus-5-5/standard": {
+      "inputTokens": 40,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 81507,
+      "cacheReadTokens": 2003196,
+      "outputTokens": 7986,
+      "thinkingTokens": 2052,
+      "responses": 18,
+      "costUsd": 1.2125752000000003
+    }
+  },
+  "warnings": [],
+  "compactions": [],
+  "telemetry": null
+}

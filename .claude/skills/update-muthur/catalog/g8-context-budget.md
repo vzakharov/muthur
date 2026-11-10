@@ -19,11 +19,13 @@ entry is `opt-in: ask`.
   and price table, the lines sit where a relay saves $0.20 over the next 100k
   tokens of work and where it saves $0.80, capped at 300k and 400k, and the
   notice gives the dollars; without them, or under
-  `MUTHUR_CONTEXT_BUDGET_LINES=fixed`, they are those caps. **The cost, which is
-  why it is asked:** a `PostToolUse` hook on every tool call, and a session that
-  can end its own turn with the work paused, or hand itself to a new one.
-  Arrives with one `.claude/settings.json` entry to merge and a `scripts/vet.sh`
-  loop running its tests; a no deletes the directory and both.
+  `MUTHUR_CONTEXT_BUDGET_LINES=fixed`, they are those caps. Under a
+  `CLAUDE_CODE_AUTO_COMPACT_WINDOW` below 350k it is silent unless
+  `MUTHUR_CONTEXT_BUDGET_RELAY_DESPITE_AUTOCOMPACT` says `true`. **The cost,
+  which is why it is asked:** a `PostToolUse` hook on every tool call, and a
+  session that can end its own turn with the work paused, or hand itself to a
+  new one. Arrives with one `.claude/settings.json` entry to merge and a
+  `scripts/vet.sh` loop running its tests; a no deletes the directory and both.
   - **Requires:** `bash`, `jq`; `gh` to read an operator's manual-relay setting;
     `python3` ≥3.9 for its tests and the priced lines
   - **Pulls in:** `.claude/hooks/lib.sh` (G4), `/go` and `/relay` (G2);
