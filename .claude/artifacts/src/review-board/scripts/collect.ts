@@ -16,7 +16,9 @@ const MAX_BUFFER = 1 << 30;
 const FIELD = "\x1f";
 const RECORD = "\x1e";
 
-type Outcome = { ok: true; stdout: Buffer } | { ok: false; reason: string };
+type Outcome =
+  | { ok: true; stdout: Buffer }
+  | { ok: false; status: number | null; reason: string };
 
 function run(
   cwd: string,
@@ -29,9 +31,14 @@ function run(
     maxBuffer: MAX_BUFFER,
     ...(input === undefined ? {} : { input }),
   });
-  if (result.error) return { ok: false, reason: result.error.message };
+  if (result.error)
+    return { ok: false, status: null, reason: result.error.message };
   if (result.status !== 0)
-    return { ok: false, reason: result.stderr.toString("utf8").trim() };
+    return {
+      ok: false,
+      status: result.status,
+      reason: result.stderr.toString("utf8").trim(),
+    };
   return { ok: true, stdout: result.stdout };
 }
 
@@ -123,15 +130,10 @@ function readCommits(cwd: string, baseSha: string): ReviewData["commits"] {
 }
 
 function isAncestor(cwd: string, commit: string, of: string): boolean {
-  const result = spawnSync("git", ["merge-base", "--is-ancestor", commit, of], {
-    cwd,
-  });
-  if (result.error) throw result.error;
-  if (result.status === 0) return true;
-  if (result.status === 1) return false;
-  throw new Error(
-    `git merge-base --is-ancestor failed: ${result.stderr.toString("utf8").trim()}`,
-  );
+  const outcome = run(cwd, "git", ["merge-base", "--is-ancestor", commit, of]);
+  if (outcome.ok) return true;
+  if (outcome.status === 1) return false;
+  throw new Error(`git merge-base --is-ancestor failed: ${outcome.reason}`);
 }
 
 interface Change {

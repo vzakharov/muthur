@@ -14,14 +14,18 @@ const IDENTITY = {
   GIT_COMMITTER_EMAIL: "ada@example.com",
 };
 
-function makeRepo(): { dir: string; commits: string[] } {
-  const dir = mkdtempSync(join(tmpdir(), "collect-test-"));
-  const git = (...args: string[]) =>
+const gitIn =
+  (dir: string) =>
+  (...args: string[]): string =>
     execFileSync("git", args, {
       cwd: dir,
       env: { ...process.env, ...IDENTITY },
       encoding: "utf8",
-    });
+    }).trim();
+
+function makeRepo(): { dir: string; commits: string[] } {
+  const dir = mkdtempSync(join(tmpdir(), "collect-test-"));
+  const git = gitIn(dir);
   const write = (path: string, content: string | Buffer) => {
     mkdirSync(dirname(join(dir, path)), { recursive: true });
     writeFileSync(join(dir, path), content);
@@ -29,7 +33,7 @@ function makeRepo(): { dir: string; commits: string[] } {
   const commit = (message: string) => {
     git("add", "-A");
     git("commit", "-q", "-m", message);
-    return git("rev-parse", "HEAD").trim();
+    return git("rev-parse", "HEAD");
   };
 
   const story =
@@ -61,9 +65,9 @@ function commitFocus(dir: string, entries: unknown): string {
   const file = join(dir, FOCUS_PATH);
   mkdirSync(dirname(file), { recursive: true });
   writeFileSync(file, JSON.stringify(entries));
-  const options = { cwd: dir, env: { ...process.env, ...IDENTITY } };
-  execFileSync("git", ["add", "-A"], options);
-  execFileSync("git", ["commit", "-q", "-m", "focus"], options);
+  const git = gitIn(dir);
+  git("add", "-A");
+  git("commit", "-q", "-m", "focus");
   return file;
 }
 
@@ -202,13 +206,7 @@ test("a focus line past the file's end fails the collection", () => {
 test("marks the merges that bring the base in, and only those", () => {
   const { dir } = makeRepo();
   try {
-    const options = {
-      cwd: dir,
-      env: { ...process.env, ...IDENTITY },
-      encoding: "utf8" as const,
-    };
-    const git = (...args: string[]) =>
-      execFileSync("git", args, options).trim();
+    const git = gitIn(dir);
     git("checkout", "-q", "-b", "side");
     writeFileSync(join(dir, "side.txt"), "side\n");
     git("add", "-A");
