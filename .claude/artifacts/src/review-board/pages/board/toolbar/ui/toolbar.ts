@@ -1,5 +1,9 @@
 import type { StoreStatus } from "#src/review-board/entities/file/index.ts";
-import { checkbox, el, setOptions } from "#src/review-board/shared/lib/dom.ts";
+import { checkbox, el } from "#src/review-board/shared/lib/dom.ts";
+import {
+  createPicker,
+  type PickerOption,
+} from "#src/review-board/shared/lib/picker.ts";
 import type { ReviewCommit } from "#src/review-board/shared/review-data/index.ts";
 
 export interface ToolbarState {
@@ -67,6 +71,7 @@ export function createToolbar(
   baseSha: string,
   focusTotal: number,
   labelOf: (sha: string) => string,
+  timeOf: (sha: string) => string,
   handlers: ToolbarHandlers,
 ): Toolbar {
   const element = el("div", "toolbar");
@@ -88,18 +93,27 @@ export function createToolbar(
     }),
   );
 
-  const from = el("select", "range-select");
-  from.ariaLabel = "Board range from";
-  from.addEventListener("change", () => {
-    handlers.onRange("from", from.value === DEFAULT_END ? null : from.value);
+  const from = createPicker("Board range from", (value) => {
+    handlers.onRange("from", value === DEFAULT_END ? null : value);
   });
-  const to = el("select", "range-select");
-  to.ariaLabel = "Board range to";
-  to.addEventListener("change", () => {
-    handlers.onRange("to", to.value === DEFAULT_END ? null : to.value);
+  const to = createPicker("Board range to", (value) => {
+    handlers.onRange("to", value === DEFAULT_END ? null : value);
   });
   const range = el("span", "tool-group range");
-  range.append(el("span", "tool-label", "Range"), from, "→", to);
+  range.append(
+    el("span", "tool-label", "Range"),
+    from.element,
+    "→",
+    to.element,
+  );
+  const optionOf = (sha: string, value: string, prefix = ""): PickerOption => {
+    const committed = timeOf(sha);
+    return {
+      value,
+      label: `${prefix}${labelOf(sha)}`,
+      lines: committed === "" ? [] : [`committed ${committed}`],
+    };
+  };
 
   const whitespace = checkbox("Hide whitespace", (hide) => {
     handlers.onWhitespace(hide);
@@ -155,27 +169,20 @@ export function createToolbar(
         state.from === null
           ? -1
           : commits.findIndex((commit) => commit.sha === state.from);
-      setOptions(
-        from,
+      from.set(
         [
-          { value: DEFAULT_END, label: `base · ${labelOf(baseSha)}` },
-          ...commits.map((commit) => ({
-            value: commit.sha,
-            label: labelOf(commit.sha),
-          })),
+          optionOf(baseSha, DEFAULT_END, "base · "),
+          ...commits.map((commit) => optionOf(commit.sha, commit.sha)),
         ],
         state.from ?? DEFAULT_END,
       );
       const later = commits.slice(fromIndex + 1);
-      setOptions(
-        to,
-        later.map((commit) => ({
-          value: commit.sha === lastSha ? DEFAULT_END : commit.sha,
-          label:
-            commit.sha === lastSha
-              ? `head · ${labelOf(commit.sha)}`
-              : labelOf(commit.sha),
-        })),
+      to.set(
+        later.map((commit) =>
+          commit.sha === lastSha
+            ? optionOf(commit.sha, DEFAULT_END, "head · ")
+            : optionOf(commit.sha, commit.sha),
+        ),
         state.to === null || state.to === lastSha ? DEFAULT_END : state.to,
       );
       whitespace.box.checked = state.whitespace;

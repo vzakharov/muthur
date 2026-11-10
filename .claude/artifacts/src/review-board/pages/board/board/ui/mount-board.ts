@@ -18,7 +18,7 @@ import type {
   LineSpan,
   ReviewFile,
 } from "#src/review-board/shared/review-data/index.ts";
-import { commitLabels } from "../lib/labels.ts";
+import { commitLabels, commitTimes } from "../lib/labels.ts";
 import { nextFocus } from "../lib/next-focus.ts";
 import type {
   BoardHandle,
@@ -50,6 +50,7 @@ export function mountBoard(
 
   const store = createFileStore(data);
   const labelOf = commitLabels(data);
+  const timeOf = commitTimes(data);
   const filesByPath = new Map(data.files.map((file) => [file.path, file]));
   const rects = new Map<string, Rect>();
   let bounds: Rect | undefined;
@@ -111,7 +112,7 @@ export function mountBoard(
   const cards = new Map(
     data.files.map((file) => [
       file.path,
-      createCard(file, focusByPath.get(file.path), labelOf, {
+      createCard(file, focusByPath.get(file.path), labelOf, timeOf, {
         onViewed: (viewed) => {
           store.setViewed(file.path, viewed);
         },
@@ -136,6 +137,7 @@ export function mountBoard(
     data.base.sha,
     data.focus.length,
     labelOf,
+    timeOf,
     {
       onFocus() {
         focusAt = nextFocus(
@@ -235,6 +237,7 @@ export function mountBoard(
         range,
         viewed: isViewed,
         unsaved: store.isUnsaved(file.path),
+        viewedAt: store.viewedAt(file.path),
         diff,
         marks: marksFor(file, range),
         viewUrl: viewFileUrl(data, file, range),

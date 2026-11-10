@@ -1,4 +1,5 @@
 import {
+  markedCommits,
   markLines,
   renderDiff,
   renderMarkdown,
@@ -7,7 +8,11 @@ import {
   type FileDiff,
 } from "#src/review-board/entities/file/index.ts";
 import type { DiffResult } from "#src/review-board/shared/lib/diff.ts";
-import { checkbox, el, setOptions } from "#src/review-board/shared/lib/dom.ts";
+import { checkbox, el } from "#src/review-board/shared/lib/dom.ts";
+import {
+  createPicker,
+  type PickerOption,
+} from "#src/review-board/shared/lib/picker.ts";
 import type {
   Focus,
   LineSpan,
@@ -22,6 +27,8 @@ export interface CardState {
   viewed: boolean;
   /** The Viewed mark or range was changed here and no write of it has succeeded. */
   unsaved: boolean;
+  /** When each blob of the file was marked viewed, by blob token. */
+  viewedAt: ReadonlyMap<string, string>;
   diff: FileDiff;
   /** New-side lines to mark as the review's focus; empty while the diff does not end at HEAD. */
   marks: readonly LineSpan[];
@@ -97,16 +104,6 @@ function stubBody(text: string, onOpen?: () => void): HTMLElement {
   return stub;
 }
 
-function select(label: string, onChange: (value: string) => void) {
-  const node = el("select", "range-select");
-  node.ariaLabel = label;
-  node.title = label;
-  node.addEventListener("change", () => {
-    onChange(node.value);
-  });
-  return node;
-}
-
 /**
  * A file's rectangle on the board: a header (path, status, counts, viewed,
  * range selectors, comment) over a diff body capped in height and scrolling
@@ -119,6 +116,7 @@ export function createCard(
   file: ReviewFile,
   focus: Focus | undefined,
   labelOf: (sha: string) => string,
+  timeOf: (sha: string) => string,
   handlers: CardHandlers,
 ): Card {
   const element = el("article", `card status-${file.status}`);
@@ -148,21 +146,32 @@ export function createCard(
     handlers.onComment({ path: file.path, side: null, line: null }, comment);
   });
 
-  const options = [
+  const optionsFor = (marked: ReadonlyMap<string, string>): PickerOption[] => [
     { value: BOARD_RANGE, label: "Board range" },
-    ...file.revisions.map((revision) => ({
-      value: revision.commit,
-      label: labelOf(revision.commit),
-    })),
+    ...file.revisions.map((revision) => {
+      const committed = timeOf(revision.commit);
+      const viewedAt = marked.get(revision.commit);
+      return {
+        value: revision.commit,
+        label: labelOf(revision.commit),
+        lines: [
+          ...(committed === "" ? [] : [`committed ${committed}`]),
+          ...(viewedAt === undefined
+            ? []
+            : [`✓ viewed ${new Date(viewedAt).toLocaleString()}`]),
+        ],
+        marked: viewedAt !== undefined,
+      };
+    }),
   ];
-  const from = select("Diff from", (value) => {
+  const from = createPicker("Diff from", (value) => {
     handlers.onRange("from", value === BOARD_RANGE ? null : value);
   });
-  const to = select("Diff to", (value) => {
+  const to = createPicker("Diff to", (value) => {
     handlers.onRange("to", value === BOARD_RANGE ? null : value);
   });
   const range = el("span", "range");
-  range.append(from, el("span", "arrow", "→"), to);
+  range.append(from.element, el("span", "arrow", "→"), to.element);
 
   const focusBadge =
     focus === undefined ? [] : [el("span", "badge focus", "focus")];
@@ -279,12 +288,14 @@ export function createCard(
       const { diff, range: current } = state;
       added.textContent = diff.kind === "text" ? `+${diff.diff.added}` : "";
       removed.textContent = diff.kind === "text" ? `−${diff.diff.removed}` : "";
-      setOptions(
-        from,
-        options,
+      from.set(
+        optionsFor(markedCommits(file, state.viewedAt)),
         current.fromExplicit ? current.from : BOARD_RANGE,
       );
-      setOptions(to, options, current.toExplicit ? current.to : BOARD_RANGE);
+      to.set(
+        optionsFor(new Map()),
+        current.toExplicit ? current.to : BOARD_RANGE,
+      );
       renderBody(state);
       markLines(body, state.marks);
     },

@@ -1,0 +1,99 @@
+.picker {
+  display: inline-block;
+  min-width: 0;
+}
+
+.picker-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  max-width: 100%;
+  padding: 3px 9px;
+  color: inherit;
+  font: inherit;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.picker-text {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.picker-caret {
+  color: var(--muted);
+  font-size: 10px;
+}
+
+// A popover sits in the top layer, so it is positioned by script and its UA
+// `inset: 0` / margins are reset here.
+.picker-list {
+  position: fixed;
+  inset: auto;
+  width: max-content;
+  min-width: 220px;
+  max-width: min(480px, calc(100vw - 16px));
+  margin: 0;
+  padding: 4px;
+  overflow-y: auto;
+  color: var(--text);
+  font-size: 12px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  box-shadow: var(--shadow);
+
+  &:not(:popover-open) {
+    display: none;
+  }
+}
+
+.picker-row {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 100%;
+  padding: 5px 8px;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  background: none;
+  border: 0;
+  border-radius: 5px;
+  cursor: pointer;
+
+  &:hover,
+  &:focus-visible {
+    background: var(--surface-2);
+    outline: none;
+  }
+
+  &.is-current {
+    box-shadow: inset 2px 0 var(--accent);
+  }
+
+  &.is-marked .picker-label::before {
+    content: "✓ ";
+    color: var(--add-text);
+  }
+}
+
+.picker-label {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.picker-line {
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.picker-row.is-marked .picker-line:last-child {
+  color: var(--add-text);
+}

@@ -39,6 +39,8 @@ export interface FileStore {
   isViewed(path: string): boolean;
   /** Marks or unmarks the blob the file's `to` shows; other revisions' marks stay. */
   setViewed(path: string, viewed: boolean): void;
+  /** When each blob of the file was marked viewed, by blob token. */
+  viewedAt(path: string): ReadonlyMap<string, string>;
   /** Whether the file's state has a change that no write has yet saved. */
   isUnsaved(path: string): boolean;
   /** How many files have such a change. */
@@ -318,6 +320,12 @@ export function createFileStore(data: ReviewData): FileStore {
       const marks = viewed ? [...others, { blob, at: now() }] : others;
       own.set({ ...own.get(), viewed: marks }, own.at() || now());
     },
+    viewedAt: (path) =>
+      new Map(
+        fileValue(path)
+          .get()
+          .viewed.map((mark) => [mark.blob, mark.at]),
+      ),
     isUnsaved: (path) => fileValue(path).unsaved(),
     unsavedCount() {
       let count = 0;

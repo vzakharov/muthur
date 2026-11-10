@@ -27,7 +27,6 @@
 }
 
 .tool-btn,
-.range-select,
 .file-filter,
 .stub-open,
 .panel-close,
@@ -69,8 +68,6 @@
   cursor: text;
 }
 
-.range-select {
+.toolbar .picker {
   max-width: 220px;
-  min-width: 0;
-  text-overflow: ellipsis;
 }

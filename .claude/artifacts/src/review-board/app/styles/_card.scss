@@ -148,8 +148,11 @@
   margin-left: auto;
   min-width: 0;
 
-  .range-select {
+  .picker {
     max-width: 150px;
+  }
+
+  .picker-btn {
     padding: 1px 4px;
     font-size: 12px;
   }
