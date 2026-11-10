@@ -1,5 +1,4 @@
 .diff {
-  min-width: max-content;
   font: 12px/var(--line-h) var(--font-mono);
 }
 
@@ -85,9 +84,11 @@
   }
 }
 
+// A long line wraps inside the card, as GitHub's diff view does.
 .code {
   padding-right: 12px;
-  white-space: pre;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
 }
 
 .sign {
