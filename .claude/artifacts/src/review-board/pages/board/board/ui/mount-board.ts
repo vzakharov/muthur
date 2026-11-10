@@ -16,6 +16,7 @@ import type {
   ReviewFile,
 } from "#src/review-board/shared/review-data/index.ts";
 import { commitLabels } from "../lib/labels.ts";
+import { nextFocus } from "../lib/next-focus.ts";
 import type {
   BoardHandle,
   BoardOptions,
@@ -133,8 +134,11 @@ export function mountBoard(
     labelOf,
     {
       onFocus() {
-        focusAt = focusAt === null ? 0 : (focusAt + 1) % data.focus.length;
-        const item = data.focus[focusAt];
+        focusAt = nextFocus(
+          focusAt,
+          data.focus.map((focus) => store.isViewed(focus.path)),
+        );
+        const item = focusAt === null ? undefined : data.focus[focusAt];
         if (item !== undefined) stepTo(item.path);
         renderSoon();
       },
@@ -209,7 +213,8 @@ export function mountBoard(
       viewed,
       total: data.files.length,
       status: store.status(),
-      focusAt,
+      focusUnviewed: data.focus.filter((item) => !store.isViewed(item.path))
+        .length,
     });
     renderPanel();
     layoutSoon();

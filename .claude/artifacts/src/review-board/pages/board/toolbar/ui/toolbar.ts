@@ -12,12 +12,12 @@ export interface ToolbarState {
   viewed: number;
   total: number;
   status: StoreStatus;
-  /** The focus item last stepped to, or null before the first step. */
-  focusAt: number | null;
+  /** How many of the review's focus items are not viewed yet. */
+  focusUnviewed: number;
 }
 
 export interface ToolbarHandlers {
-  /** Steps to the next of the review's focus items. */
+  /** Steps to the next unviewed focus item, or the next of all once each is viewed. */
   onFocus(): void;
   onFit(): void;
   onZoom(factor: number): void;
@@ -118,7 +118,7 @@ export function createToolbar(
 
   const focus = button(
     "",
-    "Go to the next file the author marked for focus",
+    "Go to the next unviewed file the author marked for focus (unviewed / all)",
     () => {
       handlers.onFocus();
     },
@@ -178,10 +178,7 @@ export function createToolbar(
       whitespace.box.checked = state.whitespace;
       hideViewed.box.checked = state.hideViewed;
       focusOnly.box.checked = state.focusOnly;
-      focus.textContent =
-        state.focusAt === null
-          ? `Focus · ${focusTotal}`
-          : `Focus ${state.focusAt + 1}/${focusTotal}`;
+      focus.textContent = `Focus ${state.focusUnviewed}/${focusTotal}`;
       tally.textContent = `${state.viewed} / ${state.total} viewed`;
       note.textContent = NOTES[state.status];
     },
