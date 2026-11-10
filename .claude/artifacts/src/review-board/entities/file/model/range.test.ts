@@ -175,3 +175,48 @@ test("viewed means the marked blob is the one now shown", () => {
   assert.equal(isViewed(viewedToken(null), null), true);
   assert.equal(isViewed(viewedToken(null), "b3"), false);
 });
+
+test("a file viewed at an earlier revision shows only what changed since", () => {
+  const range = effectiveRange({ file, order, board: whole, viewedBlob: "b1" });
+  assert.equal(range.from, "c1");
+  assert.equal(range.to, "c3");
+  assert.equal(range.fromExplicit, true);
+});
+
+test("a file viewed at its shown revision keeps the board's range", () => {
+  const range = effectiveRange({ file, order, board: whole, viewedBlob: "b3" });
+  assert.equal(range.from, "B");
+  assert.equal(range.fromExplicit, false);
+});
+
+test("a viewed revision at or before the range's start changes nothing", () => {
+  const range = effectiveRange({
+    file,
+    order,
+    board: { from: "c1", to: null },
+    viewedBlob: "b0",
+  });
+  assert.equal(range.from, "c1");
+});
+
+test("the viewer's own from outranks the viewed revision", () => {
+  const range = effectiveRange({
+    file,
+    order,
+    board: whole,
+    override: { from: "B", to: null, at: "2026-01-02T00:00:00Z" },
+    viewedBlob: "b1",
+  });
+  assert.equal(range.from, "B");
+});
+
+test("a later viewed revision outranks an earlier shift", () => {
+  const range = effectiveRange({
+    file,
+    order,
+    board: whole,
+    shift: { from: "B", at: "2026-01-02T00:00:00Z" },
+    viewedBlob: "b1",
+  });
+  assert.equal(range.from, "c1");
+});

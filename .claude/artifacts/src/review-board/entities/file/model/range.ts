@@ -73,7 +73,9 @@ const isLive = (override: RangeOverride | undefined): boolean =>
  * The range a file shows. The board's range, snapped to the file's revisions,
  * is the default. The viewer's override or the agent's shift replaces it for
  * this file, whichever is newer by `at`; a shift sets only `from`, so the
- * file's `to` then follows the board.
+ * file's `to` then follows the board. Unless the override chose `from`, a file
+ * the viewer marked viewed at an earlier revision than its `to` shows only what
+ * changed since that revision.
  */
 export function effectiveRange(input: {
   file: ReviewFile;
@@ -81,8 +83,9 @@ export function effectiveRange(input: {
   board: BoardRange;
   override?: RangeOverride | undefined;
   shift?: Shift | undefined;
+  viewedBlob?: string | null | undefined;
 }): EffectiveRange {
-  const { file, order, board, override, shift } = input;
+  const { file, order, board, override, shift, viewedBlob } = input;
   const first = file.revisions[0];
   const last = file.revisions[file.revisions.length - 1];
   if (first === undefined || last === undefined)
@@ -104,6 +107,7 @@ export function effectiveRange(input: {
   let to = boardTo;
   let fromExplicit = false;
   let toExplicit = false;
+  let fromChosen = false;
 
   if (shiftWins) {
     from = shiftRevision;
@@ -114,6 +118,7 @@ export function effectiveRange(input: {
     if (ownFrom !== undefined) {
       from = ownFrom;
       fromExplicit = true;
+      fromChosen = true;
     }
     if (ownTo !== undefined) {
       to = ownTo;
@@ -123,6 +128,22 @@ export function effectiveRange(input: {
 
   const position = (revision: Revision): number =>
     order.get(revision.commit) ?? -1;
+  // The revision the viewer marked viewed, while `to` shows a later blob than it.
+  const seen =
+    fromChosen ||
+    viewedBlob === null ||
+    viewedBlob === undefined ||
+    viewedToken(to.blob) === viewedBlob
+      ? undefined
+      : file.revisions.findLast(
+          (revision) =>
+            viewedToken(revision.blob) === viewedBlob &&
+            position(revision) < position(to),
+        );
+  if (seen !== undefined && position(seen) > position(from)) {
+    from = seen;
+    fromExplicit = true;
+  }
   if (position(from) > position(to)) from = to;
 
   return {

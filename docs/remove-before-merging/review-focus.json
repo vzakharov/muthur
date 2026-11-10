@@ -14,10 +14,10 @@
   },
   {
     "path": ".claude/artifacts/src/review-board/entities/file/model/range.ts",
-    "why": "Which diff a file shows: the board's range, the reviewer's own, or the agent's shift, newest wins. Viewed is tied to the blob shown, so a new change unmarks it.",
+    "why": "Which diff a file shows: the board's range, the reviewer's own, or the agent's shift, newest wins. Viewed is tied to the blob shown, so a new change unmarks it, and the file then diffs from the revision the reviewer viewed.",
     "lines": [
-      [72, 136],
-      [143, 147]
+      [72, 157],
+      [164, 168]
     ]
   },
   {

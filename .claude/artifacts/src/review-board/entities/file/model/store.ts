@@ -151,13 +151,14 @@ export function createFileStore(data: ReviewData): FileStore {
 
   function effective(path: string): EffectiveRange {
     const own = fileValue(path);
-    const { from, to } = own.get();
+    const { from, to, viewedBlob } = own.get();
     return effectiveRange({
       file: fileOf(path),
       order,
       board: boardValue.get(),
       override: { from, to, at: own.at() },
       shift: shifts.get(path),
+      viewedBlob,
     });
   }
 
