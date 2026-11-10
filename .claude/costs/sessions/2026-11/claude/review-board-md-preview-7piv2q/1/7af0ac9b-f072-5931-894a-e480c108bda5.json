@@ -1,13 +1,13 @@
 {
   "total": {
-    "inputTokens": 144,
+    "inputTokens": 157,
     "cacheWrite5mTokens": 103393,
-    "cacheWrite1hTokens": 184151,
-    "cacheReadTokens": 11212670,
-    "outputTokens": 52983,
-    "thinkingTokens": 17923,
-    "responses": 69,
-    "costUsd": 3.7677385000000005
+    "cacheWrite1hTokens": 268622,
+    "cacheReadTokens": 12152769,
+    "outputTokens": 56539,
+    "thinkingTokens": 18906,
+    "responses": 75,
+    "costUsd": 4.329228300000001
   },
   "estimate": {
     "at": "2026-11-10T17:53:05.097Z",
@@ -47,18 +47,18 @@
   "url": "https://claude.ai/code/session_016Z4TKq7vE5xSAuWyBP8hPt",
   "operator": "vzakharov",
   "firstResponseAt": "2026-11-10T17:52:15.937Z",
-  "lastResponseAt": "2026-11-10T18:32:32.626Z",
+  "lastResponseAt": "2026-11-10T18:34:35.866Z",
   "pricesAsOf": "2026-10-06",
   "claudeCodeTotalUsd": null,
   "ownTurns": {
-    "inputTokens": 132,
+    "inputTokens": 145,
     "cacheWrite5mTokens": 0,
-    "cacheWrite1hTokens": 184151,
-    "cacheReadTokens": 10766838,
-    "outputTokens": 51213,
-    "thinkingTokens": 17529,
-    "responses": 63,
-    "costUsd": 3.402365600000001
+    "cacheWrite1hTokens": 268622,
+    "cacheReadTokens": 11706937,
+    "outputTokens": 54769,
+    "thinkingTokens": 18512,
+    "responses": 69,
+    "costUsd": 3.963855400000001
   },
   "subagents": {
     "inputTokens": 12,
@@ -72,17 +72,47 @@
   },
   "byRate": {
     "claude-sonnet-5-5/standard": {
-      "inputTokens": 144,
+      "inputTokens": 157,
       "cacheWrite5mTokens": 103393,
-      "cacheWrite1hTokens": 184151,
-      "cacheReadTokens": 11212670,
-      "outputTokens": 52983,
-      "thinkingTokens": 17923,
-      "responses": 69,
-      "costUsd": 3.7677385000000005
+      "cacheWrite1hTokens": 268622,
+      "cacheReadTokens": 12152769,
+      "outputTokens": 56539,
+      "thinkingTokens": 18906,
+      "responses": 75,
+      "costUsd": 4.329228300000001
     }
   },
   "warnings": [],
-  "compactions": [],
+  "compactions": [
+    {
+      "at": "2026-11-10T18:34:10.623Z",
+      "trigger": "auto",
+      "compactedFrom": 258898,
+      "summaryChars": 16482,
+      "reorientation": {
+        "endedBy": "Write",
+        "endedOn": "docs/plans/review-board-viewed-history.draft.do-not-implement.md",
+        "endedAt": "2026-11-10T18:34:25.816Z",
+        "contextTokens": 130124,
+        "spend": {
+          "inputTokens": 2,
+          "cacheWrite5mTokens": 0,
+          "cacheWrite1hTokens": 68929,
+          "cacheReadTokens": 59073,
+          "outputTokens": 219,
+          "thinkingTokens": 100,
+          "responses": 1,
+          "costUsd": 0.28972460000000005
+        }
+      },
+      "rereads": {
+        "calls": 0,
+        "byTool": {},
+        "estimatedTokens": 0,
+        "estimatedUsd": 0.0
+      },
+      "billedUsd": null
+    }
+  ],
   "telemetry": null
 }
