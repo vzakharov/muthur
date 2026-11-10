@@ -199,6 +199,39 @@ test("a focus line past the file's end fails the collection", () => {
   }
 });
 
+test("marks the merges that bring the base in, and only those", () => {
+  const { dir } = makeRepo();
+  try {
+    const options = {
+      cwd: dir,
+      env: { ...process.env, ...IDENTITY },
+      encoding: "utf8" as const,
+    };
+    const git = (...args: string[]) =>
+      execFileSync("git", args, options).trim();
+    git("checkout", "-q", "-b", "side");
+    writeFileSync(join(dir, "side.txt"), "side\n");
+    git("add", "-A");
+    git("commit", "-q", "-m", "side work");
+    git("checkout", "-q", "main");
+    writeFileSync(join(dir, "keep.txt"), "changed on main\n");
+    git("commit", "-q", "-am", "main moves");
+    git("checkout", "-q", "feature");
+    git("merge", "-q", "--no-edit", "side");
+    const sideMerge = git("rev-parse", "HEAD");
+    git("merge", "-q", "--no-edit", "main");
+    const baseMerge = git("rev-parse", "HEAD");
+
+    const data = collect({ cwd: dir, base: "main" });
+    const flags = new Map(data.commits.map((c) => [c.sha, c.baseMerge]));
+    assert.equal(flags.get(sideMerge), false);
+    assert.equal(flags.get(baseMerge), true);
+    assert.equal([...flags.values()].filter(Boolean).length, 1);
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
+});
+
 test("the base falls back through origin/HEAD to main when no PR is found", () => {
   const { dir, commits } = makeRepo();
   try {

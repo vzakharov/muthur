@@ -12,9 +12,9 @@ import {
   type FileDoc,
 } from "./docs.ts";
 import {
+  baseMerges,
   commitOrder,
   effectiveRange,
-  isViewed,
   viewedToken,
   type BoardRange,
   type EffectiveRange,
@@ -66,6 +66,7 @@ const sameFile = (a: FilePrefs, b: FilePrefs): boolean =>
  */
 export function createFileStore(data: ReviewData): FileStore {
   const order = commitOrder(data);
+  const merges = baseMerges(data);
   const filesByPath = new Map<string, ReviewFile>(
     data.files.map((file) => [file.path, file]),
   );
@@ -159,6 +160,7 @@ export function createFileStore(data: ReviewData): FileStore {
       override: { from, to, at: own.at() },
       shift: shifts.get(path),
       viewedBlob,
+      merges,
     });
   }
 
@@ -292,7 +294,7 @@ export function createFileStore(data: ReviewData): FileStore {
     },
     effective,
     isViewed(path) {
-      return isViewed(fileValue(path).get().viewedBlob, effective(path).toBlob);
+      return effective(path).viewed;
     },
     setViewed(path, viewed) {
       const own = fileValue(path);

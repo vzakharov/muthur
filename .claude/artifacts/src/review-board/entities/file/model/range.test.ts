@@ -2,9 +2,9 @@ import assert from "node:assert/strict";
 import { test } from "node:test";
 import type { ReviewFile } from "#src/review-board/shared/review-data/index.ts";
 import {
+  baseMerges,
   commitOrder,
   effectiveRange,
-  isViewed,
   snapToRevision,
   viewedToken,
 } from "./range.ts";
@@ -14,6 +14,7 @@ const commit = (sha: string) => ({
   subject: sha,
   author: "a",
   date: "2026-01-01T00:00:00Z",
+  baseMerge: false,
 });
 const order = commitOrder({
   base: { ref: "main", sha: "B" },
@@ -43,6 +44,7 @@ test("the default is base to the file's last revision", () => {
     toBlob: "b3",
     fromExplicit: false,
     toExplicit: false,
+    viewed: false,
   });
 });
 
@@ -168,12 +170,65 @@ test("a file absent at its last commit reports a null blob", () => {
 });
 
 test("viewed means the marked blob is the one now shown", () => {
-  assert.equal(isViewed("b3", "b3"), true);
-  assert.equal(isViewed("b1", "b3"), false);
-  assert.equal(isViewed(null, "b3"), false);
-  assert.equal(isViewed(null, null), false);
-  assert.equal(isViewed(viewedToken(null), null), true);
-  assert.equal(isViewed(viewedToken(null), "b3"), false);
+  const viewedAs = (viewedBlob: string | null, target: ReviewFile = file) =>
+    effectiveRange({ file: target, order, board: whole, viewedBlob }).viewed;
+  assert.equal(viewedAs("b3"), true);
+  assert.equal(viewedAs("b1"), false);
+  assert.equal(viewedAs(null), false);
+  const deleted: ReviewFile = {
+    ...file,
+    revisions: [
+      { commit: "B", blob: "b0", size: 1 },
+      { commit: "c2", blob: null, size: null },
+    ],
+  };
+  assert.equal(viewedAs(viewedToken(null), deleted), true);
+  assert.equal(viewedAs(viewedToken(null)), false);
+});
+
+// c1 and c3 merge the base in; the file is touched by c0, both merges and c2.
+const merged = {
+  base: { ref: "main", sha: "B" },
+  commits: ["c0", "c1", "c2", "c3"].map((sha) => ({
+    ...commit(sha),
+    baseMerge: sha === "c1" || sha === "c3",
+  })),
+};
+const mergedFile: ReviewFile = {
+  ...file,
+  revisions: [
+    { commit: "B", blob: "b0", size: 1 },
+    { commit: "c0", blob: "m0", size: 1 },
+    { commit: "c1", blob: "m1", size: 1 },
+    { commit: "c2", blob: "m2", size: 1 },
+    { commit: "c3", blob: "m3", size: 1 },
+  ],
+};
+const acrossMerges = (viewedBlob: string, to: string | null = null) =>
+  effectiveRange({
+    file: mergedFile,
+    order: commitOrder(merged),
+    merges: baseMerges(merged),
+    board: { from: null, to },
+    viewedBlob,
+  });
+
+test("a file only base merges changed since it was viewed stays viewed", () => {
+  const range = acrossMerges("m0", "c1");
+  assert.equal(range.viewed, true);
+  assert.equal(range.fromExplicit, false);
+});
+
+test("a file changed after a base merge diffs from the merge", () => {
+  const range = acrossMerges("m0", "c2");
+  assert.equal(range.viewed, false);
+  assert.deepEqual([range.from, range.to], ["c1", "c2"]);
+});
+
+test("a base merge after the branch's own change does not hide that change", () => {
+  const range = acrossMerges("m1");
+  assert.equal(range.viewed, false);
+  assert.deepEqual([range.from, range.to], ["c1", "c3"]);
 });
 
 test("a file viewed at an earlier revision shows only what changed since", () => {

@@ -36,6 +36,7 @@ const range = (fromBlob: string | null, toBlob: string | null) =>
     toBlob,
     fromExplicit: false,
     toExplicit: false,
+    viewed: false,
   }) satisfies EffectiveRange;
 
 test("diffs the two blobs of the range", () => {

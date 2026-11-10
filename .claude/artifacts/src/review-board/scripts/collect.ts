@@ -89,7 +89,7 @@ function parseRepo(url: string | null): string | null {
 }
 
 function readCommits(cwd: string, baseSha: string): ReviewData["commits"] {
-  const format = ["%H", "%s", "%an", "%aI"].join(FIELD) + RECORD;
+  const format = ["%H", "%P", "%s", "%an", "%aI"].join(FIELD) + RECORD;
   const out = gitText(cwd, [
     "log",
     "--first-parent",
@@ -102,9 +102,10 @@ function readCommits(cwd: string, baseSha: string): ReviewData["commits"] {
     .map((record) => record.replace(/^\n/, ""))
     .filter((record) => record !== "")
     .map((record) => {
-      const [sha, subject, author, date] = record.split(FIELD);
+      const [sha, parents, subject, author, date] = record.split(FIELD);
       if (
         sha === undefined ||
+        parents === undefined ||
         subject === undefined ||
         author === undefined ||
         date === undefined
@@ -113,8 +114,24 @@ function readCommits(cwd: string, baseSha: string): ReviewData["commits"] {
           `unparseable git log record: ${JSON.stringify(record)}`,
         );
       }
-      return { sha, subject, author, date };
+      const merged = parents.split(" ").slice(1);
+      const baseMerge =
+        merged.length > 0 &&
+        merged.every((parent) => isAncestor(cwd, parent, baseSha));
+      return { sha, subject, author, date, baseMerge };
     });
+}
+
+function isAncestor(cwd: string, commit: string, of: string): boolean {
+  const result = spawnSync("git", ["merge-base", "--is-ancestor", commit, of], {
+    cwd,
+  });
+  if (result.error) throw result.error;
+  if (result.status === 0) return true;
+  if (result.status === 1) return false;
+  throw new Error(
+    `git merge-base --is-ancestor failed: ${result.stderr.toString("utf8").trim()}`,
+  );
 }
 
 interface Change {

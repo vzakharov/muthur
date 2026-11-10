@@ -12,6 +12,8 @@ const commitSchema = z.object({
   subject: z.string(),
   author: z.string(),
   date: z.string(),
+  // A merge bringing the base branch in: what it changes is the base's work.
+  baseMerge: z.boolean(),
 });
 
 // `revisions[0]` is the base (`commit` = base sha); the rest are the commits in
