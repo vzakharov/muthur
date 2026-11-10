@@ -13,9 +13,8 @@ The board is the app under `.claude/artifacts/src/review-board/`; its plan of
 record is the PR that added it. A run publishes the branch as it is pushed, so
 commit and push first.
 
-Steps 1–2 also run unasked: `@.claude/skills/pr/SKILL.md` Step 7 republishes a
-board the PR already has and, under `MUTHUR_AUTO_REVIEW_BOARD`, publishes the
-first one; `/finalize` republishes after its quality passes.
+Steps 1–2 also run unasked, from `@.claude/skills/pr/SKILL.md` Step 7 and from
+`/finalize`, which own when.
 
 ## Step 1 — Mark the focus, then build
 
