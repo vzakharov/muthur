@@ -13,7 +13,8 @@ wrapping diff that opens in a side panel past a cap, its own from/to
 commit range over the board's, and a "viewed" box; folders mark their
 files viewed at once, and viewed files can be hidden. A file viewed and
 then changed diffs from the revision the reviewer viewed, so a fix shows
-alone. Viewed state and toggles are kept per viewer across devices. The
+alone, and merges bringing the base in are skipped, their changes being
+the base's. Viewed state is kept per viewer across devices. The
 page pins threads itself, on controls and areas as well as lines,
 anchoring each as <path>@<from>..<to>[:R|L<n>[-<m>]].
 
