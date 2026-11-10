@@ -30,7 +30,10 @@ function shorten(path: string, budget: number): string {
     if (bytes(tail) <= budget) return tail;
   }
   // A file name alone past the budget keeps its last characters.
-  const chars = [...(segments.at(-1) ?? path)];
+  const chars = Array.from(
+    new Intl.Segmenter().segment(segments.at(-1) ?? path),
+    (piece) => piece.segment,
+  );
   while (chars.length > 0 && bytes(ELIDED + chars.join("")) > budget) {
     chars.shift();
   }

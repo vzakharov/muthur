@@ -1,0 +1,72 @@
+import assert from "node:assert/strict";
+import { test } from "node:test";
+import type {
+  ReviewData,
+  ReviewFile,
+} from "#src/review-board/shared/review-data/index.ts";
+import { fileDiff } from "./file-diff.ts";
+import type { EffectiveRange } from "./range.ts";
+
+const data: ReviewData = {
+  repo: null,
+  branch: "b",
+  head: "c1",
+  base: { ref: "main", sha: "B" },
+  collectedAt: "t",
+  commits: [],
+  files: [],
+  blobs: { old: "a\nb\n", next: "a\nc\n" },
+};
+const file: ReviewFile = {
+  path: "x.txt",
+  oldPath: null,
+  status: "modified",
+  binary: false,
+  revisions: [
+    { commit: "B", blob: "old", size: 4 },
+    { commit: "c1", blob: "next", size: 4 },
+  ],
+};
+const range = (fromBlob: string | null, toBlob: string | null) =>
+  ({
+    from: "B",
+    to: "c1",
+    fromBlob,
+    toBlob,
+    fromExplicit: false,
+    toExplicit: false,
+  }) satisfies EffectiveRange;
+
+test("diffs the two blobs of the range", () => {
+  const result = fileDiff(data, file, range("old", "next"), false);
+  assert.equal(result.kind, "text");
+  assert.equal(result.diff.added, 1);
+  assert.equal(result.diff.removed, 1);
+});
+
+test("an absent side is empty text", () => {
+  const added = fileDiff(data, file, range(null, "next"), false);
+  assert.equal(added.kind === "text" && added.diff.added, 2);
+  const deleted = fileDiff(data, file, range("old", null), false);
+  assert.equal(deleted.kind === "text" && deleted.diff.removed, 2);
+});
+
+test("a binary file reports its sizes", () => {
+  const binary: ReviewFile = {
+    ...file,
+    binary: true,
+    revisions: [
+      { commit: "B", blob: "x", size: 10 },
+      { commit: "c1", blob: "y", size: 30 },
+    ],
+  };
+  assert.deepEqual(fileDiff(data, binary, range("x", "y"), false), {
+    kind: "binary",
+    fromSize: 10,
+    toSize: 30,
+  });
+});
+
+test("a blob missing from the payload is an error", () => {
+  assert.throws(() => fileDiff(data, file, range("old", "ghost"), false));
+});
