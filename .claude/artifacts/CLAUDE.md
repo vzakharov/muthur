@@ -17,9 +17,9 @@ declined it carries no Node toolchain. `./vet.sh` runs every check below, and
   `erasableSyntaxOnly` fails them at type check.
 - **`#src/*` is `./src/*`**, from `package.json` `imports`. Cross-slice imports
   use it; within a slice, relative paths.
-- **Validate at the page's boundary.** A payload embedded in the page, a `db`
-  doc and a comment's anchor arrive untyped and are parsed with a `zod/mini`
-  schema; data built inside the program is not parsed again.
+- **Validate at the page's boundary.** A payload embedded in the page and a `db`
+  doc arrive untyped and are parsed with a `zod/mini` schema, a comment's anchor
+  by its grammar; data built inside the program is not parsed again.
 - **The runtime's ambient types are vendored in `types/claude-runtime/`** at the
   contract version the apps target. A newer contract is re-vendored there, not
   patched in place.
