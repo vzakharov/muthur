@@ -243,7 +243,6 @@ input {
   flex: 1;
   min-width: 0;
   overflow: hidden;
-  cursor: grab;
   background-color: var(--bg);
   background-image: radial-gradient(var(--border) 1px, transparent 1px);
   background-size: 24px 24px;

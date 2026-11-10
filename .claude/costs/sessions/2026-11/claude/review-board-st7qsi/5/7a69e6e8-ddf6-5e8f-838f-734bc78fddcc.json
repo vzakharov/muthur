@@ -1,13 +1,13 @@
 {
   "total": {
-    "inputTokens": 214,
+    "inputTokens": 229,
     "cacheWrite5mTokens": 0,
-    "cacheWrite1hTokens": 327505,
-    "cacheReadTokens": 18649954,
-    "outputTokens": 74139,
-    "thinkingTokens": 21108,
-    "responses": 114,
-    "costUsd": 7.833666800000002
+    "cacheWrite1hTokens": 410851,
+    "cacheReadTokens": 19719960,
+    "outputTokens": 83477,
+    "thinkingTokens": 22490,
+    "responses": 123,
+    "costUsd": 8.901256000000002
   },
   "estimate": {
     "at": "2026-11-10T08:49:43.712Z",
@@ -45,7 +45,7 @@
   },
   "sessionId": "7a69e6e8-ddf6-5e8f-838f-734bc78fddcc",
   "branch": "claude/review-board-st7qsi",
-  "cwd": "/home/user/muthur",
+  "cwd": "/home/user/muthur/.claude/artifacts/src/review-board",
   "openingPrompt": "/relay take claude/review-board-st7qsi — подсветка синтаксиса и DRY готовы, анкеры с диапазонами строк закоммичены; починка комментирования в режиме комментов и…",
   "prs": [
     265
@@ -53,18 +53,18 @@
   "url": "https://claude.ai/code/session_016Z4TKoWhP49B6JEWR7wwdd",
   "operator": "vzakharov",
   "firstResponseAt": "2026-11-10T08:49:22.672Z",
-  "lastResponseAt": "2026-11-10T09:09:30.708Z",
+  "lastResponseAt": "2026-11-10T09:11:49.180Z",
   "pricesAsOf": "2026-10-06",
   "claudeCodeTotalUsd": null,
   "ownTurns": {
-    "inputTokens": 214,
+    "inputTokens": 229,
     "cacheWrite5mTokens": 0,
-    "cacheWrite1hTokens": 327505,
-    "cacheReadTokens": 18649954,
-    "outputTokens": 74139,
-    "thinkingTokens": 21108,
-    "responses": 114,
-    "costUsd": 7.833666800000002
+    "cacheWrite1hTokens": 410851,
+    "cacheReadTokens": 19719960,
+    "outputTokens": 83477,
+    "thinkingTokens": 22490,
+    "responses": 123,
+    "costUsd": 8.901256000000002
   },
   "subagents": {
     "inputTokens": 0,
@@ -78,14 +78,14 @@
   },
   "byRate": {
     "claude-opus-5-5/standard": {
-      "inputTokens": 214,
+      "inputTokens": 229,
       "cacheWrite5mTokens": 0,
-      "cacheWrite1hTokens": 327505,
-      "cacheReadTokens": 18649954,
-      "outputTokens": 74139,
-      "thinkingTokens": 21108,
-      "responses": 114,
-      "costUsd": 7.833666800000002
+      "cacheWrite1hTokens": 410851,
+      "cacheReadTokens": 19719960,
+      "outputTokens": 83477,
+      "thinkingTokens": 22490,
+      "responses": 123,
+      "costUsd": 8.901256000000002
     }
   },
   "warnings": [],
@@ -118,6 +118,37 @@
         },
         "estimatedTokens": 8855,
         "estimatedUsd": 0.146993
+      },
+      "billedUsd": null
+    },
+    {
+      "at": "2026-11-10T09:10:34.847Z",
+      "trigger": "auto",
+      "compactedFrom": 224512,
+      "summaryChars": 11272,
+      "reorientation": {
+        "endedBy": "Edit",
+        "endedOn": ".claude/artifacts/src/review-board/pages/board/camera/ui/viewport.ts",
+        "endedAt": "2026-11-10T09:10:58.092Z",
+        "contextTokens": 131450,
+        "spend": {
+          "inputTokens": 11,
+          "cacheWrite5mTokens": 0,
+          "cacheWrite1hTokens": 71038,
+          "cacheReadTokens": 674019,
+          "outputTokens": 1992,
+          "thinkingTokens": 721,
+          "responses": 6,
+          "costUsd": 0.7429918000000001
+        }
+      },
+      "rereads": {
+        "calls": 2,
+        "byTool": {
+          "Read": 2
+        },
+        "estimatedTokens": 4503,
+        "estimatedUsd": 0.0394968
       },
       "billedUsd": null
     }

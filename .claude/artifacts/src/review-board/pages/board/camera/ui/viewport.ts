@@ -9,8 +9,6 @@ import {
 import { scrollsInside } from "./scroll.ts";
 
 export interface ViewportOptions {
-  /** Whether a drag starting on `target` pans (background, card headers) rather than belonging to it (a diff body). */
-  isPanSurface(target: EventTarget): boolean;
   onChange(camera: Zoomed): void;
 }
 
@@ -23,27 +21,22 @@ export interface Viewport {
   destroy(): void;
 }
 
-interface Drag {
-  start: Point;
-  camera: Zoomed;
-  pointerId: number;
-  active: boolean;
-}
 interface Pinch {
   distance: number;
   centre: Point;
   camera: Zoomed;
 }
 
-const DRAG_THRESHOLD = 3;
 const LINE_HEIGHT = 16;
 
 const distance = (a: Point, b: Point): number =>
   Math.hypot(a.x - b.x, a.y - b.y);
 
 /**
- * Applies a pan/zoom camera to `world` as a CSS transform. The viewport takes
- * `touch-action: none` so pinches reach it as pointer events.
+ * Applies a pan/zoom camera to `world` as a CSS transform: the wheel or
+ * trackpad pans, with Ctrl/Cmd it zooms, and a two-finger pinch zooms. A
+ * one-pointer drag is left to the page — text selection, comment areas. The
+ * viewport takes `touch-action: none` so pinches reach it as pointer events.
  */
 export function attachViewport(
   viewport: HTMLElement,
@@ -51,7 +44,6 @@ export function attachViewport(
   opts: ViewportOptions,
 ): Viewport {
   let camera: Zoomed = { x: 0, y: 0, zoom: 1 };
-  let drag: Drag | undefined;
   let pinch: Pinch | undefined;
   const pointers = new Map<number, Point>();
   const abort = new AbortController();
@@ -89,30 +81,13 @@ export function attachViewport(
       centre: { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 },
       camera,
     };
-    drag = undefined;
   }
 
   viewport.addEventListener(
     "pointerdown",
     (event) => {
-      const point = screenPoint(event);
-      pointers.set(event.pointerId, point);
-      if (pointers.size === 2) {
-        startPinch();
-        return;
-      }
-      if (
-        pointers.size === 1 &&
-        event.button === 0 &&
-        event.target !== null &&
-        opts.isPanSurface(event.target)
-      )
-        drag = {
-          start: point,
-          camera,
-          pointerId: event.pointerId,
-          active: false,
-        };
+      pointers.set(event.pointerId, screenPoint(event));
+      if (pointers.size === 2) startPinch();
     },
     { signal },
   );
@@ -121,25 +96,12 @@ export function attachViewport(
     "pointermove",
     (event) => {
       if (!pointers.has(event.pointerId)) return;
-      const point = screenPoint(event);
-      pointers.set(event.pointerId, point);
+      pointers.set(event.pointerId, screenPoint(event));
       const [a, b] = [...pointers.values()];
-      if (pinch !== undefined && a !== undefined && b !== undefined) {
+      if (pinch !== undefined && a !== undefined && b !== undefined)
         set(
           zoomAt(pinch.camera, pinch.centre, distance(a, b) / pinch.distance),
         );
-        return;
-      }
-      if (drag?.pointerId !== event.pointerId) return;
-      const dx = point.x - drag.start.x;
-      const dy = point.y - drag.start.y;
-      if (!drag.active) {
-        if (Math.hypot(dx, dy) <= DRAG_THRESHOLD) return;
-        drag.active = true;
-        // Captured only once it is a drag, so a plain click still reaches what it landed on.
-        viewport.setPointerCapture(event.pointerId);
-      }
-      set({ ...drag.camera, x: drag.camera.x + dx, y: drag.camera.y + dy });
     },
     { signal },
   );
@@ -147,7 +109,6 @@ export function attachViewport(
   function endPointer(event: PointerEvent): void {
     pointers.delete(event.pointerId);
     if (pointers.size < 2) pinch = undefined;
-    if (drag?.pointerId === event.pointerId) drag = undefined;
   }
   viewport.addEventListener("pointerup", endPointer, { signal });
   viewport.addEventListener("pointercancel", endPointer, { signal });

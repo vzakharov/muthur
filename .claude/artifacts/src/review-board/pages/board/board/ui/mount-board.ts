@@ -27,9 +27,6 @@ import { revealFocus } from "./reveal-focus.ts";
 
 const PACK = { headerHeight: 28, padding: 12, gap: 16 };
 
-/** Targets of a drag that belongs to them rather than to the camera. */
-const OWN_DRAG = ".card-body.has-diff, input, select, button, label";
-
 /**
  * Mounts the review board into `root`: parses the embedded payload, renders a
  * card per file, packs them into folder rectangles on a pannable canvas and
@@ -54,6 +51,8 @@ export function mountBoard(
   let bounds: Rect | undefined;
   let fitted = false;
   let panelPath: string | undefined;
+  /** Files left off the board while "Hide viewed" is on. */
+  const hidden = new Set<string>();
   const focusByPath = new Map(data.focus.map((item) => [item.path, item]));
   let focusAt: number | null = null;
 
@@ -76,8 +75,6 @@ export function mountBoard(
   viewportEl.append(world);
 
   const viewport = attachViewport(viewportEl, world, {
-    isPanSurface: (target) =>
-      target instanceof Element && target.closest(OWN_DRAG) === null,
     onChange: notifyVisible,
   });
 
@@ -144,6 +141,9 @@ export function mountBoard(
       onWhitespace: (hide) => {
         store.setBoard({ whitespace: hide });
       },
+      onHideViewed: (hide) => {
+        store.setBoard({ hideViewed: hide });
+      },
     },
   );
 
@@ -158,11 +158,16 @@ export function mountBoard(
   function render(): void {
     const board = store.board();
     let viewed = 0;
+    hidden.clear();
     for (const file of data.files) {
       const range = store.effective(file.path);
       const isViewed = store.isViewed(file.path);
       if (isViewed) viewed++;
-      cards.get(file.path)?.update({
+      if (isViewed && board.hideViewed) hidden.add(file.path);
+      const card = cards.get(file.path);
+      if (card === undefined) continue;
+      card.element.hidden = hidden.has(file.path);
+      card.update({
         range,
         viewed: isViewed,
         diff: fileDiff(data, file, range, board.whitespace),
@@ -173,6 +178,7 @@ export function mountBoard(
       from: board.from,
       to: board.to,
       whitespace: board.whitespace,
+      hideViewed: board.hideViewed,
       viewed,
       total: data.files.length,
       status: store.status(),
@@ -229,7 +235,9 @@ export function mountBoard(
 
   function layout(): void {
     const packed = pack(
-      buildTree(data.files.map((file) => file.path)),
+      buildTree(
+        data.files.map((file) => file.path).filter((path) => !hidden.has(path)),
+      ),
       (path) => {
         const element = cards.get(path)?.element;
         return {
@@ -240,6 +248,7 @@ export function mountBoard(
       PACK,
     );
     folders.sync(packed.folders);
+    rects.clear();
     for (const placed of packed.files) {
       rects.set(placed.path, placed.rect);
       const element = cards.get(placed.path)?.element;

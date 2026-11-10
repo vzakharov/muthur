@@ -7,6 +7,7 @@ export interface ToolbarState {
   from: string | null;
   to: string | null;
   whitespace: boolean;
+  hideViewed: boolean;
   viewed: number;
   total: number;
   status: StoreStatus;
@@ -21,6 +22,7 @@ export interface ToolbarHandlers {
   onZoom(factor: number): void;
   onRange(end: "from" | "to", commit: string | null): void;
   onWhitespace(hide: boolean): void;
+  onHideViewed(hide: boolean): void;
 }
 
 export interface Toolbar {
@@ -48,9 +50,21 @@ function button(text: string, title: string, onClick: () => void) {
   return node;
 }
 
+function checkbox(text: string, onChange: (checked: boolean) => void) {
+  const box = el("input", "");
+  box.type = "checkbox";
+  box.addEventListener("change", () => {
+    onChange(box.checked);
+  });
+  const label = el("label", "tool-check");
+  label.append(box, text);
+  return { box, label };
+}
+
 /**
  * Fit / zoom, the step through the review's focus items (absent when it has
- * none), the board's commit range, the whitespace toggle and the viewed tally.
+ * none), the board's commit range, the whitespace and viewed-file toggles and
+ * the viewed tally.
  */
 export function createToolbar(
   title: string,
@@ -92,13 +106,8 @@ export function createToolbar(
   const range = el("span", "tool-group range");
   range.append(el("span", "tool-label", "Range"), from, "→", to);
 
-  const whitespaceBox = el("input", "");
-  whitespaceBox.type = "checkbox";
-  whitespaceBox.addEventListener("change", () => {
-    handlers.onWhitespace(whitespaceBox.checked);
-  });
-  const whitespace = el("label", "tool-check");
-  whitespace.append(whitespaceBox, "Hide whitespace");
+  const whitespace = checkbox("Hide whitespace", handlers.onWhitespace);
+  const hideViewed = checkbox("Hide viewed", handlers.onHideViewed);
 
   const focus = button(
     "",
@@ -112,7 +121,16 @@ export function createToolbar(
 
   const tally = el("span", "tally");
   const note = el("span", "note");
-  element.append(heading, zoom, focus, range, whitespace, tally, note);
+  element.append(
+    heading,
+    zoom,
+    focus,
+    range,
+    whitespace.label,
+    hideViewed.label,
+    tally,
+    note,
+  );
 
   return {
     element,
@@ -144,7 +162,8 @@ export function createToolbar(
         })),
         state.to === null || state.to === lastSha ? DEFAULT_END : state.to,
       );
-      whitespaceBox.checked = state.whitespace;
+      whitespace.box.checked = state.whitespace;
+      hideViewed.box.checked = state.hideViewed;
       focus.textContent =
         state.focusAt === null
           ? `Focus · ${focusTotal}`
