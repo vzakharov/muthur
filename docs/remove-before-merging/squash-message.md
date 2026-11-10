@@ -21,7 +21,8 @@ anchoring each as <path>@<from>..<to>[:R|L<n>[-<m>]].
 The author marks the review's focus in a committed file of paths,
 reasons and line spans: the board frames those files, marks the lines,
 and steps through the ones still unviewed. /review-board has the agent
-write that file and keep it current while it handles comments.
+write that file and keep it current while it handles comments, and
+/finalize republishes the board after its quality passes.
 
 One script collects file contents per commit from git, with no agent
 judgement in it, and the page diffs any pair itself. The code is bare
