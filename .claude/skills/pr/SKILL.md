@@ -252,8 +252,8 @@ them.
 
 ## Step 7 — The review board
 
-The PR now shows what the branch holds, and the board is the operator's view of
-the same diff, so it follows the PR rather than waiting to be asked:
+The board is the operator's view of the diff the PR shows, so it follows the PR
+rather than waiting to be asked:
 
 - **The PR carries a `<!-- review-board` sticky comment** → rebuild and
   republish it by `@.claude/skills/review-board/SKILL.md` Steps 1–2, the focus

@@ -2,7 +2,7 @@
   {
     "path": ".claude/skills/pr/SKILL.md",
     "why": "The product decision: once a PR has a board, every /pr republishes it regardless of the switch; the switch only decides the first publish, and plan-open never gets one. Every /go and /handle round now ends in an artifact publish.",
-    "lines": [[253, 270]]
+    "lines": [[253, 269]]
   },
   {
     "path": ".claude/skills/review-board/SKILL.md",
