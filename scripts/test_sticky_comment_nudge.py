@@ -292,7 +292,7 @@ class TheMcpTools(NudgeTestCase):
 
 class TheMarkers(unittest.TestCase):
     def test_they_are_the_scripts(self) -> None:
-        arms = re.findall(r'^\s*([a-z]+)\) MARKER="([^"]+)" ;;$', SCRIPT.read_text(), re.M)
+        arms = re.findall(r'^\s*([a-z-]+)\) MARKER="([^"]+)" ;;$', SCRIPT.read_text(), re.M)
         self.assertTrue(arms, f"no marker arms found in {SCRIPT}")
         spec = importlib.util.spec_from_file_location("sticky_comment_nudge", HOOK)
         assert spec is not None and spec.loader is not None

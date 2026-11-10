@@ -198,8 +198,10 @@ the page anchors threads itself:
 
 ## The skill — `/review-board`
 
-`.claude/skills/review-board/SKILL.md`, its description staged per
-`.claude/rules/staging.md` since the skill listing carries it:
+`.claude/skills/review-board/SKILL.md`. Its description enters the skill listing
+every turn, and a new file has no tracked original for `scripts/staged.sh` to
+stage against, so it lands as the branch's last commit and the cache is paid
+once:
 
 1. **Build**: run the build command; nothing else is decided here.
 2. **Publish**: the first publish passes the capabilities and `icon: "code"`;
@@ -230,7 +232,8 @@ Generic to every watched artifact, not only the board:
 - **`/relay take`** re-watches every URL that heading lists before anything
   else.
 - **`/relay park`** writes the heading and stops the watches the same way; the
-  session that later takes the summary re-watches.
+  session that later takes the summary re-watches, and so does the parked
+  session itself if its operator comes back to it.
 
 Body-only edits to `relay/SKILL.md` and `relay/after-handoff.md`, so in place.
 
