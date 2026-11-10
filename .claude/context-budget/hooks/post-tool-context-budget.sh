@@ -46,7 +46,7 @@ switch() {
 # the relay, so a notice steering to one is noise.
 compact_window="${CLAUDE_CODE_AUTO_COMPACT_WINDOW:-}"
 if [[ "$compact_window" =~ ^[0-9]+$ ]] && [ "$compact_window" -lt 350000 ] \
-  && [ "$(switch MUTHUR_CONTEXT_BUDGET_RELAY_DESPITE_AUTOCOMPACT "${MUTHUR_CONTEXT_BUDGET_RELAY_DESPITE_AUTOCOMPACT:-}")" != yes ]; then
+  && [ "$(switch MUTHUR_RELAY_DESPITE_AUTOCOMPACT "${MUTHUR_RELAY_DESPITE_AUTOCOMPACT:-}")" != yes ]; then
   exit 0
 fi
 

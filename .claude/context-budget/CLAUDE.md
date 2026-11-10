@@ -69,8 +69,8 @@ where it stands, a last step aside. What the agent does on each notice is
   a `User`'s, has no operator file to read and leaves the default.
 - **Under `CLAUDE_CODE_AUTO_COMPACT_WINDOW` below 350k the hook is silent**,
   since a window that small is the environment choosing the compact over the
-  relay both notices steer to.
-  `MUTHUR_CONTEXT_BUDGET_RELAY_DESPITE_AUTOCOMPACT=true` brings them back.
+  relay both notices steer to. `MUTHUR_RELAY_DESPITE_AUTOCOMPACT=true` brings
+  them back.
 - **Anything unreadable is silence**, never an error: a missing notice costs a
   warning, a hook failing on every tool call costs the session.
 

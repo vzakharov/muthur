@@ -79,7 +79,7 @@ class WhenTheNoticesFire(BudgetTestCase):
     def test_the_despite_switch_keeps_the_notices_under_auto_compact(self) -> None:
         env = {
             "CLAUDE_CODE_AUTO_COMPACT_WINDOW": "300000",
-            "MUTHUR_CONTEXT_BUDGET_RELAY_DESPITE_AUTOCOMPACT": "true",
+            "MUTHUR_RELAY_DESPITE_AUTOCOMPACT": "true",
         }
         self.session.append(assistant(WARN + 1))
         self.assertIsNotNone(self.session.notice(env))
@@ -87,12 +87,12 @@ class WhenTheNoticesFire(BudgetTestCase):
     def test_an_unknown_despite_value_is_named_and_stays_silent(self) -> None:
         env = {
             "CLAUDE_CODE_AUTO_COMPACT_WINDOW": "300000",
-            "MUTHUR_CONTEXT_BUDGET_RELAY_DESPITE_AUTOCOMPACT": "ture",
+            "MUTHUR_RELAY_DESPITE_AUTOCOMPACT": "ture",
         }
         self.session.append(assistant(WARN + 1))
         result = self.session.tool_call(env)
         self.assertEqual(result.stdout.strip(), "")
-        self.assertIn("MUTHUR_CONTEXT_BUDGET_RELAY_DESPITE_AUTOCOMPACT", result.stderr)
+        self.assertIn("MUTHUR_RELAY_DESPITE_AUTOCOMPACT", result.stderr)
 
     def test_the_warning_gives_the_work_the_room_up_to_the_pause_line(self) -> None:
         # The half-of-the-session gauge matches that room only at the default

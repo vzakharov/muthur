@@ -7,9 +7,9 @@ hook's notices, both of which steer the session into /relay, were
 noise there.
 
 The hook now exits silently under such a window. Setting
-MUTHUR_CONTEXT_BUDGET_RELAY_DESPITE_AUTOCOMPACT=true brings the notices
-back; it reads through the same yes/no switch as the manual-relay
-settings, so a mistyped value is named on stderr and read as unset.
+MUTHUR_RELAY_DESPITE_AUTOCOMPACT=true brings the notices back; it reads
+through the same yes/no switch as the manual-relay settings, so a
+mistyped value is named on stderr and read as unset.
 
 Co-authored-by: Claude <noreply@anthropic.com>
 ```
