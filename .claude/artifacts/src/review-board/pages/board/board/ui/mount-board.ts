@@ -208,6 +208,7 @@ export function mountBoard(
       card.update({
         range,
         viewed: isViewed,
+        unsaved: store.isUnsaved(file.path),
         diff: fileDiff(data, file, range, board.whitespace),
         marks: marksFor(file, range),
         viewUrl: viewFileUrl(data, file, range),
@@ -222,6 +223,7 @@ export function mountBoard(
       viewed,
       total: data.files.length,
       status: store.status(),
+      unsaved: store.unsavedCount(),
       focusUnviewed: data.focus.filter((item) => !store.isViewed(item.path))
         .length,
     });

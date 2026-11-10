@@ -45,6 +45,15 @@
 
 .viewed {
   color: var(--muted);
+
+  // A change no write has saved yet: the mark is local until it is.
+  &.is-unsaved {
+    color: var(--badge-modified);
+
+    &::after {
+      content: " · not saved";
+    }
+  }
 }
 
 .path {

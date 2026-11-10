@@ -1,13 +1,13 @@
 {
   "total": {
-    "inputTokens": 263,
+    "inputTokens": 305,
     "cacheWrite5mTokens": 256949,
-    "cacheWrite1hTokens": 305805,
-    "cacheReadTokens": 19306457,
-    "outputTokens": 79343,
-    "thinkingTokens": 28332,
-    "responses": 129,
-    "costUsd": 7.068489900000004
+    "cacheWrite1hTokens": 351961,
+    "cacheReadTokens": 23869471,
+    "outputTokens": 95649,
+    "thinkingTokens": 32678,
+    "responses": 152,
+    "costUsd": 8.328860700000003
   },
   "estimate": {
     "at": "2026-11-10T19:17:04.934Z",
@@ -39,7 +39,7 @@
   },
   "sessionId": "7af0ac9b-f072-5931-894a-e480c108bda5",
   "branch": "claude/review-board-md-preview-7piv2q",
-  "cwd": "/home/user/muthur/docs/plans",
+  "cwd": "/home/user/muthur",
   "openingPrompt": "к ревью-борде давай добавим возможность просмотра .md в отрендеренном виде по переключалке (показывается только версия \"after\", чтобы не париться с рендерингом …",
   "prs": [
     269
@@ -47,18 +47,18 @@
   "url": "https://claude.ai/code/session_016Z4TKq7vE5xSAuWyBP8hPt",
   "operator": "vzakharov",
   "firstResponseAt": "2026-11-10T17:52:15.937Z",
-  "lastResponseAt": "2026-11-10T19:21:35.343Z",
+  "lastResponseAt": "2026-11-10T19:24:27.314Z",
   "pricesAsOf": "2026-10-06",
   "claudeCodeTotalUsd": null,
   "ownTurns": {
-    "inputTokens": 196,
+    "inputTokens": 238,
     "cacheWrite5mTokens": 0,
-    "cacheWrite1hTokens": 305805,
-    "cacheReadTokens": 15619329,
-    "outputTokens": 61208,
-    "thinkingTokens": 19567,
-    "responses": 95,
-    "costUsd": 4.959557800000003
+    "cacheWrite1hTokens": 351961,
+    "cacheReadTokens": 20182343,
+    "outputTokens": 77514,
+    "thinkingTokens": 23913,
+    "responses": 118,
+    "costUsd": 6.219928600000002
   },
   "subagents": {
     "inputTokens": 67,
@@ -72,14 +72,14 @@
   },
   "byRate": {
     "claude-sonnet-5-5/standard": {
-      "inputTokens": 208,
+      "inputTokens": 250,
       "cacheWrite5mTokens": 103393,
-      "cacheWrite1hTokens": 305805,
-      "cacheReadTokens": 16065161,
-      "outputTokens": 62978,
-      "thinkingTokens": 19961,
-      "responses": 101,
-      "costUsd": 5.324930700000004
+      "cacheWrite1hTokens": 351961,
+      "cacheReadTokens": 20628175,
+      "outputTokens": 79284,
+      "thinkingTokens": 24307,
+      "responses": 124,
+      "costUsd": 6.585301500000003
     },
     "claude-opus-5-5/standard": {
       "inputTokens": 55,
@@ -116,12 +116,12 @@
         }
       },
       "rereads": {
-        "calls": 1,
+        "calls": 2,
         "byTool": {
-          "Read": 1
+          "Read": 2
         },
-        "estimatedTokens": 4433,
-        "estimatedUsd": 0.038123800000000006
+        "estimatedTokens": 5375,
+        "estimatedUsd": 0.06586320000000001
       },
       "billedUsd": null
     }

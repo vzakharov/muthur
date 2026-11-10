@@ -20,6 +20,8 @@ const CHANGED_LINES_CAP = 200;
 export interface CardState {
   range: EffectiveRange;
   viewed: boolean;
+  /** The Viewed mark or range was changed here and no write of it has succeeded. */
+  unsaved: boolean;
   diff: FileDiff;
   /** New-side lines to mark as the review's focus; empty while the diff does not end at HEAD. */
   marks: readonly LineSpan[];
@@ -266,6 +268,8 @@ export function createCard(
       if (state.viewUrl !== null) viewFile.href = state.viewUrl;
       element.classList.toggle("is-viewed", state.viewed);
       viewedBox.checked = state.viewed;
+      viewedLabel.classList.toggle("is-unsaved", state.unsaved);
+      viewedLabel.title = state.unsaved ? "Not saved yet" : "";
       const { diff, range: current } = state;
       added.textContent = diff.kind === "text" ? `+${diff.diff.added}` : "";
       removed.textContent = diff.kind === "text" ? `−${diff.diff.removed}` : "";

@@ -14,14 +14,20 @@ const boardPrefsSchema = z.object({
 export const boardDocSchema = z.extend(boardPrefsSchema, { at: z.string() });
 
 // The viewer's state for one file, at `.../<branchKey>/files/<fileKey>`.
-// `viewedBlob` is the "to" blob the viewer marked viewed; `at` stamps the last
-// range change, which is what a shift is weighed against.
+// `viewed` lists the blobs the viewer marked viewed, each when; `at` stamps the
+// last range change, which is what a shift is weighed against. A doc saved
+// before the list existed carries the one `viewedBlob` instead, which
+// `filePrefsOf` reads as a one-entry list.
+const viewedMarkSchema = z.object({ blob: z.string(), at: z.string() });
 const filePrefsSchema = z.object({
-  viewedBlob: z.nullable(z.string()),
+  viewed: z._default(z.array(viewedMarkSchema), []),
   from: z.nullable(z.string()),
   to: z.nullable(z.string()),
 });
-export const fileDocSchema = z.extend(filePrefsSchema, { at: z.string() });
+export const fileDocSchema = z.extend(filePrefsSchema, {
+  viewedBlob: z.optional(z.nullable(z.string())),
+  at: z.string(),
+});
 
 // Shared, written by the agent at `shifts/<fileKey>`.
 export const shiftDocSchema = z.object({
@@ -32,7 +38,19 @@ export const shiftDocSchema = z.object({
 
 export type BoardPrefs = z.infer<typeof boardPrefsSchema>;
 export type FilePrefs = z.infer<typeof filePrefsSchema>;
+export type ViewedMark = z.infer<typeof viewedMarkSchema>;
+export type FileDoc = z.infer<typeof fileDocSchema>;
 export type ShiftDoc = z.infer<typeof shiftDocSchema>;
+
+/** The doc's prefs with its stamp, a legacy `viewedBlob` carried over as the first mark when the doc has no list. */
+export function filePrefsOf(doc: FileDoc): { value: FilePrefs; at: string } {
+  const { at, viewedBlob, ...prefs } = doc;
+  const legacy =
+    prefs.viewed.length === 0 && viewedBlob !== undefined && viewedBlob !== null
+      ? [{ blob: viewedBlob, at }]
+      : prefs.viewed;
+  return { value: { ...prefs, viewed: legacy }, at };
+}
 
 /** The doc's data, or null with a warning naming `path` when it does not fit the schema. */
 export function parseDoc<T>(

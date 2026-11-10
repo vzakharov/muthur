@@ -3,6 +3,7 @@ import { mock, test } from "node:test";
 import {
   boardDocSchema,
   fileDocSchema,
+  filePrefsOf,
   parseDoc,
   shiftDocSchema,
 } from "./docs.ts";
@@ -30,9 +31,44 @@ test("null range ends are valid in board and file docs", () => {
     }).success,
   );
   assert.ok(
-    fileDocSchema.safeParse({ viewedBlob: null, from: "a", to: null, at: "t" })
+    fileDocSchema.safeParse({ viewed: [], from: "a", to: null, at: "t" })
       .success,
   );
+});
+
+test("a doc saved with the single viewedBlob reads as a one-mark list", () => {
+  const doc = parseDoc(
+    fileDocSchema,
+    { viewedBlob: "b1", from: null, to: null, at: "2026-01-01T00:00:00Z" },
+    "k",
+  );
+  assert.ok(doc);
+  assert.deepEqual(filePrefsOf(doc), {
+    value: {
+      viewed: [{ blob: "b1", at: "2026-01-01T00:00:00Z" }],
+      from: null,
+      to: null,
+    },
+    at: "2026-01-01T00:00:00Z",
+  });
+});
+
+test("a doc with a list keeps it, and one with neither is unviewed", () => {
+  const marks = [{ blob: "b1", at: "t0" }];
+  const listed = parseDoc(
+    fileDocSchema,
+    { viewed: marks, viewedBlob: "old", from: null, to: null, at: "t" },
+    "k",
+  );
+  assert.ok(listed);
+  assert.deepEqual(filePrefsOf(listed).value.viewed, marks);
+  const bare = parseDoc(
+    fileDocSchema,
+    { viewedBlob: null, from: null, to: null, at: "t" },
+    "k",
+  );
+  assert.ok(bare);
+  assert.deepEqual(filePrefsOf(bare).value.viewed, []);
 });
 
 test("a malformed doc is ignored with a warning naming its path", () => {

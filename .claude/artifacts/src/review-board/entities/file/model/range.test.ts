@@ -171,7 +171,12 @@ test("a file absent at its last commit reports a null blob", () => {
 
 test("viewed means the marked blob is the one now shown", () => {
   const viewedAs = (viewedBlob: string | null, target: ReviewFile = file) =>
-    effectiveRange({ file: target, order, board: whole, viewedBlob }).viewed;
+    effectiveRange({
+      file: target,
+      order,
+      board: whole,
+      viewedBlobs: new Set(viewedBlob === null ? [] : [viewedBlob]),
+    }).viewed;
   assert.equal(viewedAs("b3"), true);
   assert.equal(viewedAs("b1"), false);
   assert.equal(viewedAs(null), false);
@@ -210,7 +215,7 @@ const acrossMerges = (viewedBlob: string, to: string | null = null) =>
     order: commitOrder(merged),
     merges: baseMerges(merged),
     board: { from: null, to },
-    viewedBlob,
+    viewedBlobs: new Set([viewedBlob]),
   });
 
 test("a file only base merges changed since it was viewed stays viewed", () => {
@@ -232,14 +237,24 @@ test("a base merge after the branch's own change does not hide that change", () 
 });
 
 test("a file viewed at an earlier revision shows only what changed since", () => {
-  const range = effectiveRange({ file, order, board: whole, viewedBlob: "b1" });
+  const range = effectiveRange({
+    file,
+    order,
+    board: whole,
+    viewedBlobs: new Set(["b1"]),
+  });
   assert.equal(range.from, "c1");
   assert.equal(range.to, "c3");
   assert.equal(range.fromExplicit, true);
 });
 
 test("a file viewed at its shown revision keeps the board's range", () => {
-  const range = effectiveRange({ file, order, board: whole, viewedBlob: "b3" });
+  const range = effectiveRange({
+    file,
+    order,
+    board: whole,
+    viewedBlobs: new Set(["b3"]),
+  });
   assert.equal(range.from, "B");
   assert.equal(range.fromExplicit, false);
 });
@@ -249,9 +264,42 @@ test("a viewed revision at or before the range's start changes nothing", () => {
     file,
     order,
     board: { from: "c1", to: null },
-    viewedBlob: "b0",
+    viewedBlobs: new Set(["b0"]),
   });
   assert.equal(range.from, "c1");
+});
+
+test("with several marked revisions the base is the latest before to", () => {
+  const range = effectiveRange({
+    file,
+    order,
+    board: whole,
+    viewedBlobs: new Set(["b0", "b1"]),
+  });
+  assert.equal(range.from, "c1");
+  assert.equal(range.viewed, false);
+});
+
+test("a mark on to makes the file viewed and keeps the board's base", () => {
+  const range = effectiveRange({
+    file,
+    order,
+    board: whole,
+    viewedBlobs: new Set(["b1", "b3"]),
+  });
+  assert.equal(range.viewed, true);
+  assert.equal(range.from, "B");
+});
+
+test("moving to back to a marked revision shows that revision as viewed", () => {
+  const range = effectiveRange({
+    file,
+    order,
+    board: { from: null, to: "c1" },
+    viewedBlobs: new Set(["b1", "b3"]),
+  });
+  assert.equal(range.viewed, true);
+  assert.equal(range.to, "c1");
 });
 
 test("the viewer's own from outranks the viewed revision", () => {
@@ -260,7 +308,7 @@ test("the viewer's own from outranks the viewed revision", () => {
     order,
     board: whole,
     override: { from: "B", to: null, at: "2026-01-02T00:00:00Z" },
-    viewedBlob: "b1",
+    viewedBlobs: new Set(["b1"]),
   });
   assert.equal(range.from, "B");
 });
@@ -271,7 +319,7 @@ test("a later viewed revision outranks an earlier shift", () => {
     order,
     board: whole,
     shift: { from: "B", at: "2026-01-02T00:00:00Z" },
-    viewedBlob: "b1",
+    viewedBlobs: new Set(["b1"]),
   });
   assert.equal(range.from, "c1");
 });

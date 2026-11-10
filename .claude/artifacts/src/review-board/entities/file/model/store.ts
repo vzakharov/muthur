@@ -6,10 +6,12 @@ import { connect, type Connection } from "./connection.ts";
 import {
   boardDocSchema,
   fileDocSchema,
+  filePrefsOf,
   parseDoc,
   shiftDocSchema,
   type BoardPrefs,
   type FilePrefs,
+  type ViewedMark,
 } from "./docs.ts";
 import {
   baseMerges,
@@ -35,7 +37,12 @@ export interface FileStore {
   setBoard(patch: Partial<BoardPrefs>): void;
   effective(path: string): EffectiveRange;
   isViewed(path: string): boolean;
+  /** Marks or unmarks the blob the file's `to` shows; other revisions' marks stay. */
   setViewed(path: string, viewed: boolean): void;
+  /** Whether the file's state has a change that no write has yet saved. */
+  isUnsaved(path: string): boolean;
+  /** How many files have such a change. */
+  unsavedCount(): number;
   /** Sets the file's own `from` / `to`; null clears that end back to the board. */
   setRange(path: string, patch: Partial<BoardRange>): void;
   subscribe(listener: () => void): () => void;
@@ -50,8 +57,17 @@ const sameBoard = (a: BoardPrefs, b: BoardPrefs): boolean =>
   a.focusOnly === b.focusOnly &&
   a.from === b.from &&
   a.to === b.to;
+const sameMarks = (
+  a: readonly ViewedMark[],
+  b: readonly ViewedMark[],
+): boolean =>
+  a.length === b.length &&
+  a.every((mark, i) => {
+    const other = b[i];
+    return other?.blob === mark.blob && other.at === mark.at;
+  });
 const sameFile = (a: FilePrefs, b: FilePrefs): boolean =>
-  a.viewedBlob === b.viewedBlob && a.from === b.from && a.to === b.to;
+  sameMarks(a.viewed, b.viewed) && a.from === b.from && a.to === b.to;
 
 /**
  * The page's one access layer to the artifact's `db`: the viewer's board and
@@ -93,9 +109,12 @@ export function createFileStore(data: ReviewData): FileStore {
     notify();
   };
 
+  /** The connection to write through; null when nothing is saved by design (no `db`, no id), and a refusal once the store has failed, so a change stays unsaved instead of passing for written. */
   async function writable(): Promise<Connection | null> {
     const conn = await connection;
-    return (conn?.uid ?? null) === null || degraded ? null : conn;
+    if ((conn?.uid ?? null) === null) return null;
+    if (degraded) throw new Error("the store refused an earlier write");
+    return conn;
   }
 
   const boardValue = synced<BoardPrefs>({
@@ -121,7 +140,7 @@ export function createFileStore(data: ReviewData): FileStore {
     fileValues.set(
       path,
       synced<FilePrefs>({
-        initial: { viewedBlob: null, from: null, to: null },
+        initial: { viewed: [], from: null, to: null },
         equals: sameFile,
         changed: notify,
         failed,
@@ -148,14 +167,14 @@ export function createFileStore(data: ReviewData): FileStore {
 
   function effective(path: string): EffectiveRange {
     const own = fileValue(path);
-    const { from, to, viewedBlob } = own.get();
+    const { from, to, viewed } = own.get();
     return effectiveRange({
       file: fileOf(path),
       order,
       board: boardValue.get(),
       override: { from, to, at: own.at() },
       shift: shifts.get(path),
-      viewedBlob,
+      viewedBlobs: new Set(viewed.map((mark) => mark.blob)),
       merges,
     });
   }
@@ -261,8 +280,8 @@ export function createFileStore(data: ReviewData): FileStore {
             `${conn.filesPath}/${doc.id}`,
           );
           if (parsed === null) continue;
-          const { at, ...rest } = parsed;
-          value.receive({ value: rest, at });
+          const { value: prefs, at } = filePrefsOf(parsed);
+          value.receive({ value: prefs, at });
         }
       },
     );
@@ -294,8 +313,16 @@ export function createFileStore(data: ReviewData): FileStore {
     },
     setViewed(path, viewed) {
       const own = fileValue(path);
-      const viewedBlob = viewed ? viewedToken(effective(path).toBlob) : null;
-      own.set({ ...own.get(), viewedBlob }, own.at() || now());
+      const blob = viewedToken(effective(path).toBlob);
+      const others = own.get().viewed.filter((mark) => mark.blob !== blob);
+      const marks = viewed ? [...others, { blob, at: now() }] : others;
+      own.set({ ...own.get(), viewed: marks }, own.at() || now());
+    },
+    isUnsaved: (path) => fileValue(path).unsaved(),
+    unsavedCount() {
+      let count = 0;
+      for (const value of fileValues.values()) if (value.unsaved()) count++;
+      return count;
     },
     setRange(path, patch) {
       const own = fileValue(path);
