@@ -18,13 +18,12 @@ const PERMANENT = new Set<string>([
   "capability_removed",
 ]);
 
-const errorCode = (error: unknown): string | undefined =>
+const isPermanent = (error: unknown): boolean =>
   typeof error === "object" &&
   error !== null &&
   "code" in error &&
-  typeof error.code === "string"
-    ? error.code
-    : undefined;
+  typeof error.code === "string" &&
+  PERMANENT.has(error.code);
 
 const label = (target: CommentTarget): string =>
   target.line === null
@@ -92,7 +91,7 @@ export function boardComments(): BoardComments {
     controller
       .compose(anchor, at, { label: label(target) })
       .catch((error: unknown) => {
-        if (PERMANENT.has(errorCode(error) ?? "")) {
+        if (isPermanent(error)) {
           disable();
           return;
         }
@@ -171,7 +170,7 @@ export function boardComments(): BoardComments {
       try {
         controller = await api.customAnchors(callbacks);
       } catch (error) {
-        if (PERMANENT.has(errorCode(error) ?? "")) return;
+        if (isPermanent(error)) return;
         throw error;
       }
       handle.setCommentsEnabled(true);

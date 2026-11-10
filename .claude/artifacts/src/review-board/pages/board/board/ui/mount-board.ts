@@ -42,8 +42,7 @@ export function mountBoard(
   setCommentsEnabled(false);
 
   const store = createFileStore(data);
-  const labels = commitLabels(data);
-  const labelOf = (sha: string): string => labels.get(sha) ?? sha.slice(0, 7);
+  const labelOf = commitLabels(data);
   const filesByPath = new Map(data.files.map((file) => [file.path, file]));
   const rects = new Map<string, Rect>();
   let bounds: Rect | undefined;
@@ -79,7 +78,7 @@ export function mountBoard(
   const cards = new Map(
     data.files.map((file) => [
       file.path,
-      createCard(file, labels, {
+      createCard(file, labelOf, {
         onViewed: (viewed) => {
           store.setViewed(file.path, viewed);
         },
@@ -102,7 +101,7 @@ export function mountBoard(
     data.branch === "" ? "Review board" : `Review · ${data.branch}`,
     data.commits,
     data.base.sha,
-    labels,
+    labelOf,
     {
       onFit() {
         if (bounds !== undefined) viewport.fit(bounds);

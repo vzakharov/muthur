@@ -138,15 +138,19 @@ function statusOf(code: string): FileStatus {
   }
 }
 
+/** The NUL-split base..HEAD diff in `format`; both formats share `-M`, so a rename keys both by its new path. */
+function diffTokens(
+  cwd: string,
+  baseSha: string,
+  format: "--name-status" | "--numstat",
+): string[] {
+  return gitText(cwd, ["diff", format, "-M", "-z", baseSha, "HEAD"]).split(
+    "\0",
+  );
+}
+
 function readChanges(cwd: string, baseSha: string): Change[] {
-  const tokens = gitText(cwd, [
-    "diff",
-    "--name-status",
-    "-M",
-    "-z",
-    baseSha,
-    "HEAD",
-  ]).split("\0");
+  const tokens = diffTokens(cwd, baseSha, "--name-status");
   const changes: Change[] = [];
   for (let i = 0; i < tokens.length - 1; ) {
     const code = tokens[i++] ?? "";
@@ -168,14 +172,7 @@ function readChanges(cwd: string, baseSha: string): Change[] {
 
 /** Paths git reports as binary (`-\t-` in numstat), keyed by their new path. */
 function readBinaryPaths(cwd: string, baseSha: string): Set<string> {
-  const tokens = gitText(cwd, [
-    "diff",
-    "--numstat",
-    "-M",
-    "-z",
-    baseSha,
-    "HEAD",
-  ]).split("\0");
+  const tokens = diffTokens(cwd, baseSha, "--numstat");
   const binary = new Set<string>();
   for (let i = 0; i < tokens.length - 1; ) {
     const entry = tokens[i++] ?? "";

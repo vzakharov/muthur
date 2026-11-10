@@ -75,7 +75,7 @@ function select(label: string, onChange: (value: string) => void) {
  */
 export function createCard(
   file: ReviewFile,
-  labels: ReadonlyMap<string, string>,
+  labelOf: (sha: string) => string,
   handlers: CardHandlers,
 ): Card {
   const element = el("article", `card status-${file.status}`);
@@ -108,7 +108,7 @@ export function createCard(
     { value: BOARD_RANGE, label: "Board range" },
     ...file.revisions.map((revision) => ({
       value: revision.commit,
-      label: labels.get(revision.commit) ?? revision.commit.slice(0, 7),
+      label: labelOf(revision.commit),
     })),
   ];
   const from = select("Diff from", (value) => {

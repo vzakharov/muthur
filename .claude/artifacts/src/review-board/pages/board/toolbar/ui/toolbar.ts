@@ -46,18 +46,17 @@ function button(text: string, title: string, onClick: () => void) {
 
 /**
  * Fit / zoom, the board's commit range, the whitespace toggle and the viewed
- * tally. `labels` maps a commit SHA to its "abc1234 subject" text.
+ * tally.
  */
 export function createToolbar(
   title: string,
   commits: readonly ReviewCommit[],
   baseSha: string,
-  labels: ReadonlyMap<string, string>,
+  labelOf: (sha: string) => string,
   handlers: ToolbarHandlers,
 ): Toolbar {
   const element = el("div", "toolbar");
   const lastSha = commits[commits.length - 1]?.sha ?? baseSha;
-  const labelOf = (sha: string): string => labels.get(sha) ?? sha.slice(0, 7);
 
   const heading = el("span", "toolbar-title", title);
   heading.title = title;
