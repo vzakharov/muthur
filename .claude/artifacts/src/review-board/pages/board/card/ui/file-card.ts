@@ -27,6 +27,8 @@ export interface CardState {
   marks: readonly LineSpan[];
   /** GitHub's page for the file's shown version; null where there is none. */
   viewUrl: string | null;
+  /** How recently the file last changed on the branch, for the header's tint; null for a file with no change of its own. */
+  shade: { level: number; tooltip: string } | null;
 }
 
 export interface CardHandlers {
@@ -268,6 +270,10 @@ export function createCard(
       if (state.viewUrl !== null) viewFile.href = state.viewUrl;
       element.classList.toggle("is-viewed", state.viewed);
       viewedBox.checked = state.viewed;
+      element.classList.toggle("is-aged", state.shade !== null);
+      if (state.shade === null) element.style.removeProperty("--age");
+      else element.style.setProperty("--age", String(state.shade.level));
+      header.title = state.shade?.tooltip ?? "";
       viewedLabel.classList.toggle("is-unsaved", state.unsaved);
       viewedLabel.title = state.unsaved ? "Not saved yet" : "";
       const { diff, range: current } = state;

@@ -28,6 +28,15 @@
   padding: 6px 10px;
   background: var(--surface-2);
   user-select: none;
+
+  // Newer changes tint the header more; the level runs 0 (newest) to 5 (oldest).
+  .is-aged & {
+    background: color-mix(
+      in srgb,
+      var(--accent) calc((6 - var(--age)) * 5%),
+      var(--surface-2)
+    );
+  }
 }
 
 .card-body {

@@ -1,4 +1,5 @@
 import {
+  ageShades,
   createFileStore,
   fileDiff,
   matchesPath,
@@ -197,11 +198,22 @@ export function mountBoard(
     return status !== "connecting" && status !== "loading";
   };
 
+  const shadeOf = (
+    shade: { level: number; commit: string; date: string } | undefined,
+  ): { level: number; tooltip: string } | null =>
+    shade === undefined
+      ? null
+      : {
+          level: shade.level,
+          tooltip: `Last changed in ${labelOf(shade.commit)}, ${new Date(shade.date).toLocaleString()}`,
+        };
+
   function render(): void {
     viewportEl.classList.toggle("is-loading", !settled());
     const board = store.board();
     let viewed = 0;
     hidden.clear();
+    const shades = ageShades(data, data.files, board.to);
     for (const file of data.files) {
       const range = store.effective(file.path);
       const isViewed = store.isViewed(file.path);
@@ -226,6 +238,7 @@ export function mountBoard(
         diff,
         marks: marksFor(file, range),
         viewUrl: viewFileUrl(data, file, range),
+        shade: shadeOf(shades.get(file.path)),
       });
     }
     toolbar.update({
