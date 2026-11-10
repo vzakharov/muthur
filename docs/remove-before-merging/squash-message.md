@@ -11,6 +11,11 @@ MUTHUR_RELAY_DESPITE_AUTOCOMPACT=true brings the notices back; it reads
 through the same yes/no switch as the manual-relay settings, so a
 mistyped value is named on stderr and read as unset.
 
+Two review board fixes ride along. A diff row's code is pinned to its
+own grid column, since a + button hidden while comments are off used to
+pull it into a 20px track and every card read as empty. And the focus
+notes are written in the session's language, as part of its reply.
+
 Co-authored-by: Claude <noreply@anthropic.com>
 ```
 
