@@ -33,9 +33,9 @@ button.
   later change; mark it and say so in its `why`.
 - **`why` says what the decision is and what rides on it**, in a sentence or
   two, not what the file does.
-- **`lines` are `[first, last]` spans in the file at HEAD**, inclusive; leave
-  them out when the whole file is the point. A span marks rows only while a
-  card's diff ends on HEAD's content.
+- **`lines` is a list of `[first, last]` spans in the file at HEAD** —
+  `[[12, 30]]` for one — inclusive; leave them out when the whole file is the
+  point. A span marks rows only while a card's diff ends on HEAD's content.
 - **Few items, in reading order** — the list is the reviewer's route.
 - **The collector fails the build** on a path the branch did not change, a path
   listed twice, an empty `why`, or a span outside the file. It reads the file
