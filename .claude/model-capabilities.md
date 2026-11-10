@@ -72,7 +72,9 @@ model come first.
   delegated as written in-session; the rework ran to about 137k subagent tokens.
   New modules of 500–1,000 lines with tests, from a cold brief, cost about
   two-thirds of in-session (8–10 turns assumed), the review included by eye; the
-  3,000-line port, about four-fifths (25 turns assumed).
+  3,000-line port, about four-fifths (25 turns assumed); a 2,700-line page
+  assembly, about two-thirds (22 turns assumed). Both skipped linters their base
+  tree did not yet have, so their review carried a lint pass.
 
 ## haiku
 

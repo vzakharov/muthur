@@ -296,3 +296,47 @@ skill" step 3 says, in this session.
 - **Board threads**: the agent resolving after its reply was ruled out — the
   house rule holds on any surface.
 - **Per-viewer state**: `localStorage` was ruled out — it stays on one device.
+
+## Progress
+
+### Done
+
+- Stack, scaffold, vendored runtime types, catalog G12, `scripts/vet.sh` and
+  `install-deps.sh` wiring.
+- The MASD checker suite with `.claude/artifacts/vet.sh` (1aa2d6a2); the alias
+  is `#src/*` through one `SRC_ALIAS` constant.
+- Collector, payload schema, line diff, camera, layout packing, the assembled
+  page and build (66233adf), the comment anchor codec (360ec24c).
+- `/relay`'s watch hand-over (ad29524), the `review-board` sticky-comment kind
+  (222438a).
+- A draft of the skill at `tmp/review-board-skill/SKILL.md` — gitignored, so a
+  session resuming elsewhere rewrites it from § "The skill".
+
+### Left
+
+- **The comments sub-slice's UI**, `pages/board/comments/` beside
+  `lib/anchor.ts` — `index.ts` plus a `ui/` module implementing § "Comments"
+  against the board's seam (`CommentsHook`, `BoardHandle` in
+  `pages/board/board/model/`): `customAnchors` registration, `compose` from
+  `onComment` with the card's effective range, `placed` on `threads` and
+  `visibleChanged`, `reveal`. The board needs two more `BoardHandle` members:
+  the file paths, for decoding, and a way to hide the comment controls once
+  `use("comments")` resolves null. The app entry (`app/entrypoint/index.ts`)
+  wires it; `LineAnchor` should extend `entities/file`'s `CommentTarget` rather
+  than redeclare its fields.
+- **`check:masd`'s promotion finding**: the app takes from `pages/board` only
+  its composition sub-slice `board`, and no layer lies between them to promote
+  it to. Wiring `comments` from the entry may clear it, since the app then takes
+  two sub-slices. If not, the checker's own remedy is
+  `// masd-disable promotion -- <why>` in `pages/board/board/index.ts`, on the
+  operator's yes only — ask, recommending it, since the composition cannot sit
+  beside sub-slices in the slice's own segments.
+- The touch-scroll caveat: the camera's `touch-action: none` blocks scrolling a
+  diff body by touch; giving `.card-body.has-diff` `touch-action: pan-x pan-y`
+  fixes it.
+- Then: `.claude/artifacts/vet.sh` green, the skill committed last, dogfood
+  (build, publish, sticky comment, one `ArtifactData list`, the link to the
+  operator), `/polish`, the flip to `*.completed.md`, `/pr`.
+- Report to the operator: the environment setup script needs node ≥22.18 and
+  pnpm; the autoMode "Sticky PR Comments" entry in their settings should name
+  `review-board` beside squash and attestation.
