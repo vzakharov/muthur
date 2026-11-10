@@ -33,7 +33,7 @@
   {
     "path": ".claude/artifacts/src/review-board/pages/board/comments/ui/board-comments.ts",
     "why": "The board takes over the claude.ai shell's comment mode: a click comments instead of acting, and resolves to a line, a file, or the control under it. This is the riskiest bet — an undocumented contract with the host.",
-    "lines": [[253, 343]]
+    "lines": [[253, 295]]
   },
   {
     "path": ".claude/artifacts/src/review-board/pages/board/comments/ui/area-select.ts",
@@ -43,6 +43,10 @@
     "path": ".claude/artifacts/src/review-board/scripts/focus.ts",
     "why": "This file's own reader: what an agent may mark, and why a bad path or span fails the build rather than drawing nothing.",
     "lines": [[22, 47]]
+  },
+  {
+    "path": ".claude/artifacts/src/review-board/scripts/scss.ts",
+    "why": "The board's styles are SCSS, so the build now depends on Dart Sass through this esbuild plugin. A toolchain choice that every later artifact app's styling inherits."
   },
   {
     "path": ".claude/artifacts/eslint/masd-boundaries.ts",

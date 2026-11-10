@@ -99,7 +99,10 @@ A wake for a comment on the board is review feedback, handled as
    against the branch's changed files. A thread with no such anchor is on the
    board's own controls, a folder's head or a drawn area: its label names the
    control or the folder, and its detail lists what the area covers.
-3. **Fix, commit, push.**
+3. **Fix, commit, push.** A fix that is itself a decision Step 1 would mark adds
+   its item to the focus file, in the same commit. So does a fix that moves a
+   marked span, and that item's `lines` are corrected there. A fix that only
+   follows from a marked decision leaves the focus as it is.
 4. **Shift each file a fix touched under a comment**, so the board shows that
    file from what the reviewer was looking at: the doc `shifts/<key>`, `<key>`
    being `printf %s "<path>" | sha256sum | cut -d' ' -f1`, set to
