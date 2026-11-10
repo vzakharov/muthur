@@ -2,11 +2,11 @@
   {
     "path": ".claude/context-budget/hooks/post-tool-context-budget.sh",
     "why": "The gate silences the whole hook, warning and pause alike, rather than only the pause's relay; the 350k cutoff and the override's name are the contract an environment sets against. A hook that cannot see the variable falls back to the old behaviour.",
-    "lines": [45, 51]
+    "lines": [[45, 51]]
   },
   {
     "path": ".claude/context-budget/CLAUDE.md",
     "why": "The stated reason for the cutoff: a small window is read as the environment choosing the compact over the relay, not as a claim about where the compact lands relative to the lines.",
-    "lines": [70, 73]
+    "lines": [[70, 73]]
   }
 ]
