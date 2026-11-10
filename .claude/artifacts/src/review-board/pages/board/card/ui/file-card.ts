@@ -42,13 +42,37 @@ const BOARD_RANGE = "";
 const formatSize = (bytes: number | null): string =>
   bytes === null ? "absent" : `${bytes.toLocaleString("en-US")} B`;
 
-function pathParts(path: string): HTMLElement {
-  const slash = path.lastIndexOf("/");
-  const node = el("span", "path");
-  node.title = path;
-  if (slash >= 0) node.append(el("span", "dir", path.slice(0, slash + 1)));
-  node.append(el("strong", "name", path.slice(slash + 1)));
-  return node;
+const COPY_LABEL = "⧉";
+
+/** The file's name alone, since the folder boxes around the card show its directory, and a button copying its repo-relative path. */
+function pathParts(path: string): HTMLElement[] {
+  const name = el("strong", "path", path.slice(path.lastIndexOf("/") + 1));
+  name.title = path;
+  const copy = el("button", "copy-path", COPY_LABEL);
+  copy.type = "button";
+  copy.title = `Copy ${path}`;
+  copy.ariaLabel = copy.title;
+  copy.addEventListener("click", () => {
+    navigator.clipboard.writeText(path).then(
+      () => {
+        flash(copy, "✓", `Copied ${path}`);
+      },
+      (error: unknown) => {
+        flash(copy, "✗", `Copy failed: ${String(error)}`);
+      },
+    );
+  });
+  return [name, copy];
+}
+
+function flash(button: HTMLButtonElement, mark: string, title: string): void {
+  const { title: before } = button;
+  button.textContent = mark;
+  button.title = title;
+  setTimeout(() => {
+    button.textContent = COPY_LABEL;
+    button.title = before;
+  }, 1500);
 }
 
 function stubBody(text: string, onOpen?: () => void): HTMLElement {
@@ -134,7 +158,7 @@ export function createCard(
     focus === undefined ? [] : [el("span", "badge focus", "focus")];
   header.append(
     viewedLabel,
-    pathParts(file.path),
+    ...pathParts(file.path),
     badge,
     ...focusBadge,
     counts,
