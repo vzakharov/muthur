@@ -1,0 +1,104 @@
+{
+  "total": {
+    "inputTokens": 14,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 68756,
+    "cacheReadTokens": 587327,
+    "outputTokens": 1634,
+    "thinkingTokens": 143,
+    "responses": 6,
+    "costUsd": 0.7002494
+  },
+  "estimate": {
+    "at": "2026-11-10T06:50:14.141Z",
+    "parts": [
+      {
+        "hours": 8.0,
+        "grade": "senior",
+        "role": "developer",
+        "comment": "comments UI and anchor wiring on an unfamiliar runtime API, plus dogfood fixes, need someone fluent in the board's layering"
+      },
+      {
+        "hours": 1.0,
+        "grade": "staff",
+        "role": "architect",
+        "comment": "the MASD promotion call shapes the slice layout every later artifact copies"
+      },
+      {
+        "hours": 4.0,
+        "grade": "senior",
+        "role": "prompter",
+        "comment": "a new loop skill must fit the catalog and the handle lane without overlapping them"
+      },
+      {
+        "hours": 4.0,
+        "grade": "middle",
+        "role": "qa",
+        "comment": "pan, zoom, pins and the comment round trip only show up in a live artifact"
+      }
+    ],
+    "comment": null
+  },
+  "orientation": {
+    "endedBy": null,
+    "endedOn": null,
+    "endedAt": null,
+    "contextTokens": null,
+    "spend": {
+      "inputTokens": 14,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 68756,
+      "cacheReadTokens": 587327,
+      "outputTokens": 1634,
+      "thinkingTokens": 143,
+      "responses": 6,
+      "costUsd": 0.7002494
+    }
+  },
+  "sessionId": "c6551233-d56b-527c-8fe8-3665699ddcb5",
+  "branch": "claude/review-board-st7qsi",
+  "cwd": "/home/user/muthur",
+  "openingPrompt": "/relay take claude/review-board-st7qsi — доска собрана и проверки в основном зелёные, осталось подключить комментарии, написать скилл, опубликовать и обновить P…",
+  "prs": [],
+  "url": "https://claude.ai/code/session_016Z4TKoEt7oLXtyyZnhFbdV",
+  "operator": "vzakharov",
+  "firstResponseAt": "2026-11-10T06:49:57.298Z",
+  "lastResponseAt": "2026-11-10T06:50:16.791Z",
+  "pricesAsOf": "2026-10-06",
+  "claudeCodeTotalUsd": null,
+  "ownTurns": {
+    "inputTokens": 14,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 68756,
+    "cacheReadTokens": 587327,
+    "outputTokens": 1634,
+    "thinkingTokens": 143,
+    "responses": 6,
+    "costUsd": 0.7002494
+  },
+  "subagents": {
+    "inputTokens": 0,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 0,
+    "cacheReadTokens": 0,
+    "outputTokens": 0,
+    "thinkingTokens": 0,
+    "responses": 0,
+    "costUsd": 0.0
+  },
+  "byRate": {
+    "claude-opus-5-5/standard": {
+      "inputTokens": 14,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 68756,
+      "cacheReadTokens": 587327,
+      "outputTokens": 1634,
+      "thinkingTokens": 143,
+      "responses": 6,
+      "costUsd": 0.7002494
+    }
+  },
+  "warnings": [],
+  "compactions": [],
+  "telemetry": null
+}
