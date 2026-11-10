@@ -6,7 +6,7 @@
     "node": ">=22.18"
   },
   "imports": {
-    "#/*": "./src/*"
+    "#src/*": "./src/*"
   },
   "scripts": {
     "typecheck": "tsc --noEmit",
