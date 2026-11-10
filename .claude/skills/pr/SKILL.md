@@ -265,7 +265,6 @@ the same diff, so it follows the PR rather than waiting to be asked:
   same Steps 1–2, focus file included. **Not in plan-open mode**: its diff is
   the plan alone, and a comment sent from the board is handled through `/go`,
   which would build against a plan nobody approved.
-- **Neither** → nothing, and the report does not mention it.
 
 The focus file is the one commit this skill makes itself; push it before the
 build, which reads the branch as pushed.
