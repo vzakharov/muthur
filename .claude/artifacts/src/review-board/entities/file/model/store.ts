@@ -98,7 +98,7 @@ export function createFileStore(data: ReviewData): FileStore {
   }
 
   const boardValue = synced<BoardPrefs>({
-    initial: { whitespace: false, from: null, to: null },
+    initial: { whitespace: true, from: null, to: null },
     equals: sameBoard,
     changed: notify,
     failed,

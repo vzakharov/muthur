@@ -1,4 +1,4 @@
-import { DATA_ID, ROOT_ID } from "../shared/lib/page-ids.ts";
+import { DATA_ID, ROOT_ID } from "#src/review-board/shared/lib/page-ids.ts";
 
 /** JSON for a `<script type="application/json">` body: `<` is escaped so no `</script` or `<!--` can occur. */
 export function escapeJson(value: unknown): string {
