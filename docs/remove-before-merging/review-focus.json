@@ -9,21 +9,24 @@
   },
   {
     "path": ".claude/artifacts/src/review-board/scripts/collect.ts",
-    "why": "The revision model: a file's history is its first-parent commits on the branch, renames followed by asking for both paths. Every range a reviewer can pick comes from here.",
-    "lines": [[224, 284]]
+    "why": "The revision model: a file's history is its first-parent commits on the branch, renames followed by asking for both paths; a merge whose other parents the base already holds is a base merge. Every range a reviewer can pick comes from here.",
+    "lines": [
+      [91, 135],
+      [241, 301]
+    ]
   },
   {
     "path": ".claude/artifacts/src/review-board/entities/file/model/range.ts",
-    "why": "Which diff a file shows: the board's range, the reviewer's own, or the agent's shift, newest wins. Viewed is tied to the blob shown, so a new change unmarks it, and the file then diffs from the revision the reviewer viewed.",
+    "why": "Which diff a file shows: the board's range, the reviewer's own, or the agent's shift, newest wins. Viewed is tied to the blob shown, so a new change unmarks it and the file then diffs from the revision the reviewer viewed — skipping base merges, whose changes are main's and were reviewed there.",
     "lines": [
-      [72, 157],
-      [164, 168]
+      [81, 167],
+      [169, 201]
     ]
   },
   {
     "path": ".claude/artifacts/src/review-board/entities/file/model/store.ts",
     "why": "Where state lives: the reviewer's marks private in the artifact's db, the agent's shifts shared and read-only, and a board that keeps working with no db at all.",
-    "lines": [[56, 63]]
+    "lines": [[60, 66]]
   },
   {
     "path": ".claude/artifacts/src/review-board/pages/board/comments/lib/anchor.ts",
