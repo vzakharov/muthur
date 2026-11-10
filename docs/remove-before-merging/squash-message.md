@@ -1,24 +1,31 @@
-Proposed squash body:
+Proposed squash title/body:
 
 ```
-The review board showed Markdown files only as diffs and gave no way
-to open a file on GitHub, so reading a changed README or skill meant
-leaving the board.
+feat: review board Viewed history, popovers, filter and age shading (#269)
+```
 
-A Markdown card now has a "Rendered" switch that replaces the diff with
-the file's text at the card's `to` revision, rendered by markdown-it:
-raw HTML stays escaped text, images are off so rendering fetches
-nothing, links open in a new tab. Only the "after" version is
-rendered, so no diff rendering is involved. Every card with a known
-repository also gets a "View file" link to that version on GitHub,
-falling back to the `from` version for a file deleted at `to` and to
-the old path for a rename's base.
+```
+The review board showed Markdown only as diffs, kept one Viewed mark
+per file that a later push silently invalidated, lost marks when a
+write failed, and had no way to find or order files.
 
-Artifact apps gain `masd/no-pick-omit`, ported from vovazakharov.com,
-which bans Pick and Omit over the repo's own types: the narrow type is
-declared first and the wide one extends it. Its findings are fixed
-that way: ReviewData extends a ReviewBranch schema, and the board and
-file docs extend their prefs schemas with the stamped `at`.
+A Markdown card has a "Rendered" switch showing the file at the card's
+`to` revision (markdown-it, raw HTML escaped, images off), and every
+card links its version on GitHub. Viewed becomes a per-file history of
+`{blob, at}` marks: the checkbox follows the shown blob, unticking
+drops only that mark, and the diff starts from the latest marked
+revision before `to`; old docs migrate on read. A write that is
+refused or degraded shows as "not saved", and the local mark survives
+snapshots until a write succeeds.
+
+"Hide viewed" also hides empty-diff cards, a toolbar filter matches
+full paths, card headers are tinted by how recently the file changed
+(commits minutes apart share a shade), and the from/to selects become
+top-layer popovers listing commit time and which revisions you viewed.
+
+Artifact apps gain `masd/no-pick-omit`, banning Pick and Omit over the
+repo's own types; the narrow type is declared first and the wide one
+extends it.
 
 Co-authored-by: Claude <noreply@anthropic.com>
 ```
