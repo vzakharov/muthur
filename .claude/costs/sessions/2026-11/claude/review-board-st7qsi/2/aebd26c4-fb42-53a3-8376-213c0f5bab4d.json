@@ -1,0 +1,75 @@
+{
+  "total": {
+    "inputTokens": 19,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 69943,
+    "cacheReadTokens": 960174,
+    "outputTokens": 2923,
+    "thinkingTokens": 467,
+    "responses": 9,
+    "costUsd": 0.8101148000000001
+  },
+  "estimate": null,
+  "orientation": {
+    "endedBy": "Edit",
+    "endedOn": "docs/plans/review-board.in-progress.md",
+    "endedAt": "2026-11-10T06:21:05.757Z",
+    "contextTokens": 123474,
+    "spend": {
+      "inputTokens": 16,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 68591,
+      "cacheReadTokens": 714085,
+      "outputTokens": 2264,
+      "thinkingTokens": 467,
+      "responses": 7,
+      "costUsd": 0.7368890000000001
+    }
+  },
+  "sessionId": "aebd26c4-fb42-53a3-8376-213c0f5bab4d",
+  "branch": "claude/review-board-st7qsi",
+  "cwd": "/home/user/muthur",
+  "openingPrompt": "/go claude/review-board-st7qsi",
+  "prs": [],
+  "url": "https://claude.ai/code/session_016Z4TKnuMNUvBoNs7n7T1H2",
+  "operator": "vzakharov",
+  "firstResponseAt": "2026-11-10T06:20:26.889Z",
+  "lastResponseAt": "2026-11-10T06:21:11.912Z",
+  "pricesAsOf": "2026-10-06",
+  "claudeCodeTotalUsd": null,
+  "ownTurns": {
+    "inputTokens": 19,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 69943,
+    "cacheReadTokens": 960174,
+    "outputTokens": 2923,
+    "thinkingTokens": 467,
+    "responses": 9,
+    "costUsd": 0.8101148000000001
+  },
+  "subagents": {
+    "inputTokens": 0,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 0,
+    "cacheReadTokens": 0,
+    "outputTokens": 0,
+    "thinkingTokens": 0,
+    "responses": 0,
+    "costUsd": 0.0
+  },
+  "byRate": {
+    "claude-opus-5-5/standard": {
+      "inputTokens": 19,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 69943,
+      "cacheReadTokens": 960174,
+      "outputTokens": 2923,
+      "thinkingTokens": 467,
+      "responses": 9,
+      "costUsd": 0.8101148000000001
+    }
+  },
+  "warnings": [],
+  "compactions": [],
+  "telemetry": null
+}
