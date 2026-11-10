@@ -1,0 +1,81 @@
+.markdown {
+  padding: 8px 16px 12px;
+  font-size: 13px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+  user-select: text;
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    margin: 14px 0 6px;
+    line-height: 1.25;
+  }
+
+  h1,
+  h2 {
+    padding-bottom: 4px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  p,
+  ul,
+  ol,
+  blockquote,
+  pre,
+  table {
+    margin: 0 0 10px;
+  }
+
+  ul,
+  ol {
+    padding-left: 22px;
+  }
+
+  a {
+    color: var(--accent);
+  }
+
+  blockquote {
+    padding-left: 10px;
+    border-left: 3px solid var(--border);
+    color: var(--muted);
+  }
+
+  code {
+    padding: 1px 4px;
+    background: var(--surface-2);
+    border-radius: 4px;
+    font: 12px var(--font-mono);
+  }
+
+  pre {
+    padding: 8px 10px;
+    overflow: auto;
+    background: var(--surface-2);
+    border-radius: 6px;
+
+    code {
+      padding: 0;
+      background: none;
+    }
+  }
+
+  table {
+    border-collapse: collapse;
+  }
+
+  th,
+  td {
+    padding: 3px 8px;
+    border: 1px solid var(--border);
+  }
+
+  hr {
+    border: 0;
+    border-top: 1px solid var(--border);
+  }
+}

@@ -1,6 +1,7 @@
 import {
   markLines,
   renderDiff,
+  renderMarkdown,
   type CommentTarget,
   type EffectiveRange,
   type FileDiff,
@@ -22,6 +23,8 @@ export interface CardState {
   diff: FileDiff;
   /** New-side lines to mark as the review's focus; empty while the diff does not end at HEAD. */
   marks: readonly LineSpan[];
+  /** GitHub's page for the file's shown version; null where there is none. */
+  viewUrl: string | null;
 }
 
 export interface CardHandlers {
@@ -38,6 +41,8 @@ export interface Card {
 }
 
 const BOARD_RANGE = "";
+
+const MARKDOWN = /\.md$/i;
 
 const formatSize = (bytes: number | null): string =>
   bytes === null ? "absent" : `${bytes.toLocaleString("en-US")} B`;
@@ -103,7 +108,8 @@ function select(label: string, onChange: (value: string) => void) {
  * range selectors, comment) over a diff body capped in height and scrolling
  * inside. Past the line cap the body is a stub that opens the panel; viewed
  * collapses the card to its header. A file in the review's focus carries a
- * badge and its reason under the header.
+ * badge and its reason under the header. A Markdown file's "Rendered" switch
+ * replaces the diff with the file's text at the range's `to`, rendered.
  */
 export function createCard(
   file: ReviewFile,
@@ -156,6 +162,24 @@ export function createCard(
 
   const focusBadge =
     focus === undefined ? [] : [el("span", "badge focus", "focus")];
+
+  const viewFile = el("a", "view-file", "View file");
+  viewFile.target = "_blank";
+  viewFile.rel = "noopener noreferrer";
+  viewFile.title = "Open this version on GitHub";
+
+  let preview = false;
+  let last: CardState | undefined;
+  const { box: previewBox, label: previewLabel } = checkbox(
+    "Rendered",
+    (on) => {
+      preview = on;
+      if (last !== undefined) renderBody(last);
+    },
+    "preview-toggle",
+  );
+  previewLabel.hidden = !MARKDOWN.test(file.path);
+
   header.append(
     viewedLabel,
     ...pathParts(file.path),
@@ -163,6 +187,8 @@ export function createCard(
     ...focusBadge,
     counts,
     range,
+    previewLabel,
+    viewFile,
     comment,
   );
   const body = el("div", "card-body");
@@ -173,9 +199,12 @@ export function createCard(
   let rendered: DiffResult | string | undefined;
 
   function renderBody(state: CardState): void {
+    const asDocument = preview && state.diff.kind === "text";
     const key =
       state.diff.kind === "text"
-        ? state.diff.diff
+        ? asDocument
+          ? `doc:${state.diff.after ?? ""}:${state.diff.after === null}`
+          : state.diff.diff
         : `binary:${state.diff.fromSize}:${state.diff.toSize}`;
     if (state.viewed) {
       body.hidden = true;
@@ -187,12 +216,23 @@ export function createCard(
     if (key === rendered) return;
     rendered = key;
     body.classList.toggle("has-diff", false);
+    body.classList.toggle("has-doc", false);
     if (state.diff.kind === "binary") {
       body.replaceChildren(
         stubBody(
           `Binary file — ${formatSize(state.diff.fromSize)} → ${formatSize(state.diff.toSize)}`,
         ),
       );
+      return;
+    }
+    if (asDocument) {
+      const { after } = state.diff;
+      if (after === null) {
+        body.replaceChildren(stubBody("File absent at this revision"));
+        return;
+      }
+      body.classList.add("has-doc");
+      body.replaceChildren(renderMarkdown(after));
       return;
     }
     const { diff } = state.diff;
@@ -220,6 +260,10 @@ export function createCard(
   return {
     element,
     update(state) {
+      last = state;
+      previewBox.checked = preview;
+      viewFile.hidden = state.viewUrl === null;
+      if (state.viewUrl !== null) viewFile.href = state.viewUrl;
       element.classList.toggle("is-viewed", state.viewed);
       viewedBox.checked = state.viewed;
       const { diff, range: current } = state;

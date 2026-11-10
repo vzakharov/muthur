@@ -1,6 +1,7 @@
 import {
   createFileStore,
   fileDiff,
+  viewFileUrl,
   type EffectiveRange,
 } from "#src/review-board/entities/file/index.ts";
 import { attachViewport } from "#src/review-board/pages/board/camera/index.ts";
@@ -209,6 +210,7 @@ export function mountBoard(
         viewed: isViewed,
         diff: fileDiff(data, file, range, board.whitespace),
         marks: marksFor(file, range),
+        viewUrl: viewFileUrl(data, file, range),
       });
     }
     toolbar.update({

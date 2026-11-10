@@ -46,6 +46,13 @@ test("diffs the two blobs of the range", () => {
   assert.equal(result.diff.removed, 1);
 });
 
+test("after is the text at the range's to, null where absent", () => {
+  const shown = fileDiff(data, file, range("old", "next"), false);
+  assert.equal(shown.kind === "text" && shown.after, "a\nc\n");
+  const gone = fileDiff(data, file, range("old", null), false);
+  assert.equal(gone.kind === "text" && gone.after, null);
+});
+
 test("an absent side is empty text", () => {
   const added = fileDiff(data, file, range(null, "next"), false);
   assert.equal(added.kind === "text" && added.diff.added, 2);
