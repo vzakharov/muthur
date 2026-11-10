@@ -4,6 +4,7 @@ import {
   fileDiff,
   matchesPath,
   viewFileUrl,
+  type AgeShade,
   type EffectiveRange,
 } from "#src/review-board/entities/file/index.ts";
 import { attachViewport } from "#src/review-board/pages/board/camera/index.ts";
@@ -201,7 +202,7 @@ export function mountBoard(
   };
 
   const shadeOf = (
-    shade: { level: number; commit: string; date: string } | undefined,
+    shade: AgeShade | undefined,
   ): { level: number; tooltip: string } | null =>
     shade === undefined
       ? null

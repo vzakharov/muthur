@@ -13,6 +13,7 @@ export type {
 export type { CommentTarget } from "./model/comment-target.ts";
 export { viewFileUrl } from "./model/view-file-url.ts";
 export { ageShades } from "./model/age-shade.ts";
+export type { AgeShade } from "./model/age-shade.ts";
 export { markedCommits } from "./model/marked-commits.ts";
 export { matchesPath } from "./model/path-filter.ts";
 export { markLines, renderDiff } from "./ui/diff-view.ts";
