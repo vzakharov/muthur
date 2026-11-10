@@ -1,8 +1,4 @@
-Proposed squash title/body:
-
-```
-feat: a review board artifact for line comments Claude answers (#265)
-```
+Proposed squash body:
 
 ```
 Review feedback reached a session only through GitHub, where the agent
@@ -17,9 +13,9 @@ The board lays a branch's changed files out as nested folder and file
 rectangles on a pannable, zoomable canvas. Each file carries a capped,
 scrolling diff that opens in a side panel past the cap, its own from/to
 commit range over the board's, a "viewed" box, and the board-wide
-hide-whitespace toggle, all kept per viewer across devices. Threads
-are anchored by the page as <path>@<from>..<to>[:R<line>], the
-location Claude reads off a thread.
+hide-whitespace toggle, all kept per viewer across devices. The page
+pins threads itself, since it pans by CSS transform, anchoring each as
+<path>@<from>..<to>[:R<n>|:L<n>], the location Claude reads off it.
 
 One script collects file contents per commit from git, with no agent
 judgement in it, and the page diffs any pair itself. The code is bare
