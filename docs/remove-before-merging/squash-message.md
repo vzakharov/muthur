@@ -5,26 +5,30 @@ Review feedback reached a session only through GitHub, where the agent
 learns of a comment late and answers it out of band. The review board
 is a code-review artifact whose line comments go through the artifact's
 own comment store, so "Send to Claude" wakes the session that published
-it, which fixes, pushes, republishes and replies with the commit, moving
-the fixed file's "from" to what the reviewer last saw so the board shows
-the fix alone.
+it, which fixes, pushes, republishes and replies with the commit.
 
 The board lays a branch's changed files out as nested folder and file
-rectangles on a pannable, zoomable canvas. Each file carries a capped,
-scrolling diff that opens in a side panel past the cap, its own from/to
-commit range over the board's, a "viewed" box, and the board-wide
-hide-whitespace toggle, all kept per viewer across devices. The page
-pins threads itself, since it pans by CSS transform, anchoring each as
-<path>@<from>..<to>[:R<n>|:L<n>], the location Claude reads off it.
+rectangles on a zoomable canvas. Each file carries a syntax-highlighted,
+wrapping diff that opens in a side panel past a cap, its own from/to
+commit range over the board's, and a "viewed" box; folders mark their
+files viewed at once, and viewed files can be hidden. A file viewed and
+then changed diffs from the revision the reviewer viewed, so a fix shows
+alone. Viewed state and toggles are kept per viewer across devices. The
+page pins threads itself, on controls and areas as well as lines,
+anchoring each as <path>@<from>..<to>[:R|L<n>[-<m>]].
+
+The author marks the review's focus in a committed file of paths,
+reasons and line spans: the board frames those files, marks the lines,
+and steps through the ones still unviewed. /review-board has the agent
+write that file and keep it current while it handles comments.
 
 One script collects file contents per commit from git, with no agent
 judgement in it, and the page diffs any pair itself. The code is bare
-DOM in a MASD tree under .claude/artifacts/, home to further artifact
-apps, with vovazakharov.com's MASD checkers ported, its own scoped
-package.json, and checks wired into vet.sh and install-deps.sh,
-offered to adopters as an opt-in catalog group. /review-board builds,
-publishes and handles the comments; /relay hands every artifact watch
-to the successor session.
+DOM and SCSS in a MASD tree under .claude/artifacts/, home to further
+artifact apps, with vovazakharov.com's MASD checkers ported, its own
+scoped package.json, and checks wired into vet.sh and install-deps.sh,
+offered to adopters as an opt-in catalog group. /relay hands every
+artifact watch to the successor session.
 
 Co-authored-by: Claude <noreply@anthropic.com>
 ```
