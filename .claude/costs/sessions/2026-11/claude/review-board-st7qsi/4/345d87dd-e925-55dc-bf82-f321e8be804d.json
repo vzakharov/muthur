@@ -1,13 +1,13 @@
 {
   "total": {
-    "inputTokens": 84,
+    "inputTokens": 114,
     "cacheWrite5mTokens": 0,
-    "cacheWrite1hTokens": 132627,
-    "cacheReadTokens": 6412988,
-    "outputTokens": 34404,
-    "thinkingTokens": 12489,
-    "responses": 44,
-    "costUsd": 3.032029600000001
+    "cacheWrite1hTokens": 152557,
+    "cacheReadTokens": 9331910,
+    "outputTokens": 42199,
+    "thinkingTokens": 16995,
+    "responses": 59,
+    "costUsd": 3.931274000000001
   },
   "estimate": {
     "at": "2026-11-10T08:27:36.442Z",
@@ -47,22 +47,24 @@
   "branch": "claude/review-board-st7qsi",
   "cwd": "/home/user/muthur",
   "openingPrompt": "/relay take claude/review-board-st7qsi",
-  "prs": [],
+  "prs": [
+    265
+  ],
   "url": "https://claude.ai/code/session_016Z4TKnCFaYMzFJ8mgMUNH1",
   "operator": "vzakharov",
   "firstResponseAt": "2026-11-10T08:22:34.514Z",
-  "lastResponseAt": "2026-11-10T08:35:15.253Z",
+  "lastResponseAt": "2026-11-10T08:43:42.304Z",
   "pricesAsOf": "2026-10-06",
   "claudeCodeTotalUsd": null,
   "ownTurns": {
-    "inputTokens": 84,
+    "inputTokens": 114,
     "cacheWrite5mTokens": 0,
-    "cacheWrite1hTokens": 132627,
-    "cacheReadTokens": 6412988,
-    "outputTokens": 34404,
-    "thinkingTokens": 12489,
-    "responses": 44,
-    "costUsd": 3.032029600000001
+    "cacheWrite1hTokens": 152557,
+    "cacheReadTokens": 9331910,
+    "outputTokens": 42199,
+    "thinkingTokens": 16995,
+    "responses": 59,
+    "costUsd": 3.931274000000001
   },
   "subagents": {
     "inputTokens": 0,
@@ -76,14 +78,14 @@
   },
   "byRate": {
     "claude-opus-5-5/standard": {
-      "inputTokens": 84,
+      "inputTokens": 114,
       "cacheWrite5mTokens": 0,
-      "cacheWrite1hTokens": 132627,
-      "cacheReadTokens": 6412988,
-      "outputTokens": 34404,
-      "thinkingTokens": 12489,
-      "responses": 44,
-      "costUsd": 3.032029600000001
+      "cacheWrite1hTokens": 152557,
+      "cacheReadTokens": 9331910,
+      "outputTokens": 42199,
+      "thinkingTokens": 16995,
+      "responses": 59,
+      "costUsd": 3.931274000000001
     }
   },
   "warnings": [],

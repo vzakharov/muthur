@@ -18,16 +18,14 @@ const SIGNS = { context: " ", add: "+", del: "−" } as const;
 const CLASSES = { context: "ctx", add: "add", del: "del" } as const;
 
 function codeOf(
-  line: DiffLine,
+  text: string,
+  side: "L" | "R",
+  number: number | null,
   syntax: DiffSyntax | null,
   path: string,
 ): (string | HTMLElement)[] {
-  if (syntax === null) return [line.text];
-  // A deleted line exists only on the old side; every other line is read from the new one.
-  const [lines, number] =
-    line.kind === "del"
-      ? [syntax.old, line.oldLine]
-      : [syntax.new, line.newLine];
+  if (syntax === null) return [text];
+  const lines = side === "L" ? syntax.old : syntax.new;
   const tokens = number === null ? undefined : lines[number - 1];
   if (tokens === undefined)
     throw new Error(`no highlighted line ${number} for ${path}`);
@@ -42,7 +40,7 @@ function renderRow(
   path: string,
 ): HTMLElement {
   const row = el("div", `row ${CLASSES[line.kind]}`);
-  // A deleted line is addressed on the old side, every other on the new one.
+  // A deleted line is addressed, and highlighted, on the old side; every other on the new one.
   const side = line.kind === "del" ? "L" : "R";
   const number = side === "L" ? line.oldLine : line.newLine;
   if (number !== null) {
@@ -60,7 +58,7 @@ function renderRow(
   const code = el("span", "code");
   code.append(
     el("span", "sign", SIGNS[line.kind]),
-    ...codeOf(line, syntax, path),
+    ...codeOf(line.text, side, number, syntax, path),
   );
   row.append(plus, code);
   return row;
