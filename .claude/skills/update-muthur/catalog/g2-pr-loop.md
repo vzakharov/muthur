@@ -84,9 +84,11 @@
   - **Pulls in:** `/go`
   - **Disposition:** conditional — see below
 - `/pr` — Own the PR object: rename the auto-branch, push, then open the draft
-  PR or refresh the one that exists.
+  PR or refresh the one that exists, republishing its review board if it has
+  one.
   - **Requires:** `gh`
-  - **Pulls in:** `/branch-rename`, `/qa-checklist`, `/squash-message`
+  - **Pulls in:** `/branch-rename`, `/qa-checklist`, `/squash-message`;
+    **conditionally** `/review-board` (G12)
   - **Disposition:** adopt
 - `/finalize` — Land prep: swap in staged copies, the quality passes, vet, merge
   the base, sweep working artifacts, flip to ready, reconcile the squash
@@ -98,7 +100,7 @@
     `scripts/pr-comment.sh`
   - **Pulls in:** `/polish` (G1); `/check-merge`, `/from-branch`, `/merge`,
     `/plan`, `/squash-message`, `/sync-branch`; **conditionally** `/take-issue`
-    (G3), `/watch-ci` (G5)
+    (G3), `/watch-ci` (G5), `/review-board` (G12)
   - **Disposition:** adopt
 - `/merge` — The one entry for an ask to merge: a branch not yet finalized goes
   to `/finalize and merge`; a finalized one gets `/check-merge` and the same
