@@ -1,4 +1,5 @@
 import { el } from "#src/review-board/shared/lib/dom.ts";
+import { DATA_ID } from "#src/review-board/shared/lib/page-ids.ts";
 import {
   parseReviewData,
   type ReviewData,
@@ -6,7 +7,7 @@ import {
 
 /** The payload the build embeds in the page; a missing or malformed one throws. */
 function readReviewData(): ReviewData {
-  const node = document.getElementById("review-data");
+  const node = document.getElementById(DATA_ID);
   if (node === null) throw new Error("the page carries no review data");
   return parseReviewData(JSON.parse(node.textContent));
 }

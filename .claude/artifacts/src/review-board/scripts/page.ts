@@ -1,3 +1,5 @@
+import { DATA_ID, ROOT_ID } from "../shared/lib/page-ids.ts";
+
 /** JSON for a `<script type="application/json">` body: `<` is escaped so no `</script` or `<!--` can occur. */
 export function escapeJson(value: unknown): string {
   return JSON.stringify(value).replaceAll("<", "\\u003c");
@@ -26,8 +28,8 @@ const TITLE = "<title>Review board</title>";
 export function renderPage({ data, js, css }: PageParts): Page {
   const head = `${TITLE}\n<style>${css}</style>`;
   const body = [
-    '<div id="root"></div>',
-    `<script type="application/json" id="review-data">${escapeJson(data)}</script>`,
+    `<div id="${ROOT_ID}"></div>`,
+    `<script type="application/json" id="${DATA_ID}">${escapeJson(data)}</script>`,
     `<script>${escapeScript(js)}</script>`,
   ].join("\n");
   return {

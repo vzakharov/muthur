@@ -3,6 +3,7 @@ import type {
   BoardHandle,
   CommentsHook,
 } from "#src/review-board/pages/board/board/index.ts";
+import { claudeRuntime } from "#src/review-board/shared/lib/runtime.ts";
 import { decodeAnchor, encodeAnchor } from "../lib/anchor.ts";
 import { locate, pinPoint } from "./locate.ts";
 
@@ -163,9 +164,9 @@ export function boardComments(): BoardComments {
     },
     async connect(handle) {
       board = handle;
-      // The runtime types declare `window.claude`; a page opened off disk has none.
-      if (!("claude" in window)) return;
-      const api = await window.claude.use("comments");
+      const runtime = claudeRuntime();
+      if (runtime === null) return;
+      const api = await runtime.use("comments");
       if (api === null) return;
       try {
         controller = await api.customAnchors(callbacks);

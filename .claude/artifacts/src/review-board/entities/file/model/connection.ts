@@ -1,3 +1,4 @@
+import { claudeRuntime } from "#src/review-board/shared/lib/runtime.ts";
 import type { ReviewData } from "#src/review-board/shared/review-data/index.ts";
 import { fileKey } from "./keys.ts";
 
@@ -22,9 +23,8 @@ export const SHIFTS = "shifts";
  * connection reads shifts and keeps the viewer's own state for the visit.
  */
 export async function connect(data: ReviewData): Promise<Connection | null> {
-  // The runtime types declare `window.claude`; a page opened off disk has none.
-  if (!("claude" in window)) return null;
-  const runtime = window.claude;
+  const runtime = claudeRuntime();
+  if (runtime === null) return null;
   const db = await runtime.use("db");
   if (db === null) return null;
   const user = await runtime.use("user");

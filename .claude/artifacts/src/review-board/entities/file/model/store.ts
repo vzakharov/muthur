@@ -8,6 +8,8 @@ import {
   fileDocSchema,
   parseDoc,
   shiftDocSchema,
+  type BoardDoc,
+  type FileDoc,
 } from "./docs.ts";
 import {
   commitOrder,
@@ -20,8 +22,9 @@ import {
 } from "./range.ts";
 import { synced, type Synced } from "./synced-value.ts";
 
-export type BoardPrefs = BoardRange & { whitespace: boolean };
-type FilePrefs = BoardRange & { viewedBlob: string | null };
+// A doc's `at` is stamped on write, so what the viewer sets is the rest of it.
+export type BoardPrefs = Omit<BoardDoc, "at">;
+type FilePrefs = Omit<FileDoc, "at">;
 
 /**
  * `connecting` until the capabilities answer; `loading` / `slow` / `ready`
