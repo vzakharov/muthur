@@ -1,0 +1,88 @@
+{
+  "total": {
+    "inputTokens": 112,
+    "cacheWrite5mTokens": 103393,
+    "cacheWrite1hTokens": 155481,
+    "cacheReadTokens": 8088802,
+    "outputTokens": 37977,
+    "thinkingTokens": 8732,
+    "responses": 55,
+    "costUsd": 2.8781609000000006
+  },
+  "estimate": {
+    "at": "2026-11-10T17:53:05.097Z",
+    "parts": [
+      {
+        "hours": 3.0,
+        "grade": "middle",
+        "role": "developer",
+        "comment": "a card toggle, a pure URL helper and a new sanitised markdown dependency in an FSD app, with tests and styles"
+      }
+    ],
+    "comment": null
+  },
+  "orientation": {
+    "endedBy": "oriented",
+    "endedOn": null,
+    "endedAt": "2026-11-10T17:53:01.971Z",
+    "contextTokens": 137099,
+    "spend": {
+      "inputTokens": 23,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 79084,
+      "cacheReadTokens": 997167,
+      "outputTokens": 4707,
+      "thinkingTokens": 2289,
+      "responses": 10,
+      "costUsd": 0.5628854
+    }
+  },
+  "sessionId": "7af0ac9b-f072-5931-894a-e480c108bda5",
+  "branch": "claude/review-board-md-preview-7piv2q",
+  "cwd": "/home/user/muthur",
+  "openingPrompt": "к ревью-борде давай добавим возможность просмотра .md в отрендеренном виде по переключалке (показывается только версия \"after\", чтобы не париться с рендерингом …",
+  "prs": [
+    269
+  ],
+  "url": "https://claude.ai/code/session_016Z4TKq7vE5xSAuWyBP8hPt",
+  "operator": "vzakharov",
+  "firstResponseAt": "2026-11-10T17:52:15.937Z",
+  "lastResponseAt": "2026-11-10T17:58:54.165Z",
+  "pricesAsOf": "2026-10-06",
+  "claudeCodeTotalUsd": null,
+  "ownTurns": {
+    "inputTokens": 100,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 155481,
+    "cacheReadTokens": 7642970,
+    "outputTokens": 36207,
+    "thinkingTokens": 8338,
+    "responses": 49,
+    "costUsd": 2.512788000000001
+  },
+  "subagents": {
+    "inputTokens": 12,
+    "cacheWrite5mTokens": 103393,
+    "cacheWrite1hTokens": 0,
+    "cacheReadTokens": 445832,
+    "outputTokens": 1770,
+    "thinkingTokens": 394,
+    "responses": 6,
+    "costUsd": 0.3653729
+  },
+  "byRate": {
+    "claude-sonnet-5-5/standard": {
+      "inputTokens": 112,
+      "cacheWrite5mTokens": 103393,
+      "cacheWrite1hTokens": 155481,
+      "cacheReadTokens": 8088802,
+      "outputTokens": 37977,
+      "thinkingTokens": 8732,
+      "responses": 55,
+      "costUsd": 2.8781609000000006
+    }
+  },
+  "warnings": [],
+  "compactions": [],
+  "telemetry": null
+}
