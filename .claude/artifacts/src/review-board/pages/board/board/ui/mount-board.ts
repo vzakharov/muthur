@@ -1,6 +1,7 @@
 import {
   createFileStore,
   fileDiff,
+  matchesPath,
   viewFileUrl,
   type EffectiveRange,
 } from "#src/review-board/entities/file/index.ts";
@@ -53,8 +54,9 @@ export function mountBoard(
   let bounds: Rect | undefined;
   let fitted = false;
   let panelPath: string | undefined;
-  /** Files left off the board by "Hide viewed" or "Focus only". */
+  /** Files left off the board by "Hide viewed" (viewed, or no textual change), "Focus only" or the name filter. */
   const hidden = new Set<string>();
+  let nameFilter = "";
   const focusByPath = new Map(data.focus.map((item) => [item.path, item]));
   let focusAt: number | null = null;
 
@@ -173,6 +175,11 @@ export function mountBoard(
         fitted = false;
         store.setBoard({ focusOnly: only });
       },
+      onFilter: (text) => {
+        fitted = false;
+        nameFilter = text;
+        render();
+      },
     },
   );
 
@@ -201,7 +208,14 @@ export function mountBoard(
       if (isViewed) viewed++;
       const offFocus =
         board.focusOnly && data.focus.length > 0 && !focusByPath.has(file.path);
-      if ((isViewed && board.hideViewed) || offFocus) hidden.add(file.path);
+      const diff = fileDiff(data, file, range, board.whitespace);
+      const empty = diff.kind === "text" && diff.diff.hunks.length === 0;
+      if (
+        ((isViewed || empty) && board.hideViewed) ||
+        offFocus ||
+        !matchesPath(file, nameFilter)
+      )
+        hidden.add(file.path);
       const card = cards.get(file.path);
       if (card === undefined) continue;
       card.element.hidden = hidden.has(file.path);
@@ -209,7 +223,7 @@ export function mountBoard(
         range,
         viewed: isViewed,
         unsaved: store.isUnsaved(file.path),
-        diff: fileDiff(data, file, range, board.whitespace),
+        diff,
         marks: marksFor(file, range),
         viewUrl: viewFileUrl(data, file, range),
       });

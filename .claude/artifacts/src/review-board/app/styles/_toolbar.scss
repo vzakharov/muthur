@@ -28,6 +28,7 @@
 
 .tool-btn,
 .range-select,
+.file-filter,
 .stub-open,
 .panel-close,
 .comment-btn {
@@ -60,6 +61,12 @@
 .note {
   color: var(--muted);
   font-style: italic;
+}
+
+.file-filter {
+  width: 160px;
+  min-width: 0;
+  cursor: text;
 }
 
 .range-select {

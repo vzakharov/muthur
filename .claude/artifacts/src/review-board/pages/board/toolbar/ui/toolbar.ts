@@ -27,6 +27,8 @@ export interface ToolbarHandlers {
   onHideViewed(hide: boolean): void;
   /** Leaves on the board only the files the author marked for focus. */
   onFocusOnly(only: boolean): void;
+  /** Leaves on the board only the files whose path contains the text; empty clears it. */
+  onFilter(text: string): void;
 }
 
 export interface Toolbar {
@@ -105,6 +107,16 @@ export function createToolbar(
   const hideViewed = checkbox("Hide viewed", (hide) => {
     handlers.onHideViewed(hide);
   });
+  hideViewed.label.title =
+    "Hide the files marked viewed and those with no textual change";
+
+  const filter = el("input", "file-filter");
+  filter.type = "search";
+  filter.placeholder = "Filter files";
+  filter.ariaLabel = "Filter files by path";
+  filter.addEventListener("input", () => {
+    handlers.onFilter(filter.value);
+  });
 
   const focus = button(
     "",
@@ -129,6 +141,7 @@ export function createToolbar(
     zoom,
     focusGroup,
     range,
+    filter,
     whitespace.label,
     hideViewed.label,
     tally,
