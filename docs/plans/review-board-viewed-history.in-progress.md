@@ -3,7 +3,10 @@
 Rides on PR 269 (Vova: "нене, давай всё сюда, большой PR, адоптеры возьмут сразу
 всё, плюс задогфудим раскраску"). One PR, six parts, eaten as an elephant.
 
-## This bite
+## Eaten so far
+
+All six parts landed in one session (b4344af parts 1–2, d25374e parts 3 and 6,
+96d43bc part 5, 43013a6 part 4).
 
 1. **Reliable Viewed writes.** A refused or degraded write is visible (toolbar
    note + the card's checkbox shows "not saved"), and a locally set mark
@@ -20,8 +23,6 @@ Rides on PR 269 (Vova: "нене, давай всё сюда, большой PR,
    removes only that blob's entry. The file's base shifts to the latest marked
    revision before `to`; on `to` itself the diff stays from the base. A manual
    per-file `from` still wins; base merges are still carried past.
-
-## Rest of the elephant
 
 3. **Empty cards hidden.** A card whose diff is empty ("No textual changes") is
    hidden like a viewed one: whenever the existing "Hide viewed" toggle is on.
@@ -53,11 +54,9 @@ Show/Hide renaming, changed defaults, cross-board settings persistence (artifact
 
 ## Decision: one PR, an elephant
 
-One PR (Vova chose it), eaten a bite per session: the parts share the
-range/viewed model and adopters take the board as one unit, but six parts — a
-doc migration, a popover component, a shading scale — do not fit one session.
-The first bite is parts 1–2, which share the store and the file doc; parts 3–6
-build on the history and can follow in any order.
+One PR (Vova chose it): the parts share the range/viewed model and adopters take
+the board as one unit. It was planned as bites, and Vova let the session walk
+between them unprompted, so one session ate all six.
 
 ## Tests
 
@@ -75,11 +74,11 @@ dark themes with Playwright.
 - Doc schemas extend `filePrefsSchema` (narrow type first, per
   `masd/no-pick-omit`); the migration lives in `docs.ts` beside `parseDoc`,
   reused by every reader.
-- One popover component under `shared/ui` serves board and card range pickers
-  (both take a list of `{value, label, time, viewedAt}` rows); duplicating it
-  per site would fork the viewed-mark rendering. `commitLabels` in
-  `board/lib/labels.ts` is extended with times rather than adding a parallel
-  lookup.
+- One picker, `shared/lib/picker.ts`, serves board and card range pickers (rows
+  of `{value, label, lines, marked}`); duplicating it per site would fork the
+  viewed-mark rendering. Which commits carry a mark is `markedCommits` in the
+  file entity, and `commitTimes` sits beside `commitLabels` in
+  `board/lib/labels.ts`.
 - Shade computation is a pure function in `entities/file/model`, next to
   `commitOrder`/`baseMerges`, reusing them for the base-merge filter; no new
   commit-walk helper.
