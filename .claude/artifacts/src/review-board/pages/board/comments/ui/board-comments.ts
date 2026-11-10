@@ -87,7 +87,7 @@ export function boardComments(): BoardComments {
     if (board === undefined || controller === undefined) return;
     const range = board.effectiveRange(target.path);
     if (range === undefined) return;
-    const anchor = encodeAnchor({ ...target, ...range });
+    const anchor = encodeAnchor({ ...target, ...range, through: null });
     composed = anchor;
     controller
       .compose(anchor, at, { label: label(target) })
