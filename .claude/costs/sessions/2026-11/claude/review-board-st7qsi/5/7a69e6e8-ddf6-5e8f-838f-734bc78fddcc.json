@@ -1,13 +1,13 @@
 {
   "total": {
-    "inputTokens": 151,
+    "inputTokens": 165,
     "cacheWrite5mTokens": 0,
-    "cacheWrite1hTokens": 243800,
-    "cacheReadTokens": 12978537,
-    "outputTokens": 57209,
-    "thinkingTokens": 18259,
-    "responses": 81,
-    "costUsd": 5.690891400000001
+    "cacheWrite1hTokens": 260461,
+    "cacheReadTokens": 14149051,
+    "outputTokens": 61507,
+    "thinkingTokens": 19153,
+    "responses": 89,
+    "costUsd": 6.144298200000001
   },
   "estimate": {
     "at": "2026-11-10T08:49:43.712Z",
@@ -53,18 +53,18 @@
   "url": "https://claude.ai/code/session_016Z4TKoWhP49B6JEWR7wwdd",
   "operator": "vzakharov",
   "firstResponseAt": "2026-11-10T08:49:22.672Z",
-  "lastResponseAt": "2026-11-10T09:01:35.221Z",
+  "lastResponseAt": "2026-11-10T09:02:29.927Z",
   "pricesAsOf": "2026-10-06",
   "claudeCodeTotalUsd": null,
   "ownTurns": {
-    "inputTokens": 151,
+    "inputTokens": 165,
     "cacheWrite5mTokens": 0,
-    "cacheWrite1hTokens": 243800,
-    "cacheReadTokens": 12978537,
-    "outputTokens": 57209,
-    "thinkingTokens": 18259,
-    "responses": 81,
-    "costUsd": 5.690891400000001
+    "cacheWrite1hTokens": 260461,
+    "cacheReadTokens": 14149051,
+    "outputTokens": 61507,
+    "thinkingTokens": 19153,
+    "responses": 89,
+    "costUsd": 6.144298200000001
   },
   "subagents": {
     "inputTokens": 0,
@@ -78,14 +78,14 @@
   },
   "byRate": {
     "claude-opus-5-5/standard": {
-      "inputTokens": 151,
+      "inputTokens": 165,
       "cacheWrite5mTokens": 0,
-      "cacheWrite1hTokens": 243800,
-      "cacheReadTokens": 12978537,
-      "outputTokens": 57209,
-      "thinkingTokens": 18259,
-      "responses": 81,
-      "costUsd": 5.690891400000001
+      "cacheWrite1hTokens": 260461,
+      "cacheReadTokens": 14149051,
+      "outputTokens": 61507,
+      "thinkingTokens": 19153,
+      "responses": 89,
+      "costUsd": 6.144298200000001
     }
   },
   "warnings": [],
@@ -117,7 +117,7 @@
           "Read": 3
         },
         "estimatedTokens": 8855,
-        "estimatedUsd": 0.08855
+        "estimatedUsd": 0.10271799999999999
       },
       "billedUsd": null
     }
