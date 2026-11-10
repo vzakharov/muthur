@@ -20,10 +20,6 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
-
-  &[hidden] {
-    display: none;
-  }
 }
 
 .tool-label {
@@ -54,13 +50,6 @@
 .tool-btn.focus-step {
   border-color: var(--focus);
   white-space: nowrap;
-}
-
-.tool-check {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  cursor: pointer;
 }
 
 .tally {

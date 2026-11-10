@@ -21,10 +21,6 @@
   background: var(--folder-bg);
   border: 1px solid var(--folder-border);
   border-radius: 8px;
-
-  &[hidden] {
-    display: none;
-  }
 }
 
 .folder-head {
@@ -44,16 +40,8 @@
 }
 
 .folder-viewed {
-  display: inline-flex;
   flex: none;
-  align-items: center;
-  gap: 4px;
   font: 12px var(--font-ui);
-  cursor: pointer;
-
-  &[hidden] {
-    display: none;
-  }
 }
 
 .empty-board {

@@ -1,4 +1,4 @@
-import { el } from "#src/review-board/shared/lib/dom.ts";
+import { checkbox, el } from "#src/review-board/shared/lib/dom.ts";
 import type { PackedFolder } from "#src/review-board/pages/board/layout/index.ts";
 
 /** A folder's Viewed box: checked when every file it governs is viewed, mixed when some are; null when it governs none. */
@@ -31,15 +31,15 @@ export function createFolderLayer(
     const head = el("div", "folder-head");
     head.dataset["path"] = folder.path;
     head.style.height = `${folder.header.height}px`;
-    const box = el("input", "");
-    box.type = "checkbox";
-    box.addEventListener("change", () => {
-      onViewed(folder.path, box.checked);
-    });
-    const check = el("label", "folder-viewed");
+    const { box, label: check } = checkbox(
+      "Viewed",
+      (viewed) => {
+        onViewed(folder.path, viewed);
+      },
+      "folder-viewed",
+    );
     check.title =
       "Mark every file here viewed, except those the author marked for focus";
-    check.append(box, "Viewed");
     head.append(check, el("span", "folder-name", `${folder.name}/`));
     node.append(head);
     element.append(node);

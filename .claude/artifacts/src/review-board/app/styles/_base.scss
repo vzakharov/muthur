@@ -28,6 +28,19 @@ input {
   color: inherit;
 }
 
+// `hidden` hides whatever `display` a class gives the element.
+[hidden] {
+  display: none !important;
+}
+
+// A checkbox inside its label.
+.check {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+}
+
 .app {
   display: flex;
   flex-direction: column;

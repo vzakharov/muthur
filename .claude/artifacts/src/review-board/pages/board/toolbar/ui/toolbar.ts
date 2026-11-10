@@ -1,5 +1,5 @@
 import type { StoreStatus } from "#src/review-board/entities/file/index.ts";
-import { el, setOptions } from "#src/review-board/shared/lib/dom.ts";
+import { checkbox, el, setOptions } from "#src/review-board/shared/lib/dom.ts";
 import type { ReviewCommit } from "#src/review-board/shared/review-data/index.ts";
 
 export interface ToolbarState {
@@ -50,17 +50,6 @@ function button(text: string, title: string, onClick: () => void) {
   node.ariaLabel = title;
   node.addEventListener("click", onClick);
   return node;
-}
-
-function checkbox(text: string, onChange: (checked: boolean) => void) {
-  const box = el("input", "");
-  box.type = "checkbox";
-  box.addEventListener("change", () => {
-    onChange(box.checked);
-  });
-  const label = el("label", "tool-check");
-  label.append(box, text);
-  return { box, label };
 }
 
 /**

@@ -6,10 +6,6 @@
   min-width: 320px;
   background: var(--surface);
   border-left: 1px solid var(--border);
-
-  &[hidden] {
-    display: none;
-  }
 }
 
 .panel-head {

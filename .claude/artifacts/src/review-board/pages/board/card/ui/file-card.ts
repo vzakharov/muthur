@@ -6,7 +6,7 @@ import {
   type FileDiff,
 } from "#src/review-board/entities/file/index.ts";
 import type { DiffResult } from "#src/review-board/shared/lib/diff.ts";
-import { el, setOptions } from "#src/review-board/shared/lib/dom.ts";
+import { checkbox, el, setOptions } from "#src/review-board/shared/lib/dom.ts";
 import type {
   Focus,
   LineSpan,
@@ -116,13 +116,13 @@ export function createCard(
   element.classList.toggle("is-focus", focus !== undefined);
 
   const header = el("header", "card-head");
-  const viewedBox = el("input", "viewed-box");
-  viewedBox.type = "checkbox";
-  viewedBox.addEventListener("change", () => {
-    handlers.onViewed(viewedBox.checked);
-  });
-  const viewedLabel = el("label", "viewed");
-  viewedLabel.append(viewedBox, el("span", "viewed-text", "Viewed"));
+  const { box: viewedBox, label: viewedLabel } = checkbox(
+    "Viewed",
+    (viewed) => {
+      handlers.onViewed(viewed);
+    },
+    "viewed",
+  );
 
   const badge = el("span", `badge ${file.status}`, file.status);
   if (file.oldPath !== null) badge.title = `renamed from ${file.oldPath}`;
