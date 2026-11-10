@@ -30,6 +30,26 @@ dollars='^[0-9]+(\.[0-9]+)?$'
   exit 0
 }
 
+# A switch reads as `yes`, `no`, or empty for unset; a value that is neither a
+# yes nor a no is named on stderr, so a typo does not pass silently for the
+# default.
+switch() {
+  case "$(printf '%s' "$2" | tr -d '[:space:]' | tr '[:upper:]' '[:lower:]')" in
+    true | yes | on | 1) echo yes ;;
+    false | no | off | 0) echo no ;;
+    '') ;;
+    *) say "$1 is neither a yes nor a no; read as unset." ;;
+  esac
+}
+
+# An auto-compact window this small is the environment choosing the compact over
+# the relay, so a notice steering to one is noise.
+compact_window="${CLAUDE_CODE_AUTO_COMPACT_WINDOW:-}"
+if [[ "$compact_window" =~ ^[0-9]+$ ]] && [ "$compact_window" -lt 350000 ] \
+  && [ "$(switch MUTHUR_RELAY_DESPITE_AUTOCOMPACT "${MUTHUR_RELAY_DESPITE_AUTOCOMPACT:-}")" != yes ]; then
+  exit 0
+fi
+
 root="$(project_root)"
 transcript="$(field transcript_path)"
 session="$(field session_id)"
@@ -103,17 +123,6 @@ mkdir -p "$state_dir" && printf '%s\n' "$level" >"$state_file" || {
   exit 0
 }
 
-# A manual-relay switch reads as `yes`, `no`, or empty for unset; a value that is
-# neither a yes nor a no is named on stderr, so a typo does not pass silently for
-# the default.
-switch() {
-  case "$(printf '%s' "$2" | tr -d '[:space:]' | tr '[:upper:]' '[:lower:]')" in
-    true | yes | on | 1) echo yes ;;
-    false | no | off | 0) echo no ;;
-    '') ;;
-    *) say "$1 is neither a yes nor a no; read as unset." ;;
-  esac
-}
 # `unasked` holds the operator's switch path while they have no answer on record.
 manual_relay= unasked=
 if [ "$(switch MUTHUR_MANUAL_CONTEXT_BUDGET_RELAY "${MUTHUR_MANUAL_CONTEXT_BUDGET_RELAY:-}")" = yes ]; then

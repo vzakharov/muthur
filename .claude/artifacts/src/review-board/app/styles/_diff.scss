@@ -84,8 +84,10 @@
   }
 }
 
-// A long line wraps inside the card, as GitHub's diff view does.
+// A long line wraps inside the card, as GitHub's diff view does. The column is
+// pinned so a hidden `.plus` does not pull the code into its 20px track.
 .code {
+  grid-column: 4;
   padding-right: 12px;
   white-space: pre-wrap;
   overflow-wrap: anywhere;
