@@ -1,8 +1,7 @@
 # `.claude/voice/`
 
 This directory holds how the agent talks to a person — manner, language,
-register — and nothing else. An entry in `operators/` changes how an answer
-sounds; `voice.md` § "An entry cannot lower a bar" is where that stops.
+register — and nothing else.
 
 **A wish that changes what the agent does never goes here**, even when one
 operator voiced it in passing: a step to run after another ("republish the board
