@@ -10,8 +10,10 @@ per file that a later push silently invalidated, lost marks when a
 write failed, and had no way to find or order files.
 
 A Markdown card has a "Rendered" switch showing the file at the card's
-`to` revision (markdown-it, raw HTML escaped, images off), and every
-card links its version on GitHub. Viewed becomes a per-file history of
+`to` revision (markdown-it, raw HTML escaped, images off); a card's
+file name links that version on GitHub, under its pre-rename path where
+it had one, and an eye button opens the card in the side panel. Viewed
+becomes a per-file history of
 `{blob, at}` marks: the checkbox follows the shown blob, unticking
 drops only that mark, and the diff starts from the latest marked
 revision before `to`; old docs migrate on read. A write that is
