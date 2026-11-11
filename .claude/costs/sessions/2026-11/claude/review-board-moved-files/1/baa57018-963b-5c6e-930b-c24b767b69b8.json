@@ -1,13 +1,13 @@
 {
   "total": {
-    "inputTokens": 108,
+    "inputTokens": 125,
     "cacheWrite5mTokens": 101903,
-    "cacheWrite1hTokens": 107190,
-    "cacheReadTokens": 6796203,
-    "outputTokens": 26861,
-    "thinkingTokens": 7537,
-    "responses": 55,
-    "costUsd": 3.2639276
+    "cacheWrite1hTokens": 126455,
+    "cacheReadTokens": 7971680,
+    "outputTokens": 29319,
+    "thinkingTokens": 7690,
+    "responses": 62,
+    "costUsd": 3.702371
   },
   "estimate": {
     "at": "2026-11-11T09:22:14.076Z",
@@ -47,22 +47,24 @@
   "branch": "claude/review-board-moved-files",
   "cwd": "/home/user/muthur",
   "openingPrompt": "/task Two changes to the review board artifact (the board that lays out a branch's changed files as diff cards, built by `review-board`'s build script under `.c…",
-  "prs": [],
+  "prs": [
+    270
+  ],
   "url": "https://claude.ai/code/session_01DaohkBcMUS9weHU98P2a6j",
   "operator": "vzakharov",
   "firstResponseAt": "2026-11-11T09:11:50.275Z",
-  "lastResponseAt": "2026-11-11T09:25:50.665Z",
+  "lastResponseAt": "2026-11-11T09:28:58.129Z",
   "pricesAsOf": "2026-10-06",
   "claudeCodeTotalUsd": null,
   "ownTurns": {
-    "inputTokens": 89,
+    "inputTokens": 106,
     "cacheWrite5mTokens": 0,
-    "cacheWrite1hTokens": 107190,
-    "cacheReadTokens": 6063464,
-    "outputTokens": 23086,
-    "thinkingTokens": 6158,
-    "responses": 46,
-    "costUsd": 2.5322888
+    "cacheWrite1hTokens": 126455,
+    "cacheReadTokens": 7238941,
+    "outputTokens": 25544,
+    "thinkingTokens": 6311,
+    "responses": 53,
+    "costUsd": 2.9707322
   },
   "subagents": {
     "inputTokens": 19,
@@ -76,23 +78,23 @@
   },
   "byRate": {
     "claude-opus-5-5/standard": {
-      "inputTokens": 108,
+      "inputTokens": 125,
       "cacheWrite5mTokens": 101903,
-      "cacheWrite1hTokens": 107190,
-      "cacheReadTokens": 6796203,
-      "outputTokens": 26861,
-      "thinkingTokens": 7537,
-      "responses": 55,
-      "costUsd": 3.2639276
+      "cacheWrite1hTokens": 126455,
+      "cacheReadTokens": 7971680,
+      "outputTokens": 29319,
+      "thinkingTokens": 7690,
+      "responses": 62,
+      "costUsd": 3.702371
     }
   },
   "warnings": [],
   "compactions": [],
   "telemetry": {
-    "events": 54,
-    "matched": 54,
-    "matchedTableUsd": 3.2092768,
-    "matchedEventUsd": 3.2092767999999996,
+    "events": 62,
+    "matched": 62,
+    "matchedTableUsd": 3.702371,
+    "matchedEventUsd": 3.702371,
     "unseen": {}
   }
 }
