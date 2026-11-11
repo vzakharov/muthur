@@ -1,22 +1,22 @@
 {
   "total": {
-    "inputTokens": 101,
+    "inputTokens": 122,
     "cacheWrite5mTokens": 0,
-    "cacheWrite1hTokens": 133202,
-    "cacheReadTokens": 7605557,
-    "outputTokens": 23067,
-    "thinkingTokens": 4923,
-    "responses": 52,
-    "costUsd": 3.0484714
+    "cacheWrite1hTokens": 142888,
+    "cacheReadTokens": 9740866,
+    "outputTokens": 26999,
+    "thinkingTokens": 5695,
+    "responses": 63,
+    "costUsd": 3.6317451999999997
   },
   "estimate": {
-    "at": "2026-11-11T14:03:16.437Z",
+    "at": "2026-11-11T14:43:27.784Z",
     "parts": [
       {
-        "hours": 0.75,
+        "hours": 2.0,
         "grade": "middle",
         "role": "developer",
-        "comment": "inverting two persisted toggles at the UI edge without migrating viewers' saved state needs care with defaults, plus rebuilding and republishing the board"
+        "comment": "a stored-format change threaded through the collector, schema and every fixture, plus three small header controls on a board with its own FSD and lint rules, each rebuilt and republished"
       }
     ],
     "comment": null
@@ -47,18 +47,18 @@
   "url": "https://claude.ai/code/session_016Z4TKnbzM5AaHveA6eRYgE",
   "operator": "vzakharov",
   "firstResponseAt": "2026-11-11T14:01:02.744Z",
-  "lastResponseAt": "2026-11-11T14:42:03.459Z",
+  "lastResponseAt": "2026-11-11T14:43:32.824Z",
   "pricesAsOf": "2026-10-06",
   "claudeCodeTotalUsd": null,
   "ownTurns": {
-    "inputTokens": 101,
+    "inputTokens": 122,
     "cacheWrite5mTokens": 0,
-    "cacheWrite1hTokens": 133202,
-    "cacheReadTokens": 7605557,
-    "outputTokens": 23067,
-    "thinkingTokens": 4923,
-    "responses": 52,
-    "costUsd": 3.0484714
+    "cacheWrite1hTokens": 142888,
+    "cacheReadTokens": 9740866,
+    "outputTokens": 26999,
+    "thinkingTokens": 5695,
+    "responses": 63,
+    "costUsd": 3.6317451999999997
   },
   "subagents": {
     "inputTokens": 0,
@@ -72,14 +72,14 @@
   },
   "byRate": {
     "claude-opus-5-5/standard": {
-      "inputTokens": 101,
+      "inputTokens": 122,
       "cacheWrite5mTokens": 0,
-      "cacheWrite1hTokens": 133202,
-      "cacheReadTokens": 7605557,
-      "outputTokens": 23067,
-      "thinkingTokens": 4923,
-      "responses": 52,
-      "costUsd": 3.0484714
+      "cacheWrite1hTokens": 142888,
+      "cacheReadTokens": 9740866,
+      "outputTokens": 26999,
+      "thinkingTokens": 5695,
+      "responses": 63,
+      "costUsd": 3.6317451999999997
     }
   },
   "warnings": [],
