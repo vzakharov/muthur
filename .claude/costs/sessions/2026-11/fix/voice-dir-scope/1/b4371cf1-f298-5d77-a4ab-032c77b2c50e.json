@@ -1,0 +1,98 @@
+{
+  "total": {
+    "inputTokens": 19,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 47559,
+    "cacheReadTokens": 842738,
+    "outputTokens": 4735,
+    "thinkingTokens": 1815,
+    "responses": 9,
+    "costUsd": 0.6437956000000001
+  },
+  "estimate": {
+    "at": "2026-11-11T09:40:16.400Z",
+    "parts": [
+      {
+        "hours": 0.75,
+        "grade": "senior",
+        "role": "prompter",
+        "comment": "deciding which home owns the constraint and wording a scope fence an agent heeds at write time takes judgement of how agents read the loop"
+      },
+      {
+        "hours": 0.25,
+        "grade": "senior",
+        "role": "editor",
+        "comment": "dedupe against voice.md needs a one-home edit across two files"
+      }
+    ],
+    "comment": null
+  },
+  "orientation": {
+    "endedBy": "oriented",
+    "endedOn": null,
+    "endedAt": "2026-11-11T09:40:11.154Z",
+    "contextTokens": 98131,
+    "spend": {
+      "inputTokens": 6,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 34281,
+      "cacheReadTokens": 242330,
+      "outputTokens": 948,
+      "thinkingTokens": 96,
+      "responses": 3,
+      "costUsd": 0.34169800000000006
+    }
+  },
+  "sessionId": "b4371cf1-f298-5d77-a4ab-032c77b2c50e",
+  "branch": "fix/voice-dir-scope",
+  "cwd": "/home/user/muthur",
+  "openingPrompt": "/task",
+  "prs": [],
+  "url": "https://claude.ai/code/session_01DaohkEv6tytZdnPLY5TzST",
+  "operator": "vzakharov",
+  "firstResponseAt": "2026-11-11T09:39:46.229Z",
+  "lastResponseAt": "2026-11-11T09:43:14.858Z",
+  "pricesAsOf": "2026-10-06",
+  "claudeCodeTotalUsd": null,
+  "ownTurns": {
+    "inputTokens": 19,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 47559,
+    "cacheReadTokens": 842738,
+    "outputTokens": 4735,
+    "thinkingTokens": 1815,
+    "responses": 9,
+    "costUsd": 0.6437956000000001
+  },
+  "subagents": {
+    "inputTokens": 0,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 0,
+    "cacheReadTokens": 0,
+    "outputTokens": 0,
+    "thinkingTokens": 0,
+    "responses": 0,
+    "costUsd": 0.0
+  },
+  "byRate": {
+    "claude-opus-5-5/standard": {
+      "inputTokens": 19,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 47559,
+      "cacheReadTokens": 842738,
+      "outputTokens": 4735,
+      "thinkingTokens": 1815,
+      "responses": 9,
+      "costUsd": 0.6437956000000001
+    }
+  },
+  "warnings": [],
+  "compactions": [],
+  "telemetry": {
+    "events": 8,
+    "matched": 8,
+    "matchedTableUsd": 0.5900852000000001,
+    "matchedEventUsd": 0.5900852000000001,
+    "unseen": {}
+  }
+}
