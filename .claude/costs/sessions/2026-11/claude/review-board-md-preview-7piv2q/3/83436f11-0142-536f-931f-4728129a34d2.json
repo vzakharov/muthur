@@ -1,15 +1,26 @@
 {
   "total": {
-    "inputTokens": 22,
+    "inputTokens": 51,
     "cacheWrite5mTokens": 0,
-    "cacheWrite1hTokens": 73910,
-    "cacheReadTokens": 1298408,
-    "outputTokens": 6309,
-    "thinkingTokens": 1556,
-    "responses": 12,
-    "costUsd": 0.9772296
+    "cacheWrite1hTokens": 90863,
+    "cacheReadTokens": 3056480,
+    "outputTokens": 9634,
+    "thinkingTokens": 2210,
+    "responses": 25,
+    "costUsd": 1.531084
   },
-  "estimate": null,
+  "estimate": {
+    "at": "2026-11-11T14:03:16.437Z",
+    "parts": [
+      {
+        "hours": 0.75,
+        "grade": "middle",
+        "role": "developer",
+        "comment": "inverting two persisted toggles at the UI edge without migrating viewers' saved state needs care with defaults, plus rebuilding and republishing the board"
+      }
+    ],
+    "comment": null
+  },
   "orientation": {
     "endedBy": "oriented",
     "endedOn": null,
@@ -28,24 +39,26 @@
   },
   "sessionId": "83436f11-0142-536f-931f-4728129a34d2",
   "branch": "claude/review-board-md-preview-7piv2q",
-  "cwd": "/home/user/muthur/.claude/artifacts",
+  "cwd": "/home/user/muthur",
   "openingPrompt": "/relay take claude/review-board-md-preview-7piv2q — PR #269 открыт, ждёт решения про Show/Hide",
-  "prs": [],
+  "prs": [
+    269
+  ],
   "url": "https://claude.ai/code/session_016Z4TKnbzM5AaHveA6eRYgE",
   "operator": "vzakharov",
   "firstResponseAt": "2026-11-11T14:01:02.744Z",
-  "lastResponseAt": "2026-11-11T14:02:39.742Z",
+  "lastResponseAt": "2026-11-11T14:03:56.897Z",
   "pricesAsOf": "2026-10-06",
   "claudeCodeTotalUsd": null,
   "ownTurns": {
-    "inputTokens": 22,
+    "inputTokens": 51,
     "cacheWrite5mTokens": 0,
-    "cacheWrite1hTokens": 73910,
-    "cacheReadTokens": 1298408,
-    "outputTokens": 6309,
-    "thinkingTokens": 1556,
-    "responses": 12,
-    "costUsd": 0.9772296
+    "cacheWrite1hTokens": 90863,
+    "cacheReadTokens": 3056480,
+    "outputTokens": 9634,
+    "thinkingTokens": 2210,
+    "responses": 25,
+    "costUsd": 1.531084
   },
   "subagents": {
     "inputTokens": 0,
@@ -59,14 +72,14 @@
   },
   "byRate": {
     "claude-opus-5-5/standard": {
-      "inputTokens": 22,
+      "inputTokens": 51,
       "cacheWrite5mTokens": 0,
-      "cacheWrite1hTokens": 73910,
-      "cacheReadTokens": 1298408,
-      "outputTokens": 6309,
-      "thinkingTokens": 1556,
-      "responses": 12,
-      "costUsd": 0.9772296
+      "cacheWrite1hTokens": 90863,
+      "cacheReadTokens": 3056480,
+      "outputTokens": 9634,
+      "thinkingTokens": 2210,
+      "responses": 25,
+      "costUsd": 1.531084
     }
   },
   "warnings": [],

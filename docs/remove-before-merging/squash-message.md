@@ -18,10 +18,12 @@ revision before `to`; old docs migrate on read. A write that is
 refused or degraded shows as "not saved", and the local mark survives
 snapshots until a write succeeds.
 
-"Hide viewed" also hides empty-diff cards, a toolbar filter matches
-full paths, card headers are tinted by how recently the file changed
-(commits minutes apart share a shade), and the from/to selects become
-top-layer popovers listing commit time and which revisions you viewed.
+The toolbar toggles read "Show whitespace" and "Show viewed", saved
+state keeping its old flags; unticking "Show viewed" also hides
+empty-diff cards. A toolbar filter matches full paths, card headers
+are tinted by how recently the file changed (commits minutes apart
+share a shade), and the from/to selects become top-layer popovers
+listing commit time and which revisions you viewed.
 
 Artifact apps gain `masd/no-pick-omit`, banning Pick and Omit over the
 repo's own types; the narrow type is declared first and the wide one
