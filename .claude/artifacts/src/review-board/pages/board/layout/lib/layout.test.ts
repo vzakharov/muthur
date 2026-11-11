@@ -69,6 +69,25 @@ describe("buildTree", () => {
     ]);
     assert.deepEqual(names(tree), ["a", "b", "c", "a.ts", "z.ts"]);
   });
+
+  it("names one folder path differently once its siblings drop out", () => {
+    const moved = [
+      "src/board/app/styles/board.scss",
+      "src/board/scripts/board.ts",
+      "src/board/scripts/lib/board-file.ts",
+      "src/cube/scripts/play-cube.ts",
+    ];
+    const folderAt = (tree: FolderNode, path: string) =>
+      pack(tree, measure, opts).folders.find((folder) => folder.path === path);
+    assert.equal(
+      folderAt(buildTree(moved), "src/board/scripts")?.name,
+      "scripts",
+    );
+    assert.equal(
+      folderAt(buildTree(moved.slice(1)), "src/board/scripts")?.name,
+      "board/scripts",
+    );
+  });
 });
 
 describe("pack", () => {
