@@ -167,7 +167,7 @@ export function mountBoard(
           commit !== null && to !== null && index(to) <= index(commit);
         store.setBoard(stale ? { from: commit, to: null } : { from: commit });
       },
-      // The saved board keeps the hide-side flags, so a viewer's saved toggles survive the "Show" labels.
+      // Saved boards hold hide-side flags, which the Show toggles write inverted.
       onShowWhitespace: (show) => {
         store.setBoard({ whitespace: !show });
       },

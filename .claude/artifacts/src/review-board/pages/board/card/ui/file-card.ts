@@ -60,8 +60,7 @@ const COPY_LABEL = "⧉";
 
 /**
  * The file's name alone, since the folder boxes around the card show its
- * directory, as a link to the shown version on GitHub where there is one, and
- * a button copying its repo-relative path.
+ * directory, linked to GitHub, and a button copying its repo-relative path.
  */
 function pathParts(path: string): {
   link: HTMLAnchorElement;
@@ -102,7 +101,6 @@ function flash(button: HTMLButtonElement, mark: string, title: string): void {
 
 const SVG_NS = "http://www.w3.org/2000/svg";
 
-/** An outline eye drawn in the text colour. */
 function eyeIcon(): SVGSVGElement {
   const svg = document.createElementNS(SVG_NS, "svg");
   svg.setAttribute("viewBox", "0 0 24 24");
