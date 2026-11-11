@@ -64,7 +64,6 @@ function tryText(cwd: string, command: string, args: string[]): string | null {
 const prSchema = z.object({ number: z.number(), baseRefName: z.string() });
 type Pr = z.infer<typeof prSchema>;
 
-/** The branch's PR as `gh` reports it; null when there is none or `gh` is unavailable. */
 function readPr(cwd: string): Pr | null {
   const json = tryText(cwd, "gh", [
     "pr",
