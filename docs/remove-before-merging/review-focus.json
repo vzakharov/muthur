@@ -12,5 +12,10 @@
     "path": ".claude/artifacts/src/review-board/scripts/collect.ts",
     "why": "Номер PR и базовая ветка теперь читаются одним `gh pr view`; ответ gh парсится zod-схемой, а не через -q.",
     "lines": [[64, 85]]
+  },
+  {
+    "path": ".claude/artifacts/src/review-board/entities/file/model/docs.ts",
+    "why": "Дефолт hideViewed стал true, так что «Show viewed» на свежей доске снят. Этот же фолбэк срабатывает для сохранённых документов без поля; дубль значения лежит в store.ts.",
+    "lines": [[9, 9]]
   }
 ]
