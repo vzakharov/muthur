@@ -155,6 +155,8 @@ export function createToolbar(
     zoom,
     focusGroup,
     range,
+    // What decides which files show, and the tally, start a row of their own, whatever the width.
+    el("span", "toolbar-break"),
     filter,
     whitespace.label,
     showViewed.label,

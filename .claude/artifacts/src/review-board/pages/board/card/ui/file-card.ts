@@ -102,6 +102,24 @@ function flash(button: HTMLButtonElement, mark: string, title: string): void {
   }, 1500);
 }
 
+const SVG_NS = "http://www.w3.org/2000/svg";
+
+/** An outline eye drawn in the text colour. */
+function eyeIcon(): SVGSVGElement {
+  const svg = document.createElementNS(SVG_NS, "svg");
+  svg.setAttribute("viewBox", "0 0 24 24");
+  svg.setAttribute("aria-hidden", "true");
+  svg.classList.add("icon");
+  const lid = document.createElementNS(SVG_NS, "path");
+  lid.setAttribute("d", "M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z");
+  const pupil = document.createElementNS(SVG_NS, "circle");
+  pupil.setAttribute("cx", "12");
+  pupil.setAttribute("cy", "12");
+  pupil.setAttribute("r", "3");
+  svg.append(lid, pupil);
+  return svg;
+}
+
 function stubBody(text: string, onOpen?: () => void): HTMLElement {
   const stub = el("div", "stub");
   if (onOpen === undefined) {
@@ -150,7 +168,8 @@ export function createCard(
   const removed = el("span", "removed");
   counts.append(added, " ", removed);
 
-  const open = el("button", "open-btn", "👁");
+  const open = el("button", "open-btn");
+  open.append(eyeIcon());
   open.type = "button";
   open.title = "Open in the side panel";
   open.ariaLabel = open.title;
