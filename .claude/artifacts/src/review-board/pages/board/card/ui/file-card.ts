@@ -1,7 +1,9 @@
 import {
   markLines,
+  provenance,
   renderDiff,
   type CommentTarget,
+  type Provenance,
   type EffectiveRange,
   type FileDiff,
 } from "#src/review-board/entities/file/index.ts";
@@ -44,10 +46,17 @@ const formatSize = (bytes: number | null): string =>
 
 const COPY_LABEL = "⧉";
 
-/** The file's name alone, since the folder boxes around the card show its directory, and a button copying its repo-relative path. */
-function pathParts(path: string): HTMLElement[] {
+/**
+ * The file's name alone, since the folder boxes around the card show its
+ * directory; where a rename brought it from; and a button copying its
+ * repo-relative path.
+ */
+function pathParts(file: ReviewFile): HTMLElement[] {
+  const { path } = file;
   const name = el("strong", "path", path.slice(path.lastIndexOf("/") + 1));
   name.title = path;
+  const origin = provenance(file);
+  const from = origin === null ? [] : [provenanceNote(origin)];
   const copy = el("button", "copy-path", COPY_LABEL);
   copy.type = "button";
   copy.title = `Copy ${path}`;
@@ -62,7 +71,19 @@ function pathParts(path: string): HTMLElement[] {
       },
     );
   });
-  return [name, copy];
+  return [name, copy, ...from];
+}
+
+/** `· moved from a/b/c.ts`, breakable only after a slash so a narrow card wraps it at a directory. */
+function provenanceNote({ kind, from }: Provenance): HTMLElement {
+  const note = el("span", "provenance", `· ${kind} from `);
+  const segments = from.split("/");
+  segments.forEach((segment, index) => {
+    const last = index === segments.length - 1;
+    note.append(el("span", "segment", last ? segment : `${segment}/`));
+    if (!last) note.append(el("wbr", ""));
+  });
+  return note;
 }
 
 function flash(button: HTMLButtonElement, mark: string, title: string): void {
@@ -124,8 +145,11 @@ export function createCard(
     "viewed",
   );
 
-  const badge = el("span", `badge ${file.status}`, file.status);
-  if (file.oldPath !== null) badge.title = `renamed from ${file.oldPath}`;
+  const badge = el(
+    "span",
+    `badge ${file.status}`,
+    provenance(file)?.kind ?? file.status,
+  );
   const counts = el("span", "counts");
   const added = el("span", "added");
   const removed = el("span", "removed");
@@ -158,7 +182,7 @@ export function createCard(
     focus === undefined ? [] : [el("span", "badge focus", "focus")];
   header.append(
     viewedLabel,
-    ...pathParts(file.path),
+    ...pathParts(file),
     badge,
     ...focusBadge,
     counts,
