@@ -1,0 +1,94 @@
+{
+  "total": {
+    "inputTokens": 35,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 81283,
+    "cacheReadTokens": 2217100,
+    "outputTokens": 8375,
+    "thinkingTokens": 1216,
+    "responses": 19,
+    "costUsd": 1.2613240000000001
+  },
+  "estimate": {
+    "at": "2026-11-11T17:22:53.067Z",
+    "parts": [
+      {
+        "hours": 1.0,
+        "grade": "middle",
+        "role": "developer",
+        "comment": "cutting a cross-cutting UI state (store, card, toolbar, styles) needs care to keep the separate erasure-path fixes intact"
+      },
+      {
+        "hours": 0.5,
+        "grade": "middle",
+        "role": "qa",
+        "comment": "the board must be rebuilt and checked by eye before landing"
+      }
+    ],
+    "comment": null
+  },
+  "orientation": {
+    "endedBy": "Edit",
+    "endedOn": ".claude/artifacts/src/review-board/entities/file/model/store.ts",
+    "endedAt": "2026-11-11T17:23:16.750Z",
+    "contextTokens": 126825,
+    "spend": {
+      "inputTokens": 23,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 72189,
+      "cacheReadTokens": 1299313,
+      "outputTokens": 4063,
+      "thinkingTokens": 876,
+      "responses": 12,
+      "costUsd": 0.9187266000000001
+    }
+  },
+  "sessionId": "f4e87db0-5977-59bb-a1b4-346242f3e89f",
+  "branch": "claude/review-board-md-preview-7piv2q",
+  "cwd": "/home/user/muthur/.claude/artifacts",
+  "openingPrompt": "/relay take claude/review-board-md-preview-7piv2q — PR #269 открыт, ждёт решения про «not saved»",
+  "prs": [
+    269
+  ],
+  "url": "https://claude.ai/code/session_016Z4TKqSsVUAAjkNMi7smVm",
+  "operator": "vzakharov",
+  "firstResponseAt": "2026-11-11T17:22:29.818Z",
+  "lastResponseAt": "2026-11-11T17:24:20.719Z",
+  "pricesAsOf": "2026-10-06",
+  "claudeCodeTotalUsd": null,
+  "ownTurns": {
+    "inputTokens": 35,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 81283,
+    "cacheReadTokens": 2217100,
+    "outputTokens": 8375,
+    "thinkingTokens": 1216,
+    "responses": 19,
+    "costUsd": 1.2613240000000001
+  },
+  "subagents": {
+    "inputTokens": 0,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 0,
+    "cacheReadTokens": 0,
+    "outputTokens": 0,
+    "thinkingTokens": 0,
+    "responses": 0,
+    "costUsd": 0.0
+  },
+  "byRate": {
+    "claude-opus-5-5/standard": {
+      "inputTokens": 35,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 81283,
+      "cacheReadTokens": 2217100,
+      "outputTokens": 8375,
+      "thinkingTokens": 1216,
+      "responses": 19,
+      "costUsd": 1.2613240000000001
+    }
+  },
+  "warnings": [],
+  "compactions": [],
+  "telemetry": null
+}

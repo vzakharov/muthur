@@ -7,11 +7,9 @@ export interface Synced<V> {
   get(): V;
   /** When the value was last stamped; "" for the initial one. */
   at(): string;
-  /** True from a local change until a write of it succeeds, so after a refused write too. */
-  unsaved(): boolean;
   /** A change made here: applied at once, persisted by a write that is queued. */
   set(next: V, at: string): void;
-  /** What the store holds, or null for no document; ignored while a local change is unsaved, a refused write included. */
+  /** What the store holds, or null for no document; ignored while a local change is unwritten. */
   receive(remote: Stamped<V> | null): void;
 }
 
@@ -41,19 +39,18 @@ export function synced<V>(options: SyncedOptions<V>): Synced<V> {
         queued = false;
         await options.write(value, at);
       }
-      dirty = false;
     } catch (error) {
       queued = false;
       options.failed(error);
     } finally {
       inFlight = false;
+      dirty = queued;
     }
   }
 
   return {
     get: () => value,
     at: () => at,
-    unsaved: () => dirty,
     set(next, stamp) {
       if (options.equals(value, next)) return;
       value = next;

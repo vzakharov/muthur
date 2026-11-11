@@ -25,8 +25,6 @@ const CHANGED_LINES_CAP = 200;
 export interface CardState {
   range: EffectiveRange;
   viewed: boolean;
-  /** The Viewed mark or range was changed here and no write of it has succeeded. */
-  unsaved: boolean;
   /** When each blob of the file was marked viewed, by blob token. */
   viewedAt: ReadonlyMap<string, string>;
   diff: FileDiff;
@@ -319,8 +317,6 @@ export function createCard(
       if (state.shade === null) element.style.removeProperty("--age");
       else element.style.setProperty("--age", String(state.shade.level));
       header.title = state.shade?.tooltip ?? "";
-      viewedLabel.classList.toggle("is-unsaved", state.unsaved);
-      viewedLabel.title = state.unsaved ? "Not saved yet" : "";
       const { diff, range: current } = state;
       added.textContent = diff.kind === "text" ? `+${diff.diff.added}` : "";
       removed.textContent = diff.kind === "text" ? `−${diff.diff.removed}` : "";

@@ -16,8 +16,6 @@ export interface ToolbarState {
   viewed: number;
   total: number;
   status: StoreStatus;
-  /** Files whose changes no write has saved yet. */
-  unsaved: number;
   focusUnviewed: number;
 }
 
@@ -192,10 +190,7 @@ export function createToolbar(
       focusOnly.box.checked = state.focusOnly;
       focus.textContent = `Focus ${state.focusUnviewed}/${focusTotal}`;
       tally.textContent = `${state.viewed} / ${state.total} viewed`;
-      note.textContent =
-        state.unsaved > 0 && state.status !== "visit"
-          ? `${state.unsaved} not saved yet`
-          : NOTES[state.status];
+      note.textContent = NOTES[state.status];
     },
   };
 }

@@ -94,28 +94,3 @@ test("a failed write is reported and drops what was queued", async () => {
   assert.equal(failures.length, 1);
   assert.equal(value.get(), "a");
 });
-
-test("a refused write leaves the change unsaved, and a later snapshot does not erase it", async () => {
-  const value = synced<string>({
-    initial: "",
-    equals: (a, b) => a === b,
-    write: () => Promise.reject(new Error("denied")),
-    changed: () => undefined,
-    failed: () => undefined,
-  });
-  value.set("mine", "t1");
-  await tick();
-  assert.equal(value.unsaved(), true);
-  value.receive({ value: "theirs", at: "t0" });
-  value.receive(null);
-  assert.equal(value.get(), "mine");
-});
-
-test("a change is saved once its write succeeds", async () => {
-  const { value, gates } = make();
-  value.set("a", "t1");
-  assert.equal(value.unsaved(), true);
-  gates[0]?.release();
-  await tick();
-  assert.equal(value.unsaved(), false);
-});

@@ -41,10 +41,6 @@ export interface FileStore {
   setViewed(path: string, viewed: boolean): void;
   /** When each blob of the file was marked viewed, by blob token. */
   viewedAt(path: string): ReadonlyMap<string, string>;
-  /** Whether the file's state has a change that no write has yet saved. */
-  isUnsaved(path: string): boolean;
-  /** How many files have such a change. */
-  unsavedCount(): number;
   /** Sets the file's own `from` / `to`; null clears that end back to the board. */
   setRange(path: string, patch: Partial<BoardRange>): void;
   subscribe(listener: () => void): () => void;
@@ -111,12 +107,9 @@ export function createFileStore(data: ReviewData): FileStore {
     notify();
   };
 
-  /** Null when nothing is saved by design (no `db`, no id); throws once the store has failed, so a change stays unsaved rather than passing for written. */
   async function writable(): Promise<Connection | null> {
     const conn = await connection;
-    if ((conn?.uid ?? null) === null) return null;
-    if (degraded) throw new Error("the store refused an earlier write");
-    return conn;
+    return (conn?.uid ?? null) === null || degraded ? null : conn;
   }
 
   const boardValue = synced<BoardPrefs>({
@@ -332,12 +325,6 @@ export function createFileStore(data: ReviewData): FileStore {
           .get()
           .viewed.map((mark) => [mark.blob, mark.at]),
       ),
-    isUnsaved: (path) => fileValue(path).unsaved(),
-    unsavedCount() {
-      let count = 0;
-      for (const value of fileValues.values()) if (value.unsaved()) count++;
-      return count;
-    },
     setRange(path, patch) {
       const own = fileValue(path);
       own.set({ ...own.get(), ...patch }, now());
