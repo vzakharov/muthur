@@ -20,12 +20,14 @@
   },
   "dependencies": {
     "highlight.js": "11.12.0",
+    "markdown-it": "14.1.0",
     "zod": "4.5.4"
   },
   "devDependencies": {
     "@feature-sliced/steiger-plugin": "0.7.0",
     "@steiger/toolkit": "0.2.3",
     "@types/estree": "1.0.10",
+    "@types/markdown-it": "14.1.2",
     "@types/node": "24.10.1",
     "@typescript-eslint/parser": "8.69.0",
     "esbuild": "0.28.2",

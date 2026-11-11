@@ -1,13 +1,17 @@
 import type { StoreStatus } from "#src/review-board/entities/file/index.ts";
-import { checkbox, el, setOptions } from "#src/review-board/shared/lib/dom.ts";
+import { checkbox, el } from "#src/review-board/shared/lib/dom.ts";
+import {
+  createPicker,
+  type PickerOption,
+} from "#src/review-board/shared/lib/picker.ts";
 import type { ReviewCommit } from "#src/review-board/shared/review-data/index.ts";
 
 export interface ToolbarState {
   /** The board's range; null is the base / the head. */
   from: string | null;
   to: string | null;
-  whitespace: boolean;
-  hideViewed: boolean;
+  showWhitespace: boolean;
+  showViewed: boolean;
   focusOnly: boolean;
   viewed: number;
   total: number;
@@ -21,10 +25,12 @@ export interface ToolbarHandlers {
   onFit(): void;
   onZoom(factor: number): void;
   onRange(end: "from" | "to", commit: string | null): void;
-  onWhitespace(hide: boolean): void;
-  onHideViewed(hide: boolean): void;
+  onShowWhitespace(show: boolean): void;
+  onShowViewed(show: boolean): void;
   /** Leaves on the board only the files the author marked for focus. */
   onFocusOnly(only: boolean): void;
+  /** Leaves on the board only the files whose path contains the text; empty clears it. */
+  onFilter(text: string): void;
 }
 
 export interface Toolbar {
@@ -63,6 +69,7 @@ export function createToolbar(
   baseSha: string,
   focusTotal: number,
   labelOf: (sha: string) => string,
+  timeOf: (sha: string) => string,
   handlers: ToolbarHandlers,
 ): Toolbar {
   const element = el("div", "toolbar");
@@ -84,24 +91,43 @@ export function createToolbar(
     }),
   );
 
-  const from = el("select", "range-select");
-  from.ariaLabel = "Board range from";
-  from.addEventListener("change", () => {
-    handlers.onRange("from", from.value === DEFAULT_END ? null : from.value);
+  const from = createPicker("Board range from", (value) => {
+    handlers.onRange("from", value === DEFAULT_END ? null : value);
   });
-  const to = el("select", "range-select");
-  to.ariaLabel = "Board range to";
-  to.addEventListener("change", () => {
-    handlers.onRange("to", to.value === DEFAULT_END ? null : to.value);
+  const to = createPicker("Board range to", (value) => {
+    handlers.onRange("to", value === DEFAULT_END ? null : value);
   });
   const range = el("span", "tool-group range");
-  range.append(el("span", "tool-label", "Range"), from, "→", to);
+  range.append(
+    el("span", "tool-label", "Range"),
+    from.element,
+    "→",
+    to.element,
+  );
+  const optionOf = (sha: string, value: string, prefix = ""): PickerOption => {
+    const committed = timeOf(sha);
+    return {
+      value,
+      label: `${prefix}${labelOf(sha)}`,
+      lines: committed === "" ? [] : [`committed ${committed}`],
+    };
+  };
 
-  const whitespace = checkbox("Hide whitespace", (hide) => {
-    handlers.onWhitespace(hide);
+  const whitespace = checkbox("Show whitespace", (show) => {
+    handlers.onShowWhitespace(show);
   });
-  const hideViewed = checkbox("Hide viewed", (hide) => {
-    handlers.onHideViewed(hide);
+  const showViewed = checkbox("Show viewed", (show) => {
+    handlers.onShowViewed(show);
+  });
+  showViewed.label.title =
+    "Show the files marked viewed and those with no textual change";
+
+  const filter = el("input", "file-filter");
+  filter.type = "search";
+  filter.placeholder = "Filter files";
+  filter.ariaLabel = "Filter files by path";
+  filter.addEventListener("input", () => {
+    handlers.onFilter(filter.value);
   });
 
   const focus = button(
@@ -127,8 +153,11 @@ export function createToolbar(
     zoom,
     focusGroup,
     range,
+    // What decides which files show, and the tally, start a row of their own, whatever the width.
+    el("span", "toolbar-break"),
+    filter,
     whitespace.label,
-    hideViewed.label,
+    showViewed.label,
     tally,
     note,
   );
@@ -140,31 +169,24 @@ export function createToolbar(
         state.from === null
           ? -1
           : commits.findIndex((commit) => commit.sha === state.from);
-      setOptions(
-        from,
+      from.set(
         [
-          { value: DEFAULT_END, label: `base · ${labelOf(baseSha)}` },
-          ...commits.map((commit) => ({
-            value: commit.sha,
-            label: labelOf(commit.sha),
-          })),
+          optionOf(baseSha, DEFAULT_END, "base · "),
+          ...commits.map((commit) => optionOf(commit.sha, commit.sha)),
         ],
         state.from ?? DEFAULT_END,
       );
       const later = commits.slice(fromIndex + 1);
-      setOptions(
-        to,
-        later.map((commit) => ({
-          value: commit.sha === lastSha ? DEFAULT_END : commit.sha,
-          label:
-            commit.sha === lastSha
-              ? `head · ${labelOf(commit.sha)}`
-              : labelOf(commit.sha),
-        })),
+      to.set(
+        later.map((commit) =>
+          commit.sha === lastSha
+            ? optionOf(commit.sha, DEFAULT_END, "head · ")
+            : optionOf(commit.sha, commit.sha),
+        ),
         state.to === null || state.to === lastSha ? DEFAULT_END : state.to,
       );
-      whitespace.box.checked = state.whitespace;
-      hideViewed.box.checked = state.hideViewed;
+      whitespace.box.checked = state.showWhitespace;
+      showViewed.box.checked = state.showViewed;
       focusOnly.box.checked = state.focusOnly;
       focus.textContent = `Focus ${state.focusUnviewed}/${focusTotal}`;
       tally.textContent = `${state.viewed} / ${state.total} viewed`;
