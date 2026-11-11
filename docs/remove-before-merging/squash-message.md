@@ -1,24 +1,17 @@
-Proposed squash title/body:
-
-```
-feat: review board Viewed history, popovers, filter and age shading (#269)
-```
+Proposed squash body:
 
 ```
 The review board showed Markdown only as diffs, kept one Viewed mark
-per file that a later push silently invalidated, lost marks when a
-write failed, and had no way to find or order files.
+per file that a later push silently invalidated, and had no way to
+find or order files.
 
 A Markdown card has a "Rendered" switch showing the file at the card's
 `to` revision (markdown-it, raw HTML escaped, images off); a card's
 file name links that version on GitHub, under its pre-rename path where
 it had one, and an eye button opens the card in the side panel. Viewed
-becomes a per-file history of
-`{blob, at}` marks: the checkbox follows the shown blob, unticking
-drops only that mark, and the diff starts from the latest marked
-revision before `to`; old docs migrate on read. A write that is
-refused or degraded shows as "not saved", and the local mark survives
-snapshots until a write succeeds.
+becomes a per-file history of `{blob, at}` marks: the checkbox follows
+the shown blob, unticking drops only that mark, and the diff starts
+from the latest marked revision before `to`; old docs migrate on read.
 
 The toolbar toggles read "Show whitespace" and "Show viewed", saved
 state keeping its old flags; unticking "Show viewed" also hides
