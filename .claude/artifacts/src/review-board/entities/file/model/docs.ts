@@ -6,7 +6,7 @@ import * as z from "zod/mini";
 // A doc's `at` is stamped on write, so what the viewer sets is the rest of it.
 const boardPrefsSchema = z.object({
   whitespace: z.boolean(),
-  hideViewed: z._default(z.boolean(), false),
+  hideViewed: z._default(z.boolean(), true),
   focusOnly: z._default(z.boolean(), false),
   from: z.nullable(z.string()),
   to: z.nullable(z.string()),

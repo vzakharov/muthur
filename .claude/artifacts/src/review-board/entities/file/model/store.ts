@@ -115,7 +115,7 @@ export function createFileStore(data: ReviewData): FileStore {
   const boardValue = synced<BoardPrefs>({
     initial: {
       whitespace: true,
-      hideViewed: false,
+      hideViewed: true,
       focusOnly: false,
       from: null,
       to: null,
