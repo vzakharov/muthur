@@ -30,6 +30,7 @@
 .file-filter,
 .stub-open,
 .panel-close,
+.open-btn,
 .comment-btn {
   padding: 3px 9px;
   background: var(--surface-2);
@@ -41,6 +42,7 @@
 .tool-btn,
 .stub-open,
 .panel-close,
+.open-btn,
 .comment-btn {
   &:hover {
     border-color: var(--accent);

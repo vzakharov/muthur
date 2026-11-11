@@ -150,6 +150,15 @@ export function createCard(
   const removed = el("span", "removed");
   counts.append(added, " ", removed);
 
+  const open = el("button", "open-btn", "👁");
+  open.type = "button";
+  open.title = "Open in the side panel";
+  open.ariaLabel = open.title;
+  open.hidden = file.binary;
+  open.addEventListener("click", () => {
+    handlers.onOpen();
+  });
+
   const comment = el("button", "comment-btn", "Comment");
   comment.type = "button";
   comment.title = "Comment on this file";
@@ -209,6 +218,7 @@ export function createCard(
     counts,
     range,
     previewLabel,
+    open,
     comment,
   );
   const body = el("div", "card-body");
