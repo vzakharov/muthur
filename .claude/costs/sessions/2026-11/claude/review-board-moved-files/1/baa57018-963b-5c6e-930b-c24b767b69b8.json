@@ -1,0 +1,100 @@
+{
+  "total": {
+    "inputTokens": 129,
+    "cacheWrite5mTokens": 101903,
+    "cacheWrite1hTokens": 127719,
+    "cacheReadTokens": 8331058,
+    "outputTokens": 31080,
+    "thinkingTokens": 7947,
+    "responses": 64,
+    "costUsd": 3.8195946
+  },
+  "estimate": {
+    "at": "2026-11-11T09:22:14.076Z",
+    "parts": [
+      {
+        "hours": 3.0,
+        "grade": "middle",
+        "role": "developer",
+        "comment": "tracing a stale label to a DOM cache keyed by path across tree re-collapses takes reproduction against real data, plus a small header component"
+      },
+      {
+        "hours": 1.0,
+        "grade": "middle",
+        "role": "qa",
+        "comment": "the header has to be checked in both themes and at phone width in a real browser"
+      }
+    ],
+    "comment": null
+  },
+  "orientation": {
+    "endedBy": "oriented",
+    "endedOn": null,
+    "endedAt": "2026-11-11T09:12:08.054Z",
+    "contextTokens": 109241,
+    "spend": {
+      "inputTokens": 12,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 52841,
+      "cacheReadTokens": 439095,
+      "outputTokens": 1227,
+      "thinkingTokens": 105,
+      "responses": 5,
+      "costUsd": 0.535135
+    }
+  },
+  "sessionId": "baa57018-963b-5c6e-930b-c24b767b69b8",
+  "branch": "claude/review-board-moved-files",
+  "cwd": "/home/user/muthur",
+  "openingPrompt": "/task Two changes to the review board artifact (the board that lays out a branch's changed files as diff cards, built by `review-board`'s build script under `.c…",
+  "prs": [
+    270
+  ],
+  "url": "https://claude.ai/code/session_01DaohkBcMUS9weHU98P2a6j",
+  "operator": "vzakharov",
+  "firstResponseAt": "2026-11-11T09:11:50.275Z",
+  "lastResponseAt": "2026-11-11T09:29:23.047Z",
+  "pricesAsOf": "2026-10-06",
+  "claudeCodeTotalUsd": null,
+  "ownTurns": {
+    "inputTokens": 110,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 127719,
+    "cacheReadTokens": 7598319,
+    "outputTokens": 27305,
+    "thinkingTokens": 6568,
+    "responses": 55,
+    "costUsd": 3.0879558
+  },
+  "subagents": {
+    "inputTokens": 19,
+    "cacheWrite5mTokens": 101903,
+    "cacheWrite1hTokens": 0,
+    "cacheReadTokens": 732739,
+    "outputTokens": 3775,
+    "thinkingTokens": 1379,
+    "responses": 9,
+    "costUsd": 0.7316387999999999
+  },
+  "byRate": {
+    "claude-opus-5-5/standard": {
+      "inputTokens": 129,
+      "cacheWrite5mTokens": 101903,
+      "cacheWrite1hTokens": 127719,
+      "cacheReadTokens": 8331058,
+      "outputTokens": 31080,
+      "thinkingTokens": 7947,
+      "responses": 64,
+      "costUsd": 3.8195946
+    }
+  },
+  "warnings": [],
+  "compactions": [],
+  "telemetry": {
+    "events": 64,
+    "matched": 64,
+    "matchedTableUsd": 3.8195946,
+    "matchedEventUsd": 3.8195946,
+    "unseen": {}
+  }
+}
