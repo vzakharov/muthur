@@ -1,0 +1,16 @@
+[
+  {
+    "path": ".claude/artifacts/src/review-board/shared/review-data/title.ts",
+    "why": "Формат имени доски: «Review #<pr> · <branch>». Это <title> страницы, а значит имя артефакта в галерее, и заголовок тулбара — одна функция на оба места."
+  },
+  {
+    "path": ".claude/artifacts/src/review-board/shared/review-data/schema.ts",
+    "why": "Новое поле `pr` в payload страницы — контракт между коллектором и страницей; null, когда PR нет или gh недоступен.",
+    "lines": [[57, 58]]
+  },
+  {
+    "path": ".claude/artifacts/src/review-board/scripts/collect.ts",
+    "why": "Номер PR и базовая ветка теперь читаются одним `gh pr view`; ответ gh парсится zod-схемой, а не через -q.",
+    "lines": [[64, 85]]
+  }
+]
