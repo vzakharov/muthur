@@ -68,16 +68,16 @@
 
 .copy-path {
   margin-right: auto;
-
-  &:has(+ .provenance) {
-    margin-right: 0;
-  }
   padding: 0 4px;
   background: none;
   border: 1px solid transparent;
   border-radius: 4px;
   color: var(--muted);
   cursor: pointer;
+
+  &:has(+ .provenance) {
+    margin-right: 0;
+  }
 
   &:hover {
     border-color: var(--accent);
