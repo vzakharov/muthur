@@ -1,0 +1,88 @@
+{
+  "total": {
+    "inputTokens": 53,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 91296,
+    "cacheReadTokens": 3201426,
+    "outputTokens": 10377,
+    "thinkingTokens": 2210,
+    "responses": 26,
+    "costUsd": 1.5784052
+  },
+  "estimate": {
+    "at": "2026-11-11T14:03:16.437Z",
+    "parts": [
+      {
+        "hours": 0.75,
+        "grade": "middle",
+        "role": "developer",
+        "comment": "inverting two persisted toggles at the UI edge without migrating viewers' saved state needs care with defaults, plus rebuilding and republishing the board"
+      }
+    ],
+    "comment": null
+  },
+  "orientation": {
+    "endedBy": "oriented",
+    "endedOn": null,
+    "endedAt": "2026-11-11T14:01:37.255Z",
+    "contextTokens": 112345,
+    "spend": {
+      "inputTokens": 12,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 57324,
+      "cacheReadTokens": 580350,
+      "outputTokens": 1814,
+      "thinkingTokens": 399,
+      "responses": 6,
+      "costUsd": 0.61099
+    }
+  },
+  "sessionId": "83436f11-0142-536f-931f-4728129a34d2",
+  "branch": "claude/review-board-md-preview-7piv2q",
+  "cwd": "/home/user/muthur",
+  "openingPrompt": "/relay take claude/review-board-md-preview-7piv2q — PR #269 открыт, ждёт решения про Show/Hide",
+  "prs": [
+    269
+  ],
+  "url": "https://claude.ai/code/session_016Z4TKnbzM5AaHveA6eRYgE",
+  "operator": "vzakharov",
+  "firstResponseAt": "2026-11-11T14:01:02.744Z",
+  "lastResponseAt": "2026-11-11T14:04:10.722Z",
+  "pricesAsOf": "2026-10-06",
+  "claudeCodeTotalUsd": null,
+  "ownTurns": {
+    "inputTokens": 53,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 91296,
+    "cacheReadTokens": 3201426,
+    "outputTokens": 10377,
+    "thinkingTokens": 2210,
+    "responses": 26,
+    "costUsd": 1.5784052
+  },
+  "subagents": {
+    "inputTokens": 0,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 0,
+    "cacheReadTokens": 0,
+    "outputTokens": 0,
+    "thinkingTokens": 0,
+    "responses": 0,
+    "costUsd": 0.0
+  },
+  "byRate": {
+    "claude-opus-5-5/standard": {
+      "inputTokens": 53,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 91296,
+      "cacheReadTokens": 3201426,
+      "outputTokens": 10377,
+      "thinkingTokens": 2210,
+      "responses": 26,
+      "costUsd": 1.5784052
+    }
+  },
+  "warnings": [],
+  "compactions": [],
+  "telemetry": null
+}
