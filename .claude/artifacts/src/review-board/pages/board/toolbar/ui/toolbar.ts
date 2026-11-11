@@ -10,8 +10,8 @@ export interface ToolbarState {
   /** The board's range; null is the base / the head. */
   from: string | null;
   to: string | null;
-  whitespace: boolean;
-  hideViewed: boolean;
+  showWhitespace: boolean;
+  showViewed: boolean;
   focusOnly: boolean;
   viewed: number;
   total: number;
@@ -27,8 +27,8 @@ export interface ToolbarHandlers {
   onFit(): void;
   onZoom(factor: number): void;
   onRange(end: "from" | "to", commit: string | null): void;
-  onWhitespace(hide: boolean): void;
-  onHideViewed(hide: boolean): void;
+  onShowWhitespace(show: boolean): void;
+  onShowViewed(show: boolean): void;
   /** Leaves on the board only the files the author marked for focus. */
   onFocusOnly(only: boolean): void;
   /** Leaves on the board only the files whose path contains the text; empty clears it. */
@@ -115,14 +115,14 @@ export function createToolbar(
     };
   };
 
-  const whitespace = checkbox("Hide whitespace", (hide) => {
-    handlers.onWhitespace(hide);
+  const whitespace = checkbox("Show whitespace", (show) => {
+    handlers.onShowWhitespace(show);
   });
-  const hideViewed = checkbox("Hide viewed", (hide) => {
-    handlers.onHideViewed(hide);
+  const showViewed = checkbox("Show viewed", (show) => {
+    handlers.onShowViewed(show);
   });
-  hideViewed.label.title =
-    "Hide the files marked viewed and those with no textual change";
+  showViewed.label.title =
+    "Show the files marked viewed and those with no textual change";
 
   const filter = el("input", "file-filter");
   filter.type = "search";
@@ -157,7 +157,7 @@ export function createToolbar(
     range,
     filter,
     whitespace.label,
-    hideViewed.label,
+    showViewed.label,
     tally,
     note,
   );
@@ -185,8 +185,8 @@ export function createToolbar(
         ),
         state.to === null || state.to === lastSha ? DEFAULT_END : state.to,
       );
-      whitespace.box.checked = state.whitespace;
-      hideViewed.box.checked = state.hideViewed;
+      whitespace.box.checked = state.showWhitespace;
+      showViewed.box.checked = state.showViewed;
       focusOnly.box.checked = state.focusOnly;
       focus.textContent = `Focus ${state.focusUnviewed}/${focusTotal}`;
       tally.textContent = `${state.viewed} / ${state.total} viewed`;

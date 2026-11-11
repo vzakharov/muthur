@@ -57,7 +57,7 @@ export function mountBoard(
   let bounds: Rect | undefined;
   let fitted = false;
   let panelPath: string | undefined;
-  /** Files left off the board by "Hide viewed" (viewed, or no textual change), "Focus only" or the name filter. */
+  /** Files left off the board by an unchecked "Show viewed" (viewed, or no textual change), "Focus only" or the name filter. */
   const hidden = new Set<string>();
   let nameFilter = "";
   const focusByPath = new Map(data.focus.map((item) => [item.path, item]));
@@ -167,13 +167,14 @@ export function mountBoard(
           commit !== null && to !== null && index(to) <= index(commit);
         store.setBoard(stale ? { from: commit, to: null } : { from: commit });
       },
-      onWhitespace: (hide) => {
-        store.setBoard({ whitespace: hide });
+      // The saved board keeps the hide-side flags, so a viewer's saved toggles survive the "Show" labels.
+      onShowWhitespace: (show) => {
+        store.setBoard({ whitespace: !show });
       },
       // A filter changes which files are packed, so the next layout fits them anew.
-      onHideViewed: (hide) => {
+      onShowViewed: (show) => {
         fitted = false;
-        store.setBoard({ hideViewed: hide });
+        store.setBoard({ hideViewed: !show });
       },
       onFocusOnly: (only) => {
         fitted = false;
@@ -248,8 +249,8 @@ export function mountBoard(
     toolbar.update({
       from: board.from,
       to: board.to,
-      whitespace: board.whitespace,
-      hideViewed: board.hideViewed,
+      showWhitespace: !board.whitespace,
+      showViewed: !board.hideViewed,
       focusOnly: board.focusOnly,
       viewed,
       total: data.files.length,

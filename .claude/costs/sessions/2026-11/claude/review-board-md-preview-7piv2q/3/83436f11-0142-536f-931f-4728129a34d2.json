@@ -1,0 +1,75 @@
+{
+  "total": {
+    "inputTokens": 22,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 73910,
+    "cacheReadTokens": 1298408,
+    "outputTokens": 6309,
+    "thinkingTokens": 1556,
+    "responses": 12,
+    "costUsd": 0.9772296
+  },
+  "estimate": null,
+  "orientation": {
+    "endedBy": "oriented",
+    "endedOn": null,
+    "endedAt": "2026-11-11T14:01:37.255Z",
+    "contextTokens": 112345,
+    "spend": {
+      "inputTokens": 12,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 57324,
+      "cacheReadTokens": 580350,
+      "outputTokens": 1814,
+      "thinkingTokens": 399,
+      "responses": 6,
+      "costUsd": 0.61099
+    }
+  },
+  "sessionId": "83436f11-0142-536f-931f-4728129a34d2",
+  "branch": "claude/review-board-md-preview-7piv2q",
+  "cwd": "/home/user/muthur/.claude/artifacts",
+  "openingPrompt": "/relay take claude/review-board-md-preview-7piv2q — PR #269 открыт, ждёт решения про Show/Hide",
+  "prs": [],
+  "url": "https://claude.ai/code/session_016Z4TKnbzM5AaHveA6eRYgE",
+  "operator": "vzakharov",
+  "firstResponseAt": "2026-11-11T14:01:02.744Z",
+  "lastResponseAt": "2026-11-11T14:02:39.742Z",
+  "pricesAsOf": "2026-10-06",
+  "claudeCodeTotalUsd": null,
+  "ownTurns": {
+    "inputTokens": 22,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 73910,
+    "cacheReadTokens": 1298408,
+    "outputTokens": 6309,
+    "thinkingTokens": 1556,
+    "responses": 12,
+    "costUsd": 0.9772296
+  },
+  "subagents": {
+    "inputTokens": 0,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 0,
+    "cacheReadTokens": 0,
+    "outputTokens": 0,
+    "thinkingTokens": 0,
+    "responses": 0,
+    "costUsd": 0.0
+  },
+  "byRate": {
+    "claude-opus-5-5/standard": {
+      "inputTokens": 22,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 73910,
+      "cacheReadTokens": 1298408,
+      "outputTokens": 6309,
+      "thinkingTokens": 1556,
+      "responses": 12,
+      "costUsd": 0.9772296
+    }
+  },
+  "warnings": [],
+  "compactions": [],
+  "telemetry": null
+}
