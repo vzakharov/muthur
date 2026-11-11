@@ -15,9 +15,10 @@ import { createToolbar } from "#src/review-board/pages/board/toolbar/index.ts";
 import { el } from "#src/review-board/shared/lib/dom.ts";
 import { perFrame } from "#src/review-board/shared/lib/frame.ts";
 import type { Rect } from "#src/review-board/shared/lib/geometry.ts";
-import type {
-  LineSpan,
-  ReviewFile,
+import {
+  boardTitle,
+  type LineSpan,
+  type ReviewFile,
 } from "#src/review-board/shared/review-data/index.ts";
 import { commitLabels, commitTimes } from "../lib/labels.ts";
 import { nextFocus } from "../lib/next-focus.ts";
@@ -133,7 +134,7 @@ export function mountBoard(
   for (const card of cards.values()) cardLayer.append(card.element);
 
   const toolbar = createToolbar(
-    data.branch === "" ? "Review board" : `Review · ${data.branch}`,
+    boardTitle(data.branch, data.pr),
     data.commits,
     data.base.sha,
     data.focus.length,

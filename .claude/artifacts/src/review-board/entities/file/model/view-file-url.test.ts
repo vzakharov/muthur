@@ -10,6 +10,7 @@ import { viewFileUrl } from "./view-file-url.ts";
 const data: ReviewData = {
   repo: "o/r",
   branch: "b",
+  pr: null,
   head: "c1",
   base: { ref: "main", sha: "B" },
   collectedAt: "t",

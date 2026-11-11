@@ -1,0 +1,86 @@
+{
+  "total": {
+    "inputTokens": 49,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 85740,
+    "cacheReadTokens": 2932069,
+    "outputTokens": 12113,
+    "thinkingTokens": 2376,
+    "responses": 25,
+    "costUsd": 1.5147898
+  },
+  "estimate": {
+    "at": "2026-11-11T18:19:45.712Z",
+    "parts": [
+      {
+        "hours": 1.5,
+        "grade": "middle",
+        "role": "developer",
+        "comment": "a routine data field threaded from the collector through the page head and toolbar, with tests; the escaping of a branch name into HTML needs care but no design"
+      }
+    ],
+    "comment": null
+  },
+  "orientation": {
+    "endedBy": "Edit",
+    "endedOn": ".claude/artifacts/src/review-board/shared/review-data/schema.ts",
+    "endedAt": "2026-11-11T18:19:49.418Z",
+    "contextTokens": 126242,
+    "spend": {
+      "inputTokens": 27,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 70700,
+      "cacheReadTokens": 1209314,
+      "outputTokens": 4450,
+      "thinkingTokens": 1864,
+      "responses": 12,
+      "costUsd": 0.8965708000000001
+    }
+  },
+  "sessionId": "e5174f0e-966d-59a0-9fcd-5ed46349d352",
+  "branch": "claude/review-board-title-o422ih",
+  "cwd": "/home/user/muthur",
+  "openingPrompt": "давай небольшой fix: ревью борды -- название борды должно упоминать название ветки и если доступно номер PR",
+  "prs": [],
+  "url": "https://claude.ai/code/session_016Z4TKon3MX7sAopCE4t4eC",
+  "operator": "vzakharov",
+  "firstResponseAt": "2026-11-11T18:18:53.626Z",
+  "lastResponseAt": "2026-11-11T18:21:41.331Z",
+  "pricesAsOf": "2026-10-06",
+  "claudeCodeTotalUsd": null,
+  "ownTurns": {
+    "inputTokens": 49,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 85740,
+    "cacheReadTokens": 2932069,
+    "outputTokens": 12113,
+    "thinkingTokens": 2376,
+    "responses": 25,
+    "costUsd": 1.5147898
+  },
+  "subagents": {
+    "inputTokens": 0,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 0,
+    "cacheReadTokens": 0,
+    "outputTokens": 0,
+    "thinkingTokens": 0,
+    "responses": 0,
+    "costUsd": 0.0
+  },
+  "byRate": {
+    "claude-opus-5-5/standard": {
+      "inputTokens": 49,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 85740,
+      "cacheReadTokens": 2932069,
+      "outputTokens": 12113,
+      "thinkingTokens": 2376,
+      "responses": 25,
+      "costUsd": 1.5147898
+    }
+  },
+  "warnings": [],
+  "compactions": [],
+  "telemetry": null
+}
