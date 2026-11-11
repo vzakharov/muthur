@@ -24,6 +24,7 @@ const fileAt = (path: string, ...commits: string[]): ReviewFile => ({
   binary: false,
   revisions: commits.map((sha) => ({
     commit: sha,
+    path,
     blob: `${path}@${sha}`,
     size: 1,
   })),

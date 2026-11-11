@@ -287,10 +287,12 @@ function readRevisions(
   const resolved = queries.map((q) => {
     const primary = located[cursor++];
     const fallback = q.alt === null ? undefined : located[cursor++];
-    const hit =
-      primary?.blob === null && fallback !== undefined ? fallback : primary;
-    if (hit === undefined) throw new Error("revision lookup ran short");
-    return { commit: q.commit, ...hit };
+    if (primary === undefined) throw new Error("revision lookup ran short");
+    const [hit, path] =
+      primary.blob === null && fallback !== undefined && q.alt !== null
+        ? [fallback, q.alt]
+        : [primary, q.path];
+    return { commit: q.commit, path, ...hit };
   });
 
   let offset = 0;

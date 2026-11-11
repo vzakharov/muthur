@@ -28,9 +28,9 @@ const file: ReviewFile = {
   status: "modified",
   binary: false,
   revisions: [
-    { commit: "B", blob: "b0", size: 1 },
-    { commit: "c1", blob: "b1", size: 1 },
-    { commit: "c3", blob: "b3", size: 1 },
+    { commit: "B", path: "f", blob: "b0", size: 1 },
+    { commit: "c1", path: "f", blob: "b1", size: 1 },
+    { commit: "c3", path: "f", blob: "b3", size: 1 },
   ],
 };
 const whole = { from: null, to: null };
@@ -162,8 +162,8 @@ test("a file absent at its last commit reports a null blob", () => {
     ...file,
     status: "deleted",
     revisions: [
-      { commit: "B", blob: "b0", size: 1 },
-      { commit: "c2", blob: null, size: null },
+      { commit: "B", path: "f", blob: "b0", size: 1 },
+      { commit: "c2", path: "f", blob: null, size: null },
     ],
   };
   const range = effectiveRange({ file: deleted, order, board: whole });
@@ -184,8 +184,8 @@ test("viewed means the marked blob is the one now shown", () => {
   const deleted: ReviewFile = {
     ...file,
     revisions: [
-      { commit: "B", blob: "b0", size: 1 },
-      { commit: "c2", blob: null, size: null },
+      { commit: "B", path: "f", blob: "b0", size: 1 },
+      { commit: "c2", path: "f", blob: null, size: null },
     ],
   };
   assert.equal(viewedAs(viewedToken(null), deleted), true);
@@ -203,11 +203,11 @@ const merged = {
 const mergedFile: ReviewFile = {
   ...file,
   revisions: [
-    { commit: "B", blob: "b0", size: 1 },
-    { commit: "c0", blob: "m0", size: 1 },
-    { commit: "c1", blob: "m1", size: 1 },
-    { commit: "c2", blob: "m2", size: 1 },
-    { commit: "c3", blob: "m3", size: 1 },
+    { commit: "B", path: "f", blob: "b0", size: 1 },
+    { commit: "c0", path: "f", blob: "m0", size: 1 },
+    { commit: "c1", path: "f", blob: "m1", size: 1 },
+    { commit: "c2", path: "f", blob: "m2", size: 1 },
+    { commit: "c3", path: "f", blob: "m3", size: 1 },
   ],
 };
 const acrossMerges = (viewedBlob: string, to: string | null = null) =>

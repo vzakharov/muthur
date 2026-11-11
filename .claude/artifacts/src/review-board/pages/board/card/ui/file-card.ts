@@ -60,10 +60,21 @@ const formatSize = (bytes: number | null): string =>
 
 const COPY_LABEL = "⧉";
 
-/** The file's name alone, since the folder boxes around the card show its directory, and a button copying its repo-relative path. */
-function pathParts(path: string): HTMLElement[] {
-  const name = el("strong", "path", path.slice(path.lastIndexOf("/") + 1));
+/**
+ * The file's name alone, since the folder boxes around the card show its
+ * directory, as a link to the shown version on GitHub where there is one, and
+ * a button copying its repo-relative path.
+ */
+function pathParts(path: string): {
+  link: HTMLAnchorElement;
+  parts: HTMLElement[];
+} {
+  const name = el("strong", "path");
   name.title = path;
+  const link = el("a", "path-link", path.slice(path.lastIndexOf("/") + 1));
+  link.target = "_blank";
+  link.rel = "noopener noreferrer";
+  name.append(link);
   const copy = el("button", "copy-path", COPY_LABEL);
   copy.type = "button";
   copy.title = `Copy ${path}`;
@@ -78,7 +89,7 @@ function pathParts(path: string): HTMLElement[] {
       },
     );
   });
-  return [name, copy];
+  return { link, parts: [name, copy] };
 }
 
 function flash(button: HTMLButtonElement, mark: string, title: string): void {
@@ -176,10 +187,7 @@ export function createCard(
   const focusBadge =
     focus === undefined ? [] : [el("span", "badge focus", "focus")];
 
-  const viewFile = el("a", "view-file", "View file");
-  viewFile.target = "_blank";
-  viewFile.rel = "noopener noreferrer";
-  viewFile.title = "Open this version on GitHub";
+  const { link: nameLink, parts: pathElements } = pathParts(file.path);
 
   let preview = false;
   let last: CardState | undefined;
@@ -195,13 +203,12 @@ export function createCard(
 
   header.append(
     viewedLabel,
-    ...pathParts(file.path),
+    ...pathElements,
     badge,
     ...focusBadge,
     counts,
     range,
     previewLabel,
-    viewFile,
     comment,
   );
   const body = el("div", "card-body");
@@ -275,8 +282,8 @@ export function createCard(
     update(state) {
       last = state;
       previewBox.checked = preview;
-      viewFile.hidden = state.viewUrl === null;
-      if (state.viewUrl !== null) viewFile.href = state.viewUrl;
+      if (state.viewUrl === null) nameLink.removeAttribute("href");
+      else nameLink.href = state.viewUrl;
       element.classList.toggle("is-viewed", state.viewed);
       viewedBox.checked = state.viewed;
       element.classList.toggle("is-aged", state.shade !== null);

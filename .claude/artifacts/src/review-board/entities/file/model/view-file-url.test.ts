@@ -23,14 +23,18 @@ const file: ReviewFile = {
   oldPath: null,
   status: "modified",
   binary: false,
-  revisions: [],
+  revisions: [
+    { commit: "B", path: "docs/a b.md", blob: "x", size: 1 },
+    { commit: "c1", path: "docs/a b.md", blob: "y", size: 1 },
+  ],
 };
 const range = (
   to: string,
   fromBlob: string | null,
   toBlob: string | null,
+  from = "B",
 ): EffectiveRange => ({
-  from: "B",
+  from,
   to,
   fromBlob,
   toBlob,
@@ -54,14 +58,25 @@ test("a file absent at to links its from version", () => {
   );
 });
 
-test("a rename's base version is under the old path", () => {
+test("a renamed file's versions before the rename are under the old path", () => {
+  const renamed: ReviewFile = {
+    ...file,
+    path: "n.md",
+    oldPath: "o.md",
+    status: "renamed",
+    revisions: [
+      { commit: "B", path: "o.md", blob: "x", size: 1 },
+      { commit: "c1", path: "o.md", blob: "y", size: 1 },
+      { commit: "c2", path: "n.md", blob: "z", size: 1 },
+    ],
+  };
   assert.equal(
-    viewFileUrl(
-      data,
-      { ...file, path: "n.md", oldPath: "o.md" },
-      range("c1", "x", null),
-    ),
-    "https://github.com/o/r/blob/B/o.md",
+    viewFileUrl(data, renamed, range("c1", "x", "y")),
+    "https://github.com/o/r/blob/c1/o.md",
+  );
+  assert.equal(
+    viewFileUrl(data, renamed, range("c2", "y", "z", "c1")),
+    "https://github.com/o/r/blob/c2/n.md",
   );
 });
 

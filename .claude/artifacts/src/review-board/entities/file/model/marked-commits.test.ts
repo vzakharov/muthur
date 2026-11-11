@@ -9,9 +9,9 @@ const file: ReviewFile = {
   status: "modified",
   binary: false,
   revisions: [
-    { commit: "c1", blob: "b1", size: 1 },
-    { commit: "c2", blob: "b2", size: 1 },
-    { commit: "c3", blob: "b2", size: 1 },
+    { commit: "c1", path: "f", blob: "b1", size: 1 },
+    { commit: "c2", path: "f", blob: "b2", size: 1 },
+    { commit: "c3", path: "f", blob: "b2", size: 1 },
   ],
 };
 

@@ -24,8 +24,8 @@ const file: ReviewFile = {
   status: "modified",
   binary: false,
   revisions: [
-    { commit: "B", blob: "old", size: 4 },
-    { commit: "c1", blob: "next", size: 4 },
+    { commit: "B", path: "f", blob: "old", size: 4 },
+    { commit: "c1", path: "f", blob: "next", size: 4 },
   ],
 };
 const range = (fromBlob: string | null, toBlob: string | null) =>
@@ -66,8 +66,8 @@ test("a binary file reports its sizes", () => {
     ...file,
     binary: true,
     revisions: [
-      { commit: "B", blob: "x", size: 10 },
-      { commit: "c1", blob: "y", size: 30 },
+      { commit: "B", path: "f", blob: "x", size: 10 },
+      { commit: "c1", path: "f", blob: "y", size: 30 },
     ],
   };
   assert.deepEqual(fileDiff(data, binary, range("x", "y"), false), {

@@ -7,8 +7,8 @@ import type { EffectiveRange } from "./range.ts";
 /**
  * GitHub's page for the file as the range's `to` commit has it, or, where the
  * file is absent there (deleted), as `from` had it. Null without a known
- * repository or a version that exists. A renamed file's base revision lives
- * under its old path.
+ * repository or a version that exists. The path is the revision's own, so a
+ * renamed file's versions before the rename open under the old path.
  */
 export function viewFileUrl(
   data: ReviewData,
@@ -21,8 +21,10 @@ export function viewFileUrl(
       ? [range.from, range.fromBlob !== null]
       : [range.to, true];
   if (!present) return null;
-  const path =
-    commit === data.base.sha ? (file.oldPath ?? file.path) : file.path;
+  const revision = file.revisions.find((r) => r.commit === commit);
+  if (revision === undefined)
+    throw new Error(`${file.path} has no revision at ${commit}`);
+  const { path } = revision;
   const encoded = path.split("/").map(encodeURIComponent).join("/");
   return `https://github.com/${data.repo}/blob/${commit}/${encoded}`;
 }

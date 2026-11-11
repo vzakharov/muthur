@@ -8,7 +8,7 @@ const file = (path: string, oldPath: string | null = null): ReviewFile => ({
   oldPath,
   status: oldPath === null ? "modified" : "renamed",
   binary: false,
-  revisions: [{ commit: "c", blob: "b", size: 1 }],
+  revisions: [{ commit: "c", path: "f", blob: "b", size: 1 }],
 });
 
 test("an empty or blank query passes every file", () => {
