@@ -17,7 +17,7 @@ interface FolderNode {
   node: HTMLElement;
   box: HTMLInputElement;
   check: HTMLElement;
-  /** Set on every sync: one path is `scripts` under its parent or `board/scripts` once that parent's other children are hidden and the chain collapses. */
+  /** Set on every sync, not at creation: a chain collapsing as siblings drop out renames the same path, `scripts` to `board/scripts`. */
   label: HTMLElement;
 }
 
