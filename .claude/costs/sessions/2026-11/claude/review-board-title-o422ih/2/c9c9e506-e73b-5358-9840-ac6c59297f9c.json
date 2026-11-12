@@ -1,0 +1,88 @@
+{
+  "total": {
+    "inputTokens": 33,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 94411,
+    "cacheReadTokens": 2097255,
+    "outputTokens": 12386,
+    "thinkingTokens": 4025,
+    "responses": 17,
+    "costUsd": 1.422591
+  },
+  "estimate": {
+    "at": "2026-11-12T00:50:21.891Z",
+    "parts": [
+      {
+        "hours": 1.0,
+        "grade": "middle",
+        "role": "developer",
+        "comment": "a stored-doc key rename with migrate-on-read is routine model work, but the negation flip and its migration test need care a junior would miss"
+      }
+    ],
+    "comment": null
+  },
+  "orientation": {
+    "endedBy": "Edit",
+    "endedOn": ".claude/artifacts/src/review-board/entities/file/model/docs.ts",
+    "endedAt": "2026-11-12T00:51:09.970Z",
+    "contextTokens": 141177,
+    "spend": {
+      "inputTokens": 21,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 84493,
+      "cacheReadTokens": 1085462,
+      "outputTokens": 6564,
+      "thinkingTokens": 3836,
+      "responses": 10,
+      "costUsd": 1.0244004
+    }
+  },
+  "sessionId": "c9c9e506-e73b-5358-9840-ac6c59297f9c",
+  "branch": "claude/review-board-title-o422ih",
+  "cwd": "/home/user/muthur",
+  "openingPrompt": "/relay take claude/review-board-title-o422ih — PR открыт, ждём ответа про переименование hide-флагов",
+  "prs": [
+    272
+  ],
+  "url": "https://claude.ai/code/session_016Z4TKq79qcwELdqD9YU5nX",
+  "operator": "vzakharov",
+  "firstResponseAt": "2026-11-12T00:49:57.000Z",
+  "lastResponseAt": "2026-11-12T00:52:24.904Z",
+  "pricesAsOf": "2026-10-06",
+  "claudeCodeTotalUsd": null,
+  "ownTurns": {
+    "inputTokens": 33,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 94411,
+    "cacheReadTokens": 2097255,
+    "outputTokens": 12386,
+    "thinkingTokens": 4025,
+    "responses": 17,
+    "costUsd": 1.422591
+  },
+  "subagents": {
+    "inputTokens": 0,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 0,
+    "cacheReadTokens": 0,
+    "outputTokens": 0,
+    "thinkingTokens": 0,
+    "responses": 0,
+    "costUsd": 0.0
+  },
+  "byRate": {
+    "claude-opus-5-5/standard": {
+      "inputTokens": 33,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 94411,
+      "cacheReadTokens": 2097255,
+      "outputTokens": 12386,
+      "thinkingTokens": 4025,
+      "responses": 17,
+      "costUsd": 1.422591
+    }
+  },
+  "warnings": [],
+  "compactions": [],
+  "telemetry": null
+}

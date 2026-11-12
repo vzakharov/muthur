@@ -5,7 +5,9 @@ import type {
 import { connect, type Connection } from "./connection.ts";
 import {
   boardDocSchema,
+  boardPrefsOf,
   fileDocSchema,
+  FILTERS_OFF,
   filePrefsOf,
   parseDoc,
   shiftDocSchema,
@@ -50,8 +52,8 @@ export interface FileStore {
 const LOAD_TIMEOUT_MS = 10_000;
 
 const sameBoard = (a: BoardPrefs, b: BoardPrefs): boolean =>
-  a.whitespace === b.whitespace &&
-  a.hideViewed === b.hideViewed &&
+  a.showWhitespace === b.showWhitespace &&
+  a.showViewed === b.showViewed &&
   a.focusOnly === b.focusOnly &&
   a.from === b.from &&
   a.to === b.to;
@@ -113,13 +115,7 @@ export function createFileStore(data: ReviewData): FileStore {
   }
 
   const boardValue = synced<BoardPrefs>({
-    initial: {
-      whitespace: true,
-      hideViewed: true,
-      focusOnly: false,
-      from: null,
-      to: null,
-    },
+    initial: { ...FILTERS_OFF, from: null, to: null },
     equals: sameBoard,
     changed: notify,
     failed,
@@ -251,9 +247,7 @@ export function createFileStore(data: ReviewData): FileStore {
           return;
         }
         const doc = parseDoc(boardDocSchema, snap.data(), conn.boardPath);
-        if (doc === null) return;
-        const { at, ...value } = doc;
-        boardValue.receive({ value, at });
+        if (doc !== null) boardValue.receive(boardPrefsOf(doc));
       },
     );
     watch<QuerySnapshot>(

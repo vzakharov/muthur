@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { mock, test } from "node:test";
 import {
   boardDocSchema,
+  boardPrefsOf,
   fileDocSchema,
   filePrefsOf,
   parseDoc,
@@ -24,7 +25,7 @@ test("a well-formed doc parses and drops unknown fields", () => {
 test("null range ends are valid in board and file docs", () => {
   assert.ok(
     boardDocSchema.safeParse({
-      whitespace: true,
+      showWhitespace: false,
       from: null,
       to: null,
       at: "t",
@@ -34,6 +35,56 @@ test("null range ends are valid in board and file docs", () => {
     fileDocSchema.safeParse({ viewed: [], from: "a", to: null, at: "t" })
       .success,
   );
+});
+
+const boardOf = (data: object): ReturnType<typeof boardPrefsOf> => {
+  const doc = parseDoc(boardDocSchema, data, "k");
+  assert.ok(doc);
+  return boardPrefsOf(doc);
+};
+
+test("a board doc with no filters reads with every filter off", () => {
+  assert.deepEqual(boardOf({ from: "a", to: null, at: "t" }), {
+    value: {
+      showWhitespace: false,
+      showViewed: false,
+      focusOnly: false,
+      from: "a",
+      to: null,
+    },
+    at: "t",
+  });
+});
+
+test("a board doc saved with hide-side flags reads them inverted", () => {
+  const legacy = { focusOnly: true, from: null, to: null, at: "t" };
+  assert.deepEqual(
+    boardOf({ ...legacy, whitespace: false, hideViewed: false }).value,
+    {
+      showWhitespace: true,
+      showViewed: true,
+      focusOnly: true,
+      from: null,
+      to: null,
+    },
+  );
+  const hiding = boardOf({ ...legacy, whitespace: true, hideViewed: true });
+  assert.equal(hiding.value.showWhitespace, false);
+  assert.equal(hiding.value.showViewed, false);
+});
+
+test("a board doc's show-side flag wins over a hide-side one", () => {
+  const { value } = boardOf({
+    showWhitespace: false,
+    whitespace: false,
+    showViewed: true,
+    hideViewed: true,
+    from: null,
+    to: null,
+    at: "t",
+  });
+  assert.equal(value.showWhitespace, false);
+  assert.equal(value.showViewed, true);
 });
 
 test("a doc saved with the single viewedBlob reads as a one-mark list", () => {
