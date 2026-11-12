@@ -12,9 +12,11 @@ PR number alongside its base ref in a single `gh pr view` call and
 carries it in the payload as `pr`, null without a PR or gh. The title
 is HTML-escaped, since a git branch name may contain &, < and >.
 
-"Show viewed" now starts unchecked, as "Show whitespace" does: the
-stored hideViewed default had stayed false when the old "Hide viewed"
-control was inverted. Saved board settings keep their choice.
+The board's saved filters are now named for what they show:
+showWhitespace and showViewed, both off by default like focusOnly, in
+place of the inverted whitespace / hideViewed flags whose kept default
+left "Show viewed" checked on a fresh board. A doc saved under the old
+names is read with each flag inverted, so a viewer's choice survives.
 
 Co-authored-by: Claude <noreply@anthropic.com>
 ```

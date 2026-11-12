@@ -15,7 +15,7 @@
   },
   {
     "path": ".claude/artifacts/src/review-board/entities/file/model/docs.ts",
-    "why": "Дефолт hideViewed стал true, так что «Show viewed» на свежей доске снят. Этот же фолбэк срабатывает для сохранённых документов без поля; дубль значения лежит в store.ts.",
-    "lines": [[9, 9]]
+    "why": "Фильтры доски теперь хранятся как showWhitespace / showViewed, все выключены по умолчанию (FILTERS_OFF — один дефолт и для свежей доски, и для документа без поля). boardPrefsOf читает старые whitespace / hideViewed инвертированными, так что сохранённый выбор зрителя не теряется.",
+    "lines": [[6, 34], [66, 87]]
   }
 ]
