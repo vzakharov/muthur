@@ -15,9 +15,10 @@ import { createToolbar } from "#src/review-board/pages/board/toolbar/index.ts";
 import { el } from "#src/review-board/shared/lib/dom.ts";
 import { perFrame } from "#src/review-board/shared/lib/frame.ts";
 import type { Rect } from "#src/review-board/shared/lib/geometry.ts";
-import type {
-  LineSpan,
-  ReviewFile,
+import {
+  boardTitle,
+  type LineSpan,
+  type ReviewFile,
 } from "#src/review-board/shared/review-data/index.ts";
 import { commitLabels, commitTimes } from "../lib/labels.ts";
 import { nextFocus } from "../lib/next-focus.ts";
@@ -133,7 +134,7 @@ export function mountBoard(
   for (const card of cards.values()) cardLayer.append(card.element);
 
   const toolbar = createToolbar(
-    data.branch === "" ? "Review board" : `Review · ${data.branch}`,
+    boardTitle(data.branch, data.pr),
     data.commits,
     data.base.sha,
     data.focus.length,
@@ -167,14 +168,13 @@ export function mountBoard(
           commit !== null && to !== null && index(to) <= index(commit);
         store.setBoard(stale ? { from: commit, to: null } : { from: commit });
       },
-      // Saved boards hold hide-side flags, which the Show toggles write inverted.
       onShowWhitespace: (show) => {
-        store.setBoard({ whitespace: !show });
+        store.setBoard({ showWhitespace: show });
       },
       // A filter changes which files are packed, so the next layout fits them anew.
       onShowViewed: (show) => {
         fitted = false;
-        store.setBoard({ hideViewed: !show });
+        store.setBoard({ showViewed: show });
       },
       onFocusOnly: (only) => {
         fitted = false;
@@ -224,10 +224,10 @@ export function mountBoard(
       if (isViewed) viewed++;
       const offFocus =
         board.focusOnly && data.focus.length > 0 && !focusByPath.has(file.path);
-      const diff = fileDiff(data, file, range, board.whitespace);
+      const diff = fileDiff(data, file, range, !board.showWhitespace);
       const empty = diff.kind === "text" && diff.diff.hunks.length === 0;
       if (
-        ((isViewed || empty) && board.hideViewed) ||
+        ((isViewed || empty) && !board.showViewed) ||
         offFocus ||
         !matchesPath(file, nameFilter)
       )
@@ -248,8 +248,8 @@ export function mountBoard(
     toolbar.update({
       from: board.from,
       to: board.to,
-      showWhitespace: !board.whitespace,
-      showViewed: !board.hideViewed,
+      showWhitespace: board.showWhitespace,
+      showViewed: board.showViewed,
       focusOnly: board.focusOnly,
       viewed,
       total: data.files.length,
@@ -267,7 +267,7 @@ export function mountBoard(
       panelPath === undefined ? undefined : filesByPath.get(panelPath);
     if (file === undefined) return;
     const range = store.effective(file.path);
-    const diff = fileDiff(data, file, range, store.board().whitespace);
+    const diff = fileDiff(data, file, range, !store.board().showWhitespace);
     if (diff.kind !== "text") return;
     panel.show({
       path: file.path,

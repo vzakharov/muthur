@@ -54,6 +54,8 @@ const branchSchema = z.object({
 export const reviewDataSchema = z.extend(branchSchema, {
   repo: z.nullable(z.string()),
   branch: z.string(),
+  // The number of the branch's PR; null when there is none or `gh` cannot say.
+  pr: z.nullable(z.number()),
   head: z.string(),
   collectedAt: z.string(),
   files: z.array(fileSchema),

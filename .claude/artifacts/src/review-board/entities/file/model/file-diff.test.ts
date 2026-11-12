@@ -10,6 +10,7 @@ import type { EffectiveRange } from "./range.ts";
 const data: ReviewData = {
   repo: null,
   branch: "b",
+  pr: null,
   head: "c1",
   base: { ref: "main", sha: "B" },
   collectedAt: "t",

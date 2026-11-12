@@ -4,6 +4,7 @@ export {
   parseReviewData,
   reviewDataSchema,
 } from "./schema.ts";
+export { boardTitle } from "./title.ts";
 export type {
   FileStatus,
   Focus,

@@ -21,6 +21,7 @@ test("a bundle cannot close its own script element", () => {
 
 test("the payload survives the page and is the only data script", () => {
   const page = renderPage({
+    title: "Review board",
     data: hostile,
     js: "console.log(1)",
     css: "body{}",
@@ -38,8 +39,20 @@ test("the payload survives the page and is the only data script", () => {
   }
 });
 
+test("the title is escaped as text", () => {
+  const page = renderPage({
+    title: "Review #3 · a&b<c>",
+    data: {},
+    js: "",
+    css: "",
+  });
+  for (const html of [page.fragment, page.document]) {
+    assert.ok(html.includes("<title>Review #3 · a&amp;b&lt;c&gt;</title>"));
+  }
+});
+
 test("only the document carries a skeleton", () => {
-  const page = renderPage({ data: {}, js: "", css: "" });
+  const page = renderPage({ title: "t", data: {}, js: "", css: "" });
   assert.ok(!page.fragment.includes("<!doctype"));
   assert.ok(page.document.startsWith("<!doctype html>"));
   assert.ok(page.document.includes('name="viewport"'));

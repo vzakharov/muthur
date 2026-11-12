@@ -10,7 +10,16 @@ export function escapeScript(js: string): string {
   return js.replaceAll("</script", "<\\/script");
 }
 
+/** Text for an element's body; a git branch name may carry `&`, `<` and `>`. */
+export function escapeText(text: string): string {
+  return text
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;");
+}
+
 export interface PageParts {
+  title: string;
   data: unknown;
   js: string;
   css: string;
@@ -23,10 +32,8 @@ export interface Page {
   document: string;
 }
 
-const TITLE = "<title>Review board</title>";
-
-export function renderPage({ data, js, css }: PageParts): Page {
-  const head = `${TITLE}\n<style>${css}</style>`;
+export function renderPage({ title, data, js, css }: PageParts): Page {
+  const head = `<title>${escapeText(title)}</title>\n<style>${css}</style>`;
   const body = [
     `<div id="${ROOT_ID}"></div>`,
     `<script type="application/json" id="${DATA_ID}">${escapeJson(data)}</script>`,
