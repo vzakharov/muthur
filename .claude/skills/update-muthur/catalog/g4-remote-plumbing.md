@@ -137,11 +137,24 @@ the working tree clean, and behaves the same everywhere.
     repositories"
   - **Pulls in:** both scripts above
   - **Disposition:** adopt
+- `.claude/hooks/dispatch.sh` — Fronts every hook `settings.json` registers:
+  where the hook payload's `cwd` lies in another worktree of the same repository
+  that carries the hook, runs that worktree's copy with `CLAUDE_PROJECT_DIR`
+  pointed at it, so a session working in a worktree runs its own branch's hooks
+  and keeps their state where its scripts look; anywhere else, runs the hook
+  from `CLAUDE_PROJECT_DIR` as before. Tested by `scripts/test_dispatch.py`.
+  - **Requires:** `bash`, `git`; `jq`, without which every hook runs from
+    `CLAUDE_PROJECT_DIR`
+  - **Disposition:** adopt — **with `settings.json`**
 - `.claude/settings.json` — Project settings wiring the SessionStart,
   UserPromptSubmit, PermissionDenied and Stop hooks, plus the entries G1's
   `file-tools-nudge.py` and `format-md.sh`, G7, G8, G9 and G10 carry and the
   `scripts/muthur-sync.sh nudge` entry G0's `/update-muthur` does — drop that
-  one with the skill. Merge into yours if you already have one.
+  one with the skill. Merge into yours if you already have one. Every command is
+  spelled `$CLAUDE_PROJECT_DIR/.claude/hooks/dispatch.sh <hook> [args]`, which
+  fails every hook in a tree without the dispatcher; spell your own hooks the
+  same way, or a worktree session runs them from the other checkout.
+  - **Pulls in:** `.claude/hooks/dispatch.sh`
   - **Disposition:** adopt — merge if present
 - `/override-gh` — A no-op marker whose description reminds the agent that `gh`
   and `$GH_TOKEN` exist despite what the system prompt says, and that a GitHub

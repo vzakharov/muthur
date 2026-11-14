@@ -12,19 +12,19 @@
         "hooks": [
           {
             "type": "command",
-            "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/gh-shim.sh"
+            "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/dispatch.sh .claude/hooks/gh-shim.sh"
           },
           {
             "type": "command",
-            "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/install-deps.sh"
+            "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/dispatch.sh .claude/hooks/install-deps.sh"
           },
           {
             "type": "command",
-            "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/operator-voice.sh"
+            "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/dispatch.sh .claude/hooks/operator-voice.sh"
           },
           {
             "type": "command",
-            "command": "$CLAUDE_PROJECT_DIR/.claude/costs/hooks/start-telemetry-receiver.sh"
+            "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/dispatch.sh .claude/costs/hooks/start-telemetry-receiver.sh"
           }
         ]
       },
@@ -33,7 +33,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "$CLAUDE_PROJECT_DIR/scripts/muthur-sync.sh nudge",
+            "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/dispatch.sh scripts/muthur-sync.sh nudge",
             "timeout": 30
           }
         ]
@@ -43,7 +43,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "$CLAUDE_PROJECT_DIR/.claude/costs/hooks/estimate-notice.sh"
+            "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/dispatch.sh .claude/costs/hooks/estimate-notice.sh"
           }
         ]
       },
@@ -51,7 +51,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "$CLAUDE_PROJECT_DIR/.claude/cold-cache/hooks/cold_cache.py"
+            "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/dispatch.sh .claude/cold-cache/hooks/cold_cache.py"
           }
         ]
       }
@@ -61,54 +61,54 @@
         "hooks": [
           {
             "type": "command",
-            "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/plan-mode-notice.sh"
+            "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/dispatch.sh .claude/hooks/plan-mode-notice.sh"
           },
           {
             "type": "command",
-            "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/session-images.sh"
+            "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/dispatch.sh .claude/hooks/session-images.sh"
           },
           {
             "type": "command",
-            "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/prompt-issue-export.sh",
+            "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/dispatch.sh .claude/hooks/prompt-issue-export.sh",
             "timeout": 90
           },
           {
             "type": "command",
-            "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/prompt-handle-pr-export.sh",
+            "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/dispatch.sh .claude/hooks/prompt-handle-pr-export.sh",
             "timeout": 90
           },
           {
             "type": "command",
-            "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/prompt-route-notice.sh"
+            "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/dispatch.sh .claude/hooks/prompt-route-notice.sh"
           },
           {
             "type": "command",
-            "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/go-delegation.py"
+            "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/dispatch.sh .claude/hooks/go-delegation.py"
           },
           {
             "type": "command",
-            "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/checkpoint-review.py"
+            "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/dispatch.sh .claude/hooks/checkpoint-review.py"
           },
           {
             "type": "command",
-            "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/finalize-bash-gate.py"
+            "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/dispatch.sh .claude/hooks/finalize-bash-gate.py"
           },
           {
             "type": "command",
-            "command": "$CLAUDE_PROJECT_DIR/.claude/costs/hooks/estimate-notice.sh"
+            "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/dispatch.sh .claude/costs/hooks/estimate-notice.sh"
           },
           {
             "type": "command",
-            "command": "$CLAUDE_PROJECT_DIR/.claude/cold-cache/hooks/cold_cache.py"
+            "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/dispatch.sh .claude/cold-cache/hooks/cold_cache.py"
           },
           {
             "type": "command",
-            "command": "$CLAUDE_PROJECT_DIR/.claude/merge-gate/hooks/merge_gate.py",
+            "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/dispatch.sh .claude/merge-gate/hooks/merge_gate.py",
             "timeout": 120
           },
           {
             "type": "command",
-            "command": "$CLAUDE_PROJECT_DIR/.claude/keepalive/hooks/keepalive.py"
+            "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/dispatch.sh .claude/keepalive/hooks/keepalive.py"
           }
         ]
       }
@@ -119,20 +119,20 @@
         "hooks": [
           {
             "type": "command",
-            "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/file-tools-nudge.py"
+            "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/dispatch.sh .claude/hooks/file-tools-nudge.py"
           },
           {
             "type": "command",
-            "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/sticky-comment-nudge.py",
+            "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/dispatch.sh .claude/hooks/sticky-comment-nudge.py",
             "timeout": 30
           },
           {
             "type": "command",
-            "command": "$CLAUDE_PROJECT_DIR/.claude/costs/hooks/stage-cost-row.sh"
+            "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/dispatch.sh .claude/costs/hooks/stage-cost-row.sh"
           },
           {
             "type": "command",
-            "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/checkpoint-review.py"
+            "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/dispatch.sh .claude/hooks/checkpoint-review.py"
           }
         ]
       },
@@ -141,7 +141,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/finalize-bash-gate.py"
+            "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/dispatch.sh .claude/hooks/finalize-bash-gate.py"
           }
         ]
       },
@@ -150,7 +150,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/sticky-comment-nudge.py",
+            "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/dispatch.sh .claude/hooks/sticky-comment-nudge.py",
             "timeout": 30
           }
         ]
@@ -162,11 +162,11 @@
         "hooks": [
           {
             "type": "command",
-            "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/go-delegation.py"
+            "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/dispatch.sh .claude/hooks/go-delegation.py"
           },
           {
             "type": "command",
-            "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/checkpoint-review.py"
+            "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/dispatch.sh .claude/hooks/checkpoint-review.py"
           }
         ]
       },
@@ -175,7 +175,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/format-md.sh",
+            "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/dispatch.sh .claude/hooks/format-md.sh",
             "timeout": 60
           }
         ]
@@ -184,11 +184,11 @@
         "hooks": [
           {
             "type": "command",
-            "command": "$CLAUDE_PROJECT_DIR/.claude/context-budget/hooks/post-tool-context-budget.sh"
+            "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/dispatch.sh .claude/context-budget/hooks/post-tool-context-budget.sh"
           },
           {
             "type": "command",
-            "command": "$CLAUDE_PROJECT_DIR/.claude/costs/hooks/start-telemetry-receiver.sh"
+            "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/dispatch.sh .claude/costs/hooks/start-telemetry-receiver.sh"
           }
         ]
       }
@@ -198,7 +198,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/permission-denied-phrase.sh mark"
+            "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/dispatch.sh .claude/hooks/permission-denied-phrase.sh mark"
           }
         ]
       }
@@ -208,11 +208,11 @@
         "hooks": [
           {
             "type": "command",
-            "command": "$CLAUDE_PROJECT_DIR/.claude/costs/hooks/stop-session-cost.sh"
+            "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/dispatch.sh .claude/costs/hooks/stop-session-cost.sh"
           },
           {
             "type": "command",
-            "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/permission-denied-phrase.sh stop"
+            "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/dispatch.sh .claude/hooks/permission-denied-phrase.sh stop"
           }
         ]
       }
