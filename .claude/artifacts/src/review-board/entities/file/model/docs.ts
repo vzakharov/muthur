@@ -12,9 +12,8 @@ const boardPrefsSchema = z.object({
 });
 // A doc saved before a filter existed lacks it, and one saved before the
 // filters were named for what they show carries the inverted `whitespace`
-// instead, which `boardPrefsOf` resolves. Such a doc's `hideViewed` is not
-// read: every write stored it, `false` included, so it cannot tell a viewer's
-// choice from the default that left viewed files shown.
+// instead, which `boardPrefsOf` resolves. Its `hideViewed` is never read:
+// every write stored it, so its `false` may be a choice or the old default.
 export const boardDocSchema = z.extend(
   z.partial(boardPrefsSchema, {
     showWhitespace: true,
