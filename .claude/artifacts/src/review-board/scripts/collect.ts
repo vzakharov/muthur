@@ -1,4 +1,5 @@
 import { spawnSync } from "node:child_process";
+import * as z from "zod/mini";
 import type {
   FileStatus,
   ReviewData,
@@ -60,17 +61,26 @@ function tryText(cwd: string, command: string, args: string[]): string | null {
   return outcome.stdout.toString("utf8").trim() || null;
 }
 
-function resolveBaseRef(cwd: string, base: string | undefined): string {
-  if (base !== undefined) return base;
-  const fromPr = tryText(cwd, "gh", [
+const prSchema = z.object({ number: z.number(), baseRefName: z.string() });
+type Pr = z.infer<typeof prSchema>;
+
+function readPr(cwd: string): Pr | null {
+  const json = tryText(cwd, "gh", [
     "pr",
     "view",
     "--json",
-    "baseRefName",
-    "-q",
-    ".baseRefName",
+    "number,baseRefName",
   ]);
-  if (fromPr !== null) return fromPr;
+  return json === null ? null : prSchema.parse(JSON.parse(json));
+}
+
+function resolveBaseRef(
+  cwd: string,
+  base: string | undefined,
+  pr: Pr | null,
+): string {
+  if (base !== undefined) return base;
+  if (pr !== null) return pr.baseRefName;
   const head = tryText(cwd, "git", [
     "symbolic-ref",
     "refs/remotes/origin/HEAD",
@@ -287,10 +297,12 @@ function readRevisions(
   const resolved = queries.map((q) => {
     const primary = located[cursor++];
     const fallback = q.alt === null ? undefined : located[cursor++];
-    const hit =
-      primary?.blob === null && fallback !== undefined ? fallback : primary;
-    if (hit === undefined) throw new Error("revision lookup ran short");
-    return { commit: q.commit, ...hit };
+    if (primary === undefined) throw new Error("revision lookup ran short");
+    const [hit, path] =
+      primary.blob === null && fallback !== undefined && q.alt !== null
+        ? [fallback, q.alt]
+        : [primary, q.path];
+    return { commit: q.commit, path, ...hit };
   });
 
   let offset = 0;
@@ -347,7 +359,8 @@ function readFocus(
 }
 
 export function collect({ cwd, base }: CollectOptions): ReviewData {
-  const baseRef = resolveBaseRef(cwd, base);
+  const pr = readPr(cwd);
+  const baseRef = resolveBaseRef(cwd, base, pr);
   const baseSha = resolveBaseSha(cwd, baseRef);
   // The focus file is about the review, not part of it.
   const changes = readChanges(cwd, baseSha).filter(
@@ -376,6 +389,7 @@ export function collect({ cwd, base }: CollectOptions): ReviewData {
   return {
     repo: parseRepo(tryText(cwd, "git", ["remote", "get-url", "origin"])),
     branch: gitText(cwd, ["branch", "--show-current"]).trim(),
+    pr: pr?.number ?? null,
     head: gitText(cwd, ["rev-parse", "HEAD"]).trim(),
     base: { ref: baseRef, sha: baseSha },
     collectedAt: new Date().toISOString(),

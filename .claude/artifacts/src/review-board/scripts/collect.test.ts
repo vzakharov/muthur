@@ -49,11 +49,17 @@ function makeRepo(): { dir: string; commits: string[] } {
   write("added.txt", "fresh\n");
   write("copy.txt", "fresh\n");
   write("mod.txt", "one\ntwo\nthree\n");
+  write("src/ren.txt", story.replace("story line 1", "story line one"));
   const first = commit("add and modify");
 
   write("mod.txt", "one\nTWO\nthree\n");
   git("mv", "src/ren.txt", "src/renamed.txt");
-  write("src/renamed.txt", story.replace("story line 3", "story line three"));
+  write(
+    "src/renamed.txt",
+    story
+      .replace("story line 1", "story line one")
+      .replace("story line 3", "story line three"),
+  );
   git("rm", "-q", "gone.txt");
   write("pic.bin", Buffer.from([0, 1, 2, 3, 255, 0]));
   const second = commit("modify again, rename, delete, binary");
@@ -129,7 +135,11 @@ test("collects commits, files, revisions and deduplicated blobs", () => {
     assert.equal(renamed.oldPath, "src/ren.txt");
     assert.deepEqual(
       renamed.revisions.map((r) => r.commit),
-      [base, second],
+      [base, first, second],
+    );
+    assert.deepEqual(
+      renamed.revisions.map((r) => r.path),
+      ["src/ren.txt", "src/ren.txt", "src/renamed.txt"],
     );
     assert.ok(renamed.revisions.every((r) => r.blob !== null));
     assert.notEqual(renamed.revisions[0]?.blob, renamed.revisions[1]?.blob);

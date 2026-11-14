@@ -1,5 +1,5 @@
 import type {
-  ReviewData,
+  ReviewBranch,
   ReviewFile,
 } from "#src/review-board/shared/review-data/index.ts";
 
@@ -34,22 +34,20 @@ export interface EffectiveRange {
   toExplicit: boolean;
   /** Whether what `to` shows is what the viewer marked viewed, base merges since aside. */
   viewed: boolean;
+  /** The marked blob token that makes the file read as viewed — `to`'s own, or one base merges carried forward; null when not viewed. */
+  viewedMark: string | null;
 }
 
-export function commitOrder(
-  data: Pick<ReviewData, "base" | "commits">,
-): CommitOrder {
+export function commitOrder(data: ReviewBranch): CommitOrder {
   const order = new Map<string, number>([[data.base.sha, -1]]);
   data.commits.forEach((commit, index) => order.set(commit.sha, index));
   return order;
 }
 
-export const baseMerges = (
-  data: Pick<ReviewData, "commits">,
-): ReadonlySet<string> =>
+export const baseMerges = (data: ReviewBranch): ReadonlySet<string> =>
   new Set(data.commits.filter((c) => c.baseMerge).map((c) => c.sha));
 
-const NO_MERGES: ReadonlySet<string> = new Set();
+const EMPTY: ReadonlySet<string> = new Set();
 
 /** The latest of `file`'s revisions at or before `commit`, or undefined for a commit outside the branch. */
 export function snapToRevision(
@@ -83,8 +81,8 @@ const isLive = (override: RangeOverride | undefined): boolean =>
  * is the default. The viewer's override or the agent's shift replaces it for
  * this file, whichever is newer by `at`; a shift sets only `from`, so the
  * file's `to` then follows the board. Unless the override chose `from`, a file
- * the viewer marked viewed at an earlier revision than its `to` shows only what
- * changed since that revision. Base merges right after the viewed revision
+ * the viewer marked viewed at earlier revisions than its `to` shows only what
+ * changed since the latest of them. Base merges right after the viewed revision
  * count as viewed too: what they change is the base's, reviewed there, so a
  * file they alone changed stays viewed, and one changed after them shows only
  * what came after.
@@ -95,11 +93,12 @@ export function effectiveRange(input: {
   board: BoardRange;
   override?: RangeOverride | undefined;
   shift?: Shift | undefined;
-  viewedBlob?: string | null | undefined;
+  viewedBlobs?: ReadonlySet<string> | undefined;
   merges?: ReadonlySet<string> | undefined;
 }): EffectiveRange {
-  const { file, order, board, override, shift, viewedBlob } = input;
-  const merges = input.merges ?? NO_MERGES;
+  const { file, order, board, override, shift } = input;
+  const viewedBlobs = input.viewedBlobs ?? EMPTY;
+  const merges = input.merges ?? EMPTY;
   const first = file.revisions[0];
   const last = file.revisions[file.revisions.length - 1];
   if (first === undefined || last === undefined)
@@ -142,7 +141,8 @@ export function effectiveRange(input: {
 
   const position = (revision: Revision): number =>
     order.get(revision.commit) ?? -1;
-  const seen = seenRevision(file, position, merges, to, viewedBlob);
+  const seenMark = seenRevision(file, position, merges, to, viewedBlobs);
+  const seen = seenMark?.revision;
   const viewed = seen === to;
   if (
     !fromChosen &&
@@ -163,30 +163,33 @@ export function effectiveRange(input: {
     fromExplicit,
     toExplicit,
     viewed,
+    viewedMark: viewed ? (seenMark?.mark ?? null) : null,
   };
 }
 
 /**
- * The latest revision up to `to` holding the blob the viewer marked viewed,
- * carried past the base merges that follow it; `to` itself when `to` shows
- * that blob.
+ * The latest revision up to `to` holding a blob the viewer marked viewed,
+ * carried past the base merges that follow it, with the marked blob's token;
+ * `to` itself when `to` shows a marked blob.
  */
 function seenRevision(
   file: ReviewFile,
   position: (revision: Revision) => number,
   merges: ReadonlySet<string>,
   to: Revision,
-  viewedBlob: string | null | undefined,
-): Revision | undefined {
-  if (viewedBlob === null || viewedBlob === undefined) return undefined;
-  if (viewedToken(to.blob) === viewedBlob) return to;
+  viewedBlobs: ReadonlySet<string>,
+): { revision: Revision; mark: string } | undefined {
+  const toMark = viewedToken(to.blob);
+  if (viewedBlobs.has(toMark)) return { revision: to, mark: toMark };
   const { revisions } = file;
   let at = revisions.findLastIndex(
     (revision) =>
-      viewedToken(revision.blob) === viewedBlob &&
+      viewedBlobs.has(viewedToken(revision.blob)) &&
       position(revision) < position(to),
   );
-  if (at < 0) return undefined;
+  const marked = revisions[at];
+  if (marked === undefined) return undefined;
+  let revision = marked;
   for (;;) {
     const next = revisions[at + 1];
     if (
@@ -195,12 +198,13 @@ function seenRevision(
       !merges.has(next.commit)
     )
       break;
+    revision = next;
     at++;
   }
-  return revisions[at];
+  return { revision, mark: viewedToken(marked.blob) };
 }
 
-/** What `viewedBlob` holds for a file that is absent at its "to" commit. */
+/** The blob a viewed mark holds for a file that is absent at its "to" commit. */
 const ABSENT = "-";
 
 export const viewedToken = (toBlob: string | null): string => toBlob ?? ABSENT;

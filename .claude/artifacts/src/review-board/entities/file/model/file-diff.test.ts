@@ -10,6 +10,7 @@ import type { EffectiveRange } from "./range.ts";
 const data: ReviewData = {
   repo: null,
   branch: "b",
+  pr: null,
   head: "c1",
   base: { ref: "main", sha: "B" },
   collectedAt: "t",
@@ -24,8 +25,8 @@ const file: ReviewFile = {
   status: "modified",
   binary: false,
   revisions: [
-    { commit: "B", blob: "old", size: 4 },
-    { commit: "c1", blob: "next", size: 4 },
+    { commit: "B", path: "f", blob: "old", size: 4 },
+    { commit: "c1", path: "f", blob: "next", size: 4 },
   ],
 };
 const range = (fromBlob: string | null, toBlob: string | null) =>
@@ -37,6 +38,7 @@ const range = (fromBlob: string | null, toBlob: string | null) =>
     fromExplicit: false,
     toExplicit: false,
     viewed: false,
+    viewedMark: null,
   }) satisfies EffectiveRange;
 
 test("diffs the two blobs of the range", () => {
@@ -44,6 +46,13 @@ test("diffs the two blobs of the range", () => {
   assert.equal(result.kind, "text");
   assert.equal(result.diff.added, 1);
   assert.equal(result.diff.removed, 1);
+});
+
+test("after is the text at the range's to, null where absent", () => {
+  const shown = fileDiff(data, file, range("old", "next"), false);
+  assert.equal(shown.kind === "text" && shown.after, "a\nc\n");
+  const gone = fileDiff(data, file, range("old", null), false);
+  assert.equal(gone.kind === "text" && gone.after, null);
 });
 
 test("an absent side is empty text", () => {
@@ -58,8 +67,8 @@ test("a binary file reports its sizes", () => {
     ...file,
     binary: true,
     revisions: [
-      { commit: "B", blob: "x", size: 10 },
-      { commit: "c1", blob: "y", size: 30 },
+      { commit: "B", path: "f", blob: "x", size: 10 },
+      { commit: "c1", path: "f", blob: "y", size: 30 },
     ],
   };
   assert.deepEqual(fileDiff(data, binary, range("x", "y"), false), {
