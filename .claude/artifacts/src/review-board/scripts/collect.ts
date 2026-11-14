@@ -6,6 +6,7 @@ import type {
   ReviewFile,
 } from "#src/review-board/shared/review-data/index.ts";
 import { FOCUS_PATH, lineCount, parseFocus } from "./focus.ts";
+import { CHECK_GENERATED, generatedPaths } from "./generated.ts";
 
 interface CollectOptions {
   cwd: string;
@@ -338,6 +339,7 @@ function readBlobs(cwd: string, ids: string[]): Record<string, string> {
 function readFocus(
   cwd: string,
   files: ReviewFile[],
+  generated: ReadonlySet<string>,
   blobs: Record<string, string>,
 ): ReviewData["focus"] {
   const listed = gitText(cwd, [
@@ -355,17 +357,33 @@ function readFocus(
       return [file.path, text === undefined ? null : lineCount(text)];
     }),
   );
-  return parseFocus(gitText(cwd, ["show", `HEAD:${FOCUS_PATH}`]), counts);
+  return parseFocus(
+    gitText(cwd, ["show", `HEAD:${FOCUS_PATH}`]),
+    counts,
+    generated,
+  );
+}
+
+/** The changed paths `.gitattributes` at HEAD marks `linguist-generated`. */
+function readGenerated(cwd: string, paths: string[]): Set<string> {
+  if (paths.length === 0) return new Set();
+  return generatedPaths(gitText(cwd, CHECK_GENERATED, paths.join("\0")));
 }
 
 export function collect({ cwd, base }: CollectOptions): ReviewData {
   const pr = readPr(cwd);
   const baseRef = resolveBaseRef(cwd, base, pr);
   const baseSha = resolveBaseSha(cwd, baseRef);
-  // The focus file is about the review, not part of it.
-  const changes = readChanges(cwd, baseSha).filter(
+  // The focus file is about the review, not part of it; a generated file is
+  // reviewed through its source and the script that writes it.
+  const changed = readChanges(cwd, baseSha).filter(
     (change) => change.path !== FOCUS_PATH,
   );
+  const generated = readGenerated(
+    cwd,
+    changed.map((change) => change.path),
+  );
+  const changes = changed.filter((change) => !generated.has(change.path));
   const binary = readBinaryPaths(cwd, baseSha);
   const revisions = readRevisions(cwd, baseSha, changes);
 
@@ -395,7 +413,7 @@ export function collect({ cwd, base }: CollectOptions): ReviewData {
     collectedAt: new Date().toISOString(),
     commits: readCommits(cwd, baseSha),
     files,
-    focus: readFocus(cwd, files, blobs),
+    focus: readFocus(cwd, files, generated, blobs),
     blobs,
   };
 }

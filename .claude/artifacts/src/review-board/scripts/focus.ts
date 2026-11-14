@@ -16,17 +16,22 @@ export const lineCount = (text: string): number =>
 /**
  * Parses the focus file against the changed files' line counts at HEAD (null
  * for a file with no text there), throwing on any entry the board could not
- * show as written: an unknown or repeated path, an empty reason, or lines
- * outside the file.
+ * show as written: an unknown, generated or repeated path, an empty reason, or
+ * lines outside the file.
  */
 export function parseFocus(
   text: string,
   lineCounts: ReadonlyMap<string, number | null>,
+  generated: ReadonlySet<string>,
 ): Focus[] {
   const entries = focusFileSchema.parse(JSON.parse(text));
   const seen = new Set<string>();
   for (const entry of entries) {
     const where = `${FOCUS_PATH}: ${entry.path}`;
+    if (generated.has(entry.path))
+      throw new Error(
+        `${where} is marked linguist-generated in .gitattributes, so it is off the board; mark its source instead`,
+      );
     if (!lineCounts.has(entry.path))
       throw new Error(`${where} is not among the changed files`);
     if (seen.has(entry.path)) throw new Error(`${where} is listed twice`);
