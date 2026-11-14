@@ -1,7 +1,7 @@
 // ESLint configuration philosophy: every rule is either enabled as 'error' or
 // disabled with a comment explaining why; severity is 'error' or 'off', never
 // 'warn'. This file only orchestrates: the typescript-eslint presets, the
-// boundaries config generated from `src/masd.json`, the two `masd/*` rules and
+// boundaries config generated from `src/masd.json`, the three `masd/*` rules and
 // the ignores.
 //
 // Type-aware linting runs through the project service over `tsconfig.json`.
@@ -13,6 +13,7 @@ import { defineConfig, globalIgnores } from "eslint/config";
 import tseslint from "typescript-eslint";
 
 import { boundariesConfig } from "./eslint/masd-boundaries.ts";
+import noPickOmit from "./eslint/rules/no-pick-omit.ts";
 import noRelativeEscape from "./eslint/rules/no-relative-escape.ts";
 import subSliceEntry from "./eslint/rules/sub-slice-entry.ts";
 
@@ -51,12 +52,14 @@ export default defineConfig([
     plugins: {
       masd: {
         rules: {
+          "no-pick-omit": noPickOmit,
           "no-relative-escape": noRelativeEscape,
           "sub-slice-entry": subSliceEntry,
         },
       },
     },
     rules: {
+      "masd/no-pick-omit": "error",
       "masd/no-relative-escape": "error",
       "masd/sub-slice-entry": "error",
     },

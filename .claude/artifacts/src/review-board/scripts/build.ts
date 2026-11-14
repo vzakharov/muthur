@@ -3,6 +3,7 @@ import { mkdirSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { build } from "esbuild";
+import { boardTitle } from "#src/review-board/shared/review-data/index.ts";
 import { collect } from "./collect.ts";
 import { renderPage } from "./page.ts";
 import { scss } from "./scss.ts";
@@ -49,7 +50,11 @@ const outDir = resolve(
 );
 
 const [data, assets] = [collect({ cwd: process.cwd() }), await bundle()];
-const page = renderPage({ data, ...assets });
+const page = renderPage({
+  title: boardTitle(data.branch, data.pr),
+  data,
+  ...assets,
+});
 
 mkdirSync(outDir, { recursive: true });
 const indexPath = join(outDir, "index.html");

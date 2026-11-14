@@ -17,10 +17,12 @@ const commitSchema = z.object({
 });
 
 // `revisions[0]` is the base (`commit` = base sha); the rest are the commits in
-// range that touched the file, oldest first. `blob` and `size` are null where
+// range that touched the file, oldest first. `path` is where the file lives at
+// that commit — a rename's old path before it. `blob` and `size` are null where
 // the file does not exist at that commit.
 const revisionSchema = z.object({
   commit: z.string(),
+  path: z.string(),
   blob: z.nullable(z.string()),
   size: z.nullable(z.number()),
 });
@@ -43,18 +45,25 @@ export const focusSchema = z.object({
   lines: z.optional(z.array(lineSpanSchema)),
 });
 
-export const reviewDataSchema = z.object({
+// What the commit order is read from: the base and the commits since it.
+const branchSchema = z.object({
+  base: z.object({ ref: z.string(), sha: z.string() }),
+  commits: z.array(commitSchema),
+});
+
+export const reviewDataSchema = z.extend(branchSchema, {
   repo: z.nullable(z.string()),
   branch: z.string(),
+  // The number of the branch's PR; null when there is none or `gh` cannot say.
+  pr: z.nullable(z.number()),
   head: z.string(),
-  base: z.object({ ref: z.string(), sha: z.string() }),
   collectedAt: z.string(),
-  commits: z.array(commitSchema),
   files: z.array(fileSchema),
   focus: z.array(focusSchema),
   blobs: z.record(z.string(), z.string()),
 });
 
+export type ReviewBranch = z.infer<typeof branchSchema>;
 export type ReviewData = z.infer<typeof reviewDataSchema>;
 export type Focus = z.infer<typeof focusSchema>;
 export type LineSpan = z.infer<typeof lineSpanSchema>;

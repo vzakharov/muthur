@@ -24,6 +24,8 @@ export type FileDiff =
   | {
       kind: "text";
       diff: DiffResult;
+      /** The file's text at the range's `to`, or null where it is absent there. */
+      after: string | null;
       /** Null for a file with no known grammar, or a side past the highlighting budget. */
       syntax: () => DiffSyntax | null;
     }
@@ -104,6 +106,7 @@ export function fileDiff(
   return {
     kind: "text",
     diff,
+    after: range.toBlob === null ? null : textOf(data, range.toBlob),
     syntax: () => diffSyntax(data, file.path, range),
   };
 }
