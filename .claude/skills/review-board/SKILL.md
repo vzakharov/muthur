@@ -44,10 +44,10 @@ button.
   file. It reads the file from HEAD and keeps it off the board; with no file
   there is no focus.
 
-**A generated file stays off the board** when `.gitattributes` at HEAD marks it
-`linguist-generated=true`, the mark GitHub collapses in a PR diff too: it is
-reviewed through its source and the script that writes it. A branch that adds
-generated output commits that mark with it.
+**A generated file stays off the board**, as GitHub collapses it in a PR diff,
+when `.gitattributes` at HEAD marks it `linguist-generated=true`: it is reviewed
+through its source and the script that writes it. A branch that adds generated
+output commits that mark with it.
 
 ```bash
 node .claude/artifacts/src/review-board/scripts/build.ts
