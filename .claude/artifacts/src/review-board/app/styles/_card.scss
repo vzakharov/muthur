@@ -64,6 +64,18 @@
   font: 12px var(--font-mono);
 }
 
+// A rename's previous path, after the copy button; a long one wraps at its slashes rather than widening the card.
+.provenance {
+  min-width: 0;
+  margin-right: auto;
+  color: var(--muted);
+  font: 11px var(--font-mono);
+
+  .segment {
+    white-space: nowrap;
+  }
+}
+
 .copy-path {
   margin-right: auto;
   padding: 0 4px;
@@ -72,6 +84,10 @@
   border-radius: 4px;
   color: var(--muted);
   cursor: pointer;
+
+  &:has(+ .provenance) {
+    margin-right: 0;
+  }
 
   &:hover {
     border-color: var(--accent);

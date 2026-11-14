@@ -17,6 +17,8 @@ interface FolderNode {
   node: HTMLElement;
   box: HTMLInputElement;
   check: HTMLElement;
+  /** Set on every sync, not at creation: a chain collapsing as siblings drop out renames the same path, `scripts` to `board/scripts`. */
+  label: HTMLElement;
 }
 
 /** The folder rectangles, behind the cards, each with a Viewed box in its header. */
@@ -40,10 +42,11 @@ export function createFolderLayer(
     );
     check.title =
       "Mark every file here viewed, except those the author marked for focus";
-    head.append(check, el("span", "folder-name", `${folder.name}/`));
+    const label = el("span", "folder-name");
+    head.append(check, label);
     node.append(head);
     element.append(node);
-    return { node, box, check };
+    return { node, box, check, label };
   }
 
   return {
@@ -57,8 +60,9 @@ export function createFolderLayer(
           entry = create(folder);
           nodes.set(folder.path, entry);
         }
-        const { node, box, check } = entry;
+        const { node, box, check, label } = entry;
         node.hidden = false;
+        label.textContent = `${folder.name}/`;
         node.style.left = `${folder.rect.x}px`;
         node.style.top = `${folder.rect.y}px`;
         node.style.width = `${folder.rect.width}px`;
