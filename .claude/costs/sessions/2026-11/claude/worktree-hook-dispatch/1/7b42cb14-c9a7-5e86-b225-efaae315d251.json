@@ -1,0 +1,98 @@
+{
+  "total": {
+    "inputTokens": 114,
+    "cacheWrite5mTokens": 88367,
+    "cacheWrite1hTokens": 115046,
+    "cacheReadTokens": 5258825,
+    "outputTokens": 24701,
+    "thinkingTokens": 6837,
+    "responses": 54,
+    "costUsd": 2.9084439999999994
+  },
+  "estimate": {
+    "at": "2026-11-14T08:42:36.518Z",
+    "parts": [
+      {
+        "hours": 4.0,
+        "grade": "senior",
+        "role": "developer",
+        "comment": "a bash dispatcher whose fallbacks (non-git, other repo, stale branch) each have to stay exact, plus the multi-repo generator's classification"
+      },
+      {
+        "hours": 1.0,
+        "grade": "middle",
+        "role": "qa",
+        "comment": "worktree fixtures in a temp repo cover the routing matrix and exit passthrough"
+      }
+    ],
+    "comment": null
+  },
+  "orientation": {
+    "endedBy": "oriented",
+    "endedOn": null,
+    "endedAt": "2026-11-14T08:40:28.209Z",
+    "contextTokens": 70087,
+    "spend": {
+      "inputTokens": 6,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 37193,
+      "cacheReadTokens": 156029,
+      "outputTokens": 872,
+      "thinkingTokens": 102,
+      "responses": 3,
+      "costUsd": 0.3462138
+    }
+  },
+  "sessionId": "7b42cb14-c9a7-5e86-b225-efaae315d251",
+  "branch": "claude/worktree-hook-dispatch",
+  "cwd": "/home/user/muthur",
+  "openingPrompt": "Fix, in muthur itself, the split between where hooks run and where the agent's own scripts run when a Claude Code session works in a git worktree. Start from th…",
+  "prs": [],
+  "url": "https://claude.ai/code/session_01RAikutHxsrZ71oQYawowXs",
+  "operator": "vzakharov",
+  "firstResponseAt": "2026-11-14T08:40:13.760Z",
+  "lastResponseAt": "2026-11-14T08:52:13.346Z",
+  "pricesAsOf": "2026-10-06",
+  "claudeCodeTotalUsd": null,
+  "ownTurns": {
+    "inputTokens": 83,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 115046,
+    "cacheReadTokens": 4199317,
+    "outputTokens": 20196,
+    "thinkingTokens": 4942,
+    "responses": 39,
+    "costUsd": 2.1644834
+  },
+  "subagents": {
+    "inputTokens": 31,
+    "cacheWrite5mTokens": 88367,
+    "cacheWrite1hTokens": 0,
+    "cacheReadTokens": 1059508,
+    "outputTokens": 4505,
+    "thinkingTokens": 1895,
+    "responses": 15,
+    "costUsd": 0.7439606
+  },
+  "byRate": {
+    "claude-opus-5-5/standard": {
+      "inputTokens": 114,
+      "cacheWrite5mTokens": 88367,
+      "cacheWrite1hTokens": 115046,
+      "cacheReadTokens": 5258825,
+      "outputTokens": 24701,
+      "thinkingTokens": 6837,
+      "responses": 54,
+      "costUsd": 2.9084439999999994
+    }
+  },
+  "warnings": [],
+  "compactions": [],
+  "telemetry": {
+    "events": 54,
+    "matched": 54,
+    "matchedTableUsd": 2.9084439999999994,
+    "matchedEventUsd": 2.908443999999999,
+    "unseen": {}
+  }
+}
