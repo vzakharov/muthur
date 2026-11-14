@@ -1,0 +1,92 @@
+{
+  "total": {
+    "inputTokens": 49,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 68000,
+    "cacheReadTokens": 2629024,
+    "outputTokens": 8276,
+    "thinkingTokens": 1902,
+    "responses": 23,
+    "costUsd": 1.2355208
+  },
+  "estimate": {
+    "at": "2026-11-14T12:21:51.692Z",
+    "parts": [
+      {
+        "hours": 1.5,
+        "grade": "middle",
+        "role": "developer",
+        "comment": "tracing why a default already flipped still shows on means reading the old writer's persisted shape; the fix and its migration tests are routine once found"
+      }
+    ],
+    "comment": null
+  },
+  "orientation": {
+    "endedBy": "Edit",
+    "endedOn": ".claude/artifacts/src/review-board/entities/file/model/docs.ts",
+    "endedAt": "2026-11-14T12:21:00.314Z",
+    "contextTokens": 124865,
+    "spend": {
+      "inputTokens": 29,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 60748,
+      "cacheReadTokens": 1349207,
+      "outputTokens": 4152,
+      "thinkingTokens": 1510,
+      "responses": 13,
+      "costUsd": 0.8389814
+    }
+  },
+  "sessionId": "fb13267b-c807-5853-b9bf-082d1b178a1b",
+  "branch": "claude/review-board-hide-viewed-default-9uyvw8",
+  "cwd": "/home/user/muthur",
+  "openingPrompt": "Show viewd в ревью борде должно быть выключенным по умолчанию",
+  "prs": [],
+  "url": "https://claude.ai/code/session_01RAikuvDpeFwo6XTMwkdBT4",
+  "operator": "vzakharov",
+  "firstResponseAt": "2026-11-14T12:20:12.485Z",
+  "lastResponseAt": "2026-11-14T12:21:58.993Z",
+  "pricesAsOf": "2026-10-06",
+  "claudeCodeTotalUsd": null,
+  "ownTurns": {
+    "inputTokens": 49,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 68000,
+    "cacheReadTokens": 2629024,
+    "outputTokens": 8276,
+    "thinkingTokens": 1902,
+    "responses": 23,
+    "costUsd": 1.2355208
+  },
+  "subagents": {
+    "inputTokens": 0,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 0,
+    "cacheReadTokens": 0,
+    "outputTokens": 0,
+    "thinkingTokens": 0,
+    "responses": 0,
+    "costUsd": 0.0
+  },
+  "byRate": {
+    "claude-opus-5-5/standard": {
+      "inputTokens": 49,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 68000,
+      "cacheReadTokens": 2629024,
+      "outputTokens": 8276,
+      "thinkingTokens": 1902,
+      "responses": 23,
+      "costUsd": 1.2355208
+    }
+  },
+  "warnings": [],
+  "compactions": [],
+  "telemetry": {
+    "events": 22,
+    "matched": 22,
+    "matchedTableUsd": 1.1956176,
+    "matchedEventUsd": 1.1956176,
+    "unseen": {}
+  }
+}

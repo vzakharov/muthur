@@ -11,8 +11,10 @@ const boardPrefsSchema = z.object({
   to: z.nullable(z.string()),
 });
 // A doc saved before a filter existed lacks it, and one saved before the
-// filters were named for what they show carries the inverted `whitespace` /
-// `hideViewed` instead, both of which `boardPrefsOf` resolves.
+// filters were named for what they show carries the inverted `whitespace`
+// instead, which `boardPrefsOf` resolves. Such a doc's `hideViewed` is not
+// read: every write stored it, `false` included, so it cannot tell a viewer's
+// choice from the default that left viewed files shown.
 export const boardDocSchema = z.extend(
   z.partial(boardPrefsSchema, {
     showWhitespace: true,
@@ -21,7 +23,6 @@ export const boardDocSchema = z.extend(
   }),
   {
     whitespace: z.optional(z.boolean()),
-    hideViewed: z.optional(z.boolean()),
     at: z.string(),
   },
 );
@@ -63,23 +64,16 @@ export type ViewedMark = z.infer<typeof viewedMarkSchema>;
 export type FileDoc = z.infer<typeof fileDocSchema>;
 export type ShiftDoc = z.infer<typeof shiftDocSchema>;
 
-/** The doc's prefs with its stamp, a legacy hide-side flag read inverted where the doc has no show-side one. */
+/** The doc's prefs with its stamp, a legacy `whitespace` read inverted where the doc has no `showWhitespace`. */
 export function boardPrefsOf(doc: BoardDoc): { value: BoardPrefs; at: string } {
-  const { at, whitespace, hideViewed, ...prefs } = doc;
-  const shown = (
-    show: boolean | undefined,
-    hide: boolean | undefined,
-    off: boolean,
-  ): boolean => show ?? (hide === undefined ? off : !hide);
+  const { at, whitespace, ...prefs } = doc;
   return {
     value: {
       ...prefs,
-      showWhitespace: shown(
-        prefs.showWhitespace,
-        whitespace,
-        FILTERS_OFF.showWhitespace,
-      ),
-      showViewed: shown(prefs.showViewed, hideViewed, FILTERS_OFF.showViewed),
+      showWhitespace:
+        prefs.showWhitespace ??
+        (whitespace === undefined ? FILTERS_OFF.showWhitespace : !whitespace),
+      showViewed: prefs.showViewed ?? FILTERS_OFF.showViewed,
       focusOnly: prefs.focusOnly ?? FILTERS_OFF.focusOnly,
     },
     at,

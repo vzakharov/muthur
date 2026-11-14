@@ -56,24 +56,31 @@ test("a board doc with no filters reads with every filter off", () => {
   });
 });
 
-test("a board doc saved with hide-side flags reads them inverted", () => {
+test("a board doc saved with the legacy whitespace flag reads it inverted", () => {
   const legacy = { focusOnly: true, from: null, to: null, at: "t" };
-  assert.deepEqual(
-    boardOf({ ...legacy, whitespace: false, hideViewed: false }).value,
-    {
-      showWhitespace: true,
-      showViewed: true,
-      focusOnly: true,
-      from: null,
-      to: null,
-    },
+  assert.equal(
+    boardOf({ ...legacy, whitespace: false }).value.showWhitespace,
+    true,
   );
-  const hiding = boardOf({ ...legacy, whitespace: true, hideViewed: true });
-  assert.equal(hiding.value.showWhitespace, false);
-  assert.equal(hiding.value.showViewed, false);
+  assert.equal(
+    boardOf({ ...legacy, whitespace: true }).value.showWhitespace,
+    false,
+  );
 });
 
-test("a board doc's show-side flag wins over a hide-side one", () => {
+test("a legacy hideViewed leaves viewed files hidden, false included", () => {
+  const legacy = { whitespace: true, from: null, to: null, at: "t" };
+  assert.equal(
+    boardOf({ ...legacy, hideViewed: false }).value.showViewed,
+    false,
+  );
+  assert.equal(
+    boardOf({ ...legacy, hideViewed: true }).value.showViewed,
+    false,
+  );
+});
+
+test("a board doc's show-side flag wins over a legacy one", () => {
   const { value } = boardOf({
     showWhitespace: false,
     whitespace: false,
