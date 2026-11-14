@@ -1,19 +1,19 @@
 {
   "total": {
-    "inputTokens": 89,
-    "cacheWrite5mTokens": 87172,
-    "cacheWrite1hTokens": 94737,
-    "cacheReadTokens": 3738811,
-    "outputTokens": 19003,
-    "thinkingTokens": 5896,
-    "responses": 42,
-    "costUsd": 2.3219342
+    "inputTokens": 127,
+    "cacheWrite5mTokens": 88367,
+    "cacheWrite1hTokens": 124511,
+    "cacheReadTokens": 6164111,
+    "outputTokens": 29924,
+    "thinkingTokens": 7514,
+    "responses": 60,
+    "costUsd": 3.2697331999999992
   },
   "estimate": {
-    "at": "2026-11-14T08:42:36.518Z",
+    "at": "2026-11-14T09:47:23.473Z",
     "parts": [
       {
-        "hours": 4.0,
+        "hours": 3.75,
         "grade": "senior",
         "role": "developer",
         "comment": "a bash dispatcher whose fallbacks (non-git, other repo, stale branch) each have to stay exact, plus the multi-repo generator's classification"
@@ -51,48 +51,48 @@
   "url": "https://claude.ai/code/session_01RAikutHxsrZ71oQYawowXs",
   "operator": "vzakharov",
   "firstResponseAt": "2026-11-14T08:40:13.760Z",
-  "lastResponseAt": "2026-11-14T08:43:38.829Z",
+  "lastResponseAt": "2026-11-14T09:47:35.801Z",
   "pricesAsOf": "2026-10-06",
   "claudeCodeTotalUsd": null,
   "ownTurns": {
-    "inputTokens": 62,
+    "inputTokens": 96,
     "cacheWrite5mTokens": 0,
-    "cacheWrite1hTokens": 94737,
-    "cacheReadTokens": 2854738,
-    "outputTokens": 15180,
-    "thinkingTokens": 4001,
-    "responses": 29,
-    "costUsd": 1.6326916
+    "cacheWrite1hTokens": 124511,
+    "cacheReadTokens": 5104603,
+    "outputTokens": 25419,
+    "thinkingTokens": 5619,
+    "responses": 45,
+    "costUsd": 2.5257726
   },
   "subagents": {
-    "inputTokens": 27,
-    "cacheWrite5mTokens": 87172,
+    "inputTokens": 31,
+    "cacheWrite5mTokens": 88367,
     "cacheWrite1hTokens": 0,
-    "cacheReadTokens": 884073,
-    "outputTokens": 3823,
+    "cacheReadTokens": 1059508,
+    "outputTokens": 4505,
     "thinkingTokens": 1895,
-    "responses": 13,
-    "costUsd": 0.6892426
+    "responses": 15,
+    "costUsd": 0.7439606
   },
   "byRate": {
     "claude-opus-5-5/standard": {
-      "inputTokens": 89,
-      "cacheWrite5mTokens": 87172,
-      "cacheWrite1hTokens": 94737,
-      "cacheReadTokens": 3738811,
-      "outputTokens": 19003,
-      "thinkingTokens": 5896,
-      "responses": 42,
-      "costUsd": 2.3219342
+      "inputTokens": 127,
+      "cacheWrite5mTokens": 88367,
+      "cacheWrite1hTokens": 124511,
+      "cacheReadTokens": 6164111,
+      "outputTokens": 29924,
+      "thinkingTokens": 7514,
+      "responses": 60,
+      "costUsd": 3.2697331999999992
     }
   },
   "warnings": [],
   "compactions": [],
   "telemetry": {
-    "events": 41,
-    "matched": 41,
-    "matchedTableUsd": 2.291343,
-    "matchedEventUsd": 2.291343,
+    "events": 60,
+    "matched": 60,
+    "matchedTableUsd": 3.2697331999999992,
+    "matchedEventUsd": 3.269733199999999,
     "unseen": {}
   }
 }
