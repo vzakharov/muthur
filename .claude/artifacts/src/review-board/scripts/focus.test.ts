@@ -8,7 +8,7 @@ const counts = new Map<string, number | null>([
 ]);
 
 const parse = (entries: unknown): ReturnType<typeof parseFocus> =>
-  parseFocus(JSON.stringify(entries), counts);
+  parseFocus(JSON.stringify(entries), counts, new Set(["gen/shader.ts"]));
 
 test("keeps valid entries as written", () => {
   const entries = [
@@ -22,6 +22,13 @@ test("rejects a path that is not among the changed files", () => {
   assert.throws(
     () => parse([{ path: "src/b.ts", why: "x" }]),
     /not among the changed files/,
+  );
+});
+
+test("rejects a path hidden in diffs, naming why it is off the board", () => {
+  assert.throws(
+    () => parse([{ path: "gen/shader.ts", why: "x" }]),
+    /hidden by default in diffs/,
   );
 });
 
