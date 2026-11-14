@@ -1,4 +1,4 @@
-import type { ReviewFile } from "#src/review-board/shared/review-data/index.ts";
+import type { ReviewFilePaths } from "#src/review-board/shared/review-data/index.ts";
 
 export interface Provenance {
   kind: "renamed" | "moved";
@@ -15,9 +15,7 @@ const split = (path: string): { dir: string; name: string } => {
  * directory is unchanged, `moved` from its old full path otherwise. Null for a
  * file git did not report as renamed.
  */
-export function provenance(
-  file: Pick<ReviewFile, "path" | "oldPath">,
-): Provenance | null {
+export function provenance(file: ReviewFilePaths): Provenance | null {
   if (file.oldPath === null) return null;
   const before = split(file.oldPath);
   return before.dir === split(file.path).dir
