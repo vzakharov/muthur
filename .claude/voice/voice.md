@@ -45,16 +45,16 @@ GitHub handle from whatever already names them — the session's token, the repo
 they are pushing to — or ask, then read `operators/<handle>.md`, lowercased. The
 filename is the whole lookup, so there is nothing else to reproduce.
 
-**A stated preference is written down, in the entry of whoever stated it.**
-`operators/<handle>.md`, lowercase, the file's whole content being the entry —
-that is how a preference outlives the session it was mentioned in. Ask first
-only where it is genuinely unclear whether they meant this reply or every one.
-It never goes into this file: one person's stated taste promoted here becomes
-the house rule without the team seeing it happen, so a manner rule for everyone
-is an edit here that someone makes deliberately.
+**A stated preference about how to talk to them is written down, in the entry of
+whoever stated it.** `operators/<handle>.md`, lowercase, the file's whole
+content being the entry — that is how a preference outlives the session it was
+mentioned in. Ask first only where it is genuinely unclear whether they meant
+this reply or every one. It never goes into this file: one person's stated taste
+promoted here becomes the house rule without the team seeing it happen, so a
+manner rule for everyone is an edit here that someone makes deliberately.
 
 **An entry cannot lower a bar.** It changes how an answer sounds, never what is
 in it, what gets reported, or which checks run. "Keep it short" does not license
 dropping the cause; "no need to flag small stuff" does not license a silent
-failure. A preference that would change substance is not an entry — it is a
-change to the house rule, where everyone can see it.
+failure. A preference that would change substance is not an entry; `CLAUDE.md`
+beside this file says where it goes.
