@@ -62,30 +62,22 @@ const COPY_LABEL = "⧉";
 
 /**
  * The file's name alone, since the folder boxes around the card show its
-<<<<<<< HEAD
- * directory; where a rename brought it from; and a button copying its
- * repo-relative path.
+ * directory, linked to GitHub; a button copying its repo-relative path; and
+ * where a rename brought it from.
  */
-function pathParts(file: ReviewFile): HTMLElement[] {
-  const { path } = file;
-  const name = el("strong", "path", path.slice(path.lastIndexOf("/") + 1));
-  name.title = path;
-  const origin = provenance(file);
-  const from = origin === null ? [] : [provenanceNote(origin)];
-=======
- * directory, linked to GitHub, and a button copying its repo-relative path.
- */
-function pathParts(path: string): {
+function pathParts(file: ReviewFile): {
   link: HTMLAnchorElement;
   parts: HTMLElement[];
 } {
+  const { path } = file;
   const name = el("strong", "path");
   name.title = path;
   const link = el("a", "path-link", path.slice(path.lastIndexOf("/") + 1));
   link.target = "_blank";
   link.rel = "noopener noreferrer";
   name.append(link);
->>>>>>> origin/main
+  const origin = provenance(file);
+  const from = origin === null ? [] : [provenanceNote(origin)];
   const copy = el("button", "copy-path", COPY_LABEL);
   copy.type = "button";
   copy.title = `Copy ${path}`;
@@ -100,8 +92,7 @@ function pathParts(path: string): {
       },
     );
   });
-<<<<<<< HEAD
-  return [name, copy, ...from];
+  return { link, parts: [name, copy, ...from] };
 }
 
 /** `· moved from a/b/c.ts`, breakable only after a slash so a narrow card wraps it at a directory. */
@@ -114,9 +105,6 @@ function provenanceNote({ kind, from }: Provenance): HTMLElement {
     if (!last) note.append(el("wbr", ""));
   });
   return note;
-=======
-  return { link, parts: [name, copy] };
->>>>>>> origin/main
 }
 
 function flash(button: HTMLButtonElement, mark: string, title: string): void {
@@ -244,7 +232,7 @@ export function createCard(
   const focusBadge =
     focus === undefined ? [] : [el("span", "badge focus", "focus")];
 
-  const { link: nameLink, parts: pathElements } = pathParts(file.path);
+  const { link: nameLink, parts: pathElements } = pathParts(file);
 
   let preview = false;
   let last: CardState | undefined;
@@ -260,11 +248,7 @@ export function createCard(
 
   header.append(
     viewedLabel,
-<<<<<<< HEAD
-    ...pathParts(file),
-=======
     ...pathElements,
->>>>>>> origin/main
     badge,
     ...focusBadge,
     counts,
