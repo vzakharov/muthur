@@ -1,19 +1,19 @@
 {
   "total": {
-    "inputTokens": 114,
+    "inputTokens": 131,
     "cacheWrite5mTokens": 88367,
-    "cacheWrite1hTokens": 115046,
-    "cacheReadTokens": 5258825,
-    "outputTokens": 24701,
-    "thinkingTokens": 6837,
-    "responses": 54,
-    "costUsd": 2.9084439999999994
+    "cacheWrite1hTokens": 129114,
+    "cacheReadTokens": 6477814,
+    "outputTokens": 30553,
+    "thinkingTokens": 7570,
+    "responses": 62,
+    "costUsd": 3.381893799999999
   },
   "estimate": {
-    "at": "2026-11-14T08:42:36.518Z",
+    "at": "2026-11-14T09:47:23.473Z",
     "parts": [
       {
-        "hours": 4.0,
+        "hours": 3.75,
         "grade": "senior",
         "role": "developer",
         "comment": "a bash dispatcher whose fallbacks (non-git, other repo, stale branch) each have to stay exact, plus the multi-repo generator's classification"
@@ -51,18 +51,18 @@
   "url": "https://claude.ai/code/session_01RAikutHxsrZ71oQYawowXs",
   "operator": "vzakharov",
   "firstResponseAt": "2026-11-14T08:40:13.760Z",
-  "lastResponseAt": "2026-11-14T08:52:13.346Z",
+  "lastResponseAt": "2026-11-14T09:48:23.601Z",
   "pricesAsOf": "2026-10-06",
   "claudeCodeTotalUsd": null,
   "ownTurns": {
-    "inputTokens": 83,
+    "inputTokens": 100,
     "cacheWrite5mTokens": 0,
-    "cacheWrite1hTokens": 115046,
-    "cacheReadTokens": 4199317,
-    "outputTokens": 20196,
-    "thinkingTokens": 4942,
-    "responses": 39,
-    "costUsd": 2.1644834
+    "cacheWrite1hTokens": 129114,
+    "cacheReadTokens": 5418306,
+    "outputTokens": 26048,
+    "thinkingTokens": 5675,
+    "responses": 47,
+    "costUsd": 2.6379331999999995
   },
   "subagents": {
     "inputTokens": 31,
@@ -76,23 +76,23 @@
   },
   "byRate": {
     "claude-opus-5-5/standard": {
-      "inputTokens": 114,
+      "inputTokens": 131,
       "cacheWrite5mTokens": 88367,
-      "cacheWrite1hTokens": 115046,
-      "cacheReadTokens": 5258825,
-      "outputTokens": 24701,
-      "thinkingTokens": 6837,
-      "responses": 54,
-      "costUsd": 2.9084439999999994
+      "cacheWrite1hTokens": 129114,
+      "cacheReadTokens": 6477814,
+      "outputTokens": 30553,
+      "thinkingTokens": 7570,
+      "responses": 62,
+      "costUsd": 3.381893799999999
     }
   },
   "warnings": [],
   "compactions": [],
   "telemetry": {
-    "events": 54,
-    "matched": 54,
-    "matchedTableUsd": 2.9084439999999994,
-    "matchedEventUsd": 2.908443999999999,
+    "events": 62,
+    "matched": 62,
+    "matchedTableUsd": 3.381893799999999,
+    "matchedEventUsd": 3.381893799999999,
     "unseen": {}
   }
 }
