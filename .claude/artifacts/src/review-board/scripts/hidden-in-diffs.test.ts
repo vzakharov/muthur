@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { generatedPaths } from "./generated.ts";
+import { hiddenInDiffs } from "./hidden-in-diffs.ts";
 
 const output = (entries: [string, string][]): string =>
   entries
@@ -8,25 +8,25 @@ const output = (entries: [string, string][]): string =>
     .join("");
 
 test("keeps the paths marked set or true", () => {
-  const paths = generatedPaths(
+  const paths = hiddenInDiffs(
     output([
       ["gen/bare.ts", "set"],
-      ["gen/explicit.ts", "true"],
+      ["pnpm-lock.yaml", "true"],
       ["src/plain.ts", "unspecified"],
       ["src/opted-out.ts", "false"],
       ["src/negated.ts", "unset"],
     ]),
   );
-  assert.deepEqual([...paths], ["gen/bare.ts", "gen/explicit.ts"]);
+  assert.deepEqual([...paths], ["gen/bare.ts", "pnpm-lock.yaml"]);
 });
 
 test("keeps a path with spaces whole", () => {
   assert.deepEqual(
-    [...generatedPaths(output([["gen/a b.ts", "true"]]))],
+    [...hiddenInDiffs(output([["gen/a b.ts", "true"]]))],
     ["gen/a b.ts"],
   );
 });
 
-test("reads empty output as no generated paths", () => {
-  assert.equal(generatedPaths("").size, 0);
+test("reads empty output as no hidden paths", () => {
+  assert.equal(hiddenInDiffs("").size, 0);
 });

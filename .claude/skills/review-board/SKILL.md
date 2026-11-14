@@ -39,15 +39,16 @@ button.
   `[[12, 30]]` for one — inclusive; leave them out when the whole file is the
   point. A span marks rows only while a card's diff ends on HEAD's content.
 - **Few items, in reading order** — the list is the reviewer's route.
-- **The collector fails the build** on a path the branch did not change, a
-  generated path, a path listed twice, an empty `why`, or a span outside the
+- **The collector fails the build** on a path the branch did not change, a path
+  hidden in diffs, a path listed twice, an empty `why`, or a span outside the
   file. It reads the file from HEAD and keeps it off the board; with no file
   there is no focus.
 
-**A generated file stays off the board**, as GitHub collapses it in a PR diff,
-when `.gitattributes` at HEAD marks it `linguist-generated=true`: it is reviewed
-through its source and the script that writes it. A branch that adds generated
-output commits that mark with it.
+**A file GitHub hides by default in diffs stays off the board too** — any path
+`.gitattributes` at HEAD marks `linguist-generated`, GitHub's mark for it
+whatever the file is: build output, a lockfile, a vendored bundle. Such a file
+is reviewed through what produces it, so a branch that adds one it would rather
+not read line by line commits the mark with it.
 
 ```bash
 node .claude/artifacts/src/review-board/scripts/build.ts

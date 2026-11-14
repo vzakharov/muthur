@@ -25,10 +25,10 @@ test("rejects a path that is not among the changed files", () => {
   );
 });
 
-test("rejects a generated path, naming why it is off the board", () => {
+test("rejects a path hidden in diffs, naming why it is off the board", () => {
   assert.throws(
     () => parse([{ path: "gen/shader.ts", why: "x" }]),
-    /marked linguist-generated/,
+    /hidden by default in diffs/,
   );
 });
 

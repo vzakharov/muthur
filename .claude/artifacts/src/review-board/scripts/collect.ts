@@ -6,7 +6,7 @@ import type {
   ReviewFile,
 } from "#src/review-board/shared/review-data/index.ts";
 import { FOCUS_PATH, lineCount, parseFocus } from "./focus.ts";
-import { CHECK_GENERATED, generatedPaths } from "./generated.ts";
+import { CHECK_HIDDEN_IN_DIFFS, hiddenInDiffs } from "./hidden-in-diffs.ts";
 
 interface CollectOptions {
   cwd: string;
@@ -339,7 +339,7 @@ function readBlobs(cwd: string, ids: string[]): Record<string, string> {
 function readFocus(
   cwd: string,
   files: ReviewFile[],
-  generated: ReadonlySet<string>,
+  hidden: ReadonlySet<string>,
   blobs: Record<string, string>,
 ): ReviewData["focus"] {
   const listed = gitText(cwd, [
@@ -360,30 +360,30 @@ function readFocus(
   return parseFocus(
     gitText(cwd, ["show", `HEAD:${FOCUS_PATH}`]),
     counts,
-    generated,
+    hidden,
   );
 }
 
-/** The changed paths `.gitattributes` at HEAD marks `linguist-generated`. */
-function readGenerated(cwd: string, paths: string[]): Set<string> {
+/** The changed paths GitHub hides by default in diffs, per `.gitattributes` at HEAD. */
+function readHidden(cwd: string, paths: string[]): Set<string> {
   if (paths.length === 0) return new Set();
-  return generatedPaths(gitText(cwd, CHECK_GENERATED, paths.join("\0")));
+  return hiddenInDiffs(gitText(cwd, CHECK_HIDDEN_IN_DIFFS, paths.join("\0")));
 }
 
 export function collect({ cwd, base }: CollectOptions): ReviewData {
   const pr = readPr(cwd);
   const baseRef = resolveBaseRef(cwd, base, pr);
   const baseSha = resolveBaseSha(cwd, baseRef);
-  // The focus file is about the review, not part of it; a generated file is
-  // reviewed through its source and the script that writes it.
+  // The focus file is about the review, not part of it; a file GitHub hides by
+  // default in diffs is one the repo declared not worth reading line by line.
   const changed = readChanges(cwd, baseSha).filter(
     (change) => change.path !== FOCUS_PATH,
   );
-  const generated = readGenerated(
+  const hidden = readHidden(
     cwd,
     changed.map((change) => change.path),
   );
-  const changes = changed.filter((change) => !generated.has(change.path));
+  const changes = changed.filter((change) => !hidden.has(change.path));
   const binary = readBinaryPaths(cwd, baseSha);
   const revisions = readRevisions(cwd, baseSha, changes);
 
@@ -413,7 +413,7 @@ export function collect({ cwd, base }: CollectOptions): ReviewData {
     collectedAt: new Date().toISOString(),
     commits: readCommits(cwd, baseSha),
     files,
-    focus: readFocus(cwd, files, generated, blobs),
+    focus: readFocus(cwd, files, hidden, blobs),
     blobs,
   };
 }

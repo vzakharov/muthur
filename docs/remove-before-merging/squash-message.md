@@ -1,19 +1,21 @@
 Proposed squash body:
 
 ```
-A generated file is reviewed through its source and the script that
-writes it, so its diff on the review board is noise; in one adopter,
-~130 generated shader modules were 1.6 MB of a 6.7 MB board.
+A file GitHub hides by default in diffs is one the repo has declared
+not worth reading line by line, yet the review board showed it in full;
+in one adopter, ~130 generated shader modules were 1.6 MB of a 6.7 MB
+board.
 
 The collector now leaves off every changed path that `.gitattributes`
-marks `linguist-generated` (set or true), the mark GitHub collapses in
-a PR diff. It reads the attributes with `git check-attr --source=HEAD`,
-so the board stays built from git alone; the call and its parser live
-in the review board's `scripts/generated.ts`.
+marks `linguist-generated` (set or true), GitHub's mark for such a file
+whatever it is: build output, a lockfile, a vendored bundle. It reads
+the attributes with `git check-attr --source=HEAD`, so the board stays
+built from git alone; the call and its parser live in the review
+board's `scripts/hidden-in-diffs.ts`.
 
-A focus entry naming a generated path fails with that reason rather
-than "not among the changed files", and the review-board skill says how
-to keep a file off the board: commit the mark with the generated output.
+A focus entry naming such a path fails with that reason rather than
+"not among the changed files", and the review-board skill says how to
+keep a file off the board: commit the mark with it.
 
 Co-authored-by: Claude <noreply@anthropic.com>
 ```
