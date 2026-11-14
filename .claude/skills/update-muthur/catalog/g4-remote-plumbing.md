@@ -142,7 +142,7 @@ the working tree clean, and behaves the same everywhere.
   that carries the hook, runs that worktree's copy with `CLAUDE_PROJECT_DIR`
   pointed at it, so a session working in a worktree runs its own branch's hooks
   and keeps their state where its scripts look; anywhere else, runs the hook
-  from `CLAUDE_PROJECT_DIR` as before. Tested by `scripts/test_dispatch.py`.
+  from `CLAUDE_PROJECT_DIR`. Tested by `scripts/test_dispatch.py`.
   - **Requires:** `bash`, `git`; `jq`, without which every hook runs from
     `CLAUDE_PROJECT_DIR`
   - **Disposition:** adopt — **with `settings.json`**
