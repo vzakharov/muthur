@@ -106,10 +106,10 @@ is the first moment anyone has read the code. Work that fits is taken whole.
 Work that doesn't is split in one of two shapes, and the plan names which, with
 a recommendation, so the choice is the operator's at review:
 
-- **Elephant** — eaten a bite per session, in one PR. The plan is what is eaten
-  so far and the rest of the elephant, both coarse, plus the open bite in
-  detail; each session takes a bite, builds it, rewrites the plan and pauses,
-  and the operator reviews before the next `/go`. The default.
+- **Elephant** — eaten a bite at a time, in one PR. The plan is what is eaten so
+  far and the rest of the elephant, both coarse, plus the open bite in detail;
+  each bite is taken, built, folded into the plan and paused on, and the
+  operator reviews before the next `/go`. The default.
 - **Pizza** — carved into slices that each ship as their own PR, tracked as
   issues the plan proposes. It takes a reason, and any one of these is enough:
   - the slices are self-contained enough to land on the trunk separately;

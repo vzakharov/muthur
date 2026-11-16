@@ -257,7 +257,10 @@ to get there:
   it wrong or learned what it needs, while this session still holds that
   context; then run Step 3 and Step 4, which leave the plan `*.paused.md`. Stop
   there, budget left or not — the operator reviews between bites — and end the
-  turn with the handoff block below.
+  turn offering `/relay`, whose successor takes the next bite, unless the
+  environment chose compaction over relays (`.claude/context-budget/CLAUDE.md`
+  names the variables that say so): then the next bite continues in this
+  session.
 - **A stop mid-bite** — the budget notice, the operator, or a question that
   blocks the turn: fold what is built into `## Eaten so far`, rename
   `## This bite` to `## Rest of the bite` and leave the rest as written, then
