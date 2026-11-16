@@ -1,0 +1,103 @@
+{
+  "total": {
+    "inputTokens": 143,
+    "cacheWrite5mTokens": 110293,
+    "cacheWrite1hTokens": 148342,
+    "cacheReadTokens": 11517711,
+    "outputTokens": 27171,
+    "thinkingTokens": 6728,
+    "responses": 75,
+    "costUsd": 4.585735199999999
+  },
+  "estimate": {
+    "at": "2026-11-16T05:45:13.045Z",
+    "parts": [
+      {
+        "hours": 0.75,
+        "grade": "senior",
+        "role": "developer",
+        "comment": "the dispatcher was already built on a branch; what remains is syncing it with main, checking it against the adopter's version and opening its PR"
+      },
+      {
+        "hours": 1.0,
+        "grade": "middle",
+        "role": "editor",
+        "comment": "the relay offer at a bite's end is stated in several skill files that must agree"
+      }
+    ],
+    "comment": null
+  },
+  "orientation": {
+    "endedBy": "oriented",
+    "endedOn": null,
+    "endedAt": "2026-11-16T05:41:37.002Z",
+    "contextTokens": 108364,
+    "spend": {
+      "inputTokens": 10,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 44725,
+      "cacheReadTokens": 469813,
+      "outputTokens": 1107,
+      "thinkingTokens": 125,
+      "responses": 5,
+      "costUsd": 0.4739426
+    }
+  },
+  "sessionId": "a180b9f6-d98c-5a21-8407-84aec861dcb5",
+  "branch": "claude/worktree-hook-dispatch",
+  "cwd": "/home/user/muthur",
+  "openingPrompt": "/task Port two changes from the adopter repo `vzakharov/pl-hub` upstream into muthur, as **two separate draft PRs** (one per change), each through the normal lo…",
+  "prs": [
+    276,
+    277
+  ],
+  "url": "https://claude.ai/code/session_01RAikuwMqNwcmcxPBgo9twA",
+  "operator": "vzakharov",
+  "firstResponseAt": "2026-11-16T05:41:15.838Z",
+  "lastResponseAt": "2026-11-16T05:46:49.020Z",
+  "pricesAsOf": "2026-10-06",
+  "claudeCodeTotalUsd": null,
+  "ownTurns": {
+    "inputTokens": 124,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 148342,
+    "cacheReadTokens": 10769890,
+    "outputTokens": 23736,
+    "thinkingTokens": 5406,
+    "responses": 66,
+    "costUsd": 3.81593
+  },
+  "subagents": {
+    "inputTokens": 19,
+    "cacheWrite5mTokens": 110293,
+    "cacheWrite1hTokens": 0,
+    "cacheReadTokens": 747821,
+    "outputTokens": 3435,
+    "thinkingTokens": 1322,
+    "responses": 9,
+    "costUsd": 0.7698052000000001
+  },
+  "byRate": {
+    "claude-opus-5-5/standard": {
+      "inputTokens": 143,
+      "cacheWrite5mTokens": 110293,
+      "cacheWrite1hTokens": 148342,
+      "cacheReadTokens": 11517711,
+      "outputTokens": 27171,
+      "thinkingTokens": 6728,
+      "responses": 75,
+      "costUsd": 4.585735199999999
+    }
+  },
+  "warnings": [
+    "1 responses were written with the usage their stream started with — no `stop_reason`, as a subagent's transcript writes each one — and no event to correct it, so their output tokens are a floor"
+  ],
+  "compactions": [],
+  "telemetry": {
+    "events": 74,
+    "matched": 74,
+    "matchedTableUsd": 4.5532352,
+    "matchedEventUsd": 4.5532352,
+    "unseen": {}
+  }
+}
