@@ -70,7 +70,8 @@ where it stands, a last step aside. What the agent does on each notice is
 - **Under `CLAUDE_CODE_AUTO_COMPACT_WINDOW` below 350k the hook is silent**,
   since a window that small is the environment choosing the compact over the
   relay both notices steer to. `MUTHUR_RELAY_DESPITE_AUTOCOMPACT=true` brings
-  them back.
+  them back. `/go` reads the same condition at an elephant bite's end, offering
+  `/relay` only where these notices would fire.
 - **Anything unreadable is silence**, never an error: a missing notice costs a
   warning, a hook failing on every tool call costs the session.
 

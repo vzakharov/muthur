@@ -12,5 +12,15 @@
   {
     "path": ".claude/skills/update-muthur/catalog/g4-remote-plumbing.md",
     "why": "Контракт для адоптеров: dispatch.sh берётся вместе с settings.json, а свои хуки переписываются через него — иначе ломаются все хуки сразу."
+  },
+  {
+    "path": ".claude/skills/go/SKILL.md",
+    "why": "Второе изменение: в конце укуса /relay предлагается, только если среда не выбрала автокомпакт; иначе следующий укус идёт в этой же сессии, а ревью между укусами остаётся.",
+    "lines": [[255, 263]]
+  },
+  {
+    "path": ".claude/context-budget/CLAUDE.md",
+    "why": "Дом условия (CLAUDE_CODE_AUTO_COMPACT_WINDOW < 350k, MUTHUR_RELAY_DESPITE_AUTOCOMPACT): тот, кто сдвинет порог, должен знать, что /go читает то же условие.",
+    "lines": [[70, 74]]
   }
 ]
