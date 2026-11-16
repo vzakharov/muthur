@@ -1,0 +1,12 @@
+[
+  {
+    "path": ".claude/skills/go/SKILL.md",
+    "why": "Само правило: в конце укуса /relay предлагается, только если среда не выбрала автокомпакт; иначе следующий укус идёт в этой же сессии, а ревью между укусами остаётся.",
+    "lines": [[255, 263]]
+  },
+  {
+    "path": ".claude/context-budget/CLAUDE.md",
+    "why": "Дом условия (CLAUDE_CODE_AUTO_COMPACT_WINDOW < 350k, MUTHUR_RELAY_DESPITE_AUTOCOMPACT): тот, кто сдвинет порог, должен знать, что /go читает то же условие.",
+    "lines": [[70, 74]]
+  }
+]
