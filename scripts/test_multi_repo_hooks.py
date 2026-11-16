@@ -157,6 +157,34 @@ class MultiRepoHooksTest(unittest.TestCase):
             ],
         )
 
+    def test_dispatched_hooks_are_classified_by_the_hook_they_front(self) -> None:
+        def dispatched(script: str) -> dict:
+            return command(".claude/hooks/dispatch.sh", script)
+
+        alpha, beta = self.two_repos(
+            {
+                "UserPromptSubmit": [
+                    {
+                        "hooks": [
+                            dispatched(".claude/hooks/format-md.sh"),
+                            dispatched(".claude/hooks/operator-voice.sh"),
+                            dispatched(".claude/hooks/prompt-issue-export.sh"),
+                        ]
+                    }
+                ]
+            }
+        )
+        self.assertEqual(self.fx.run().returncode, 0)
+        prefix = ".claude/hooks/dispatch.sh .claude/hooks"
+        self.assertEqual(
+            self.fx.commands("UserPromptSubmit"),
+            [
+                f"CLAUDE_PROJECT_DIR={alpha} {alpha}/{prefix}/format-md.sh",
+                f"CLAUDE_PROJECT_DIR={alpha} {alpha}/{prefix}/operator-voice.sh",
+                f"CLAUDE_PROJECT_DIR={beta} {beta}/{prefix}/format-md.sh",
+            ],
+        )
+
     def test_a_once_hook_runs_from_the_primary(self) -> None:
         _, beta = self.two_repos(
             {"Stop": [{"hooks": [command(".claude/hooks/operator-voice.sh")]}]}

@@ -69,11 +69,21 @@ SKIPPED = frozenset(
 
 STAMP = "multi-repo-hooks.sha256"
 
+# Fronts each registered hook, taking the hook's own path as its first argument.
+DISPATCHER = ".claude/hooks/dispatch.sh"
+
 
 def hook_key(command: str) -> str:
-    """The repo-relative script a hook command runs: its classification key."""
+    """The repo-relative script a hook command runs: its classification key.
+
+    A command through the dispatcher is keyed by the hook it fronts, since that
+    is what PER_REPO and SKIPPED name.
+    """
     stripped = PROJECT_DIR_VAR.sub("", command, count=1).lstrip("/")
-    return shlex.split(stripped)[0] if stripped else ""
+    words = shlex.split(stripped) if stripped else []
+    if words[:1] == [DISPATCHER] and len(words) > 1:
+        return words[1]
+    return words[0] if words else ""
 
 
 def localize(command: str, repo: Path) -> str:

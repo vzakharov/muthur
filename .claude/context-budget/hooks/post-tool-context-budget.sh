@@ -45,7 +45,7 @@ switch() {
 # An auto-compact window this small is the environment choosing the compact over
 # the relay, so a notice steering to one is noise.
 compact_window="${CLAUDE_CODE_AUTO_COMPACT_WINDOW:-}"
-if [[ "$compact_window" =~ ^[0-9]+$ ]] && [ "$compact_window" -lt 350000 ] \
+if [[ "$compact_window" =~ ^[0-9]+$ ]] && [ "$compact_window" -le 400000 ] \
   && [ "$(switch MUTHUR_RELAY_DESPITE_AUTOCOMPACT "${MUTHUR_RELAY_DESPITE_AUTOCOMPACT:-}")" != yes ]; then
   exit 0
 fi

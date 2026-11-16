@@ -67,10 +67,11 @@ where it stands, a last step aside. What the agent does on each notice is
   use for it — and not at all once `MUTHUR_MANUAL_CONTEXT_BUDGET_RELAY` has
   settled how the pause ends. A `gh` that cannot answer, or a token that is not
   a `User`'s, has no operator file to read and leaves the default.
-- **Under `CLAUDE_CODE_AUTO_COMPACT_WINDOW` below 350k the hook is silent**,
-  since a window that small is the environment choosing the compact over the
-  relay both notices steer to. `MUTHUR_RELAY_DESPITE_AUTOCOMPACT=true` brings
-  them back.
+- **Under `CLAUDE_CODE_AUTO_COMPACT_WINDOW` at or below 400k the hook is
+  silent**, since a window that small is the environment choosing the compact
+  over the relay both notices steer to. `MUTHUR_RELAY_DESPITE_AUTOCOMPACT=true`
+  brings them back. `/go` reads the same condition at an elephant bite's end,
+  offering `/relay` only where these notices would fire.
 - **Anything unreadable is silence**, never an error: a missing notice costs a
   warning, a hook failing on every tool call costs the session.
 
