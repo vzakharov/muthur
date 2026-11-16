@@ -66,15 +66,15 @@ class WhenTheNoticesFire(BudgetTestCase):
         self.assertIn("50k warning line", notice)
 
     def test_a_small_auto_compact_window_silences_both_notices(self) -> None:
-        compact = {"CLAUDE_CODE_AUTO_COMPACT_WINDOW": "300000"}
+        compact = {"CLAUDE_CODE_AUTO_COMPACT_WINDOW": "400000"}
         self.session.append(assistant(WARN + 1))
         self.assertIsNone(self.session.notice(compact))
         self.session.append(assistant(PAUSE + 1))
         self.assertIsNone(self.session.notice(compact))
 
-    def test_an_auto_compact_window_at_the_cutoff_leaves_the_notices(self) -> None:
+    def test_an_auto_compact_window_past_the_cutoff_leaves_the_notices(self) -> None:
         self.session.append(assistant(WARN + 1))
-        self.assertIsNotNone(self.session.notice({"CLAUDE_CODE_AUTO_COMPACT_WINDOW": "350000"}))
+        self.assertIsNotNone(self.session.notice({"CLAUDE_CODE_AUTO_COMPACT_WINDOW": "400001"}))
 
     def test_the_despite_switch_keeps_the_notices_under_auto_compact(self) -> None:
         env = {
