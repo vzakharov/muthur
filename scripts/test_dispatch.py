@@ -22,9 +22,11 @@ from pathlib import Path
 DISPATCHER = Path(__file__).resolve().parent.parent / ".claude" / "hooks" / "dispatch.sh"
 HOOK = ".claude/hooks/probe.sh"
 
-# Prints its checkout's label, the project dir it was given, its args and its
-# stdin, then exits with PROBE_EXIT.
+# Records its checkout's label as session state under the project dir it was
+# given, as a hook keeping per-session state does; prints that label, the
+# project dir, its args and its stdin, then exits with PROBE_EXIT.
 PROBE = """#!/bin/sh
+mkdir -p "$CLAUDE_PROJECT_DIR/tmp/probe" && printf '{label}' >"$CLAUDE_PROJECT_DIR/tmp/probe/s"
 printf '%s|%s|%s|' "{label}" "$CLAUDE_PROJECT_DIR" "$*"
 cat
 exit "${{PROBE_EXIT:-0}}"
@@ -80,8 +82,22 @@ class DispatchTest(unittest.TestCase):
         *args: str,
         project_dir: Path | None = None,
         env: dict[str, str] | None = None,
+        started_in: Path | None = None,
     ) -> subprocess.CompletedProcess:
-        payload = json.dumps({"cwd": str(cwd)} if cwd else {"session_id": "s"})
+        """`started_in` writes a transcript whose first `cwd` is there, as the
+        session's opening records name where it started."""
+        event: dict[str, str] = {"cwd": str(cwd)} if cwd else {"session_id": "s"}
+        if started_in is not None:
+            transcript = Path(self._tmp.name) / "transcript.jsonl"
+            transcript.write_text(
+                "\n".join(
+                    json.dumps(record)
+                    for record in ({"type": "summary"}, {"type": "user", "cwd": str(started_in)})
+                )
+                + "\n"
+            )
+            event["transcript_path"] = str(transcript)
+        payload = json.dumps(event)
         environ = dict(os.environ)
         environ.pop("CLAUDE_PROJECT_DIR", None)
         environ.pop("PROBE_EXIT", None)
@@ -108,6 +124,31 @@ class DispatchTest(unittest.TestCase):
     def test_worktree_subdirectory_cwd_runs_the_worktrees_hook(self) -> None:
         result = self.dispatch(self.worktree / ".claude" / "hooks", project_dir=self.main)
         self.assertEqual(self.ran(result), ("worktree", str(self.worktree)))
+
+    def test_a_delegates_worktree_cwd_keeps_state_where_the_session_started(self) -> None:
+        delegate = self.main / ".claude" / "worktrees" / "agent"
+        git(self.main, "worktree", "add", "-q", "-b", "agent", str(delegate))
+        write_probe(delegate, "delegate")
+        result = self.dispatch(delegate, project_dir=self.main, started_in=self.main)
+        self.assertEqual(self.ran(result), ("main", str(self.main)))
+        self.assertEqual((self.main / "tmp" / "probe" / "s").read_text(), "main")
+        self.assertFalse((delegate / "tmp").exists())
+
+    def test_a_session_started_in_a_worktree_stays_there_from_any_cwd(self) -> None:
+        result = self.dispatch(self.main, project_dir=self.main, started_in=self.worktree)
+        self.assertEqual(self.ran(result), ("worktree", str(self.worktree)))
+
+    def test_a_transcript_naming_no_start_runs_from_the_anchor(self) -> None:
+        transcript = Path(self._tmp.name) / "empty.jsonl"
+        transcript.write_text('{"type":"summary"}\nnot json\n')
+        result = subprocess.run(
+            [str(self.main / ".claude" / "hooks" / "dispatch.sh"), HOOK],
+            input=json.dumps({"cwd": str(self.worktree), "transcript_path": str(transcript)}),
+            env={**os.environ, "CLAUDE_PROJECT_DIR": str(self.main)},
+            capture_output=True,
+            text=True,
+        )
+        self.assertEqual(self.ran(result), ("main", str(self.main)))
 
     def test_same_checkout_runs_from_the_anchor(self) -> None:
         result = self.dispatch(self.main / ".claude", project_dir=self.main)
