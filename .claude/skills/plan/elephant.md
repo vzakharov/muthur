@@ -70,9 +70,7 @@ The session that claims the plan writes `## This bite` before building:
   bite's end normally comes before the hook says anything, and a notice arriving
   mid-bite means the bite was cut too big;
 - is one per pause: the pause is for the operator's review, not for saving
-  tokens, so a session that finishes its bite early stops there. The next bite
-  goes to a fresh session through `/relay`, or stays in this one where the
-  environment chose compaction over relays.
+  tokens, so a session that finishes its bite early stops there.
 
 What a pause does — at a bite's end or forced mid-bite by the budget — is `/go`
 Step 2's.
