@@ -1,13 +1,13 @@
 {
   "total": {
-    "inputTokens": 21,
+    "inputTokens": 32,
     "cacheWrite5mTokens": 0,
-    "cacheWrite1hTokens": 65647,
-    "cacheReadTokens": 1050598,
-    "outputTokens": 3061,
-    "thinkingTokens": 628,
-    "responses": 10,
-    "costUsd": 0.7965996000000001
+    "cacheWrite1hTokens": 82507,
+    "cacheReadTokens": 1845237,
+    "outputTokens": 5982,
+    "thinkingTokens": 829,
+    "responses": 16,
+    "costUsd": 1.1488714
   },
   "estimate": {
     "at": "2026-11-17T03:18:37.905Z",
@@ -41,22 +41,24 @@
   "branch": "worktree-dispatch-started-in",
   "cwd": "/home/user/muthur",
   "openingPrompt": "/relay take worktree-dispatch-started-in — черновик PR #278 запаркован",
-  "prs": [],
+  "prs": [
+    278
+  ],
   "url": "https://claude.ai/code/session_016Z4TKpDsdWwjzM7Y8oYifG",
   "operator": "vzakharov",
   "firstResponseAt": "2026-11-17T03:18:18.842Z",
-  "lastResponseAt": "2026-11-17T03:46:50.604Z",
+  "lastResponseAt": "2026-11-17T04:42:27.317Z",
   "pricesAsOf": "2026-10-06",
   "claudeCodeTotalUsd": null,
   "ownTurns": {
-    "inputTokens": 21,
+    "inputTokens": 32,
     "cacheWrite5mTokens": 0,
-    "cacheWrite1hTokens": 65647,
-    "cacheReadTokens": 1050598,
-    "outputTokens": 3061,
-    "thinkingTokens": 628,
-    "responses": 10,
-    "costUsd": 0.7965996000000001
+    "cacheWrite1hTokens": 82507,
+    "cacheReadTokens": 1845237,
+    "outputTokens": 5982,
+    "thinkingTokens": 829,
+    "responses": 16,
+    "costUsd": 1.1488714
   },
   "subagents": {
     "inputTokens": 0,
@@ -70,14 +72,14 @@
   },
   "byRate": {
     "claude-opus-5-5/standard": {
-      "inputTokens": 21,
+      "inputTokens": 32,
       "cacheWrite5mTokens": 0,
-      "cacheWrite1hTokens": 65647,
-      "cacheReadTokens": 1050598,
-      "outputTokens": 3061,
-      "thinkingTokens": 628,
-      "responses": 10,
-      "costUsd": 0.7965996000000001
+      "cacheWrite1hTokens": 82507,
+      "cacheReadTokens": 1845237,
+      "outputTokens": 5982,
+      "thinkingTokens": 829,
+      "responses": 16,
+      "costUsd": 1.1488714
     }
   },
   "warnings": [],
