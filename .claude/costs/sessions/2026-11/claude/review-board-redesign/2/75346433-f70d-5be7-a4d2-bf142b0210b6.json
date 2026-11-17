@@ -1,0 +1,98 @@
+{
+  "total": {
+    "inputTokens": 17,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 53288,
+    "cacheReadTokens": 849489,
+    "outputTokens": 2561,
+    "thinkingTokens": 370,
+    "responses": 8,
+    "costUsd": 0.6474898
+  },
+  "estimate": {
+    "at": "2026-11-17T05:30:11.492Z",
+    "parts": [
+      {
+        "hours": 14.0,
+        "grade": "senior",
+        "role": "developer",
+        "comment": "a new builder with git range resolution, validation that fails loudly, static rendering and comment anchoring replaces an 8k-line app; the anchoring needs a spike against the artifact runtime"
+      },
+      {
+        "hours": 3.0,
+        "grade": "senior",
+        "role": "prompter",
+        "comment": "the skill and its callers in /pr and /finalize carry a new agent-written data contract whose rules decide how well parts are cut"
+      }
+    ],
+    "comment": null
+  },
+  "orientation": {
+    "endedBy": "end_turn",
+    "endedOn": null,
+    "endedAt": "2026-11-17T05:30:19.721Z",
+    "contextTokens": 118265,
+    "spend": {
+      "inputTokens": 16,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 52548,
+      "cacheReadTokens": 731965,
+      "outputTokens": 1871,
+      "thinkingTokens": 319,
+      "responses": 7,
+      "costUsd": 0.604261
+    }
+  },
+  "sessionId": "75346433-f70d-5be7-a4d2-bf142b0210b6",
+  "branch": "claude/review-board-redesign",
+  "cwd": "/home/user/muthur",
+  "openingPrompt": "/relay take claude/review-board-redesign — план на черновом PR, ждёт ответов Вовы",
+  "prs": [],
+  "url": "https://claude.ai/code/session_01RAikuw9gdDUVZU4rMxj5Dx",
+  "operator": null,
+  "firstResponseAt": "2026-11-17T05:29:44.461Z",
+  "lastResponseAt": "2026-11-17T05:30:19.721Z",
+  "pricesAsOf": "2026-10-06",
+  "claudeCodeTotalUsd": null,
+  "ownTurns": {
+    "inputTokens": 17,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 53288,
+    "cacheReadTokens": 849489,
+    "outputTokens": 2561,
+    "thinkingTokens": 370,
+    "responses": 8,
+    "costUsd": 0.6474898
+  },
+  "subagents": {
+    "inputTokens": 0,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 0,
+    "cacheReadTokens": 0,
+    "outputTokens": 0,
+    "thinkingTokens": 0,
+    "responses": 0,
+    "costUsd": 0.0
+  },
+  "byRate": {
+    "claude-opus-5-5/standard": {
+      "inputTokens": 17,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 53288,
+      "cacheReadTokens": 849489,
+      "outputTokens": 2561,
+      "thinkingTokens": 370,
+      "responses": 8,
+      "costUsd": 0.6474898
+    }
+  },
+  "warnings": [],
+  "compactions": [],
+  "telemetry": {
+    "events": 8,
+    "matched": 8,
+    "matchedTableUsd": 0.6474898,
+    "matchedEventUsd": 0.6474898,
+    "unseen": {}
+  }
+}
