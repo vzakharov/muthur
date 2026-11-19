@@ -1,13 +1,13 @@
 {
   "total": {
-    "inputTokens": 65,
-    "cacheWrite5mTokens": 101561,
-    "cacheWrite1hTokens": 114024,
-    "cacheReadTokens": 3573193,
-    "outputTokens": 21238,
-    "thinkingTokens": 7707,
-    "responses": 29,
-    "costUsd": 1.9155266050000002
+    "inputTokens": 97,
+    "cacheWrite5mTokens": 208932,
+    "cacheWrite1hTokens": 115372,
+    "cacheReadTokens": 5156527,
+    "outputTokens": 25901,
+    "thinkingTokens": 9794,
+    "responses": 45,
+    "costUsd": 2.873220405
   },
   "estimate": {
     "at": "2026-11-19T11:30:51.625Z",
@@ -53,39 +53,39 @@
   "url": "https://claude.ai/code/session_01WLCYzxbv6xTiNTdMJgLZsB",
   "operator": "vzakharov",
   "firstResponseAt": "2026-11-19T11:28:51.685Z",
-  "lastResponseAt": "2026-11-19T11:32:33.055Z",
+  "lastResponseAt": "2026-11-19T11:33:32.290Z",
   "pricesAsOf": "2026-10-06",
   "claudeCodeTotalUsd": null,
   "ownTurns": {
-    "inputTokens": 57,
+    "inputTokens": 60,
     "cacheWrite5mTokens": 0,
-    "cacheWrite1hTokens": 114024,
-    "cacheReadTokens": 3430461,
-    "outputTokens": 13877,
+    "cacheWrite1hTokens": 115372,
+    "cacheReadTokens": 3766447,
+    "outputTokens": 14217,
     "thinkingTokens": 3690,
-    "responses": 25,
-    "costUsd": 1.8760522000000002
+    "responses": 27,
+    "costUsd": 1.9608454000000002
   },
   "subagents": {
-    "inputTokens": 8,
-    "cacheWrite5mTokens": 101561,
+    "inputTokens": 37,
+    "cacheWrite5mTokens": 208932,
     "cacheWrite1hTokens": 0,
-    "cacheReadTokens": 142732,
-    "outputTokens": 7361,
-    "thinkingTokens": 4017,
-    "responses": 4,
-    "costUsd": 0.039474405
+    "cacheReadTokens": 1390080,
+    "outputTokens": 11684,
+    "thinkingTokens": 6104,
+    "responses": 18,
+    "costUsd": 0.912375005
   },
   "byRate": {
     "claude-opus-5-5/standard": {
-      "inputTokens": 57,
-      "cacheWrite5mTokens": 0,
-      "cacheWrite1hTokens": 114024,
-      "cacheReadTokens": 3430461,
-      "outputTokens": 13877,
-      "thinkingTokens": 3690,
-      "responses": 25,
-      "costUsd": 1.8760522000000002
+      "inputTokens": 89,
+      "cacheWrite5mTokens": 107371,
+      "cacheWrite1hTokens": 115372,
+      "cacheReadTokens": 5013795,
+      "outputTokens": 18540,
+      "thinkingTokens": 5777,
+      "responses": 41,
+      "costUsd": 2.833746
     },
     "claude-haiku-5-5/standard": {
       "inputTokens": 8,
