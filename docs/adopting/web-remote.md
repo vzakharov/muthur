@@ -126,9 +126,10 @@ can paste into that setting. Three things make it worth the paragraph:
   run before deleting an abandoned branch name on origin is invisible to it, and
   the delete reads as Git Destructive. And it is where the loop's sticky PR
   comments get approved: the classifier reads `scripts/pr-comment.sh`'s edit as
-  External System Writes, and cloud sessions do not honour the project's
-  `permissions.allow`, so the rule `.claude/settings.json` carries for it never
-  reaches them.
+  External System Writes, and the rule `.claude/settings.json` carries for it
+  cannot be counted on in a cloud session —
+  [`.claude/rules/cloud-permissions.md`](../../.claude/rules/cloud-permissions.md)
+  says which sessions it reaches.
 
 ### Where it goes — tell the operator this, not just "the settings"
 
