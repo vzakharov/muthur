@@ -1,13 +1,13 @@
 {
   "total": {
-    "inputTokens": 48,
+    "inputTokens": 65,
     "cacheWrite5mTokens": 101561,
-    "cacheWrite1hTokens": 98492,
-    "cacheReadTokens": 2457007,
-    "outputTokens": 19000,
-    "thinkingTokens": 7636,
-    "responses": 22,
-    "costUsd": 1.523205405
+    "cacheWrite1hTokens": 114024,
+    "cacheReadTokens": 3573193,
+    "outputTokens": 21238,
+    "thinkingTokens": 7707,
+    "responses": 29,
+    "costUsd": 1.9155266050000002
   },
   "estimate": {
     "at": "2026-11-19T11:30:51.625Z",
@@ -47,22 +47,24 @@
   "branch": "cloud-settings-permissions-rule",
   "cwd": "/home/user/muthur",
   "openingPrompt": "/task Повесить path-scoped правило на `.claude/settings.json`. Контекст (Вова, 19.11.2026, из сессии оркестратора в vzakharov/sc-hub): агент там предложил дать …",
-  "prs": [],
+  "prs": [
+    279
+  ],
   "url": "https://claude.ai/code/session_01WLCYzxbv6xTiNTdMJgLZsB",
   "operator": "vzakharov",
   "firstResponseAt": "2026-11-19T11:28:51.685Z",
-  "lastResponseAt": "2026-11-19T11:31:58.695Z",
+  "lastResponseAt": "2026-11-19T11:32:33.055Z",
   "pricesAsOf": "2026-10-06",
   "claudeCodeTotalUsd": null,
   "ownTurns": {
-    "inputTokens": 40,
+    "inputTokens": 57,
     "cacheWrite5mTokens": 0,
-    "cacheWrite1hTokens": 98492,
-    "cacheReadTokens": 2314275,
-    "outputTokens": 11639,
-    "thinkingTokens": 3619,
-    "responses": 18,
-    "costUsd": 1.483731
+    "cacheWrite1hTokens": 114024,
+    "cacheReadTokens": 3430461,
+    "outputTokens": 13877,
+    "thinkingTokens": 3690,
+    "responses": 25,
+    "costUsd": 1.8760522000000002
   },
   "subagents": {
     "inputTokens": 8,
@@ -76,14 +78,14 @@
   },
   "byRate": {
     "claude-opus-5-5/standard": {
-      "inputTokens": 40,
+      "inputTokens": 57,
       "cacheWrite5mTokens": 0,
-      "cacheWrite1hTokens": 98492,
-      "cacheReadTokens": 2314275,
-      "outputTokens": 11639,
-      "thinkingTokens": 3619,
-      "responses": 18,
-      "costUsd": 1.483731
+      "cacheWrite1hTokens": 114024,
+      "cacheReadTokens": 3430461,
+      "outputTokens": 13877,
+      "thinkingTokens": 3690,
+      "responses": 25,
+      "costUsd": 1.8760522000000002
     },
     "claude-haiku-5-5/standard": {
       "inputTokens": 8,
