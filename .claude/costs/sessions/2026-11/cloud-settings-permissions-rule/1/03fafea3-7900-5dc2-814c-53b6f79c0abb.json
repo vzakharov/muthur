@@ -1,0 +1,102 @@
+{
+  "total": {
+    "inputTokens": 48,
+    "cacheWrite5mTokens": 101561,
+    "cacheWrite1hTokens": 98492,
+    "cacheReadTokens": 2457007,
+    "outputTokens": 19000,
+    "thinkingTokens": 7636,
+    "responses": 22,
+    "costUsd": 1.523205405
+  },
+  "estimate": {
+    "at": "2026-11-19T11:30:51.625Z",
+    "parts": [
+      {
+        "hours": 2.0,
+        "grade": "senior",
+        "role": "prompter",
+        "comment": "the rule must state a platform mechanic exactly as documented, separating verified from observed, in prose agents act on"
+      },
+      {
+        "hours": 1.0,
+        "grade": "middle",
+        "role": "analyst",
+        "comment": "checking the cloud permission model against docs and a prior PR's evidence before writing"
+      }
+    ],
+    "comment": null
+  },
+  "orientation": {
+    "endedBy": "oriented",
+    "endedOn": null,
+    "endedAt": "2026-11-19T11:29:09.763Z",
+    "contextTokens": 118136,
+    "spend": {
+      "inputTokens": 10,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 62944,
+      "cacheReadTokens": 358841,
+      "outputTokens": 1519,
+      "thinkingTokens": 499,
+      "responses": 4,
+      "costUsd": 0.6057402000000001
+    }
+  },
+  "sessionId": "03fafea3-7900-5dc2-814c-53b6f79c0abb",
+  "branch": "cloud-settings-permissions-rule",
+  "cwd": "/home/user/muthur",
+  "openingPrompt": "/task Повесить path-scoped правило на `.claude/settings.json`. Контекст (Вова, 19.11.2026, из сессии оркестратора в vzakharov/sc-hub): агент там предложил дать …",
+  "prs": [],
+  "url": "https://claude.ai/code/session_01WLCYzxbv6xTiNTdMJgLZsB",
+  "operator": "vzakharov",
+  "firstResponseAt": "2026-11-19T11:28:51.685Z",
+  "lastResponseAt": "2026-11-19T11:31:58.695Z",
+  "pricesAsOf": "2026-10-06",
+  "claudeCodeTotalUsd": null,
+  "ownTurns": {
+    "inputTokens": 40,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 98492,
+    "cacheReadTokens": 2314275,
+    "outputTokens": 11639,
+    "thinkingTokens": 3619,
+    "responses": 18,
+    "costUsd": 1.483731
+  },
+  "subagents": {
+    "inputTokens": 8,
+    "cacheWrite5mTokens": 101561,
+    "cacheWrite1hTokens": 0,
+    "cacheReadTokens": 142732,
+    "outputTokens": 7361,
+    "thinkingTokens": 4017,
+    "responses": 4,
+    "costUsd": 0.039474405
+  },
+  "byRate": {
+    "claude-opus-5-5/standard": {
+      "inputTokens": 40,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 98492,
+      "cacheReadTokens": 2314275,
+      "outputTokens": 11639,
+      "thinkingTokens": 3619,
+      "responses": 18,
+      "costUsd": 1.483731
+    },
+    "claude-haiku-5-5/standard": {
+      "inputTokens": 8,
+      "cacheWrite5mTokens": 101561,
+      "cacheWrite1hTokens": 0,
+      "cacheReadTokens": 142732,
+      "outputTokens": 7361,
+      "thinkingTokens": 4017,
+      "responses": 4,
+      "costUsd": 0.039474405
+    }
+  },
+  "warnings": [],
+  "compactions": [],
+  "telemetry": null
+}

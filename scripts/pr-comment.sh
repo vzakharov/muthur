@@ -11,7 +11,8 @@
 #     calls it "Sticky PR Comments"; an operator's own wording counts the same.
 #   - the `.claude/settings.json` allow rule, which resolves before the
 #     classifier in a session that honours the project's `permissions.allow`
-#     — a cloud session does not.
+#     — a cloud session cannot be counted on to
+#     (`.claude/rules/cloud-permissions.md`).
 # A denial on the web, not a name absent from `claude auto-mode config`, means
 # the setup script lacks the first: the reply that meets it names that entry
 # beside the phrase CLAUDE.md asks for, so the operator can add it. The file must

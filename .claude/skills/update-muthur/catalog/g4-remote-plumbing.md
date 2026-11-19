@@ -137,6 +137,12 @@ the working tree clean, and behaves the same everywhere.
     repositories"
   - **Pulls in:** both scripts above
   - **Disposition:** adopt
+- `.claude/rules/cloud-permissions.md` — On opening the project's settings
+  files: a permission added there does not reliably reach a cloud session, so
+  the approval goes into the setup script's `autoMode.allow` as an entry the
+  operator pastes, its text kept in `docs/adopting/web-remote.md`.
+  - **Requires:** `docs/adopting/web-remote.md`
+  - **Disposition:** adopt
 - `.claude/hooks/dispatch.sh` — Fronts every hook `settings.json` registers:
   where the hook payload's `cwd` lies in another worktree of the same repository
   that carries the hook, runs that worktree's copy with `CLAUDE_PROJECT_DIR`

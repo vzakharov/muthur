@@ -26,7 +26,9 @@ tables is its own call, and `markdown-wrap.md` (the 80-column wrap, and the
 GitHub-bound text it leaves alone), which holds whatever tool does the wrapping,
 and `multi-repo.md` (a session with several repositories attached), whose
 `paths:` name only its own scripts so that `CLAUDE.md`'s pointer is what loads
-it. Everything else here is yours: rules are mostly project-specific, and the
+it, and `cloud-permissions.md` (why a permission in the project's settings files
+does not reliably reach a cloud session, and the setup-script entry that does).
+Everything else here is yours: rules are mostly project-specific, and the
 reusable part is the mechanism. Add rule files as your conventions emerge.
 
 ## Format
