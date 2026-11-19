@@ -22,9 +22,8 @@ them is narrow:
   auto mode keeps only narrow rules, dropping broad ones such as `Bash(*)`.
 - **Observed beyond the docs:** in a cloud auto-mode session, a run spelled
   exactly as a narrow project `allow` rule was still denied by the classifier
-  ([muthur#239](https://github.com/vzakharov/muthur/pull/239)). Whether that
-  session was single-repository outside a project is not on record, so the gap
-  stays open.
+  (PR #239 of the template this loop ships from). Whether that session was
+  single-repository outside a project is not on record, so the gap stays open.
 
 So a project `allow` rule is worth keeping for local sessions, and is never the
 whole answer for cloud ones.
