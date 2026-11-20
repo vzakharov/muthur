@@ -27,9 +27,13 @@ const revisionSchema = z.object({
   size: z.nullable(z.number()),
 });
 
-const fileSchema = z.object({
+// Where a file lives at HEAD, and where it lived before git saw it renamed.
+const filePathsSchema = z.object({
   path: z.string(),
   oldPath: z.nullable(z.string()),
+});
+
+const fileSchema = z.extend(filePathsSchema, {
   status: z.enum(FILE_STATUSES),
   binary: z.boolean(),
   revisions: z.array(revisionSchema),
@@ -67,6 +71,7 @@ export type ReviewBranch = z.infer<typeof branchSchema>;
 export type ReviewData = z.infer<typeof reviewDataSchema>;
 export type Focus = z.infer<typeof focusSchema>;
 export type LineSpan = z.infer<typeof lineSpanSchema>;
+export type ReviewFilePaths = z.infer<typeof filePathsSchema>;
 export type ReviewFile = ReviewData["files"][number];
 export type ReviewCommit = ReviewData["commits"][number];
 export type FileStatus = (typeof FILE_STATUSES)[number];

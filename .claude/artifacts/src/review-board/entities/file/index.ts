@@ -11,6 +11,8 @@ export type {
   Shift,
 } from "./model/range.ts";
 export type { CommentTarget } from "./model/comment-target.ts";
+export { provenance } from "./model/provenance.ts";
+export type { Provenance } from "./model/provenance.ts";
 export { viewFileUrl } from "./model/view-file-url.ts";
 export { ageShades } from "./model/age-shade.ts";
 export type { AgeShade } from "./model/age-shade.ts";
