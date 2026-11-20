@@ -1,0 +1,86 @@
+{
+  "total": {
+    "inputTokens": 32,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 90872,
+    "cacheReadTokens": 1822213,
+    "outputTokens": 11644,
+    "thinkingTokens": 3928,
+    "responses": 16,
+    "costUsd": 1.3244266
+  },
+  "estimate": {
+    "at": "2026-10-25T13:17:00.716Z",
+    "parts": [
+      {
+        "hours": 1.0,
+        "grade": "senior",
+        "role": "architect",
+        "comment": "Framing the control-plane design against the existing ledger and naming its forks is judgement work; the decisions themselves are still open and belong to the session that settles them"
+      }
+    ],
+    "comment": null
+  },
+  "sessionId": "cec5906f-3239-5448-a8c9-edb48e12330f",
+  "branch": "claude/muthur-hub-discussion-u6b63n",
+  "cwd": "/home/user/muthur",
+  "openingPrompt": "хочу какую-то такую штуку типа \"центра управления muthur\" суть: у меня есть много реп, которые адоптнули muthur; у меня есть куча сессий, над которыми работаю. …",
+  "prs": [],
+  "url": "https://claude.ai/code/session_019RKfWgneBdX5BP3FhTfpLd",
+  "operator": "vzakharov",
+  "firstResponseAt": "2026-10-25T12:20:18.608Z",
+  "lastResponseAt": "2026-10-25T13:17:39.804Z",
+  "pricesAsOf": "2026-10-06",
+  "claudeCodeTotalUsd": null,
+  "ownTurns": {
+    "inputTokens": 32,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 90872,
+    "cacheReadTokens": 1822213,
+    "outputTokens": 11644,
+    "thinkingTokens": 3928,
+    "responses": 16,
+    "costUsd": 1.3244266
+  },
+  "subagents": {
+    "inputTokens": 0,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 0,
+    "cacheReadTokens": 0,
+    "outputTokens": 0,
+    "thinkingTokens": 0,
+    "responses": 0,
+    "costUsd": 0.0
+  },
+  "byRate": {
+    "claude-opus-5-5/standard": {
+      "inputTokens": 32,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 90872,
+      "cacheReadTokens": 1822213,
+      "outputTokens": 11644,
+      "thinkingTokens": 3928,
+      "responses": 16,
+      "costUsd": 1.3244266
+    }
+  },
+  "warnings": [],
+  "orientation": {
+    "endedBy": "end_turn",
+    "endedOn": null,
+    "endedAt": "2026-10-25T12:21:38.569Z",
+    "contextTokens": 125535,
+    "spend": {
+      "inputTokens": 14,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 74569,
+      "cacheReadTokens": 646764,
+      "outputTokens": 6384,
+      "thinkingTokens": 3367,
+      "responses": 7,
+      "costUsd": 0.8536408
+    }
+  },
+  "compactions": [],
+  "telemetry": null
+}
