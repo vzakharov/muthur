@@ -1,0 +1,94 @@
+{
+  "total": {
+    "inputTokens": 125,
+    "cacheWrite5mTokens": 107031,
+    "cacheWrite1hTokens": 135560,
+    "cacheReadTokens": 8096730,
+    "outputTokens": 27441,
+    "thinkingTokens": 6223,
+    "responses": 59,
+    "costUsd": 3.788300999999999
+  },
+  "estimate": {
+    "at": "2026-11-16T16:14:38.289Z",
+    "parts": [
+      {
+        "hours": 3.0,
+        "grade": "senior",
+        "role": "developer",
+        "comment": "hook dispatch is cross-cutting shell plumbing where a wrong root silently loses session state; needs git-worktree fixtures and a judgement on where the fix belongs"
+      },
+      {
+        "hours": 0.5,
+        "grade": "middle",
+        "role": "editor",
+        "comment": "the catalog entry and dispatcher contract must stay exact for adopters"
+      }
+    ],
+    "comment": null
+  },
+  "orientation": {
+    "endedBy": "oriented",
+    "endedOn": null,
+    "endedAt": "2026-11-16T16:13:17.077Z",
+    "contextTokens": 122548,
+    "spend": {
+      "inputTokens": 10,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 68042,
+      "cacheReadTokens": 472246,
+      "outputTokens": 1954,
+      "thinkingTokens": 453,
+      "responses": 5,
+      "costUsd": 0.6779051999999999
+    }
+  },
+  "sessionId": "5d886583-21cb-5f9f-8845-b1d64df68b8e",
+  "branch": "worktree-dispatch-started-in",
+  "cwd": "/home/user/muthur",
+  "openingPrompt": "/task",
+  "prs": [
+    278
+  ],
+  "url": "https://claude.ai/code/session_016Z4TKpmsU5nLQXCVVeoCti",
+  "operator": "vzakharov",
+  "firstResponseAt": "2026-11-16T16:12:45.251Z",
+  "lastResponseAt": "2026-11-16T17:13:12.593Z",
+  "pricesAsOf": "2026-10-06",
+  "claudeCodeTotalUsd": null,
+  "ownTurns": {
+    "inputTokens": 100,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 135560,
+    "cacheReadTokens": 6946948,
+    "outputTokens": 21770,
+    "thinkingTokens": 4712,
+    "responses": 46,
+    "costUsd": 2.909669599999999
+  },
+  "subagents": {
+    "inputTokens": 25,
+    "cacheWrite5mTokens": 107031,
+    "cacheWrite1hTokens": 0,
+    "cacheReadTokens": 1149782,
+    "outputTokens": 5671,
+    "thinkingTokens": 1511,
+    "responses": 13,
+    "costUsd": 0.8786314
+  },
+  "byRate": {
+    "claude-opus-5-5/standard": {
+      "inputTokens": 125,
+      "cacheWrite5mTokens": 107031,
+      "cacheWrite1hTokens": 135560,
+      "cacheReadTokens": 8096730,
+      "outputTokens": 27441,
+      "thinkingTokens": 6223,
+      "responses": 59,
+      "costUsd": 3.788300999999999
+    }
+  },
+  "warnings": [],
+  "compactions": [],
+  "telemetry": null
+}

@@ -1,0 +1,86 @@
+{
+  "total": {
+    "inputTokens": 30,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 82147,
+    "cacheReadTokens": 1708328,
+    "outputTokens": 5716,
+    "thinkingTokens": 809,
+    "responses": 15,
+    "costUsd": 1.1132816
+  },
+  "estimate": {
+    "at": "2026-11-17T03:18:37.905Z",
+    "parts": [
+      {
+        "hours": 0.1,
+        "grade": "middle",
+        "role": "developer",
+        "comment": "picking up a parked branch means reading its relay summary and confirming PR state; no new work was handed on"
+      }
+    ],
+    "comment": null
+  },
+  "orientation": {
+    "endedBy": "end_turn",
+    "endedOn": null,
+    "endedAt": "2026-11-17T03:18:44.495Z",
+    "contextTokens": 115009,
+    "spend": {
+      "inputTokens": 14,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 60972,
+      "cacheReadTokens": 585973,
+      "outputTokens": 1552,
+      "thinkingTokens": 288,
+      "responses": 6,
+      "costUsd": 0.6360666
+    }
+  },
+  "sessionId": "44134404-c1be-53d6-b828-a6189b627052",
+  "branch": "worktree-dispatch-started-in",
+  "cwd": "/home/user/muthur",
+  "openingPrompt": "/relay take worktree-dispatch-started-in — черновик PR #278 запаркован",
+  "prs": [],
+  "url": "https://claude.ai/code/session_016Z4TKpDsdWwjzM7Y8oYifG",
+  "operator": "vzakharov",
+  "firstResponseAt": "2026-11-17T03:18:18.842Z",
+  "lastResponseAt": "2026-11-17T04:42:21.641Z",
+  "pricesAsOf": "2026-10-06",
+  "claudeCodeTotalUsd": null,
+  "ownTurns": {
+    "inputTokens": 30,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 82147,
+    "cacheReadTokens": 1708328,
+    "outputTokens": 5716,
+    "thinkingTokens": 809,
+    "responses": 15,
+    "costUsd": 1.1132816
+  },
+  "subagents": {
+    "inputTokens": 0,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 0,
+    "cacheReadTokens": 0,
+    "outputTokens": 0,
+    "thinkingTokens": 0,
+    "responses": 0,
+    "costUsd": 0.0
+  },
+  "byRate": {
+    "claude-opus-5-5/standard": {
+      "inputTokens": 30,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 82147,
+      "cacheReadTokens": 1708328,
+      "outputTokens": 5716,
+      "thinkingTokens": 809,
+      "responses": 15,
+      "costUsd": 1.1132816
+    }
+  },
+  "warnings": [],
+  "compactions": [],
+  "telemetry": null
+}
