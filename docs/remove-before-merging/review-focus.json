@@ -1,0 +1,16 @@
+[
+  {
+    "path": ".claude/skills/review-board/SKILL.md",
+    "why": "Конвенция для адоптеров в терминах GitHub: с доски уходит всё, что GitHub скрывает по умолчанию в диффах, то есть любой путь с пометкой linguist-generated, какой бы ни был файл. Агенты узнают о фильтре только отсюда.",
+    "lines": [[42, 51]]
+  },
+  {
+    "path": ".claude/artifacts/src/review-board/scripts/hidden-in-diffs.ts",
+    "why": "Ставка на git: атрибуты читаются из HEAD через check-attr --source (git ≥ 2.40), а не из рабочего дерева, чтобы доска оставалась собранной из одного git. Значимы только set и true; false и unset файл оставляют."
+  },
+  {
+    "path": ".claude/artifacts/src/review-board/scripts/focus.ts",
+    "why": "Решение, которое адоптер не принимал: запись focus про скрытый в диффах путь падает с объяснением и советом отметить то, что его производит, а не с ложным «not among the changed files».",
+    "lines": [[22, 35]]
+  }
+]
