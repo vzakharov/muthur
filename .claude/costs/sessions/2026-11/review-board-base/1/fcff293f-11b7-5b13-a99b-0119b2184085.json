@@ -1,0 +1,100 @@
+{
+  "total": {
+    "inputTokens": 88,
+    "cacheWrite5mTokens": 65690,
+    "cacheWrite1hTokens": 95821,
+    "cacheReadTokens": 4695875,
+    "outputTokens": 18232,
+    "thinkingTokens": 2931,
+    "responses": 42,
+    "costUsd": 2.3991849999999997
+  },
+  "estimate": {
+    "at": "2026-11-23T10:47:01.831Z",
+    "parts": [
+      {
+        "hours": 2.0,
+        "grade": "middle",
+        "role": "developer",
+        "comment": "a collector change with git-history edge cases (rebased base, branch vs commit) and four fixture-repo tests is routine for a mid-level engineer who knows git plumbing"
+      },
+      {
+        "hours": 0.5,
+        "grade": "senior",
+        "role": "prompter",
+        "comment": "the skill paragraph is loop-executed prose that must state the pinning convention precisely"
+      }
+    ],
+    "comment": null
+  },
+  "orientation": {
+    "endedBy": "oriented",
+    "endedOn": null,
+    "endedAt": "2026-11-23T10:44:38.899Z",
+    "contextTokens": 93400,
+    "spend": {
+      "inputTokens": 2,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 36986,
+      "cacheReadTokens": 53234,
+      "outputTokens": 556,
+      "thinkingTokens": 129,
+      "responses": 1,
+      "costUsd": 0.3176628
+    }
+  },
+  "sessionId": "fcff293f-11b7-5b13-a99b-0119b2184085",
+  "branch": "review-board-base",
+  "cwd": "/home/user/muthur",
+  "openingPrompt": "Задача — выполни её через /task: научить сборщик доски ревью (.claude/artifacts/src/review-board/scripts/) брать базу, отличную от базы PR. Зачем: если дифф вет…",
+  "prs": [
+    280
+  ],
+  "url": "https://claude.ai/code/session_01DaohkDuwhJGYhDNEz1Feba",
+  "operator": "vzakharov",
+  "firstResponseAt": "2026-11-23T10:44:34.589Z",
+  "lastResponseAt": "2026-11-23T10:48:50.861Z",
+  "pricesAsOf": "2026-10-06",
+  "claudeCodeTotalUsd": null,
+  "ownTurns": {
+    "inputTokens": 53,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 95821,
+    "cacheReadTokens": 3072791,
+    "outputTokens": 13076,
+    "thinkingTokens": 1300,
+    "responses": 25,
+    "costUsd": 1.6428582
+  },
+  "subagents": {
+    "inputTokens": 35,
+    "cacheWrite5mTokens": 65690,
+    "cacheWrite1hTokens": 0,
+    "cacheReadTokens": 1623084,
+    "outputTokens": 5156,
+    "thinkingTokens": 1631,
+    "responses": 17,
+    "costUsd": 0.7563268000000002
+  },
+  "byRate": {
+    "claude-opus-5-5/standard": {
+      "inputTokens": 88,
+      "cacheWrite5mTokens": 65690,
+      "cacheWrite1hTokens": 95821,
+      "cacheReadTokens": 4695875,
+      "outputTokens": 18232,
+      "thinkingTokens": 2931,
+      "responses": 42,
+      "costUsd": 2.3991849999999997
+    }
+  },
+  "warnings": [],
+  "compactions": [],
+  "telemetry": {
+    "events": 42,
+    "matched": 42,
+    "matchedTableUsd": 2.3991849999999997,
+    "matchedEventUsd": 2.3991849999999997,
+    "unseen": {}
+  }
+}
