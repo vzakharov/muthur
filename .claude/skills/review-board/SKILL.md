@@ -47,6 +47,14 @@ button.
 node .claude/artifacts/src/review-board/scripts/build.ts
 ```
 
+**The board diffs against the PR's base unless told otherwise.** `--base` takes
+a branch, or a commit on HEAD's history. A branch whose diff is mostly work
+brought in whole — a vendored snapshot of another repository, say — pins a
+commit in `docs/remove-before-merging/review-base`, committed, one line, so
+every rebuild, `/pr`'s and `/finalize`'s included, shows only what the branch
+did on top. The collector keeps that file off the board, fails the build on a
+pinned commit off HEAD's history, and lets `--base` override it.
+
 It writes `tmp/review-board/index.html`, the page to publish, and `local.html`,
 the same page as a whole document for a browser off disk. A failure is reported,
 never worked around: the collector reads git, and a board built from anything

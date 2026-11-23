@@ -1,0 +1,81 @@
+{
+  "total": {
+    "inputTokens": 28,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 76257,
+    "cacheReadTokens": 1535626,
+    "outputTokens": 9374,
+    "thinkingTokens": 1175,
+    "responses": 14,
+    "costUsd": 1.1047732000000001
+  },
+  "estimate": null,
+  "orientation": {
+    "endedBy": "oriented",
+    "endedOn": null,
+    "endedAt": "2026-11-23T10:44:38.899Z",
+    "contextTokens": 93400,
+    "spend": {
+      "inputTokens": 2,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 36986,
+      "cacheReadTokens": 53234,
+      "outputTokens": 556,
+      "thinkingTokens": 129,
+      "responses": 1,
+      "costUsd": 0.3176628
+    }
+  },
+  "sessionId": "fcff293f-11b7-5b13-a99b-0119b2184085",
+  "branch": "review-board-base",
+  "cwd": "/home/user/muthur",
+  "openingPrompt": "Задача — выполни её через /task: научить сборщик доски ревью (.claude/artifacts/src/review-board/scripts/) брать базу, отличную от базы PR. Зачем: если дифф вет…",
+  "prs": [],
+  "url": "https://claude.ai/code/session_01DaohkDuwhJGYhDNEz1Feba",
+  "operator": "vzakharov",
+  "firstResponseAt": "2026-11-23T10:44:34.589Z",
+  "lastResponseAt": "2026-11-23T10:47:00.617Z",
+  "pricesAsOf": "2026-10-06",
+  "claudeCodeTotalUsd": null,
+  "ownTurns": {
+    "inputTokens": 28,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 76257,
+    "cacheReadTokens": 1535626,
+    "outputTokens": 9374,
+    "thinkingTokens": 1175,
+    "responses": 14,
+    "costUsd": 1.1047732000000001
+  },
+  "subagents": {
+    "inputTokens": 0,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 0,
+    "cacheReadTokens": 0,
+    "outputTokens": 0,
+    "thinkingTokens": 0,
+    "responses": 0,
+    "costUsd": 0.0
+  },
+  "byRate": {
+    "claude-opus-5-5/standard": {
+      "inputTokens": 28,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 76257,
+      "cacheReadTokens": 1535626,
+      "outputTokens": 9374,
+      "thinkingTokens": 1175,
+      "responses": 14,
+      "costUsd": 1.1047732000000001
+    }
+  },
+  "warnings": [],
+  "compactions": [],
+  "telemetry": {
+    "events": 13,
+    "matched": 13,
+    "matchedTableUsd": 1.0607528000000002,
+    "matchedEventUsd": 1.0607528000000002,
+    "unseen": {}
+  }
+}

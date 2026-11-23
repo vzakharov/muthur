@@ -7,9 +7,12 @@ import type {
 } from "#src/review-board/shared/review-data/index.ts";
 import { FOCUS_PATH, lineCount, parseFocus } from "./focus.ts";
 
+/** A one-line file naming a commit on HEAD's history to review against, for a branch whose diff is mostly work brought in whole. */
+export const BASE_PATH = "docs/remove-before-merging/review-base";
+
 interface CollectOptions {
   cwd: string;
-  /** The branch the review is against; resolved from the PR, then the repo default, when omitted. */
+  /** The branch or commit the review is against; resolved from BASE_PATH, then the PR, then the repo default, when omitted. */
   base?: string;
 }
 
@@ -74,12 +77,29 @@ function readPr(cwd: string): Pr | null {
   return json === null ? null : prSchema.parse(JSON.parse(json));
 }
 
+/** The file's text as committed at HEAD, whatever the worktree holds; null when HEAD has none. */
+function showAtHead(cwd: string, path: string): string | null {
+  const listed = gitText(cwd, ["ls-tree", "--name-only", "HEAD", "--", path]);
+  if (listed.trim() === "") return null;
+  return gitText(cwd, ["show", `HEAD:${path}`]);
+}
+
+function readPinnedBase(cwd: string): string | null {
+  const text = showAtHead(cwd, BASE_PATH);
+  if (text === null) return null;
+  const pinned = text.trim();
+  if (pinned === "") throw new Error(`${BASE_PATH} is empty`);
+  return pinned;
+}
+
 function resolveBaseRef(
   cwd: string,
   base: string | undefined,
   pr: Pr | null,
 ): string {
   if (base !== undefined) return base;
+  const pinned = readPinnedBase(cwd);
+  if (pinned !== null) return pinned;
   if (pr !== null) return pr.baseRefName;
   const head = tryText(cwd, "git", [
     "symbolic-ref",
@@ -88,16 +108,30 @@ function resolveBaseRef(
   return head?.replace(/^refs\/remotes\/origin\//, "") ?? "main";
 }
 
+function hasRef(cwd: string, ref: string): boolean {
+  return run(cwd, "git", ["show-ref", "--verify", "--quiet", ref]).ok;
+}
+
+/**
+ * A branch reviews from its merge-base with HEAD; any other name must be a
+ * commit already on HEAD's history, since a merge-base with a commit off it —
+ * after a rebase, say — would put the branch's own earlier work back on the board.
+ */
 function resolveBaseSha(cwd: string, baseRef: string): string {
-  const remoteRef = `origin/${baseRef}`;
-  const hasRemote = run(cwd, "git", [
+  const branch = [
+    `refs/remotes/origin/${baseRef}`,
+    `refs/heads/${baseRef}`,
+  ].find((ref) => hasRef(cwd, ref));
+  if (branch !== undefined)
+    return gitText(cwd, ["merge-base", branch, "HEAD"]).trim();
+  const sha = gitText(cwd, [
     "rev-parse",
     "--verify",
-    "--quiet",
-    remoteRef,
-  ]).ok;
-  const target = hasRemote ? remoteRef : baseRef;
-  return gitText(cwd, ["merge-base", target, "HEAD"]).trim();
+    `${baseRef}^{commit}`,
+  ]).trim();
+  if (!isAncestor(cwd, sha, "HEAD"))
+    throw new Error(`the review base ${baseRef} is not on HEAD's history`);
+  return sha;
 }
 
 function parseRepo(url: string | null): string | null {
@@ -340,14 +374,8 @@ function readFocus(
   files: ReviewFile[],
   blobs: Record<string, string>,
 ): ReviewData["focus"] {
-  const listed = gitText(cwd, [
-    "ls-tree",
-    "--name-only",
-    "HEAD",
-    "--",
-    FOCUS_PATH,
-  ]);
-  if (listed.trim() === "") return [];
+  const text = showAtHead(cwd, FOCUS_PATH);
+  if (text === null) return [];
   const counts = new Map(
     files.map((file) => {
       const blob = file.binary ? null : (file.revisions.at(-1)?.blob ?? null);
@@ -355,16 +383,16 @@ function readFocus(
       return [file.path, text === undefined ? null : lineCount(text)];
     }),
   );
-  return parseFocus(gitText(cwd, ["show", `HEAD:${FOCUS_PATH}`]), counts);
+  return parseFocus(text, counts);
 }
 
 export function collect({ cwd, base }: CollectOptions): ReviewData {
   const pr = readPr(cwd);
   const baseRef = resolveBaseRef(cwd, base, pr);
   const baseSha = resolveBaseSha(cwd, baseRef);
-  // The focus file is about the review, not part of it.
+  // The focus and base files are about the review, not part of it.
   const changes = readChanges(cwd, baseSha).filter(
-    (change) => change.path !== FOCUS_PATH,
+    (change) => change.path !== FOCUS_PATH && change.path !== BASE_PATH,
   );
   const binary = readBinaryPaths(cwd, baseSha);
   const revisions = readRevisions(cwd, baseSha, changes);
