@@ -46,7 +46,6 @@ async function bundle(): Promise<{ js: string; css: string }> {
 const repoRoot = execFileSync("git", ["rev-parse", "--show-toplevel"], {
   encoding: "utf8",
 }).trim();
-// build.ts [<out dir>] [--base <branch|commit>]
 const { values, positionals } = parseArgs({
   options: { base: { type: "string" } },
   allowPositionals: true,
