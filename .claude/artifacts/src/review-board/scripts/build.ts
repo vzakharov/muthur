@@ -2,6 +2,7 @@ import { execFileSync } from "node:child_process";
 import { mkdirSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { parseArgs } from "node:util";
 import { build } from "esbuild";
 import { boardTitle } from "#src/review-board/shared/review-data/index.ts";
 import { collect } from "./collect.ts";
@@ -45,11 +46,21 @@ async function bundle(): Promise<{ js: string; css: string }> {
 const repoRoot = execFileSync("git", ["rev-parse", "--show-toplevel"], {
   encoding: "utf8",
 }).trim();
-const outDir = resolve(
-  process.argv[2] ?? join(repoRoot, "tmp", "review-board"),
-);
+const { values, positionals } = parseArgs({
+  options: { base: { type: "string" } },
+  allowPositionals: true,
+});
+if (positionals.length > 1)
+  throw new Error("usage: build.ts [<out dir>] [--base <branch|commit>]");
+const outDir = resolve(positionals[0] ?? join(repoRoot, "tmp", "review-board"));
 
-const [data, assets] = [collect({ cwd: process.cwd() }), await bundle()];
+const [data, assets] = [
+  collect({
+    cwd: process.cwd(),
+    ...(values.base === undefined ? {} : { base: values.base }),
+  }),
+  await bundle(),
+];
 const page = renderPage({
   title: boardTitle(data.branch, data.pr),
   data,

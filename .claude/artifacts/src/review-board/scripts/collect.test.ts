@@ -4,7 +4,7 @@ import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { test } from "node:test";
-import { collect } from "./collect.ts";
+import { BASE_PATH, collect } from "./collect.ts";
 import { FOCUS_PATH } from "./focus.ts";
 
 const IDENTITY = {
@@ -23,7 +23,7 @@ const gitIn =
       encoding: "utf8",
     }).trim();
 
-function makeRepo(): { dir: string; commits: string[] } {
+function makeRepo(): { dir: string; commits: [string, string, string] } {
   const dir = mkdtempSync(join(tmpdir(), "collect-test-"));
   const git = gitIn(dir);
   const write = (path: string, content: string | Buffer) => {
@@ -67,15 +67,23 @@ function makeRepo(): { dir: string; commits: string[] } {
   return { dir, commits: [base, first, second] };
 }
 
-function commitFocus(dir: string, entries: unknown): string {
-  const file = join(dir, FOCUS_PATH);
+function commitFile(
+  dir: string,
+  path: string,
+  content: string,
+  message: string,
+): string {
+  const file = join(dir, path);
   mkdirSync(dirname(file), { recursive: true });
-  writeFileSync(file, JSON.stringify(entries));
+  writeFileSync(file, content);
   const git = gitIn(dir);
   git("add", "-A");
-  git("commit", "-q", "-m", "focus");
+  git("commit", "-q", "-m", message);
   return file;
 }
+
+const commitFocus = (dir: string, entries: unknown): string =>
+  commitFile(dir, FOCUS_PATH, JSON.stringify(entries), "focus");
 
 test("collects commits, files, revisions and deduplicated blobs", () => {
   const { dir, commits } = makeRepo();
@@ -235,6 +243,79 @@ test("marks the merges that bring the base in, and only those", () => {
     assert.equal(flags.get(sideMerge), false);
     assert.equal(flags.get(baseMerge), true);
     assert.equal([...flags.values()].filter(Boolean).length, 1);
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+const commitBase = (dir: string, base: string): string =>
+  commitFile(dir, BASE_PATH, `${base}\n`, "pin the review base");
+
+const paths = (data: ReturnType<typeof collect>): string[] =>
+  data.files.map((file) => file.path).sort();
+
+test("a commit as the base shows only what came after it", () => {
+  const { dir, commits } = makeRepo();
+  try {
+    const [, first, second] = commits;
+    const data = collect({ cwd: dir, base: first });
+    assert.deepEqual(data.base, { ref: first, sha: first });
+    assert.deepEqual(
+      data.commits.map((c) => c.sha),
+      [second],
+    );
+    assert.deepEqual(paths(data), [
+      "gone.txt",
+      "mod.txt",
+      "pic.bin",
+      "src/renamed.txt",
+    ]);
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+test("a pinned base is read from HEAD and left off the board", () => {
+  const { dir, commits } = makeRepo();
+  try {
+    const [, first] = commits;
+    commitBase(dir, first);
+    // An uncommitted edit is not what the board uses.
+    writeFileSync(join(dir, BASE_PATH), "main\n");
+
+    const data = collect({ cwd: dir });
+    assert.equal(data.base.sha, first);
+    assert.ok(data.files.every((file) => file.path !== BASE_PATH));
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+test("an explicit base wins over the pinned one", () => {
+  const { dir, commits } = makeRepo();
+  try {
+    const [base, first] = commits;
+    commitBase(dir, first);
+    const data = collect({ cwd: dir, base: "main" });
+    assert.deepEqual(data.base, { ref: "main", sha: base });
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+test("a commit off HEAD's history fails the collection", () => {
+  const { dir } = makeRepo();
+  try {
+    const git = gitIn(dir);
+    git("checkout", "-q", "main");
+    writeFileSync(join(dir, "keep.txt"), "changed on main\n");
+    git("commit", "-q", "-am", "main moves");
+    const offHistory = git("rev-parse", "HEAD");
+    git("checkout", "-q", "feature");
+    assert.throws(
+      () => collect({ cwd: dir, base: offHistory }),
+      /is not on HEAD's history/,
+    );
   } finally {
     rmSync(dir, { recursive: true, force: true });
   }
