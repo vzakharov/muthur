@@ -1,13 +1,13 @@
 {
   "total": {
-    "inputTokens": 67,
-    "cacheWrite5mTokens": 65285,
-    "cacheWrite1hTokens": 78185,
-    "cacheReadTokens": 3307659,
-    "outputTokens": 14134,
-    "thinkingTokens": 2806,
-    "responses": 32,
-    "costUsd": 1.8963847999999999
+    "inputTokens": 86,
+    "cacheWrite5mTokens": 65690,
+    "cacheWrite1hTokens": 95583,
+    "cacheReadTokens": 4547058,
+    "outputTokens": 17224,
+    "thinkingTokens": 2874,
+    "responses": 41,
+    "costUsd": 2.3473495999999994
   },
   "estimate": {
     "at": "2026-11-23T10:47:01.831Z",
@@ -47,52 +47,54 @@
   "branch": "review-board-base",
   "cwd": "/home/user/muthur",
   "openingPrompt": "Задача — выполни её через /task: научить сборщик доски ревью (.claude/artifacts/src/review-board/scripts/) брать базу, отличную от базы PR. Зачем: если дифф вет…",
-  "prs": [],
+  "prs": [
+    280
+  ],
   "url": "https://claude.ai/code/session_01DaohkDuwhJGYhDNEz1Feba",
   "operator": "vzakharov",
   "firstResponseAt": "2026-11-23T10:44:34.589Z",
-  "lastResponseAt": "2026-11-23T10:48:00.750Z",
+  "lastResponseAt": "2026-11-23T10:48:41.469Z",
   "pricesAsOf": "2026-10-06",
   "claudeCodeTotalUsd": null,
   "ownTurns": {
-    "inputTokens": 34,
+    "inputTokens": 51,
     "cacheWrite5mTokens": 0,
-    "cacheWrite1hTokens": 78185,
-    "cacheReadTokens": 1795681,
-    "outputTokens": 9689,
-    "thinkingTokens": 1175,
-    "responses": 16,
-    "costUsd": 1.1785322
+    "cacheWrite1hTokens": 95583,
+    "cacheReadTokens": 2923974,
+    "outputTokens": 12068,
+    "thinkingTokens": 1243,
+    "responses": 24,
+    "costUsd": 1.5910228
   },
   "subagents": {
-    "inputTokens": 33,
-    "cacheWrite5mTokens": 65285,
+    "inputTokens": 35,
+    "cacheWrite5mTokens": 65690,
     "cacheWrite1hTokens": 0,
-    "cacheReadTokens": 1511978,
-    "outputTokens": 4445,
+    "cacheReadTokens": 1623084,
+    "outputTokens": 5156,
     "thinkingTokens": 1631,
-    "responses": 16,
-    "costUsd": 0.7178526000000002
+    "responses": 17,
+    "costUsd": 0.7563268000000002
   },
   "byRate": {
     "claude-opus-5-5/standard": {
-      "inputTokens": 67,
-      "cacheWrite5mTokens": 65285,
-      "cacheWrite1hTokens": 78185,
-      "cacheReadTokens": 3307659,
-      "outputTokens": 14134,
-      "thinkingTokens": 2806,
-      "responses": 32,
-      "costUsd": 1.8963847999999999
+      "inputTokens": 86,
+      "cacheWrite5mTokens": 65690,
+      "cacheWrite1hTokens": 95583,
+      "cacheReadTokens": 4547058,
+      "outputTokens": 17224,
+      "thinkingTokens": 2874,
+      "responses": 41,
+      "costUsd": 2.3473495999999994
     }
   },
   "warnings": [],
   "compactions": [],
   "telemetry": {
-    "events": 31,
-    "matched": 31,
-    "matchedTableUsd": 1.8663724,
-    "matchedEventUsd": 1.8663724,
+    "events": 40,
+    "matched": 40,
+    "matchedTableUsd": 2.3111199999999994,
+    "matchedEventUsd": 2.3111199999999994,
     "unseen": {}
   }
 }
