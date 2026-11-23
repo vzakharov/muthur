@@ -67,15 +67,23 @@ function makeRepo(): { dir: string; commits: [string, string, string] } {
   return { dir, commits: [base, first, second] };
 }
 
-function commitFocus(dir: string, entries: unknown): string {
-  const file = join(dir, FOCUS_PATH);
+function commitFile(
+  dir: string,
+  path: string,
+  content: string,
+  message: string,
+): string {
+  const file = join(dir, path);
   mkdirSync(dirname(file), { recursive: true });
-  writeFileSync(file, JSON.stringify(entries));
+  writeFileSync(file, content);
   const git = gitIn(dir);
   git("add", "-A");
-  git("commit", "-q", "-m", "focus");
+  git("commit", "-q", "-m", message);
   return file;
 }
+
+const commitFocus = (dir: string, entries: unknown): string =>
+  commitFile(dir, FOCUS_PATH, JSON.stringify(entries), "focus");
 
 test("collects commits, files, revisions and deduplicated blobs", () => {
   const { dir, commits } = makeRepo();
@@ -240,14 +248,8 @@ test("marks the merges that bring the base in, and only those", () => {
   }
 });
 
-function commitBase(dir: string, base: string): void {
-  const file = join(dir, BASE_PATH);
-  mkdirSync(dirname(file), { recursive: true });
-  writeFileSync(file, `${base}\n`);
-  const git = gitIn(dir);
-  git("add", "-A");
-  git("commit", "-q", "-m", "pin the review base");
-}
+const commitBase = (dir: string, base: string): string =>
+  commitFile(dir, BASE_PATH, `${base}\n`, "pin the review base");
 
 const paths = (data: ReturnType<typeof collect>): string[] =>
   data.files.map((file) => file.path).sort();
