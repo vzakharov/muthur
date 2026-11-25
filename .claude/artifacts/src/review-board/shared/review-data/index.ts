@@ -13,4 +13,5 @@ export type {
   ReviewCommit,
   ReviewData,
   ReviewFile,
+  ReviewFilePaths,
 } from "./schema.ts";
