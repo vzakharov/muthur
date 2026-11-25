@@ -27,6 +27,10 @@ does that and hands the number back. Both mentions stay bare rather than
 `@`-references: this skill ships to adopters who track no issues at all, and
 nothing here needs those files read.
 
+**A skill whose run leaves work in the repo arrives here too**, as its own work
+rather than an operator's prompt: `@.claude/skills/task/repo-change.md` is that
+contract, and each such skill cites it with its deviations named.
+
 **What that routing costs, plainly:** the agent makes the plan-or-not call on
 every session that asks for a change, without the operator opting into it. The
 gate survives that — Step 3 routes gate-worthy work back to `/plan` — but it

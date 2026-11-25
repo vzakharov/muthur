@@ -30,6 +30,11 @@ ended. Decide how that boundary is recorded (a timestamp in a tracked file, the
 last review's issue, a cursor) — without it, every run either re-reports the
 same week or silently skips days.
 
+A boundary or readout kept in a tracked file makes a run
+`@.claude/skills/task/repo-change.md`'s case, and a hydrated version names its
+deviations from that route — an unattended run committing straight to a branch
+of its own, say — and only those.
+
 ### Two outputs, kept apart
 
 Don't fold the usage readout into the error list. They have different readers

@@ -7,7 +7,9 @@
   judge whether the operator has to look — a question, a draft, and a question,
   running whichever of the three outcomes they pick. `/task <what to do>` is a
   conditional go-ahead scoped to that task, and CLAUDE.md's entry ladder routes
-  every change-asking prompt here.
+  every change-asking prompt here. Carries `repo-change.md`, the contract that
+  routes any skill whose run leaves work in the repo through `/task` as well,
+  each such skill naming only its deviations.
   - **Pulls in:** `/go`, `/plan`, `/pr`; **conditionally** `/take-issue` (G3)
   - **Disposition:** adopt
 - `.claude/hooks/prompt-route-notice.sh` — Point the session's first prompt at
