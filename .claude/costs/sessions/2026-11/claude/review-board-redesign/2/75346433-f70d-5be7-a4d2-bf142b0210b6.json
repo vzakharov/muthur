@@ -1,0 +1,103 @@
+{
+  "total": {
+    "inputTokens": 537,
+    "cacheWrite5mTokens": 689,
+    "cacheWrite1hTokens": 61094,
+    "cacheReadTokens": 1704032,
+    "outputTokens": 5153,
+    "thinkingTokens": 667,
+    "responses": 15,
+    "costUsd": 0.9402784000000001
+  },
+  "estimate": {
+    "at": "2026-11-17T06:25:29.529Z",
+    "parts": [
+      {
+        "hours": 0.2,
+        "grade": "senior",
+        "role": "developer",
+        "comment": "attaching to a parked branch and reporting its state is a short routine step the implementer does before coding"
+      }
+    ],
+    "comment": null
+  },
+  "orientation": {
+    "endedBy": "end_turn",
+    "endedOn": null,
+    "endedAt": "2026-11-17T05:30:19.721Z",
+    "contextTokens": 118265,
+    "spend": {
+      "inputTokens": 16,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 52548,
+      "cacheReadTokens": 731965,
+      "outputTokens": 1871,
+      "thinkingTokens": 319,
+      "responses": 7,
+      "costUsd": 0.604261
+    }
+  },
+  "sessionId": "75346433-f70d-5be7-a4d2-bf142b0210b6",
+  "branch": "claude/review-board-redesign",
+  "cwd": "/home/user/muthur",
+  "openingPrompt": "/relay take claude/review-board-redesign — план на черновом PR, ждёт ответов Вовы",
+  "prs": [],
+  "url": "https://claude.ai/code/session_01RAikuw9gdDUVZU4rMxj5Dx",
+  "operator": null,
+  "firstResponseAt": "2026-11-17T05:29:44.461Z",
+  "lastResponseAt": "2026-11-17T06:25:49.529Z",
+  "pricesAsOf": "2026-10-06",
+  "claudeCodeTotalUsd": null,
+  "ownTurns": {
+    "inputTokens": 31,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 61094,
+    "cacheReadTokens": 1585768,
+    "outputTokens": 5137,
+    "thinkingTokens": 667,
+    "responses": 14,
+    "costUsd": 0.9087696000000001
+  },
+  "subagents": {
+    "inputTokens": 0,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 0,
+    "cacheReadTokens": 0,
+    "outputTokens": 0,
+    "thinkingTokens": 0,
+    "responses": 0,
+    "costUsd": 0.0
+  },
+  "byRate": {
+    "claude-opus-5-5/standard": {
+      "inputTokens": 537,
+      "cacheWrite5mTokens": 689,
+      "cacheWrite1hTokens": 61094,
+      "cacheReadTokens": 1704032,
+      "outputTokens": 5153,
+      "thinkingTokens": 667,
+      "responses": 15,
+      "costUsd": 0.9402784000000001
+    }
+  },
+  "warnings": [],
+  "compactions": [],
+  "telemetry": {
+    "events": 14,
+    "matched": 13,
+    "matchedTableUsd": 0.8671612000000001,
+    "matchedEventUsd": 0.8671612000000001,
+    "unseen": {
+      "prompt_suggestion": {
+        "inputTokens": 506,
+        "cacheWrite5mTokens": 689,
+        "cacheWrite1hTokens": 0,
+        "cacheReadTokens": 118264,
+        "outputTokens": 16,
+        "thinkingTokens": 0,
+        "responses": 1,
+        "costUsd": 0.031508800000000003
+      }
+    }
+  }
+}
